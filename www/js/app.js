@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
+angular.module('waddle', ['ionic', 'waddle.controllers', 'waddle.services'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -33,52 +33,51 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     .state('tab', {
       url: "/tab",
       abstract: true,
-      templateUrl: "templates/tabs.html"
+      templateUrl: "tabs/tabs.html"
     })
 
     // Each tab has its own nav history stack:
 
-    .state('tab.dash', {
-      url: '/dash',
+    .state('tab.home', {
+      url: '/home',
       views: {
-        'tab-dash': {
-          templateUrl: 'templates/tab-dash.html',
-          controller: 'DashCtrl'
+        'home-tab': {
+          templateUrl: 'tabs/home/home.html',
+          controller: 'HomeController'
         }
       }
     })
-
-    .state('tab.friends', {
-      url: '/friends',
+    .state('tab.footprints', {
+      url: '/footprints',
       views: {
-        'tab-friends': {
-          templateUrl: 'templates/tab-friends.html',
-          controller: 'FriendsCtrl'
+        'footprints-tab': {
+          templateUrl: 'tabs/footprints/footprints.html',
+          controller: 'FootprintsController'
         }
       }
     })
-    .state('tab.friend-detail', {
-      url: '/friend/:friendId',
+    .state('tab.hypelist', {
+      url: '/hypelist',
       views: {
-        'tab-friends': {
-          templateUrl: 'templates/friend-detail.html',
-          controller: 'FriendDetailCtrl'
+        'hypelist-tab': {
+          templateUrl: 'tabs/hypelist/hypelist.html',
+          controller: 'HypelistController'
         }
       }
     })
-
-    .state('tab.account', {
-      url: '/account',
+    .state('tab.profile', {
+      url: '/profile',
       views: {
-        'tab-account': {
-          templateUrl: 'templates/tab-account.html',
-          controller: 'AccountCtrl'
+        'profile-tab': {
+          templateUrl: 'tabs/profile/profile.html',
+          controller: 'ProfileController'
         }
       }
     });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
+  $urlRouterProvider.otherwise('/tab/home');
 
 });
+
 
