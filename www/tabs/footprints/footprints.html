@@ -2,8 +2,6 @@
   <ion-content class="padding">
 
     <!-- <div ng-if="inBoundsObject.datapoints" class='waddlefeed'>-->
-      <!-- <br> -->
-      <!-- <h4 class="feedtitle">Feed</h4> -->
       <!--<div class='waddlefeeditem' ng-repeat="footprint in inBoundsObject.datapoints | orderBy:'-checkin.checkinTime' | limitTo:20 ">-->
       <div class='waddlefeeditem'>
 
@@ -14,9 +12,9 @@
 
         <!-- User Name -->
         <h4>{{footprint.user.name}}</h4>
-          <img ng-if="!footprint.checkin.bucketed" class='addbucket feedactions' title="Add to Bucket List" ng-click="addCheckinToBucketList(footprint)"/>
-          <img ng-if="footprint.checkin.bucketed" class='addbucketactive feedactions' title="Add to Bucket List" ng-click="removeCheckinFromBucketList(footprint)"/>
-          <h8 class="checkindate">{{footprint.checkin.checkinTime | date : shortDate}}</h8>
+        <img ng-if="!footprint.checkin.bucketed" class='addbucket feedactions' title="Add to Bucket List" ng-click="addCheckinToBucketList(footprint)"/>
+        <img ng-if="footprint.checkin.bucketed" class='addbucketactive feedactions' title="Add to Bucket List" ng-click="removeCheckinFromBucketList(footprint)"/>
+        <h8 class="checkindate">{{footprint.checkin.checkinTime | date : shortDate}}</h8>
 
         <br/>
 
@@ -62,6 +60,8 @@
             <p>{{comment.comment.text}}</p>
             <button ng-click='removeComment()'>Delete</button>
           </div> -->
+
+        <!-- Add Comment -->
         <form name="customSubmit" data-custom-submit info='someinfo' class='comment_form' novalidate>
           <input ng-model='comment' name='comment' placeholder='Leave a comment' class="comment" data-ng-minlength="1" data-ng-maxlength="120" required>
           <span class="help-inline" ng-show="customSubmit.comment.$error.maxlength">120 Character Max</span>
