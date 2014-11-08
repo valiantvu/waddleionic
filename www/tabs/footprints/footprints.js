@@ -30,6 +30,39 @@ var FootprintsController = function ($scope, $state) {
         "comments":null,
         "$$hashKey":"object:34"
     };
+
+    $scope.addCheckinToBucketList = function (footprint){
+      
+      var bucketListData = {
+        facebookID: window.sessionStorage.userFbID,
+        checkinID: footprint.checkin.checkinID
+      };
+
+      FootprintRequests.addToBucketList(bucketListData)
+      .then(function (data){
+        // Add bucketed property to checkin, updating markerQuadTree and refreshing inBounds
+        // The second and third arguments to addPropertyToCheckin add to footprint.checkin 
+        MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', true);
+        filterFeedByBounds();
+      });
+    };
+
+    $scope.removeCheckinFromBucketList = function (footprint){
+      console.log('removed?');
+
+      var bucketListData = {
+        facebookID: window.sessionStorage.userFbID,
+        checkinID: footprint.checkin.checkinID
+      };
+
+      FootprintRequests.removeFromBucketList(bucketListData)
+      .then(function (data){
+        MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
+      });
+    };
+
+    // $scope.selectedFootprintInteractions = null;
+
     // $scope.getFootprint = function (footprint) {
     //     $scope.footprint = footprint;
 
@@ -43,9 +76,38 @@ var FootprintsController = function ($scope, $state) {
     //     });
     // };
 
+    // $scope.closeFootprintWindow = function (){
+    //   FootprintRequests.openFootprint = undefined;
+    //   $state.go('map.feed')
+    // };
+
+    // Ensure that a user comment is posted in the database before displaying
+    // $scope.updateFootprint = function (footprint){
+    //   var checkinID = footprint.checkin.checkinID;
+    //   FootprintRequests.getFootprintInteractions(checkinID)
+    //   .then(function (data) {
+    //     $scope.selectedFootprintInteractions.comments = data.data.comments;
+    //   });  
+    // };
+
+    // $scope.removeComment = function (footprint, comment){
+    //   console.log(footprint);
+    //   console.log(comment);
+    //   var commentData = {
+    //     facebookID: comment.commenter.facebookID,
+    //     checkinID: footprint.checkin.checkinID,
+    //     commentID : comment.comment.commentID 
+    //   };
+    //   console.log(commentData);
+    //   FootprintRequests.removeComment(commentData)
+    //   .then(function (data){
+    //     console.log("success");
+    //     //MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
+    //   });
+    // };
 };
 
-FootprintsController.$inject = ['$scope', '$state']
+FootprintsController.$inject = ['$scope', '$state'];
 
 angular.module('waddle.footprints', [])
   .controller('FootprintsController', FootprintsController);
