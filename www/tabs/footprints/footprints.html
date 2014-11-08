@@ -12,7 +12,9 @@
 
         <!-- User Name -->
         <h4>{{footprint.user.name}}</h4>
+        <!-- Not bucketed -->
         <img ng-if="!footprint.checkin.bucketed" class='addbucket feedactions' title="Add to Bucket List" ng-click="addCheckinToBucketList(footprint)"/>
+        <!-- Bucketed -->
         <img ng-if="footprint.checkin.bucketed" class='addbucketactive feedactions' title="Add to Bucket List" ng-click="removeCheckinFromBucketList(footprint)"/>
         <h8 class="checkindate">{{footprint.checkin.checkinTime | date : shortDate}}</h8>
 
