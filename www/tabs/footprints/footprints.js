@@ -1,6 +1,6 @@
 (function(){
 
-var FootprintsController = function ($scope, $state) {
+var FootprintsController = function (MapFactory, FootprintRequests, $scope, $state) {
 
     $scope.footprint = {
         "user": {
@@ -42,8 +42,8 @@ var FootprintsController = function ($scope, $state) {
       .then(function (data){
         // Add bucketed property to checkin, updating markerQuadTree and refreshing inBounds
         // The second and third arguments to addPropertyToCheckin add to footprint.checkin 
-        MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', true);
-        filterFeedByBounds();
+        // MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', true);
+        // filterFeedByBounds();
       });
     };
 
@@ -57,7 +57,7 @@ var FootprintsController = function ($scope, $state) {
 
       FootprintRequests.removeFromBucketList(bucketListData)
       .then(function (data){
-        MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
+        // MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
       });
     };
 
@@ -107,7 +107,7 @@ var FootprintsController = function ($scope, $state) {
     // };
 };
 
-FootprintsController.$inject = ['$scope', '$state'];
+FootprintsController.$inject = ['MapFactory', 'FootprintRequests', '$scope', '$state'];
 
 angular.module('waddle.footprints', [])
   .controller('FootprintsController', FootprintsController);
