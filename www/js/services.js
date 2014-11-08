@@ -26,6 +26,11 @@
 // });
 
 (function() {
-angular.module('waddle.services', []);
+
+angular.module('waddle.services', [
+    'waddle.services.footprintRequestsFactory',
+    'waddle.services.mapFactory'
+    ]);
+
 })();
 
