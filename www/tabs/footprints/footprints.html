@@ -13,11 +13,13 @@
 
   <ion-content class="padding">
 
+    <input type="search" ng-model="search" placeholder="Search your footprints">
+
     <!-- <div ng-if="inBoundsObject.datapoints" class='waddlefeed'>-->
       <!--<div class='waddlefeeditem' ng-repeat="footprint in inBoundsObject.datapoints | orderBy:'-checkin.checkinTime' | limitTo:20 ">-->
       <!-- <div class='waddlefeeditem'> -->
 
-        <div class="list card">
+        <div ng-repeat="footprint in footprints | filter:search" class="list card">
 
           <div class="item item-avatar">
 
