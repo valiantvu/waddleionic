@@ -12,7 +12,7 @@ var FootprintsController = function (MapFactory, FootprintRequests, $scope, $sta
         },
         "checkin": {
             "checkinTime":"2013-09-29T07:45:38.000Z",
-            "caption":"null",
+            "caption":"Adventure Time!! #Finn #Jake #Running",
             "likes":100000,
             "photoLarge":"img/adventure_time.png",
             "source":"facebook",
