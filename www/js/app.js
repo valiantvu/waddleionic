@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('waddle', ['ionic', 'waddle.controllers', 'waddle.services'])
+angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.services'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -30,6 +30,11 @@ angular.module('waddle', ['ionic', 'waddle.controllers', 'waddle.services'])
   $stateProvider
 
     // setup an abstract state for the tabs directive
+    .state('frontpage', {
+      url: '/',
+      templateUrl: 'modules/login/frontpage.html',
+      controller: 'FrontpageController'
+    })
     .state('tab', {
       url: "/tab",
       abstract: true,
@@ -54,6 +59,22 @@ angular.module('waddle', ['ionic', 'waddle.controllers', 'waddle.services'])
           templateUrl: 'tabs/footprints/footprints.html',
           controller: 'FootprintsController'
         }
+      }
+    })
+    .state('tab.checkin', {
+      url: '/checkin',
+      views: {
+        'checkin-tab': {
+          templateUrl: 'tabs/checkin/checkin.html',
+          controller: 'CheckinController'
+        }
+      }
+    })
+    .state('tab.checkin.post', {
+      url: '/:venue',
+      views: {
+        templateUrl: 'tabs/checkin/checkin-post.html',
+        controller: 'CheckinController'
       }
     })
     .state('tab.hypelist', {

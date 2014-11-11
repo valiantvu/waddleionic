@@ -1,0 +1,32 @@
+<!-- This script is loaded when a user clicks on the "Add Foursquare button".  Its purpose is to parse the foursquare auth
+code from the URL bar, and send it to foursquare's servers.  (Foursquare then sends over a long-term access token that is unique
+to each user, which is handled in the userRoutes) -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Waddle</title>
+  </head>
+  <body>
+    <script>
+
+      var parseFoursquareCode = function() {
+        var url = window.location.href;
+        var processedUrl = url.split('code=');
+        var userCode = processedUrl[1].split('#');
+        return userCode[0];
+      };
+
+      var sendFoursquareCodeToServer = function(code) {
+        var request = new XMLHttpRequest();
+        request.open('POST', '/api/users/userfoursquarecode', false);
+        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+        request.send(JSON.stringify({facebookID: window.sessionStorage.userFbID, foursquareCode: code}));
+      };
+
+      window.location.assign('http://waddle.herokuapp.com/#/map');
+      sendFoursquareCodeToServer(parseFoursquareCode());
+
+    </script>
+  </body>
+</html>
