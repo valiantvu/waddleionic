@@ -1,5 +1,13 @@
+	<div><ion-nav-view></ion-nav-view></div>
 <ion-view title="Checkins">
   <ion-content class="padding">
-    <h1>Checkin</h1>
+ <!--   <h4>{{location}}</h4> -->
+    <div ng-repeat="venue in venues">
+    	<h4 ng-click='passSelectedVenueInfoToPostModal(venue)' ui-sref="tab.checkin.post({venue: venue.id})">{{venue.name}}</h4>
+    	<h5>{{venue.location.formattedAddress[0]}}, {{venue.location.formattedAddress[1]}}<h5>
+    	<h6>{{venue.location.distance}} meters</h6>
+    </div>
+    <button ng-click="checkin()">Checkin</button>
   </ion-content>
+	<div style="z-index:-1;"id="map"></div>
 </ion-view>
