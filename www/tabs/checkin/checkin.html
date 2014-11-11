@@ -1,7 +1,18 @@
-	<div><ion-nav-view></ion-nav-view></div>
+
+<!-- Header Bar -->
+<ion-header-bar align-title="center" class="bar-positive">
+  <div class="buttons">
+    <button class="button button-icon icon ion-arrow-left-b" ng-click="doSomething()"></button>
+  </div>
+  <h1 class="title">Check-Ins</h1>
+  <div class="buttons">
+    <button class="button button-icon icon ion-map"></button>
+  </div>
+</ion-header-bar>
+
 <ion-view title="Checkins">
   <ion-content class="padding">
- <!--   <h4>{{location}}</h4> -->
+    <h4>{{location}}</h4>
     <div ng-repeat="venue in venues">
     	<h4 ng-click='passSelectedVenueInfoToPostModal(venue)' ui-sref="tab.checkin.post({venue: venue.id})">{{venue.name}}</h4>
     	<h5>{{venue.location.formattedAddress[0]}}, {{venue.location.formattedAddress[1]}}<h5>
@@ -11,3 +22,4 @@
   </ion-content>
 	<div style="z-index:-1;"id="map"></div>
 </ion-view>
+ 
