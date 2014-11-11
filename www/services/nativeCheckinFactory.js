@@ -4,16 +4,11 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation){
 
   return {
 
-	  searchFoursquareVenues: function (currentLocation) {
+	  searchFoursquareVenues: function (facebookID, currentLocation) {
       if (currentLocation) {
         return $http({
           method: 'GET',
-          url: 'https://api.foursquare.com/v2/venues/search?' + 
-          'client_id=' + '3XX0HGXBG4ZNKNFPN5F1LBSS4JCT3J0P3UBKLDMSR3BQNJKU' + 
-          '&client_secret=' + 'OCTH24K435KUKDACCRXMZCGYWP4335BWQNEPEJGANEYOH1KV' +
-          '&v=20141110' +
-          '&ll=' + currentLocation.lat + ',' + currentLocation.lng +
-          '&intent=' + 'checkin'
+          url: '/api/checkins/venuesearch/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng
         });
       }
     },

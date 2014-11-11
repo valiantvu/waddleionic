@@ -1,6 +1,6 @@
 (function(){
 
-var CheckinController = function ($scope, $state, NativeCheckin) {	
+var CheckinController = function ($scope, $state, NativeCheckin, UserRequests) {	
 
 	$scope.checkin = function () {
 		// NativeCheckin.getCurrentLocation()
@@ -11,11 +11,18 @@ var CheckinController = function ($scope, $state, NativeCheckin) {
 		// 		lng: location.coords.longitude
 		// 	};
 		  var currentLocation = {lat:40.753522 , lng: -74.272922}
-			NativeCheckin.searchFoursquareVenues(currentLocation)
+			NativeCheckin.searchFoursquareVenues("10202833487341857", currentLocation)
 			.then(function (venues) {
-				$scope.venues = venues.data.response.venues;
+				$scope.venues = venues.data;
 			})
 		// });
+	}
+
+	$scope.serverTest = function () {
+		UserRequests.getUserInfo('10202833487341857')
+    .then(function (data) {
+    console.log(data);
+    })
 	}
 
 	$scope.passSelectedVenueInfoToPostModal = function (venueInfo) {
@@ -52,7 +59,7 @@ var CheckinController = function ($scope, $state, NativeCheckin) {
 
 };
 
-CheckinController.$inject = ['$scope', '$state', 'NativeCheckin']
+CheckinController.$inject = ['$scope', '$state', 'NativeCheckin', 'UserRequests']
 
 angular.module('waddle.checkin', [])
   .controller('CheckinController', CheckinController);
