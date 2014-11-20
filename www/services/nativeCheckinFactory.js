@@ -33,18 +33,18 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation){
           file_dom_selector: 'files',
           s3_sign_put_url: 'api/checkins/sign_s3',
           onProgress: function(percent, message) {
-              status_elem.innerHTML = 'Upload progress: ' + percent + '% ' + message;
+              console.log('Upload progress: ' + percent + '% ' + message);
+              // status_elem.innerHTML = 'Upload progress: ' + percent + '% ' + message;
           },
           onFinishS3Put: function(public_url) {
               console.log(public_url)
-              status_elem.innerHTML = 'Upload completed. Uploaded to: ' + public_url;
-              // Store this url in mongodb
-              // self.saveStache(newStache);
-              preview_elem.innerHTML = '<img src="' + public_url + '" style="height:45px;border: #455059 4px solid;"/>';
+              // status_elem.innerHTML = 'Upload completed. Uploaded to: ' + public_url;
+              // preview_elem.innerHTML = '<img src="' + public_url + '" style="height:45px;border: #455059 4px solid;"/>';
               deferred.resolve(public_url);
           },
           onError: function(status) {
-              status_elem.innerHTML = 'Upload error: ' + status;
+              console.log('Upload error: ' + status);
+              // status_elem.innerHTML = 'Upload error: ' + status;
           }
         });
         return deferred.promise;

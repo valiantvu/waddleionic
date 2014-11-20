@@ -6,7 +6,7 @@
   </div>
   <h1 class="title">Check-Ins</h1>
   <div class="buttons">
-    <button class="button button-icon icon ion-map" ng-click="serverTest()"></button>
+    <button class="button button-icon icon ion-map"></button>
   </div>
 </ion-header-bar>
 
@@ -14,12 +14,29 @@
   <ion-content class="padding">
     <h4>{{location}}</h4>
     <div ng-repeat="venue in venues">
-    	<h4 ng-click='passSelectedVenueInfoToPostModal(venue)' ui-sref="tab.checkin.post({venue: venue.id})">{{venue.name}}</h4>
+    	<h4 ng-click='passSelectedVenueInfoToPostModal(venue); openModal()'>{{venue.name}}</h4>
     	<h5>{{venue.location.formattedAddress[0]}}, {{venue.location.formattedAddress[1]}}<h5>
     	<h6>{{venue.location.distance}} meters</h6>
     </div>
-    <button ng-click="checkin()">Checkin</button>
+    <button ng-click="searchFoursquareVenues()">Checkin</button>
   </ion-content>
-	<div style="z-index:-1;"id="map"></div>
 </ion-view>
+
+<script id="checkin-post.html" type="text/ng-template">
+  <ion-modal-view>
+    <ion-header-bar>
+      <h1 class="title">{{venue.name}}</h1>
+    </ion-header-bar>
+    <ion-content>
+    <form class="navbar-form navbar-left" role="search">
+      <textarea ng-model="checkinInfo.footprintCaption" type="text" class="form-control" placeholder="What did you think of this place?">
+      </textarea>
+      <input type="file" id="files"/><p id="status">Please select a file</p>
+      <button ng-click='showCaption()'>caption</button>
+      <button type="submit" ng-click="sendCheckinDataToServer(venue)" ui-sref="tab.home">Post</button>
+    </form>
+    </ion-content>
+    <button></button>
+  </ion-modal-view>
+</script>
  
