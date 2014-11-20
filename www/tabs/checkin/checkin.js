@@ -1,8 +1,10 @@
 (function(){
 
-var CheckinController = function ($scope, $state, NativeCheckin) {	
+var CheckinController = function ($scope, $state, NativeCheckin, $ionicModal) {	
 
-	$scope.checkin = function () {
+	$scope.checkinInfo = {footprintCaption: null};
+
+	$scope.searchFoursquareVenues = function () {
 		// NativeCheckin.getCurrentLocation()
 		// .then(function (location) {
 		// 	// $scope.location = location.coords.latitude;
@@ -11,9 +13,9 @@ var CheckinController = function ($scope, $state, NativeCheckin) {
 		// 		lng: location.coords.longitude
 		// 	};
 		  var currentLocation = {lat:40.753522 , lng: -74.272922}
-			NativeCheckin.searchFoursquareVenues(currentLocation)
+			NativeCheckin.searchFoursquareVenues("10202833487341857", currentLocation)
 			.then(function (venues) {
-				$scope.venues = venues.data.response.venues;
+				$scope.venues = venues.data;
 			})
 		// });
 	}
@@ -25,7 +27,7 @@ var CheckinController = function ($scope, $state, NativeCheckin) {
 	$scope.sendCheckinDataToServer = function(venueInfo) {
 		// venueInfo.facebookID = window.sessionStorage.userFbID;
 		venueInfo.facebookID = "10202833487341857";
-		venueInfo.footprintCaption = $scope.footprintCaption;
+		venueInfo.footprintCaption = $scope.checkinInfo.footprintCaption;
 		NativeCheckin.s3_upload()
 		.then(function (public_url) {
 		  venueInfo.photo = public_url;
@@ -37,22 +39,42 @@ var CheckinController = function ($scope, $state, NativeCheckin) {
 		})
 	}
 
-	L.mapbox.accessToken = 'pk.eyJ1Ijoid2FkZGxldXNlciIsImEiOiItQWlwaU5JIn0.mTIpotbZXv5KVgP4pkcYrA';
+	$scope.showCaption = function() {
+		console.log($scope.checkinInfo.footprintCaption);
+	}
 
+	$ionicModal.fromTemplateUrl('checkin-post.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.modal = modal;
+  });
 
-      var map = L.mapbox.map('map', 'injeyeo.8fac2415')
-        // attributionControl: false,
-        // zoomControl: false,
-        // worldCopyJump: true,
-        // minZoom: 2,
-        // // maxBounds: [[80,200],[-80,-200]],
-        // bounceAtZoomLimits: false
-      // })
-			.setView([20.00, 0.00], 2);
+  $scope.openModal = function() {
+    $scope.modal.show();
+  };
+
+  $scope.closeModal = function() {
+    $scope.modal.hide();
+  };
+
+  //Cleanup the modal when we're done with it!
+  $scope.$on('$destroy', function() {
+    $scope.modal.remove();
+  });
+
+  // Execute action on hide modal
+  $scope.$on('modal.hidden', function() {
+    // Execute action
+  });
+  // Execute action on remove modal
+  $scope.$on('modal.removed', function() {
+    // Execute action
+  });
 
 };
 
-CheckinController.$inject = ['$scope', '$state', 'NativeCheckin']
+CheckinController.$inject = ['$scope', '$state', 'NativeCheckin', '$ionicModal']
 
 angular.module('waddle.checkin', [])
   .controller('CheckinController', CheckinController);

@@ -35,6 +35,11 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       templateUrl: 'modules/login/frontpage.html',
       controller: 'FrontpageController'
     })
+    .state('footprints-map', {
+      url: '/footprints-map',
+      templateUrl: 'modules/map/map.html',
+      controller: 'FootprintsController'
+    })
     .state('tab', {
       url: "/tab",
       abstract: true,

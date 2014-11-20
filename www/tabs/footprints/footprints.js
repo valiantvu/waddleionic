@@ -1,6 +1,6 @@
 (function(){
 
-var FootprintsController = function (MapFactory, FootprintRequests, $scope, $state) {
+var FootprintsController = function (Auth, MapFactory, FootprintRequests, $scope, $state) {
 
     $scope.footprints = [
         {
@@ -21,7 +21,7 @@ var FootprintsController = function (MapFactory, FootprintRequests, $scope, $sta
                 "checkinID":"10201337526173598"
             },
             "place": {
-                "lat":19.5,
+                "lat":21.5,
                 "category":"null",
                 "foursquareID":"Cayman Islands",
                 "country":"null",
@@ -91,6 +91,58 @@ var FootprintsController = function (MapFactory, FootprintRequests, $scope, $sta
       });
     };
 
+    if($state.current.name === 'footprints-map') {
+      console.log($state.current.name);
+      L.mapbox.accessToken = 'pk.eyJ1Ijoid2FkZGxldXNlciIsImEiOiItQWlwaU5JIn0.mTIpotbZXv5KVgP4pkcYrA';
+      var map = L.mapbox.map('map', 'injeyeo.8fac2415', {
+        attributionControl: false,
+        zoomControl: false,
+        worldCopyJump: true,
+        minZoom: 2,
+        maxBounds: [[80,200],[-80,-200]],
+        bounceAtZoomLimits: false
+      })
+        .setView([20.00, 0.00], 2);
+
+      for(var i = 0; i < $scope.footprints.length; i++) {
+          var place = $scope.footprints[i].place;
+          var checkin = $scope.footprints[i].checkin;
+
+          var placeName = place.name;
+          var latLng = [place.lat, place.lng];
+          var img;
+          var caption;
+
+          if (checkin.photoSmall !== 'null') {
+            img = checkin.photoSmall;
+          }
+
+          if (checkin.caption !== 'null') {
+            caption = checkin.caption;
+          }
+
+          var marker = L.marker(latLng, {
+            icon: L.mapbox.marker.icon({
+              'marker-color': '1087bf',
+              'marker-size': 'large',
+              'marker-symbol': 'circle-stroked'
+            }),
+            title: placeName
+          });
+
+          if (img && caption) {
+            marker.bindPopup('<h3>' + placeName + '</h3><h4>' + caption + '</h4><img src="' + img + '"/>');
+          } else if (img) {
+            marker.bindPopup('<h3>' + placeName + '</h3><img src="' + img + '"/>');
+          } else if (caption) {
+            marker.bindPopup('<h3>' + placeName + '</h3><h4>' + caption + '</h4>');
+          } else {
+            marker.bindPopup('<h3>' + placeName + '</h3>');
+          }
+          marker.addTo(map);
+      }
+    }
+
     // $scope.selectedFootprintInteractions = null;
 
     // $scope.getFootprint = function (footprint) {
@@ -137,7 +189,7 @@ var FootprintsController = function (MapFactory, FootprintRequests, $scope, $sta
     // };
 };
 
-FootprintsController.$inject = ['MapFactory', 'FootprintRequests', '$scope', '$state'];
+FootprintsController.$inject = ['Auth', 'MapFactory', 'FootprintRequests', '$scope', '$state'];
 
 angular.module('waddle.footprints', [])
   .controller('FootprintsController', FootprintsController);

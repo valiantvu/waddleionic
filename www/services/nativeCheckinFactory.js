@@ -4,16 +4,11 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation){
 
   return {
 
-	  searchFoursquareVenues: function (currentLocation) {
+	  searchFoursquareVenues: function (facebookID, currentLocation) {
       if (currentLocation) {
         return $http({
           method: 'GET',
-          url: 'https://api.foursquare.com/v2/venues/search?' + 
-          'client_id=' + '3XX0HGXBG4ZNKNFPN5F1LBSS4JCT3J0P3UBKLDMSR3BQNJKU' + 
-          '&client_secret=' + 'OCTH24K435KUKDACCRXMZCGYWP4335BWQNEPEJGANEYOH1KV' +
-          '&v=20141110' +
-          '&ll=' + currentLocation.lat + ',' + currentLocation.lng +
-          '&intent=' + 'checkin'
+          url: '/api/checkins/venuesearch/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng
         });
       }
     },
@@ -38,18 +33,18 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation){
           file_dom_selector: 'files',
           s3_sign_put_url: 'api/checkins/sign_s3',
           onProgress: function(percent, message) {
-              status_elem.innerHTML = 'Upload progress: ' + percent + '% ' + message;
+              console.log('Upload progress: ' + percent + '% ' + message);
+              // status_elem.innerHTML = 'Upload progress: ' + percent + '% ' + message;
           },
           onFinishS3Put: function(public_url) {
               console.log(public_url)
-              status_elem.innerHTML = 'Upload completed. Uploaded to: ' + public_url;
-              // Store this url in mongodb
-              // self.saveStache(newStache);
-              preview_elem.innerHTML = '<img src="' + public_url + '" style="height:45px;border: #455059 4px solid;"/>';
+              // status_elem.innerHTML = 'Upload completed. Uploaded to: ' + public_url;
+              // preview_elem.innerHTML = '<img src="' + public_url + '" style="height:45px;border: #455059 4px solid;"/>';
               deferred.resolve(public_url);
           },
           onError: function(status) {
-              status_elem.innerHTML = 'Upload error: ' + status;
+              console.log('Upload error: ' + status);
+              // status_elem.innerHTML = 'Upload error: ' + status;
           }
         });
         return deferred.promise;
