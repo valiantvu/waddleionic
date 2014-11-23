@@ -30,6 +30,15 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         }
     };
 
+    $scope.getFootprintInteractions = function() {
+        FootprintRequests.getFootprintInteractions("53188abe498eddb85a3f3f9c")
+            .then(function (data) {
+                // console.dir(data);
+            });
+    };
+
+    $scope.getFootprintInteractions();
+
     $scope.addCheckinToBucketList = function (footprint){
       
       var bucketListData = {

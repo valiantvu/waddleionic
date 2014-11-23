@@ -7,7 +7,6 @@ var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequ
     $scope.getBucketList = function () {
         UserRequests.getBucketList(window.sessionStorage.userFbID)
         .then(function (data) {
-            console.dir(data);
             $scope.allFootprints = data.data;
             $scope.loadMore();
         });
@@ -18,6 +17,7 @@ var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequ
     $scope.loadMore = function() {
         if (typeof $scope.allFootprints !== 'undefined') {
             $scope.footprints = $scope.footprints.concat($scope.allFootprints.splice(0, 3));
+            console.dir($scope.footprints);
         }
         $scope.$broadcast('scroll.infiniteScrollComplete');
     };
@@ -29,6 +29,16 @@ var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequ
             return $scope.allFootprints.length === 0 ? false : true;
         }
     };
+
+
+    $scope.getFootprintInteractions = function() {
+        FootprintRequests.getFootprintInteractions("859509805076155280_230515481")
+            .then(function (data) {
+                console.dir(data);
+            });
+    };
+
+    $scope.getFootprintInteractions();
 
     $scope.addCheckinToBucketList = function (footprint){
       
