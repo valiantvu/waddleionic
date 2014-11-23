@@ -2,24 +2,31 @@
 
 var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
 
+    $scope.footprints = [];
+
     $scope.getUserData = function () {
         UserRequests.getUserData(window.sessionStorage.userFbID, window.sessionStorage.userFbID)
         .then(function (data) {
-            console.dir(data);
             $scope.allFootprints = data.data.footprints;
-            $scope.footprints = $scope.allFootprints.splice(0, 3);
+            $scope.loadMore();
         });
     };
 
     $scope.getUserData();
 
     $scope.loadMore = function() {
-        $scope.footprints = $scope.footprints.concat($scope.allFootprints.splice(0, 3));
+        if (typeof $scope.allFootprints !== 'undefined') {
+            $scope.footprints = $scope.footprints.concat($scope.allFootprints.splice(0, 3));
+        }
         $scope.$broadcast('scroll.infiniteScrollComplete');
     };
 
     $scope.moreDataCanBeLoaded = function() {
-        return $scope.allFootprints.length === 0 ? false : true;
+        if (typeof $scope.allFootprints === 'undefined') {
+            return false;
+        } else {
+            return $scope.allFootprints.length === 0 ? false : true;
+        }
     };
 
     $scope.addCheckinToBucketList = function (footprint){
