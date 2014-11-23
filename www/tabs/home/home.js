@@ -4,29 +4,30 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     
     $scope.footprints = [];
 
-    $scope.getUserData = function () {
+    $scope.getAggregatedFeedData = function () {
         UserRequests.getAggregatedFeedData(window.sessionStorage.userFbID)
         .then(function (data) {
-            console.dir(data);
-            $scope.allFootprints = data.data.footprints;
+            console.dir(data.data);
+            $scope.allFootprints = data.data;
             $scope.loadMore();
         });
     };
 
-    $scope.getUserData();
+    $scope.getAggregatedFeedData();
 
     $scope.loadMore = function() {
-        if (typeof $scope.allFootprints === 'undefined') {
+        if (typeof $scope.allFootprints !== 'undefined') {
             $scope.footprints = $scope.footprints.concat($scope.allFootprints.splice(0, 3));
         }
         $scope.$broadcast('scroll.infiniteScrollComplete');
     };
 
     $scope.moreDataCanBeLoaded = function() {
-        if (typeof $scope.allFootprints !== 'undefined') {
+        if (typeof $scope.allFootprints === 'undefined') {
             return false;
+        } else {
+            return $scope.allFootprints.length === 0 ? false : true;
         }
-        return $scope.allFootprints.length === 0 ? false : true;
     };
 
     $scope.addCheckinToBucketList = function (footprint){
