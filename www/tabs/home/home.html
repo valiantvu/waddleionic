@@ -54,6 +54,11 @@
           <div class="col">
             <h6 class="checkindate">{{footprint.checkin.checkinTime | date : shortDate}}</h6>
           </div>
+
+          <!-- Hype Button -->
+          <button class="button button-small">
+            <i class="icon ion-arrow-up-a"></i>
+          </button>
         </div>
 
         
@@ -79,7 +84,7 @@
       <div class="item item-divider">
         <div class="row">
           <i class="icon ion-arrow-up-a"></i>
-          <div ng-repeat="hyper in hypers">Onika Maraj</div>
+          <div ng-repeat="hyper in footprint.checkin.hypers">{{ hyper }}</div>
         </div>
       </div>
 
