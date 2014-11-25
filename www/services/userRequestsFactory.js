@@ -15,7 +15,7 @@ var UserRequests = function ($http){
           method: 'POST',
           data: data,
           url: '/api/users/userdata'
-        })
+        });
       }
     },
 

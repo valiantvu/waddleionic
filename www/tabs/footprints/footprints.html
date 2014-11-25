@@ -122,5 +122,11 @@
     </form> -->
   <!-- </div> -->
 
+  <ion-infinite-scroll
+    on-infinite="loadMore()"
+    ng-if="moreDataCanBeLoaded()"
+    distance="10%">
+  </ion-infinite-scroll>
+
   </ion-content>
 </ion-view>
