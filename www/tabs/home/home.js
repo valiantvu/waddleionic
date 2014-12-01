@@ -39,10 +39,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
       FootprintRequests.addToBucketList(bucketListData)
       .then(function (data){
-        // Add bucketed property to checkin, updating markerQuadTree and refreshing inBounds
-        // The second and third arguments to addPropertyToCheckin add to footprint.checkin 
-        // MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', true);
-        // filterFeedByBounds();
+        footprint.bucketed = true;
       });
     };
 
