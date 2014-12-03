@@ -244,26 +244,26 @@ checkinController.giveProps = function (req, res){
 };
 
 
-checkinController.getPropsAndComments = function (req, res){
+checkinController.getHypesAndComments = function (req, res){
   var checkinID = req.params.checkinid;
   var data = {}
 
-  Checkin.getProps(checkinID)
-    .then(function (props){
-      data['props'] = props;
+  Checkin.getHypes(checkinID)
+    .then(function (hypes){
+      data['hypes'] = hypes;
       return Checkin.getComments(checkinID);
     })
     .then(function (comments){
       if (typeof comments === "object")
       data['comments'] = comments;
       var parsedData = {
-        props: data.props.length,
-        propGivers: [],
+        hypes: data.hypes.length,
+        hypeGivers: [],
         comments: []
       };
      
-      parsedData.propGivers = _.map(data.props, function (prop) {
-        return prop.user._data.data
+      parsedData.hypeGivers = _.map(data.hypes, function (hype) {
+        return hype.user._data.data
       });
 
       parsedData.comments = _.map(data.comments, function (comment) {
@@ -282,30 +282,30 @@ checkinController.getPropsAndComments = function (req, res){
     });
 };
 
-checkinController.getHypes = function (req, res){
-  var checkinID = req.params.checkinid;
-  var data = {};
+// checkinController.getHypes = function (req, res){
+//   var checkinID = req.params.checkinid;
+//   var data = {};
 
-  Checkin.getHypes(checkinID)
-    .then(function (props){
-      data['props'] = props;
-      var parsedData = {
-        props: data.props.length,
-        propGivers: [],
-      };
+//   Checkin.getHypes(checkinID)
+//     .then(function (props){
+//       data['props'] = props;
+//       var parsedData = {
+//         props: data.props.length,
+//         propGivers: [],
+//       };
      
-      parsedData.propGivers = _.map(data.props, function (prop) {
-        return prop.user._data.data;
-      });
+//       parsedData.propGivers = _.map(data.props, function (prop) {
+//         return prop.user._data.data;
+//       });
 
-      res.json(parsedData);
-      res.status(200).end();
-    })
-    .catch(function (err){
-      console.log(err);
-      res.status(500).end();
-    });
-};
+//       res.json(parsedData);
+//       res.status(200).end();
+//     })
+//     .catch(function (err){
+//       console.log(err);
+//       res.status(500).end();
+//     });
+// };
 
 checkinController.sign_s3 = function (req, res) {
   aws.config.update({accessKeyId: process.env.AWS_ACCESS_KEY, secretAccessKey: process.env.AWS_SECRET_KEY});
