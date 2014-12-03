@@ -46,13 +46,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         checkinID: footprint.checkin.checkinID
       };
 
-      FootprintRequests.addToBucketList(bucketListData)
-      .then(function (data){
-        // Add bucketed property to checkin, updating markerQuadTree and refreshing inBounds
-        // The second and third arguments to addPropertyToCheckin add to footprint.checkin 
-        // MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', true);
-        // filterFeedByBounds();
-      });
+      FootprintRequests.addToBucketList(bucketListData);
     };
 
     $scope.removeCheckinFromBucketList = function (footprint){
@@ -63,10 +57,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         checkinID: footprint.checkin.checkinID
       };
 
-      FootprintRequests.removeFromBucketList(bucketListData)
-      .then(function (data){
-        // MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
-      });
+      FootprintRequests.removeFromBucketList(bucketListData);
     };
 
     if($state.current.name === 'footprints-map') {
