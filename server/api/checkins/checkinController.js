@@ -282,31 +282,6 @@ checkinController.getHypesAndComments = function (req, res){
     });
 };
 
-// checkinController.getHypes = function (req, res){
-//   var checkinID = req.params.checkinid;
-//   var data = {};
-
-//   Checkin.getHypes(checkinID)
-//     .then(function (props){
-//       data['props'] = props;
-//       var parsedData = {
-//         props: data.props.length,
-//         propGivers: [],
-//       };
-     
-//       parsedData.propGivers = _.map(data.props, function (prop) {
-//         return prop.user._data.data;
-//       });
-
-//       res.json(parsedData);
-//       res.status(200).end();
-//     })
-//     .catch(function (err){
-//       console.log(err);
-//       res.status(500).end();
-//     });
-// };
-
 checkinController.sign_s3 = function (req, res) {
   aws.config.update({accessKeyId: process.env.AWS_ACCESS_KEY, secretAccessKey: process.env.AWS_SECRET_KEY});
     var s3 = new aws.S3();
