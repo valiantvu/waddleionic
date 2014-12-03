@@ -304,7 +304,8 @@ User.prototype.getAggregatedFootprintList = function (facebookID) {
     // 'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'MATCH (user:User {facebookID: {facebookID}})-[:hasFriend]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'OPTIONAL MATCH (checkin)<-[]-(comment:Comment)<-[]-(commenter:User)',
-    'RETURN user, friend, checkin, place, collect(comment), collect(commenter)'
+    'OPTIONAL MATCH (checkin)<-[]-(hype:hasBucket)<-[]-(hyper:User)',
+    'RETURN user, friend, checkin, place, collect(comment), collect(commenter), collect(hype), collect(hyper)'
   ].join('\n');
 
   var params = {
@@ -332,6 +333,23 @@ User.prototype.getAggregatedFootprintList = function (facebookID) {
           }
           singleResult.comments = commentsArray;
         }
+
+        if(item['collect(hype)'].length && item['collect(hyper)'].length) {
+          var hypesArray = [];
+          for(var i = 0; i < item['collect(hype)'].length; i++) {
+            var hypeData = {
+              // hype: item['collect(hype)'][i].data,
+              // hyper: item['collect(hyper)'][i].data
+              hype: 'lalal',
+              hyper: 'frank lord'
+            };
+            hypesArray.push(hypeData);
+          }
+          singleResult.hypes = hypesArray;
+        }
+
+        // TEST, TEMPORARY
+        singleResult.hypes = [{hype: 'lalal', hyper: 'frank lord'}];
 
         if(item.friend) {
           singleResult["user"] = item.friend.data;
