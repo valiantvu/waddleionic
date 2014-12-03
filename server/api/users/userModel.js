@@ -349,7 +349,7 @@ User.prototype.getAggregatedFootprintList = function (facebookID) {
         }
 
         // TEST, TEMPORARY
-        singleResult.hypes = [{hype: 'lalal', hyper: 'frank lord'}];
+        singleResult.hypes = [{hype: 'lalal', hyper: 'frank lord'}, {hype: 'lalal', hyper: 'michelle vu'}];
 
         if(item.friend) {
           singleResult["user"] = item.friend.data;
