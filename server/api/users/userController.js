@@ -238,11 +238,12 @@ userController.getUserData = function (req, res){
   };
   var userInfo = {};
   var viewer = req.params.viewer;
+  var page = req.params.page;
 
   User.find(userData)
   .then(function (friend) {
     userInfo.user = friend.node._data.data;
-    return friend.findAllCheckins(viewer);
+    return friend.findAllCheckins(viewer, page);
   })
   .then(function (checkins) {
     // console.log("checkins: ", checkins.length)

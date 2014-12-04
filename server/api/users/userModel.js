@@ -228,7 +228,7 @@ User.prototype.findAllFriends = function () {
 
 // Basic query to find all user's checkins
 // Uses this.getProperty to grab instantiated user's facebookID as query parameter
-User.prototype.findAllCheckins = function (viewer) {
+User.prototype.findAllCheckins = function (viewer, page) {
   var deferred = Q.defer();
 
   var query = [
@@ -236,15 +236,21 @@ User.prototype.findAllCheckins = function (viewer) {
     'OPTIONAL MATCH (checkin)<-[]-(comment:Comment)<-[]-(commenter:User)',
     (viewer ? 'OPTIONAL MATCH (liker:User {facebookID: {viewerID}})-[:givesProps]->(checkin)' +
       'OPTIONAL MATCH (bucketer:User {facebookID: {viewerID}})-[:hasBucket]->(checkin)' : ""),
-    'RETURN user, checkin, place, collect(comment), collect(commenter)' + (viewer ? ', liker, bucketer' : "")
+    'RETURN user, checkin, place, collect(comment), collect(commenter)' + (viewer ? ', liker, bucketer' : ""),
+    'ORDER BY checkin.checkinTime DESC',
+    'SKIP { skipNum }',
+    'LIMIT 2'
   ].join('\n');
 
   var params = {
     facebookID: this.getProperty('facebookID')
   };
   if (viewer){
-    params['viewerID'] = viewer
+    params['viewerID'] = viewer;
   }
+
+  var skipAmount = 4;
+  params['skipNum'] = page ? page * skipAmount : 0;
 
 
   db.query(query, params, function (err, results) {
@@ -257,7 +263,7 @@ User.prototype.findAllCheckins = function (viewer) {
           "checkin": item.checkin.data,
           "place": item.place.data,
           "comments": null
-        }
+        };
 
         if(item['collect(comment)'].length && item['collect(commenter)'].length) {
           var commentsArray = [];
