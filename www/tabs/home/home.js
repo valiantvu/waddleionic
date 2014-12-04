@@ -10,7 +10,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         UserRequests.getAggregatedFeedData(window.sessionStorage.userFbID, page)
         .then(function (data) {
           if (data.data.length > 0) {
-            $scope.footprints = $scope.footprints.concat(data.data);
+              $scope.footprints = $scope.footprints.concat(data.data);
               page++;
               console.log('page: ', page);
             } else {

@@ -346,8 +346,9 @@ userController.getUserInfo = function (req, res) {
 // checkin and place keys, containing checkin and place data
 userController.getBucketList = function (req, res){
   var facebookID = req.params.user;
+  var page = req.params.page;
 
-  User.getBucketList(facebookID)
+  User.getBucketList(facebookID, page)
   .then(function (footprints) {
     res.json(footprints);
     res.status(200).end();
