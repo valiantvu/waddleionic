@@ -120,8 +120,8 @@
   <!-- </div> -->
 
   <ion-infinite-scroll
-    on-infinite="loadMore()"
-    ng-if="moreDataCanBeLoaded()"
+    on-infinite="getAggregatedFeedData()"
+    ng-if="moreDataCanBeLoaded"
     distance="10%">
   </ion-infinite-scroll>
 

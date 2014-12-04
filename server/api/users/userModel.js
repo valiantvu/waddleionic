@@ -11,6 +11,8 @@ var db = new neo4j.GraphDatabase(neo4jUrl);
 var Checkin = require('../checkins/checkinModel.js');
 var Place = require('../places/placeModel.js');
 
+var skipAmount = 2;
+
 // Class to instantiate different users which will inherit prototype functions
 var User = function (node){
 	this.node = node;
@@ -239,7 +241,7 @@ User.prototype.findAllCheckins = function (viewer, page) {
     'RETURN user, checkin, place, collect(comment), collect(commenter)' + (viewer ? ', liker, bucketer' : ""),
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
-    'LIMIT 2'
+    'LIMIT { skipAmount }'
   ].join('\n');
 
   var params = {
@@ -248,8 +250,7 @@ User.prototype.findAllCheckins = function (viewer, page) {
   if (viewer){
     params['viewerID'] = viewer;
   }
-
-  var skipAmount = 4;
+  params['skipAmount'] = skipAmount;
   params['skipNum'] = page ? page * skipAmount : 0;
 
 
@@ -303,7 +304,7 @@ User.prototype.findAllCheckins = function (viewer, page) {
 //   ]
 // 
 
-User.prototype.getAggregatedFootprintList = function (facebookID) {
+User.prototype.getAggregatedFootprintList = function (facebookID, page) {
   var deferred = Q.defer();
 
   var query = [
@@ -311,11 +312,16 @@ User.prototype.getAggregatedFootprintList = function (facebookID) {
     'MATCH (user:User {facebookID: {facebookID}})-[:hasFriend]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'OPTIONAL MATCH (checkin)<-[]-(comment:Comment)<-[]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[]-(hype:hasBucket)<-[]-(hyper:User)',
-    'RETURN user, friend, checkin, place, collect(comment), collect(commenter), collect(hype), collect(hyper)'
+    'RETURN user, friend, checkin, place, collect(comment), collect(commenter), collect(hype), collect(hyper)',
+    // 'ORDER BY checkin.checkinTime DESC',
+    'SKIP { skipNum }',
+    'LIMIT {skipAmount }'
   ].join('\n');
 
   var params = {
-    facebookID: this.getProperty('facebookID')
+    facebookID: this.getProperty('facebookID'),
+    skipAmount: skipAmount,
+    skipNum: page ? page * skipAmount : 0
   };
 
   db.query(query, params, function (err, results) {

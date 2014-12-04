@@ -5,7 +5,7 @@ module.exports = function(app){
   app.post('/userfoursquarecode', userController.addFoursquareData);
   app.post('/userinstagramcode', userController.addInstagramData);
   app.get('/bucketlist/:user', userController.getBucketList);
-	app.get('/aggregatefeed/:user', userController.getAggregatedListOfCheckins);
+	app.get('/aggregatefeed/:user/:page?', userController.getAggregatedListOfCheckins);
 	app.get('/userinfo/:user', userController.getUserInfo)
 	//the next line must be listed last because it catches all paths
 	app.get('/:friend/:viewer/:page?', userController.getUserData);

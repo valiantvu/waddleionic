@@ -263,11 +263,12 @@ userController.getAggregatedListOfCheckins = function (req, res){
   var aggregatedFootprints = [];
   // var friendCheckins;
   params.facebookID = req.params.user;
+  params.page = req.params.page;
 
   User.find(params)
   .then(function (userNode) {
     user = userNode;
-    return user.getAggregatedFootprintList(params.facebookID);
+    return user.getAggregatedFootprintList(params.facebookID, params.page);
   })
   .then(function (aggregatedFootprintsFromFriends) {
     aggregatedFootprints.push(aggregatedFootprintsFromFriends);

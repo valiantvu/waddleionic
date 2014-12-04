@@ -49,11 +49,17 @@ var UserRequests = function ($http){
       }
     },
 
-    getAggregatedFeedData:function (userFbID) {
+    getAggregatedFeedData:function (userFbID, page) {
+      var url = '/api/users/aggregatefeed/' + userFbID;
+      
+      if (page) {
+          url +=  "/" + page;
+      }
+
       if (userFbID) {
         return $http({
           method: 'GET',
-          url: '/api/users/aggregatefeed/' + userFbID
+          url: url
         });
       }
     },
