@@ -11,6 +11,8 @@
 
 <ion-view title="Profile">
   <ion-content class="padding">
-    <h1>Your Profile</h1>
+    <img ng-src='{{userInfo.fbProfilePicture}}'>
+    <h2>{{userInfo.name}}</h2>
+    <h3>{{userInfo.footprintsCount}} footprints</h3>
   </ion-content>
 </ion-view>
