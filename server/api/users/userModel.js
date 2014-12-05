@@ -311,8 +311,8 @@ User.prototype.getAggregatedFootprintList = function (facebookID, page) {
     // 'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'MATCH (user:User {facebookID: {facebookID}})-[:hasFriend]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'OPTIONAL MATCH (checkin)<-[]-(comment:Comment)<-[]-(commenter:User)',
-    'OPTIONAL MATCH (checkin)<-[]-(hype:hasBucket)<-[]-(hyper:User)',
-    'RETURN user, friend, checkin, place, collect(comment), collect(commenter), collect(hype), collect(hyper)',
+    'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
+    'RETURN user, friend, checkin, place, collect(comment), collect(commenter), collect(hyper) AS hypers',
     // 'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
     'LIMIT {skipAmount }'
@@ -346,22 +346,16 @@ User.prototype.getAggregatedFootprintList = function (facebookID, page) {
           singleResult.comments = commentsArray;
         }
 
-        if(item['collect(hype)'].length && item['collect(hyper)'].length) {
+        if(item['hypers'].length) {
           var hypesArray = [];
-          for(var i = 0; i < item['collect(hype)'].length; i++) {
-            var hypeData = {
-              // hype: item['collect(hype)'][i].data,
-              // hyper: item['collect(hyper)'][i].data
-              hype: 'lalal',
-              hyper: 'frank lord'
-            };
-            hypesArray.push(hypeData);
+          for(var i = 0; i < item['hypers'].length; i++) {
+            hypesArray.push(item['hypers'][i].data);
           }
           singleResult.hypes = hypesArray;
         }
 
         // TEST, TEMPORARY
-        singleResult.hypes = [{hype: 'lalal', hyper: 'frank lord'}, {hype: 'lalal', hyper: 'michelle vu'}];
+        // singleResult.hypes = [{hype: 'lalal', hyper: 'frank lord'}, {hype: 'lalal', hyper: 'michelle vu'}];
 
         if(item.friend) {
           singleResult["user"] = item.friend.data;
