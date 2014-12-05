@@ -16,5 +16,5 @@ module.exports = function (app) {
   app.post('/comment', checkinController.addComment);
   app.post('/removecomment', checkinController.removeComment);
   app.post('/props', checkinController.giveProps);
-  app.get('/interactions/:checkinid', checkinController.getPropsAndComments);
+  app.get('/interactions/:checkinid', checkinController.getHypesAndComments);
 };

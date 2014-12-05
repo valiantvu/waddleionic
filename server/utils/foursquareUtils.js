@@ -131,7 +131,7 @@ utils.parseNativeCheckin = function (venue) {
     'name': venue.name,
     'lat': venue.location.lat,
     'lng': venue.location.lng,
-    'checkinTime': new Date().getTime(),
+    'checkinTime': new Date(),
     'likes': 'null',
     'photoSmall': 'null',
     'photoLarge': 'null',

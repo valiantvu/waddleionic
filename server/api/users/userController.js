@@ -238,11 +238,12 @@ userController.getUserData = function (req, res){
   };
   var userInfo = {};
   var viewer = req.params.viewer;
+  var page = req.params.page;
 
   User.find(userData)
   .then(function (friend) {
     userInfo.user = friend.node._data.data;
-    return friend.findAllCheckins(viewer);
+    return friend.findAllCheckins(viewer, page);
   })
   .then(function (checkins) {
     // console.log("checkins: ", checkins.length)
@@ -262,11 +263,12 @@ userController.getAggregatedListOfCheckins = function (req, res){
   var aggregatedFootprints = [];
   // var friendCheckins;
   params.facebookID = req.params.user;
+  params.page = req.params.page;
 
   User.find(params)
   .then(function (userNode) {
     user = userNode;
-    return user.getAggregatedFootprintList(params.facebookID);
+    return user.getAggregatedFootprintList(params.facebookID, params.page);
   })
   .then(function (aggregatedFootprintsFromFriends) {
     aggregatedFootprints.push(aggregatedFootprintsFromFriends);
@@ -344,8 +346,9 @@ userController.getUserInfo = function (req, res) {
 // checkin and place keys, containing checkin and place data
 userController.getBucketList = function (req, res){
   var facebookID = req.params.user;
+  var page = req.params.page;
 
-  User.getBucketList(facebookID)
+  User.getBucketList(facebookID, page)
   .then(function (footprints) {
     res.json(footprints);
     res.status(200).end();

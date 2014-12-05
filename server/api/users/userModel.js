@@ -11,6 +11,8 @@ var db = new neo4j.GraphDatabase(neo4jUrl);
 var Checkin = require('../checkins/checkinModel.js');
 var Place = require('../places/placeModel.js');
 
+var skipAmount = 4;
+
 // Class to instantiate different users which will inherit prototype functions
 var User = function (node){
 	this.node = node;
@@ -228,7 +230,7 @@ User.prototype.findAllFriends = function () {
 
 // Basic query to find all user's checkins
 // Uses this.getProperty to grab instantiated user's facebookID as query parameter
-User.prototype.findAllCheckins = function (viewer) {
+User.prototype.findAllCheckins = function (viewer, page) {
   var deferred = Q.defer();
 
   var query = [
@@ -236,15 +238,20 @@ User.prototype.findAllCheckins = function (viewer) {
     'OPTIONAL MATCH (checkin)<-[]-(comment:Comment)<-[]-(commenter:User)',
     (viewer ? 'OPTIONAL MATCH (liker:User {facebookID: {viewerID}})-[:givesProps]->(checkin)' +
       'OPTIONAL MATCH (bucketer:User {facebookID: {viewerID}})-[:hasBucket]->(checkin)' : ""),
-    'RETURN user, checkin, place, collect(comment), collect(commenter)' + (viewer ? ', liker, bucketer' : "")
+    'RETURN user, checkin, place, collect(comment), collect(commenter)' + (viewer ? ', liker, bucketer' : ""),
+    'ORDER BY checkin.checkinTime DESC',
+    'SKIP { skipNum }',
+    'LIMIT { skipAmount }'
   ].join('\n');
 
   var params = {
     facebookID: this.getProperty('facebookID')
   };
   if (viewer){
-    params['viewerID'] = viewer
+    params['viewerID'] = viewer;
   }
+  params['skipAmount'] = skipAmount;
+  params['skipNum'] = page ? page * skipAmount : 0;
 
 
   db.query(query, params, function (err, results) {
@@ -257,7 +264,7 @@ User.prototype.findAllCheckins = function (viewer) {
           "checkin": item.checkin.data,
           "place": item.place.data,
           "comments": null
-        }
+        };
 
         if(item['collect(comment)'].length && item['collect(commenter)'].length) {
           var commentsArray = [];
@@ -297,18 +304,24 @@ User.prototype.findAllCheckins = function (viewer) {
 //   ]
 // 
 
-User.prototype.getAggregatedFootprintList = function (facebookID) {
+User.prototype.getAggregatedFootprintList = function (facebookID, page) {
   var deferred = Q.defer();
 
   var query = [
     // 'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'MATCH (user:User {facebookID: {facebookID}})-[:hasFriend]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'OPTIONAL MATCH (checkin)<-[]-(comment:Comment)<-[]-(commenter:User)',
-    'RETURN user, friend, checkin, place, collect(comment), collect(commenter)'
+    'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
+    'RETURN user, friend, checkin, place, collect(comment), collect(commenter), collect(hyper) AS hypers',
+    // 'ORDER BY checkin.checkinTime DESC',
+    'SKIP { skipNum }',
+    'LIMIT {skipAmount }'
   ].join('\n');
 
   var params = {
-    facebookID: this.getProperty('facebookID')
+    'facebookID': this.getProperty('facebookID'),
+    'skipAmount': skipAmount,
+    'skipNum': page ? page * skipAmount : 0
   };
 
   db.query(query, params, function (err, results) {
@@ -333,6 +346,17 @@ User.prototype.getAggregatedFootprintList = function (facebookID) {
           singleResult.comments = commentsArray;
         }
 
+        if(item['hypers'].length) {
+          var hypesArray = [];
+          for(var i = 0; i < item['hypers'].length; i++) {
+            hypesArray.push(item['hypers'][i].data);
+          }
+          singleResult.hypes = hypesArray;
+        }
+
+        // TEST, TEMPORARY
+        // singleResult.hypes = [{hype: 'lalal', hyper: 'frank lord'}, {hype: 'lalal', hyper: 'michelle vu'}];
+
         if(item.friend) {
           singleResult["user"] = item.friend.data;
         }
@@ -349,16 +373,21 @@ User.prototype.getAggregatedFootprintList = function (facebookID) {
 // Find all bucketList items for a user
 // Takes a facebookID and returns a footprint object with
 // checkin and place keys, containing checkin and place data
-User.getBucketList = function (facebookID){
+User.getBucketList = function (facebookID, page){
   var deferred = Q.defer();
 
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})-[:hasBucket]->(checkin:Checkin)-[:hasPlace]->(p:Place)',
     'RETURN checkin, p',
+    // 'ORDER BY checkin.checkinTime DESC',
+    'SKIP { skipNum }',
+    'LIMIT { skipAmount }'
   ].join('\n');
 
   var params = {
-    'facebookID': facebookID
+    'facebookID': facebookID,
+    'skipAmount': skipAmount,
+    'skipNum': page ? page * skipAmount : 0
   };
   
   db.query(query, params, function (err, results) {

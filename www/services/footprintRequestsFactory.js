@@ -50,14 +50,14 @@ var FootprintRequests = function ($http){
     //   }
     // },
 
-    // getFootprintInteractions: function (checkinID) {
-    //   if (checkinID) {
-    //     return $http({
-    //       method: 'GET',
-    //       url: '/api/checkins/interactions/' + checkinID
-    //     });
-    //   }
-    // }
+    getFootprintInteractions: function (checkinID) {
+      if (checkinID) {
+        return $http({
+          method: 'GET',
+          url: '/api/checkins/interactions/' + checkinID
+        });
+      }
+    }
   };
 };
 
