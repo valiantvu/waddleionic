@@ -3,32 +3,50 @@
 var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
     
     $scope.footprints = [];
+    var page = 0;
+    $scope.moreDataCanBeLoaded = true;
 
     $scope.getBucketList = function () {
-        UserRequests.getBucketList(window.sessionStorage.userFbID)
+        UserRequests.getBucketList(window.sessionStorage.userFbID, page)
         .then(function (data) {
-            console.dir(data);
-            $scope.allFootprints = data.data;
-            $scope.loadMore();
+            if (data.data.length > 0) {
+              $scope.footprints = $scope.footprints.concat(data.data);
+              page++;
+              console.log('page: ', page);
+            } else {
+              $scope.moreDataCanBeLoaded = false;
+            }
+            $scope.$broadcast('scroll.infiniteScrollComplete');
         });
     };
 
     $scope.getBucketList();
 
-    $scope.loadMore = function() {
-        if (typeof $scope.allFootprints !== 'undefined') {
-            $scope.footprints = $scope.footprints.concat($scope.allFootprints.splice(0, 3));
-        }
-        $scope.$broadcast('scroll.infiniteScrollComplete');
+    // $scope.loadMore = function() {
+    //     if (typeof $scope.allFootprints !== 'undefined') {
+    //         $scope.footprints = $scope.footprints.concat($scope.allFootprints.splice(0, 3));
+    //         console.dir($scope.footprints);
+    //     }
+    //     $scope.$broadcast('scroll.infiniteScrollComplete');
+    // };
+
+    // $scope.moreDataCanBeLoaded = function() {
+    //     if (typeof $scope.allFootprints === 'undefined') {
+    //         return false;
+    //     } else {
+    //         return $scope.allFootprints.length === 0 ? false : true;
+    //     }
+    // };
+
+
+    $scope.getFootprintInteractions = function() {
+        FootprintRequests.getFootprintInteractions("859509805076155280_230515481")
+            .then(function (data) {
+                console.dir(data);
+            });
     };
 
-    $scope.moreDataCanBeLoaded = function() {
-        if (typeof $scope.allFootprints === 'undefined') {
-            return false;
-        } else {
-            return $scope.allFootprints.length === 0 ? false : true;
-        }
-    };
+    $scope.getFootprintInteractions();
 
     $scope.addCheckinToBucketList = function (footprint){
       

@@ -205,6 +205,30 @@ Checkin.getProps = function (checkinID) {
   return deferred.promise;
 };
 
+Checkin.getHypes = function (checkinID) {
+  var deferred = Q.defer();
+
+  var query = [
+  'MATCH (user)-[connection:hasBucket]->(checkin:Checkin {checkinID: {checkinID}})',
+  'RETURN user, connection'
+  ].join('\n');
+
+  var params = {
+    'checkinID': checkinID
+  };
+
+  db.query(query, params, function (err, results)  {
+    if (err) { deferred.reject(err); }
+    else {
+      console.log(results);
+      deferred.resolve(results);
+    }
+  });
+
+  return deferred.promise;
+};
+
+
 // Resolves to a list of users and comments
 Checkin.getComments = function (checkinID){
   var deferred = Q.defer();

@@ -34,20 +34,32 @@ var UserRequests = function ($http){
     // Pass in the viewerID so that there is a context to the data returned
     // this allows the viewer to see whether they have liked another user's checkin
 
-    getUserData: function (userFbID, viewerID) {
+    getUserData: function (userFbID, viewerID, page) {
+      var url = '/api/users/' + userFbID + "/" + viewerID;
+      
+      if (page) {
+          url +=  "/" + page;
+      }
+
       if (userFbID) {
         return $http({
           method: 'GET',
-          url: '/api/users/' + userFbID + "/" + viewerID
+          url: url
         });
       }
     },
 
-    getAggregatedFeedData:function (userFbID) {
+    getAggregatedFeedData:function (userFbID, page) {
+      var url = '/api/users/aggregatefeed/' + userFbID;
+      
+      if (page) {
+          url +=  "/" + page;
+      }
+
       if (userFbID) {
         return $http({
           method: 'GET',
-          url: '/api/users/aggregatefeed/' + userFbID
+          url: url
         });
       }
     },
