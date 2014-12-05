@@ -3,32 +3,33 @@
 var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
     
     $scope.footprints = [];
+    var page = 0;
+    $scope.moreDataCanBeLoaded = true;
 
     $scope.getAggregatedFeedData = function () {
-        UserRequests.getAggregatedFeedData(window.sessionStorage.userFbID)
+        UserRequests.getAggregatedFeedData(window.sessionStorage.userFbID, page)
         .then(function (data) {
-            console.dir(data.data);
-            $scope.allFootprints = data.data;
-            $scope.loadMore();
+          if (data.data.length > 0) {
+              $scope.footprints = $scope.footprints.concat(data.data);
+              page++;
+              console.log('page: ', page);
+            } else {
+              $scope.moreDataCanBeLoaded = false;
+            }
+            $scope.$broadcast('scroll.infiniteScrollComplete');
         });
     };
 
     $scope.getAggregatedFeedData();
 
-    $scope.loadMore = function() {
-        if (typeof $scope.allFootprints !== 'undefined') {
-            $scope.footprints = $scope.footprints.concat($scope.allFootprints.splice(0, 3));
-        }
-        $scope.$broadcast('scroll.infiniteScrollComplete');
+    $scope.getFootprintInteractions = function() {
+        FootprintRequests.getFootprintInteractions("53188abe498eddb85a3f3f9c")
+            .then(function (data) {
+                // console.dir(data);
+            });
     };
 
-    $scope.moreDataCanBeLoaded = function() {
-        if (typeof $scope.allFootprints === 'undefined') {
-            return false;
-        } else {
-            return $scope.allFootprints.length === 0 ? false : true;
-        }
-    };
+    $scope.getFootprintInteractions();
 
     $scope.addCheckinToBucketList = function (footprint){
       
@@ -51,10 +52,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         checkinID: footprint.checkin.checkinID
       };
 
-      FootprintRequests.removeFromBucketList(bucketListData)
-      .then(function (data){
-        // MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
-      });
+      FootprintRequests.removeFromBucketList(bucketListData);
     };
 
     if($state.current.name === 'footprints-map') {
