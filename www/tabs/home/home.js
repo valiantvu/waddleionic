@@ -17,6 +17,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
           if (data.data.length > 0) {
               console.log(data);
               $scope.footprints = $scope.footprints.concat(data.data);
+              FootprintRequests.footprints = $scope.footprints;
               page++;
               console.log('page: ', page);
             } else {
@@ -82,9 +83,9 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       })
         .setView([20.00, 0.00], 2);
 
-      for(var i = 0; i < $scope.footprints.length; i++) {
-          var place = $scope.footprints[i].place;
-          var checkin = $scope.footprints[i].checkin;
+      for(var i = 0; i < FootprintRequests.footprints.length; i++) {
+          var place = FootprintRequests.footprints[i].place;
+          var checkin = FootprintRequests.footprints[i].checkin;
 
           var placeName = place.name;
           var latLng = [place.lat, place.lng];
