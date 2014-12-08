@@ -28,10 +28,6 @@
       <!-- </a> -->
     <!-- </div> -->
 
-    <!-- <div ng-if="inBoundsObject.datapoints" class='waddlefeed'>-->
-      <!--<div class='waddlefeeditem' ng-repeat="footprint in inBoundsObject.datapoints | orderBy:'-checkin.checkinTime' | limitTo:20 ">-->
-      <!-- <div class='waddlefeeditem'> -->
-
     <div ng-repeat="footprint in footprints | filter:search" class="list card">
 
       <div class="item item-avatar">
@@ -40,85 +36,83 @@
         <img ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
 
         <!-- User Name -->
-        <!-- <h2>{{footprint.user.name}}</h2> -->
+        <a href="#" class="subdued">{{footprint.user.name}}</a>
+        <br>
+        <!-- Place Name -->
+        <a ng-click="getFootprint(footprint)">
+          {{footprint.place.name}}
+        </h2>
 
-        <div class="row">
-          <!-- Location -->
-          <div class="col col-73">
-            <h2 class='feeditemname' ng-click="getFootprint(footprint)">
-              {{footprint.place.name}}
-            </h2>
-          </div>
-
-          <!-- Check-in Time -->
-          <div class="col">
-            <h6 class="checkindate">{{footprint.checkin.checkinTime | date : shortDate}}</h6>
-          </div>
-
-          <!-- Hype Button -->
-          <button class="button button-small" ng-click="addCheckinToBucketList({{ footprint }})">
-            <i class="icon ion-arrow-up-a"></i>
-          </button>
-        </div>
-
-        <button ng-click="addCheckinToBucketList(footprint)">Bucket</button>
-
-        
-        <!-- Photo & Caption -->
-        <div ng-if="footprint.checkin.photoLarge !== 'null'" ng-click="getFootprint(footprint)">
-          <img class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
-          <h4 ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</h4>
-        </div>
-
-        <!-- Default Photo (if no photo) -->
-        <div ng-if="footprint.checkin.photoLarge === 'null'" ng-if="footprint.checkin.caption === 'null'" class='captioncontainer'>
-          <img class="full-image defaultpeng" ng-click="getFootprint(footprint)" ng-src="https://s3-us-west-2.amazonaws.com/waddle/WaddlePenguinLogo.png"/>
-          <h4 ng-if="footprint.checkin.caption !== 'null' && footprint.checkin.photoLarge === 'null'">"{{footprint.checkin.caption}}"</h4>
-        </div>
-
-<!--             <p>
-          <a href="#" class="subdued">1 Like</a>
-          <a href="#" class="subdued">5 Comments</a>
-        </p> -->
+        <!-- Check-in Time -->
+        <p>{{footprint.checkin.checkinTime | date : shortDate}}</p>
       </div>
 
-      <!-- Card Bottom Buttons -->
-      <div class="item item-divider">
-        <div class="row">
+      <div class="item item-body">
+        <img ng-if="footprint.checkin.photoLarge !== 'null'" ng-click="getFootprint(footprint)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
+        <p ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
+
+        <p>
+          <a ng-if="footprint.comments.length > 0" href="#" class="subdued">{{ footprint.comments.length }} Comments</a>
+          <a ng-if="footprint.hypes.length > 0"  href="#" class="subdued">{{ footprint.hypes.length }} Hypes</a>
+        </p>
+      </div>
+
+      <div class="item tabs tabs-secondary tabs-icon-left">
+        <a class="tab-item" href="addCheckinToBucketList({{ footprint }})">
           <i class="icon ion-arrow-up-a"></i>
-          <div ng-repeat="hyper in footprint.hypes">{{ hyper.name }}</div>
-        </div>
+          Hype
+        </a>
+        <a class="tab-item" href="#">
+          <i class="icon ion-chatbox"></i>
+          Comment
+        </a>
       </div>
 
     </div>
+
+          <!-- Hype Button -->
+<!--           <button class="button button-small" ng-click="addCheckinToBucketList({{ footprint }})">
+            <i class="icon ion-arrow-up-a"></i>
+          </button> -->
+      <!-- </div> -->
+      <!-- <div class="item item-body"> -->
+        <!-- Photo & Caption -->
+<!--         <img ng-if="footprint.checkin.photoLarge !== 'null'" ng-click="getFootprint(footprint)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
+        <p ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p> -->
+
+        <!-- Default Photo (if no photo) -->
+<!--         <div ng-if="footprint.checkin.photoLarge === 'null'" ng-if="footprint.checkin.caption === 'null'" class='captioncontainer'>
+          <img class="full-image defaultpeng" ng-click="getFootprint(footprint)" ng-src="https://s3-us-west-2.amazonaws.com/waddle/WaddlePenguinLogo.png"/>
+          <h4 ng-if="footprint.checkin.caption !== 'null' && footprint.checkin.photoLarge === 'null'">"{{footprint.checkin.caption}}"</h4>
+        </div> -->
+
+      <!-- List of hypers -->
+<!--       <div ng-if="footprint.hypes.length > 0" class="item item-divider">
+        <div class="row">
+          <i class="icon ion-arrow-up-a"></i>
+          <p ng-repeat="hyper in footprint.hypes">{{ hyper.name }}</p>
+        </div>
+      </div> -->
+
+      <!-- Comments -->
+<!--       <div ng-repeat="comment in footprint.comments | orderBy:'comment.time'" class="item item-avatar">  
+        <img ng-src='{{comment.commenter.fbProfilePicture}}'>
+        <h2>{{comment.commenter.name}}</h2>
+        <p>{{comment.comment.text}}</p>
+        <p>{{comment.comment.time | date : shortDate}}<P>
+      </div> -->
+
+      <!-- Add Comment -->
+<!--       <form name="customSubmit" data-custom-submit info='someinfo' class='comment_form' novalidate>
+        <input ng-model='comment' name='comment' placeholder='Leave a comment' data-ng-minlength="1" data-ng-maxlength="120" required>
+        <span class="help-inline" ng-show="customSubmit.comment.$error.maxlength">120 Character Max</span>
+      </form> -->
 
     <!-- Not bucketed -->
     <!-- <img ng-if="!footprint.checkin.bucketed" class='addbucket feedactions' title="Add to Bucket List" ng-click="addCheckinToBucketList(footprint)"/> -->
     <!-- Bucketed -->
     <!-- <img ng-if="footprint.checkin.bucketed" class='addbucketactive feedactions' title="Add to Bucket List" ng-click="removeCheckinFromBucketList(footprint)"/> -->
 
-    <!-- Comments -->
-<!--         <div class="feedcomment" ng-repeat="comment in footprint.comments | orderBy:'comment.time'">
-        <img class='footprintprofpic' ng-src='{{comment.commenter.fbProfilePicture}}'>
-        <h4>{{comment.commenter.name}}</h4>
-        <h8 class="checkindate">{{comment.comment.time | date : shortDate}}</h8><br>
-        <p>{{comment.comment.text}}</p>
-    </div> -->
-<!--     <div class='footprintcomments' ng-repeat="comment in selectedFootprintInteractions.comments">
-        <div class='footprintcommentpiccontainer'>
-          <img class='footprintprofpic' ng-src='{{comment.commenter.fbProfilePicture}}'>
-        </div>
-        <h4 class="commentername">{{comment.commenter.name}}</h4>
-        <h7>{{comment.comment.time | date : shortDate}}</h7>
-        <p>{{comment.comment.text}}</p>
-        <button ng-click='removeComment()'>Delete</button>
-      </div> -->
-
-    <!-- Add Comment -->
-<!--         <form name="customSubmit" data-custom-submit info='someinfo' class='comment_form' novalidate>
-      <input ng-model='comment' name='comment' placeholder='Leave a comment' class="comment" data-ng-minlength="1" data-ng-maxlength="120" required>
-      <span class="help-inline" ng-show="customSubmit.comment.$error.maxlength">120 Character Max</span>
-    </form> -->
   <!-- </div> -->
 
   <ion-infinite-scroll
