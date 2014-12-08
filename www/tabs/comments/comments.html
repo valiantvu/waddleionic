@@ -1,0 +1,33 @@
+<!-- Header Bar -->
+<ion-header-bar align-title="center" class="bar-positive">
+  <div class="buttons">
+    <button class="button button-icon icon ion-arrow-left-b" ui-sref="tab.home"></button>
+  </div>
+  <h1 class="title">Comments</h1>
+  <div class="buttons">
+    <button class="button button-icon icon ion-map" ui-sref="footprints-map"></button>
+  </div>
+</ion-header-bar>
+
+<ion-view title="Home">
+
+  <ion-content class="padding">
+
+      <!-- Comments -->
+      <div ng-repeat="comment in footprint.comments | orderBy:'comment.time'" class="item item-avatar">  
+        <img ng-src='{{comment.commenter.fbProfilePicture}}'>
+        <h2>{{comment.commenter.name}}</h2>
+        <p>{{comment.comment.text}}</p>
+        <p>{{comment.comment.time | date : shortDate}}<P>
+      </div>
+
+      <!-- Add Comment -->
+      <div class="item">
+        <form name="customSubmit" data-custom-submit info='someinfo' class='comment_form' novalidate>
+          <input ng-model='comment' name='comment' placeholder='Leave a comment' data-ng-minlength="1" data-ng-maxlength="120" required>
+          <span class="help-inline" ng-show="customSubmit.comment.$error.maxlength">120 Character Max</span>
+        </form>
+      </div>
+
+  </ion-content>
+</ion-view>

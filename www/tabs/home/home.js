@@ -7,6 +7,10 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     var skipAmount = 5;
     $scope.moreDataCanBeLoaded = true;
 
+    $scope.openFootprint = function(footprint) {
+      FootprintRequests.openFootprint = footprint;
+    };
+
     $scope.getAggregatedFeedData = function () {
         UserRequests.getAggregatedFeedData(window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {

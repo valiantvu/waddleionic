@@ -99,6 +99,24 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
           controller: 'ProfileController'
         }
       }
+    })
+    .state('tab.comments', {
+      url: '/comments',
+      views: {
+        'home-tab': {
+          templateUrl: 'tabs/comments/comments.html',
+          controller: 'CommentsController'
+        }
+      }
+    })
+    .state('tab.hypers', {
+      url: '/hypers',
+      views: {
+        'home-tab': {
+          templateUrl: 'tabs/hypers/hypers.html',
+          controller: 'HypersController'
+        }
+      }
     });
 
   // if none of the above states are matched, use this as the fallback
