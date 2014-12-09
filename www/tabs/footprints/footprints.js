@@ -57,9 +57,9 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
       if($scope.search.query) {
         console.log($scope.search.query);
         UserRequests.searchUserFootprints(window.sessionStorage.userFbID, $scope.search.query)
-        .then(function(data) {
-          $scope.moreDataCanBeLoaded = false;
-          console.log(data);
+        .then(function(footprints) {
+          $scope.footprints = footprints.data;
+          console.log($scope.footprints);
         })
       }
     };

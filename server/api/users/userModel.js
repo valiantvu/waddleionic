@@ -382,6 +382,7 @@ User.findFootprintsByPlaceName = function (facebookID, placeName) {
     'RETURN user, checkin, place, collect(comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
   ].join('\n');
 
+  //params.placeName includes regexp to search nodes containing placeName string. (?i) makes query case insensitive
   var params = {
     facebookID: facebookID,
     placeName: '(?i).*' + placeName + '.*'
@@ -398,8 +399,8 @@ User.findFootprintsByPlaceName = function (facebookID, placeName) {
         
         var singleResult = {
           "place": item.place.data,
-          "checkins": item.checkins,
-          "users": item.users
+          "checkin": item.checkin.data,
+          "user": item.user.data
         }
 
         if(item['comments'].length && item['commenters'].length) {
