@@ -1,13 +1,14 @@
 (function(){
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope) {
     
     $scope.footprints = [];
     var page = 0;
+    var skipAmount = 5;
     $scope.moreDataCanBeLoaded = true;
 
     $scope.getAggregatedFeedData = function () {
-        UserRequests.getAggregatedFeedData(window.sessionStorage.userFbID, page)
+        UserRequests.getAggregatedFeedData(window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {
           if (data.data.length > 0) {
               $scope.footprints = $scope.footprints.concat(data.data);
@@ -54,6 +55,14 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
       FootprintRequests.removeFromBucketList(bucketListData);
     };
+
+    $scope.loadProfilePage = function (userInfo) {
+      console.log(userInfo)
+      // var targetElement = userInfo;
+      // ionic.trigger("loadProfilePage", {target: targetElement}, true, true);
+      $rootScope.$emit('loadProfilePage', userInfo);
+      $state.go('tab.profile');
+    }
 
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);
@@ -153,7 +162,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     // };
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope'];
 
 angular.module('waddle.home', [])
   .controller('HomeController', HomeController);

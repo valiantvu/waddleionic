@@ -233,17 +233,31 @@ userController.addInstagramData = function (req, res) {
 
 //uses facebook ID to grab friend data when user navigates to friend page
 userController.getUserData = function (req, res){
+  var page, skipAmount;
   var userData = {
     facebookID: req.params.friend
   };
   var userInfo = {};
   var viewer = req.params.viewer;
-  var page = req.params.page;
+  
+  if(req.params.page) {
+    page = parseInt(req.params.page);
+  }
+  else {
+    page = 0;
+  }
+
+  if(req.params.skip) {
+    skipAmount = parseInt(req.params.skip);
+  }
+  else {
+    skipAmount = 0;
+  }
 
   User.find(userData)
   .then(function (friend) {
     userInfo.user = friend.node._data.data;
-    return friend.findAllCheckins(viewer, page);
+    return friend.findAllCheckins(viewer, page, skipAmount);
   })
   .then(function (checkins) {
     // console.log("checkins: ", checkins.length)
@@ -259,20 +273,34 @@ userController.getUserData = function (req, res){
 
 userController.getAggregatedListOfCheckins = function (req, res){
   // var users = req.params.userlist;
+  var user;
   var params = {};
   var aggregatedFootprints = [];
   // var friendCheckins;
   params.facebookID = req.params.user;
-  params.page = req.params.page;
+  
+  if(req.params.page) {
+    params.page = parseInt(req.params.page);
+  }
+  else {
+    params.page = 0;
+  }
+
+  if(req.params.skip) {
+    params.skipAmount = parseInt(req.params.skip);
+  }
+  else {
+    params.skipAmount = 0;
+  }
 
   User.find(params)
   .then(function (userNode) {
     user = userNode;
-    return user.getAggregatedFootprintList(params.facebookID, params.page);
+    return user.getAggregatedFootprintList(params.facebookID, params.page, params.skipAmount);
   })
   .then(function (aggregatedFootprintsFromFriends) {
     aggregatedFootprints.push(aggregatedFootprintsFromFriends);
-    return user.findAllCheckins(params.facebookID);
+    return user.findAllCheckins(params.facebookID, params.page, params.skipAmount);
   })
   .then(function (userFootprints) {
     aggregatedFootprints.push(userFootprints);
@@ -285,41 +313,66 @@ userController.getAggregatedListOfCheckins = function (req, res){
     console.log(err);
     res.status(500).end();
   });
-
-  // User.find(params)
-  // .then(function (userNode) {
-  //   user = userNode
-  //   return user.findAllCheckins(params.facebookID);
-  // })
-  // .then(function (userCheckins){
-  //   aggregatedFootprints.push(userCheckins);
-  //   return user.findAllFriends();
-  // })
-  // .then(function (friendlist) {
-  //   _.each(friendlist, function(friend) {
-  //     User.find(friend)
-  //     .then(function (friendnode) {
-  //       return friendnode.findAllCheckins(params.facebookID);
-  //     })
-  //     .then(function (friendCheckins) {
-  //       aggregatedFootprints.push(friendCheckins);
-  //       console.log('aggregated footprints', JSON.stringify(aggregatedFootprints));
-  //     })   
-  //   })
-  //   // if(aggregatedFootprints.length > 1) {
-  //     return aggregatedFootprints;
-  //   // }
-  // })
-  // .then(function (aggregatedFootprints) {
-  //   console.log(aggregatedFootprints);
-  //   res.json(aggregatedFootprints);
-  //   res.status(200).end();
-  // })
-  // .catch(function (err) {
-  //   console.log(err);
-  //   res.status(500).end();
-  // });
 };
+
+userController.updateNotificationReadStatus = function (req, res) {
+  var user;
+  User.find(req.body)
+  .then(function (userNode) {
+    user = userNode;
+    return user.updateNotificationReadStatus();
+  })
+  .then(function (notifications) {
+    res.json(notifications);
+    res.status(201).end();
+  })
+  .catch(function (err) {
+    console.log(err);
+    res.status(500).end();
+  })
+}
+
+userController.getUnreadNotifications = function (req, res) {
+  var user;
+  var params = {}
+  params.facebookID = req.params.user;
+
+  User.find(params)
+  .then(function (userNode) {
+    user = userNode;
+    return user.getUnreadNotifications();
+  })
+  .then(function (notifications) {
+    res.json(notifications);
+    res.status(200).end();
+  })
+  .catch(function (err) {
+    console.log(err);
+    res.status(500).end();
+  })
+}
+
+userController.getReadNotifications = function (req, res) {
+  var user;
+  var params = {}
+  var limit = req.params.limit;
+  params.facebookID = req.params.user;
+
+  User.find(params)
+  .then(function (userNode) {
+    user = userNode;
+    return user.getReadNotifications(limit);
+  })
+  .then(function (notifications) {
+    res.json(notifications);
+    res.status(200).end();
+  })
+  .catch(function (err) {
+    console.log(err);
+    res.status(500).end();
+  })
+  
+}
 
 userController.getUserInfo = function (req, res) {
   console.log('in the controller')

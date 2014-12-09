@@ -1,7 +1,15 @@
-var neo4j = require('neo4j');
-var Q = require('q');
+var qs = require('querystring');
+var request = require('request');
 
-var db = new neo4j.GraphDatabase(process.env['GRAPHENEDB_URL'] || 'http://localhost:7474');
+var Q = require('q');
+var _ = require('lodash');
+
+var neo4j = require('neo4j');
+var neo4jUrl = process.env['WADDLE_GRAPHENEDB_URL'] || 'http://localhost:7474';
+var db = new neo4j.GraphDatabase(neo4jUrl);
+
+var Checkin = require('../checkins/checkinModel.js');
+var User = require('../users/userModel.js');
 
 var Place = function(node){
   this.node = node;
@@ -101,5 +109,67 @@ Place.findByCheckinID = function (checkinID) {
 
   return deferred.promise;
 };
+
+Place.findAllByCountryOrCityName = function (userID, locationName) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (loc {name:{locationName}})<-[*..2]-(place:Place)<-[rel1:hasPlace]-(checkin:Checkin)<-[:hasCheckin]-(user:User)',
+    // 'OPTIONAL MATCH (user)-[:hasFriend]->(self:User{facebookID:{facebookID}})',
+    'RETURN loc, place, collect(DISTINCT checkin) AS checkins, collect(DISTINCT user) AS users, count(DISTINCT rel1) AS checkinCount, count(DISTINCT user) AS userCount',
+    'ORDER BY count(DISTINCT user) DESC, count(DISTINCT rel1) DESC'
+  ].join('\n');
+
+  var params = {
+    facebookID: userID,
+    locationName: locationName
+  };
+
+  console.log('dis b ma params:', params);
+
+  db.query(query, params, function (err, results) {
+    if (err) {
+      deferred.reject(err);
+    }
+    else {
+      var parsedResults = _.map(results, function (item) {
+        
+        var singleResult = {
+          "place": item.place.data,
+          "checkins": item.checkins,
+          "users": item.users,
+          "checkinCount": item.checkinCount,
+          "userCount": item.userCount
+        }
+
+        // if(item['collect(comment)'].length && item['collect(commenter)'].length) {
+        //   var commentsArray = [];
+        //   for(var i = 0; i < item['collect(comment)'].length; i++) {
+        //     var commentData = {
+        //       comment: item['collect(comment)'][i].data,
+        //       commenter: item['collect(commenter)'][i].data
+        //     }
+        //     commentsArray.push(commentData);
+        //   }
+
+        //   singleResult.comments = commentsArray;
+        //   console.log('singleResult: ', singleResult.comments);
+
+        // }
+
+        // if (item.liker){
+        //   singleResult.checkin.liked = true;
+        // }
+        // if (item.bucketer){
+        //   singleResult.checkin.bucketed = true;
+        // }
+        return singleResult
+      });
+      deferred.resolve(parsedResults);
+
+    }
+  })
+  return deferred.promise;
+}
 
 module.exports = Place;
