@@ -16,4 +16,19 @@ placeController.updatePlace = function (req, res){
   });
 };
 
+placeController.searchWaddleDB = function (req, res) {
+	var facebookID = req.params.user;
+	var searchQuery = req.params.query;
+	Place.findAllByCountryOrCityName(facebookID, searchQuery)
+	.then(function (data) {
+		console.log(data);
+		res.json(data);
+		res.status(200).end();
+	})
+	.catch(function (err) {
+		console.log(err);
+		res.status(500).end();
+	})
+}
+
 module.exports = placeController;

@@ -5,9 +5,10 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
     $scope.footprints = [];
     $scope.moreDataCanBeLoaded = true;
     var page = 0;
+    var skipAmount = 5;
 
     $scope.getUserData = function () {
-        UserRequests.getUserData(window.sessionStorage.userFbID, window.sessionStorage.userFbID, page)
+        UserRequests.getUserData(window.sessionStorage.userFbID, window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {
             if (data.data.footprints.length > 0) {
               $scope.footprints = $scope.footprints.concat(data.data.footprints);

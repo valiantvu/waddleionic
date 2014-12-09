@@ -7,6 +7,7 @@ var errorhandlers = require('./errorhandlers.js');
 module.exports = function (app, express) {
 	var userRouter = express.Router();
 	var checkinRouter = express.Router();
+  var placeRouter = express.Router();
 
   app.use(morgan('dev'));
   app.use(bodyParser.json());
@@ -17,6 +18,7 @@ module.exports = function (app, express) {
 
   app.use('/api/users', userRouter);
   app.use('/api/checkins', checkinRouter);
+  app.use('/api/places', placeRouter);
 
   app.get('/fsqredirect', function(req, res) {
     res.sendfile(__dirname + '/static/foursquareredirect.html');
@@ -31,6 +33,7 @@ module.exports = function (app, express) {
 
   require('./api/users/userRoutes.js')(userRouter);
 	require('./api/checkins/checkinRoutes.js')(checkinRouter);
+  require('./api/places/placeRoutes.js')(placeRouter);
 };
 
 
