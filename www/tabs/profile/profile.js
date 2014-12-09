@@ -3,11 +3,15 @@
 var ProfileController = function ($scope, $state, UserRequests, $rootScope) {	
 
 	$scope.getUserInfo = function (userFbID) {
-		UserRequests.getUserInfo(userFbID)
-		.then(function (userInfo) {
-			$scope.userInfo = userInfo.data;
-		})
+		 console.log(UserRequests.userProfileData);
+		 $scope.userInfo = UserRequests.userProfileData;
+		// UserRequests.getUserInfo(userFbID)
+		// .then(function (userInfo) {
+		// 	$scope.userInfo = userInfo.data;
+		// })
 	}
+
+	$scope.getUserInfo(window.sessionStorage.userFbID);
 
 	$scope.setUserInfo = function (userInfo) {
 		$scope.$apply(function () {

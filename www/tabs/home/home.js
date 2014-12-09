@@ -57,10 +57,11 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     };
 
     $scope.loadProfilePage = function (userInfo) {
-      console.log(userInfo)
+      console.log(userInfo);
+      UserRequests.userProfileData = userInfo;
       // var targetElement = userInfo;
       // ionic.trigger("loadProfilePage", {target: targetElement}, true, true);
-      $rootScope.$emit('loadProfilePage', userInfo);
+      // $rootScope.$emit('loadProfilePage', userInfo);
       $state.go('tab.profile');
     }
 

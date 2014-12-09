@@ -6,6 +6,7 @@ var UserRequests = function ($http){
 
   return {
     allData: userData,
+    userProfileData: null,
 
     // Sends request to server with relevant user data 
     // for creation of new user or retrieval of existing user' checkins/data
