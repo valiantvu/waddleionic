@@ -29,15 +29,6 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     $scope.getAggregatedFeedData();
 
-    // $scope.getFootprintInteractions = function() {
-    //     FootprintRequests.getFootprintInteractions("53188abe498eddb85a3f3f9c")
-    //         .then(function (data) {
-    //             console.dir(data);
-    //         });
-    // };
-
-    // $scope.getFootprintInteractions();
-
     $scope.addCheckinToBucketList = function (footprint){
       
       var bucketListData = {
@@ -122,50 +113,6 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       }
     }
 
-    $scope.selectedFootprintInteractions = null;
-
-    // $scope.getFootprint = function (footprint) {
-    //     $scope.footprint = footprint;
-
-    //     var checkinID = footprint.checkin.checkinID;
-    //     FootprintRequests.openFootprint = footprint;
-
-    //     FootprintRequests.getFootprintInteractions(checkinID)
-    //     .then(function (data) {
-    //         FootprintRequests.currentFootprint = data.data;
-    //         $scope.selectedFootprintInteractions = FootprintRequests.currentFootprint;
-    //     });
-    // };
-
-    // $scope.closeFootprintWindow = function (){
-    //   FootprintRequests.openFootprint = undefined;
-    //   $state.go('map.feed')
-    // };
-
-    // Ensure that a user comment is posted in the database before displaying
-    // $scope.updateFootprint = function (footprint){
-    //   var checkinID = footprint.checkin.checkinID;
-    //   FootprintRequests.getFootprintInteractions(checkinID)
-    //   .then(function (data) {
-    //     $scope.selectedFootprintInteractions.comments = data.data.comments;
-    //   });  
-    // };
-
-    // $scope.removeComment = function (footprint, comment){
-    //   console.log(footprint);
-    //   console.log(comment);
-    //   var commentData = {
-    //     facebookID: comment.commenter.facebookID,
-    //     checkinID: footprint.checkin.checkinID,
-    //     commentID : comment.comment.commentID 
-    //   };
-    //   console.log(commentData);
-    //   FootprintRequests.removeComment(commentData)
-    //   .then(function (data){
-    //     console.log("success");
-    //     //MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
-    //   });
-    // };
 };
 
 HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope'];
