@@ -9,6 +9,7 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
     var skipAmount = 5;
 
     $scope.getUserData = function () {
+      console.log('hi')
         UserRequests.getUserData(window.sessionStorage.userFbID, window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {
             if (data.data.footprints.length > 0) {
@@ -20,6 +21,15 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
             }
             $scope.$broadcast('scroll.infiniteScrollComplete');
         });
+    };
+
+    $scope.clearSearch = function () {
+      console.log('clearSearch')
+      $scope.search = {};
+      $scope.footprints = [];
+      page = 0;
+      $scope.moreDataCanBeLoaded = true;
+      $scope.getUserData();
     };
 
     $scope.addCheckinToBucketList = function (footprint){
@@ -53,13 +63,11 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
     };
 
     $scope.searchUserFootprints = function () {
-      console.log('hi')
       if($scope.search.query) {
-        console.log($scope.search.query);
         UserRequests.searchUserFootprints(window.sessionStorage.userFbID, $scope.search.query)
         .then(function(footprints) {
           $scope.footprints = footprints.data;
-          console.log($scope.footprints);
+          $scope.moreDataCanBeLoaded = false;
         })
       }
     };
