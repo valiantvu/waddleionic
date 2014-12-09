@@ -4,9 +4,6 @@
     <button class="button button-icon icon ion-arrow-left-b" ng-click="doSomething()"></button>
   </div>
   <h1 class="title">Home</h1>
-  <div class="buttons">
-    <button class="button button-icon icon ion-map" ui-sref="footprints-map"></button>
-  </div>
 </ion-header-bar>
 
 <ion-view title="Home">
@@ -20,13 +17,6 @@
         <input type="text" placeholder="Search footprints" ng-model="search">
       </label>
     </div>
-
-    <!-- <div class="list card"> -->
-      <!-- <a class="item item-icon-left" href="#"> -->
-        <!-- <i class="icon ion-ios7-search-strong"></i> -->
-        <!-- <input class="icon ion-ios7-search-strong" type="search" ng-model="search" placeholder="Search your footprints"> -->
-      <!-- </a> -->
-    <!-- </div> -->
 
     <div ng-repeat="footprint in footprints | filter:search" class="list card">
 
