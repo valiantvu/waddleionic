@@ -50,9 +50,9 @@
       <div class="item item-body">
         <img ng-if="footprint.checkin.photoLarge !== 'null'" ng-click="getFootprint(footprint)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
         <p ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
-
+<!-- 
         <img ng-if="footprint.checkin.photoLarge === 'null'" ng-if="footprint.checkin.caption === 'null'" class="full-image defaultpeng" ng-click="getFootprint(footprint)" ng-src="https://s3-us-west-2.amazonaws.com/waddle/WaddlePenguinLogo.png"/>
-        <p ng-if="footprint.checkin.caption !== 'null' && footprint.checkin.photoLarge === 'null'">"{{footprint.checkin.caption}}"</p>
+        <p ng-if="footprint.checkin.caption !== 'null' && footprint.checkin.photoLarge === 'null'">"{{footprint.checkin.caption}}"</p> -->
 
         <p>
           <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint)" class="subdued">{{ footprint.comments.length }} Comments</a>
@@ -65,7 +65,7 @@
           <i class="icon ion-arrow-up-a"></i>
           Hype
         </a>
-        <a class="tab-item" ui-sref="tab.comments">
+        <a class="tab-item" ui-sref="tab.comments" ng-click="openFootprint(footprint)">
           <i class="icon ion-chatbox"></i>
           Comment
         </a>
