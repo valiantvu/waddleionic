@@ -50,9 +50,6 @@
       <div class="item item-body">
         <img ng-if="footprint.checkin.photoLarge !== 'null'" ng-click="getFootprint(footprint)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
         <p ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
-<!-- 
-        <img ng-if="footprint.checkin.photoLarge === 'null'" ng-if="footprint.checkin.caption === 'null'" class="full-image defaultpeng" ng-click="getFootprint(footprint)" ng-src="https://s3-us-west-2.amazonaws.com/waddle/WaddlePenguinLogo.png"/>
-        <p ng-if="footprint.checkin.caption !== 'null' && footprint.checkin.photoLarge === 'null'">"{{footprint.checkin.caption}}"</p> -->
 
         <p>
           <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint)" class="subdued">{{ footprint.comments.length }} Comments</a>
@@ -60,7 +57,15 @@
         </p>
       </div>
 
-      <div class="item tabs tabs-secondary tabs-icon-left">
+      <!-- Comments -->
+      <div ng-repeat="comment in footprint.comments | orderBy:'comment.time' | limitTo:3" class="item item-avatar item-text-wrap" ui-sref="tab.comments" ng-click="openFootprint(footprint)">  
+        <img ng-src='{{comment.commenter.fbProfilePicture}}'>
+        <h2>{{comment.commenter.name}}</h2>
+        <p>{{comment.comment.text}}</p>
+        <p>{{comment.comment.time | date : shortDate}}<P>
+      </div>
+
+      <div class="item item-divider tabs tabs-secondary tabs-icon-left">
         <a class="tab-item" ng-click="addCheckinToBucketList({{ footprint }})">
           <i class="icon ion-arrow-up-a"></i>
           Hype
