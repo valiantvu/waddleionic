@@ -3,7 +3,7 @@
 var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
     
     $scope.footprint = FootprintRequests.openFootprint;
-    // $scope.selectedFootprintInteractions = null;
+    $scope.selectedFootprintInteractions = {};
 
     // $scope.getFootprint = function (footprint) {
     //     $scope.footprint = footprint;
@@ -98,7 +98,7 @@ var CustomSubmitDirective = function(FootprintRequests) {
         //ID can be found with $element.context.dataset['customSubmit']
         var commentData = {
           clickerID: window.sessionStorage.userFbID,
-          checkinID: scope.footprint.checkin.checkinID,
+          checkinID: FootprintRequests.openFootprint.checkin.checkinID,
           // commentID: scope.footprint.comments[0],
           text: scope.comment
         };
