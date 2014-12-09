@@ -5,30 +5,12 @@ var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequ
     $scope.footprint = FootprintRequests.openFootprint;
     $scope.selectedFootprintInteractions = {};
 
-    // $scope.getFootprint = function (footprint) {
-    //     $scope.footprint = footprint;
-
-    //     var checkinID = footprint.checkin.checkinID;
-    //     FootprintRequests.openFootprint = footprint;
-
-    //     FootprintRequests.getFootprintInteractions(checkinID)
-    //     .then(function (data) {
-    //         FootprintRequests.currentFootprint = data.data;
-    //         $scope.selectedFootprintInteractions = FootprintRequests.currentFootprint;
-    //     });
-    // };
-
-    // $scope.closeFootprintWindow = function (){
-    //   FootprintRequests.openFootprint = undefined;
-    //   $state.go('map.feed')
-    // };
-
     // Ensure that a user comment is posted in the database before displaying
     $scope.updateFootprint = function (footprint){
       var checkinID = footprint.checkin.checkinID;
       FootprintRequests.getFootprintInteractions(checkinID)
       .then(function (data) {
-        $scope.selectedFootprintInteractions.comments = data.data.comments;
+        $scope.footprint.comments = data.data.comments;
       });
     };
 
@@ -112,18 +94,14 @@ var CustomSubmitDirective = function(FootprintRequests) {
         var commentData = {
           clickerID: window.sessionStorage.userFbID,
           checkinID: FootprintRequests.openFootprint.checkin.checkinID,
-          // commentID: scope.footprint.comments[0],
           text: scope.comment
         };
 
         FootprintRequests.addComment(commentData)
         .then(function (data) {
-          // Socket.emit('comment posted', commentData);
           if (FootprintRequests.openFootprint){
             scope.updateFootprint(FootprintRequests.openFootprint);
           }
-          // scope.data.currentComment = '';
-          //$element[0][0].value = ''
         });
         console.log(commentData);
         scope.comment = "";
