@@ -84,6 +84,15 @@ var UserRequests = function ($http){
           url: '/api/users/bucketlist/' + userFbID
         });
       }
+    },
+
+    searchUserFootprints: function (userFbID, query) {
+      if (userFbID && query) {
+        return $http({
+          method: 'GET',
+          url: '/api/users/searchfootprints/' + userFbID + '/' + query
+        });
+      }
     }
   }; 
 };

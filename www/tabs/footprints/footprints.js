@@ -3,6 +3,7 @@
 var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
 
     $scope.footprints = [];
+    $scope.search = {};
     $scope.moreDataCanBeLoaded = true;
     var page = 0;
     var skipAmount = 5;
@@ -49,6 +50,18 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
       .then(function (data){
         // MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
       });
+    };
+
+    $scope.searchUserFootprints = function () {
+      console.log('hi')
+      if($scope.search.query) {
+        console.log($scope.search.query);
+        UserRequests.searchUserFootprints(window.sessionStorage.userFbID, $scope.search.query)
+        .then(function(data) {
+          $scope.moreDataCanBeLoaded = false;
+          console.log(data);
+        })
+      }
     };
 
     if($state.current.name === 'footprints-map') {

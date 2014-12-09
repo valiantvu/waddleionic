@@ -391,8 +391,6 @@ userController.getUserInfo = function (req, res) {
     res.status(500).end();
   });
 
-
-
 }
 
 // Takes a facebookID and returns a footprint object with
@@ -407,10 +405,24 @@ userController.getBucketList = function (req, res){
     res.status(200).end();
   })
   .catch(function (err) {
-    console.log('req');
     console.log(err);
     res.status(500).end();
   });
 };
+
+userController.searchUserFootprints = function (req, res) {
+  console.log(req.params);
+  var facebookID = req.params.user;
+  var query = req.params.query;
+  User.findFootprintsByPlaceName(facebookID, query)
+  .then(function (footprints) {
+    res.json(footprints);
+    res.status(200).end();
+  })
+  .catch(function(err) {
+    console.log(err);
+    res.status(500).end();
+  })
+}
 
 module.exports = userController;

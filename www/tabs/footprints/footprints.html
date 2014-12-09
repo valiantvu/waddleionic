@@ -17,8 +17,9 @@
     <div class="list list-inset">
       <label class="item item-input">
         <i class="icon ion-ios7-search-strong placeholder-icon"></i>
-        <input type="text" placeholder="Search your footprints" ng-model="search">
+        <input type="text" placeholder="Search your footprints" ng-model="search.query">
       </label>
+        <button type="submit" ng-click="searchUserFootprints()">Submit</button>
     </div>
 
     <!-- <div class="list card"> -->
@@ -32,7 +33,7 @@
       <!--<div class='waddlefeeditem' ng-repeat="footprint in inBoundsObject.datapoints | orderBy:'-checkin.checkinTime' | limitTo:20 ">-->
       <!-- <div class='waddlefeeditem'> -->
 
-    <div ng-repeat="footprint in footprints | filter:search" class="list card">
+    <div ng-repeat="footprint in footprints" class="list card">
 
       <div class="item item-avatar">
 

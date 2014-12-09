@@ -9,7 +9,8 @@ module.exports = function(app){
 	app.post('/notifications', userController.updateNotificationReadStatus);
   app.get('/notifications/:user', userController.getUnreadNotifications);
   app.get('/readnotifications/:user/:limit', userController.getReadNotifications);
-	app.get('/userinfo/:user', userController.getUserInfo)
+	app.get('/userinfo/:user', userController.getUserInfo);
+  app.get('/searchfootprints/:user/:query', userController.searchUserFootprints);
 	//the next line must be listed last because it catches all paths
 	app.get('/:friend/:viewer/:page?/:skip?', userController.getUserData);
 };
