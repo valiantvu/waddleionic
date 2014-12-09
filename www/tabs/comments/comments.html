@@ -14,9 +14,10 @@
   <ion-content class="padding">
 
       <!-- Comments -->
-      <div ng-repeat="comment in footprint.comments | orderBy:'comment.time'" class="item item-avatar item-text-wrap">  
+      <div ng-repeat="comment in footprint.comments | orderBy:'comment.time'" class="item item-avatar item-text-wrap" ng-click="show(comment, footprint)">  
         <img ng-src='{{comment.commenter.fbProfilePicture}}'>
         <h2>{{comment.commenter.name}}</h2>
+        <!-- <ion-delete-button class="ion-minus-circled"></ion-delete-button> -->
         <p>{{comment.comment.text}}</p>
         <p>{{comment.comment.time | date : shortDate}}<P>
       </div>

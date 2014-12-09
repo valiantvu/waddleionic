@@ -1,6 +1,6 @@
 (function(){
 
-var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
+var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicActionSheet) {
     
     $scope.footprint = FootprintRequests.openFootprint;
     $scope.selectedFootprintInteractions = {};
@@ -32,24 +32,37 @@ var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequ
       });
     };
 
-    // $scope.removeComment = function (footprint, comment){
-    //   console.log(footprint);
-    //   console.log(comment);
-    //   var commentData = {
-    //     facebookID: comment.commenter.facebookID,
-    //     checkinID: footprint.checkin.checkinID,
-    //     commentID : comment.comment.commentID 
-    //   };
-    //   console.log(commentData);
-    //   FootprintRequests.removeComment(commentData)
-    //   .then(function (data){
-    //     console.log("success");
-    //     //MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
-    //   });
-    // };
+
+     // Triggered on a button click, or some other target
+    $scope.show = function(comment, footprint) {
+      // Show the action sheet
+      var hideSheet = $ionicActionSheet.show({
+        destructiveText: 'Delete',
+        cancelText: 'Cancel',
+        cancel: function() {
+          hideSheet();
+        },
+        destructiveButtonClicked: function(index) {
+
+          var commentData = {
+            facebookID: comment.commenter.facebookID,
+            checkinID: footprint.checkin.checkinID,
+            commentID : comment.comment.commentID
+          };
+
+          console.log(commentData);
+
+          FootprintRequests.removeComment(commentData)
+          .then(function (data){
+            console.log("comment removed");
+          });
+          return true;
+        }
+      });
+    };
 };
 
-CommentsController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state'];
+CommentsController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicActionSheet'];
 
   // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 
