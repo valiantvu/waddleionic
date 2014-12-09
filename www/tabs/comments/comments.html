@@ -14,7 +14,7 @@
   <ion-content class="padding">
 
       <!-- Comments -->
-      <div ng-repeat="comment in footprint.comments | orderBy:'comment.time'" class="item item-avatar">  
+      <div ng-repeat="comment in footprint.comments | orderBy:'comment.time'" class="item item-avatar item-text-wrap">  
         <img ng-src='{{comment.commenter.fbProfilePicture}}'>
         <h2>{{comment.commenter.name}}</h2>
         <p>{{comment.comment.text}}</p>
