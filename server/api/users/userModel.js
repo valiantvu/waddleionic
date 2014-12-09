@@ -471,11 +471,7 @@ User.getBucketList = function (facebookID, page){
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})-[:hasBucket]->(checkin:Checkin)-[:hasPlace]->(p:Place)',
     'RETURN checkin, p',
-<<<<<<< HEAD
-       // 'ORDER BY checkin.checkinTime DESC',
-=======
     'ORDER BY checkin.checkinTime DESC',
->>>>>>> (feat) Uncomment order by statement in queries
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
   ].join('\n');
