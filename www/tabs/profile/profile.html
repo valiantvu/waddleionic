@@ -14,5 +14,67 @@
     <img ng-src='{{userInfo.fbProfilePicture}}'>
     <h2>{{userInfo.name}}</h2>
     <h3>{{userInfo.footprintsCount}} footprints</h3>
+    <div ng-repeat="footprint in footprints" class="list card">
+
+      <div class="item item-avatar">
+
+        <!-- Profile Picture -->
+        <img ng-src='{{footprint.user.fbProfilePicture}}'>
+
+        <!-- User Name -->
+        <!-- <h2>{{footprint.user.name}}</h2> -->
+
+        <div class="row">
+          <!-- Location -->
+          <div class="col col-73">
+            <h2 class='feeditemname' ng-click="getFootprint(footprint)">
+              {{footprint.place.name}}
+            </h2>
+          </div>
+
+          <!-- Check-in Time -->
+          <div class="col">
+            <h6 class="checkindate">{{footprint.checkin.checkinTime | date : shortDate}}</h6>
+          </div>
+        </div>
+
+        
+        <!-- Photo & Caption -->
+        <div ng-if="footprint.checkin.photoLarge !== 'null'" ng-click="getFootprint(footprint)">
+          <img class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
+          <h4 ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</h4>
+        </div>
+
+        <!-- Default Photo (if no photo) -->
+        <div ng-if="footprint.checkin.photoLarge === 'null'" ng-if="footprint.checkin.caption === 'null'" class='captioncontainer'>
+          <img class="full-image defaultpeng" ng-click="getFootprint(footprint)" ng-src="https://s3-us-west-2.amazonaws.com/waddle/WaddlePenguinLogo.png"/>
+          <h4 ng-if="footprint.checkin.caption !== 'null' && footprint.checkin.photoLarge === 'null'">"{{footprint.checkin.caption}}"</h4>
+        </div>
+
+<!--             <p>
+          <a href="#" class="subdued">1 Like</a>
+          <a href="#" class="subdued">5 Comments</a>
+        </p> -->
+      </div>
+
+      <!-- Card Bottom Buttons -->
+<!--           <div class="item tabs tabs-secondary tabs-icon-left">
+        <a class="tab-item" href="#">
+          <i class="icon ion-thumbsup"></i>
+          Like
+        </a>
+        <a class="tab-item" href="#">
+          <i class="icon ion-chatbox"></i>
+          Comment
+        </a>
+        <a class="tab-item" href="#">
+          <i class="icon ion-share"></i>
+          Share
+        </a>
+      </div> -->
+
+    </div>
   </ion-content>
 </ion-view>
+
+

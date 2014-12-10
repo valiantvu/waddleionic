@@ -1,6 +1,6 @@
 (function(){
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope) {
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
     
     $scope.footprints = [];
     var page = 0;
@@ -59,9 +59,6 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $scope.loadProfilePage = function (userInfo) {
       console.log(userInfo);
       UserRequests.userProfileData = userInfo;
-      // var targetElement = userInfo;
-      // ionic.trigger("loadProfilePage", {target: targetElement}, true, true);
-      // $rootScope.$emit('loadProfilePage', userInfo);
       $state.go('tab.profile');
     }
 
@@ -163,7 +160,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     // };
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state'];
 
 angular.module('waddle.home', [])
   .controller('HomeController', HomeController);

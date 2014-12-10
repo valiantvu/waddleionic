@@ -9,7 +9,6 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
     var skipAmount = 5;
 
     $scope.getUserData = function () {
-      console.log('hi')
         UserRequests.getUserData(window.sessionStorage.userFbID, window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {
             if (data.data.footprints.length > 0) {
@@ -24,7 +23,6 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
     };
 
     $scope.clearSearch = function () {
-      console.log('clearSearch')
       $scope.search = {};
       $scope.footprints = [];
       page = 0;

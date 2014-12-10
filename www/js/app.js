@@ -99,6 +99,15 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
           controller: 'ProfileController'
         }
       }
+    })
+    .state('tab.profile-friend', {
+      url: '/profile-friend',
+      views: {
+        'profile_friend-tab': {
+          templateUrl: 'tabs/profile/profile.html',
+          controller: 'ProfileController'
+        }
+      }
     });
 
   // if none of the above states are matched, use this as the fallback
