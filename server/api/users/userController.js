@@ -388,8 +388,7 @@ userController.getUserInfo = function (req, res) {
     console.log(err);
     res.status(500).end();
   });
-
-}
+};
 
 // Takes a facebookID and returns a footprint object with
 // checkin and place keys, containing checkin and place data
