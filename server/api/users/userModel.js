@@ -589,7 +589,7 @@ User.getBucketList = function (facebookID, page, skipAmount){
   });
 
   return deferred.promise;
-}
+};
 
 // Find a single user in the database, requires facebookID as input
 // If user is not in database, promise will resolve to error 'user does not exist'

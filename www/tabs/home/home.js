@@ -60,7 +60,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       console.log(userInfo);
       UserRequests.userProfileData = userInfo;
       $state.go('tab.profile');
-    }
+    };
 
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);
@@ -118,7 +118,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
 HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state'];
 
-  // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
+// Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 
 var CustomSubmitDirective = function(FootprintRequests) {
   return {
