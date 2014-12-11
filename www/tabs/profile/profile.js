@@ -1,41 +1,97 @@
 (function(){
 
-var ProfileController = function ($scope, $state, UserRequests, $rootScope) {	
+var ProfileController = function ($scope, $state, UserRequests) {
 
-	$scope.getUserInfo = function (userFbID) {
-		UserRequests.getUserInfo(userFbID)
-		.then(function (userInfo) {
-			$scope.userInfo = userInfo.data;
+	var footprints, hypelist, friends;
+	var page = 0;
+	var skip = 5;
+
+	$scope.getUserProfileData = function () {
+		if(UserRequests.userProfileData) {
+			getFriendProfileData();
+		}
+		else {
+			getOwnProfileData();
+		}
+	}
+
+	$scope.showFriendsList = function () {
+		$scope.hypelist = null;
+		$scope.footprints = null;
+
+		if(friends) {
+			$scope.friends = friends;
+		}
+		else {
+			UserRequests.getFriendsList($scope.userInfo.facebookID, page, skip)
+			.then(function (data) {
+				console.log(data);
+				friends = data.data;
+				$scope.friends = friends;
+			})
+		}
+	}
+
+	$scope.showFootprints = function () {
+		$scope.hypelist = null;
+		$scope.friends = null;
+		$scope.footprints = footprints;
+	}
+
+	$scope.showHypeList = function () {
+		$scope.footprints = null;
+		$scope.friends = null;
+		if(hypelist) {
+			console.log(hypelist);
+			$scope.hypelist = hypelist;
+		}
+		else {
+			UserRequests.getBucketList($scope.userInfo.facebookID, page, skip)
+			.then(function (data) {
+				hypelist = data.data;
+				$scope.hypelist = hypelist;
+			})
+		}
+	}
+
+	$scope.loadFriendPage = function (userInfo) {
+		UserRequests.userProfileData = userInfo;
+		$scope.getUserProfileData();
+		hypelist = null;
+		friends = null;
+	}
+
+	var getFriendProfileData = function () {
+		$scope.userInfo = UserRequests.userProfileData;
+		UserRequests.userProfileData = null;
+		UserRequests.getUserData($scope.userInfo.facebookID, window.sessionStorage.userFbID, page, skip)
+		.then(function (data) {
+			console.log(data.data)
+			footprints = data.data.footprints;
+			$scope.footprints = footprints;
 		})
 	}
 
-	$scope.setUserInfo = function (userInfo) {
-		$scope.$apply(function () {
-			$scope.userInfo = userInfo;
-		});
-			console.log('infooo:', $scope.userInfo)
+	var getOwnProfileData = function () {
+		console.log(UserRequests.allData);
+		UserRequests.getUserData(window.sessionStorage.userFbID, window.sessionStorage.userFbID, page, skip)
+		.then(function (data) {
+			console.log(data.data);
+			$scope.userInfo = data.data.user;
+			footprints = data.data.footprints;
+			$scope.footprints = footprints;
+		})
 	}
 
 
-	// ionic.on("loadProfilePage", function (userInfo) {
-	$rootScope.$on("loadProfilePage", function (event, userInfo) {
-		// $scope.setUserInfo(userInfo.detail.target);
-		$rootScope.$apply(function () {
-			console.log("profile clicked");
-			// $scope.userInfo = userInfo.detail.target;
-			$scope.userInfo = userInfo
-		});
-		// console.log(userInfo.detail.target);
-		console.log('userInfo: ', $scope.userInfo)
-	})
 
-	// if($scope.userInfo === undefined) {
-	// 	$scope.getUserInfo(window.sessionStorage.userFbID);
-	// }
-	// $scope.$on('$destroy', profileDataListener);
+
+	$scope.getUserProfileData();
+
+
 };
 
-ProfileController.$inject = ['$scope', '$state', 'UserRequests', '$rootScope']
+ProfileController.$inject = ['$scope', '$state', 'UserRequests']
 
 angular.module('waddle.profile', [])
   .controller('ProfileController', ProfileController);

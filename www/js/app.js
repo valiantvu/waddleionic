@@ -100,6 +100,15 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         }
       }
     })
+    .state('tab.profile-friend', {
+      url: '/profile-friend',
+      views: {
+        'profile_friend-tab': {
+          templateUrl: 'tabs/profile/profile.html',
+          controller: 'ProfileController'
+        }
+      }
+    })
     .state('tab.comments', {
       url: '/comments',
       views: {

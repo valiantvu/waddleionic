@@ -304,8 +304,6 @@ userController.getAggregatedListOfCheckins = function (req, res){
   })
   .then(function (userFootprints) {
     aggregatedFootprints.push(userFootprints);
-
-    console.log(aggregatedFootprints);
     res.json(_.flatten(aggregatedFootprints));
     res.status(200).end();
   })
@@ -391,26 +389,86 @@ userController.getUserInfo = function (req, res) {
     res.status(500).end();
   });
 
-
-
 }
 
 // Takes a facebookID and returns a footprint object with
 // checkin and place keys, containing checkin and place data
 userController.getBucketList = function (req, res){
+  var page, skipAmount
   var facebookID = req.params.user;
-  var page = req.params.page;
 
-  User.getBucketList(facebookID, page)
+  if(req.params.page) {
+    page = parseInt(req.params.page);
+  }
+  else {
+    page = 0;
+  }
+
+  if(req.params.skip) {
+    skipAmount = parseInt(req.params.skip);
+  }
+  else {
+    skipAmount = 0;
+  }
+
+  User.getBucketList(facebookID, page, skipAmount)
   .then(function (footprints) {
     res.json(footprints);
     res.status(200).end();
   })
   .catch(function (err) {
-    console.log('req');
     console.log(err);
     res.status(500).end();
   });
 };
+
+userController.searchUserFootprints = function (req, res) {
+  var facebookID = req.params.user;
+  var query = req.params.query;
+  User.findFootprintsByPlaceName(facebookID, query)
+  .then(function (footprints) {
+    res.json(footprints);
+    res.status(200).end();
+  })
+  .catch(function(err) {
+    console.log(err);
+    res.status(500).end();
+  })
+}
+
+userController.getFriendsList = function (req, res) {
+  var user, page, skipAmount;
+  console.log(req.params);
+  var params = {};
+  params.facebookID = req.params.user;
+
+   if(req.params.page) {
+    page = parseInt(req.params.page);
+  }
+  else {
+    page = 0;
+  }
+
+  if(req.params.skip) {
+    skipAmount = parseInt(req.params.skip);
+  }
+  else {
+    skipAmount = 0;
+  }
+
+  User.find(params)
+  .then(function(userNode) {
+    user = userNode
+    return user.findAllFriends();
+  })
+  .then(function (friends) {
+    res.json(friends);
+    res.status(200).end();
+  })
+  .catch(function (err) {
+    console.log(err);
+    res.status(500).end();
+  });
+}
 
 module.exports = userController;

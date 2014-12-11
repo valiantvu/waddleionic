@@ -3,6 +3,7 @@
 var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
 
     $scope.footprints = [];
+    $scope.search = {};
     $scope.moreDataCanBeLoaded = true;
     var page = 0;
     var skipAmount = 5;
@@ -19,6 +20,14 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
             }
             $scope.$broadcast('scroll.infiniteScrollComplete');
         });
+    };
+
+    $scope.clearSearch = function () {
+      $scope.search = {};
+      $scope.footprints = [];
+      page = 0;
+      $scope.moreDataCanBeLoaded = true;
+      $scope.getUserData();
     };
 
     $scope.addCheckinToBucketList = function (footprint){
@@ -49,6 +58,16 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
       .then(function (data){
         // MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
       });
+    };
+
+    $scope.searchUserFootprints = function () {
+      if($scope.search.query) {
+        UserRequests.searchUserFootprints(window.sessionStorage.userFbID, $scope.search.query)
+        .then(function(footprints) {
+          $scope.footprints = footprints.data;
+          $scope.moreDataCanBeLoaded = false;
+        })
+      }
     };
 
     if($state.current.name === 'footprints-map') {

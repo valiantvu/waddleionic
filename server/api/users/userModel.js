@@ -231,6 +231,19 @@ User.prototype.findAllFriends = function () {
 // Basic query to find all user's checkins
 // Uses this.getProperty to grab instantiated user's facebookID as query parameter
 User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
+  var page, skipAmount;
+  if(arguments[1]) {
+    page = arguments[1];
+  }
+  else {
+    page = 0;
+  }
+   if(arguments[2]) {
+    skipAmount = arguments[2];
+  }
+  else {
+    skipAmount = 0;
+  }
   var deferred = Q.defer();
 
   var query = [
@@ -371,6 +384,76 @@ User.prototype.getAggregatedFootprintList = function (facebookID, page, skipAmou
   return deferred.promise;
 }
 
+User.findFootprintsByPlaceName = function (facebookID, placeName) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User{facebookID:{facebookID}})-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'WHERE place.name =~ {placeName} OR place.city =~ {placeName} OR place.country =~ {placeName}',
+    'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
+    'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
+    'RETURN user, checkin, place, collect(comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
+  ].join('\n');
+
+  //params.placeName includes regexp to search nodes containing placeName string. (?i) makes query case insensitive
+  var params = {
+    facebookID: facebookID,
+    placeName: '(?i).*' + placeName + '.*'
+  };
+
+  console.log('dis b ma params:', params);
+
+  db.query(query, params, function (err, results) {
+    if (err) {
+      deferred.reject(err);
+    }
+    else {
+      var parsedResults = _.map(results, function (item) {
+        
+        var singleResult = {
+          "place": item.place.data,
+          "checkin": item.checkin.data,
+          "user": item.user.data
+        }
+
+        if(item['comments'].length && item['commenters'].length) {
+          var commentsArray = [];
+          for(var i = 0; i < item['comments'].length; i++) {
+            var commentData = {
+              comment: item['comments'][i].data,
+              commenter: item['commenters'][i].data
+            }
+            commentsArray.push(commentData);
+          }
+
+          singleResult.comments = commentsArray;
+          console.log('singleResult: ', singleResult.comments);
+
+        }
+
+        if(item['hypers'].length) {
+          var hypesArray = [];
+          for(var i = 0; i < item['hypers'].length; i++) {
+            hypesArray.push(item['hypers'][i].data);
+          }
+          singleResult.hypes = hypesArray;
+        }
+
+        if (item.liker){
+          singleResult.checkin.liked = true;
+        }
+        if (item.bucketer){
+          singleResult.checkin.bucketed = true;
+        }
+        return singleResult
+      });
+      deferred.resolve(parsedResults);
+
+    }
+  })
+  return deferred.promise;
+}
+
 User.prototype.updateNotificationReadStatus = function () {
   var deferred = Q.defer();
 
@@ -465,7 +548,7 @@ User.prototype.getReadNotifications = function (limit) {
 // Find all bucketList items for a user
 // Takes a facebookID and returns a footprint object with
 // checkin and place keys, containing checkin and place data
-User.getBucketList = function (facebookID, page){
+User.getBucketList = function (facebookID, page, skipAmount){
   var deferred = Q.defer();
 
   var query = [
