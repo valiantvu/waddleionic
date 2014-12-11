@@ -1,6 +1,6 @@
 (function(){
 
-var ProfileController = function ($scope, $state, UserRequests) {
+var ProfileController = function ($scope, $state, UserRequests, Auth) {
 
 	var footprints, hypelist, friends;
 	var page = 0;
@@ -58,8 +58,12 @@ var ProfileController = function ($scope, $state, UserRequests) {
 		UserRequests.userProfileData = userInfo;
 		$scope.getUserProfileData();
 		hypelist = null;
+		$scope.hypelist = null;
+		$scope.friends = null;
 		friends = null;
 	}
+
+	$scope.logout = Auth.logout;
 
 	var getFriendProfileData = function () {
 		$scope.userInfo = UserRequests.userProfileData;
@@ -91,7 +95,7 @@ var ProfileController = function ($scope, $state, UserRequests) {
 
 };
 
-ProfileController.$inject = ['$scope', '$state', 'UserRequests']
+ProfileController.$inject = ['$scope', '$state', 'UserRequests', 'Auth']
 
 angular.module('waddle.profile', [])
   .controller('ProfileController', ProfileController);
