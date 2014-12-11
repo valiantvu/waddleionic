@@ -3,7 +3,7 @@
   <div class="buttons">
     <button class="button button-icon icon ion-arrow-left-b" ng-click="doSomething()"></button>
   </div>
-  <h1 class="title">Footprints</h1>
+  <h1 class="title" ng-click="clearSearch()">Footprints</h1>
   <div class="buttons">
     <button class="button button-icon icon ion-map" ui-sref="footprints-map"></button>
   </div>
@@ -17,8 +17,10 @@
     <div class="list list-inset">
       <label class="item item-input">
         <i class="icon ion-ios7-search-strong placeholder-icon"></i>
-        <input type="text" placeholder="Search your footprints" ng-model="search">
+        <input type="text" placeholder="Search your footprints" ng-model="search.query">
       </label>
+        <button type="submit" ng-click="searchUserFootprints()">Submit</button>
+        <button class="ion-close-round" ng-if="search.query" ng-click="clearSearch()"></button>
     </div>
 
     <!-- <div class="list card"> -->
@@ -32,7 +34,7 @@
       <!--<div class='waddlefeeditem' ng-repeat="footprint in inBoundsObject.datapoints | orderBy:'-checkin.checkinTime' | limitTo:20 ">-->
       <!-- <div class='waddlefeeditem'> -->
 
-    <div ng-repeat="footprint in footprints | filter:search" class="list card">
+    <div ng-repeat="footprint in footprints" class="list card">
 
       <div class="item item-avatar">
 
@@ -127,6 +129,7 @@
     ng-if="moreDataCanBeLoaded"
     distance="10%">
   </ion-infinite-scroll>
+  <h5 ng-if="!moreDataCanBeLoaded">No more results to show</h5>
 
   </ion-content>
 </ion-view>

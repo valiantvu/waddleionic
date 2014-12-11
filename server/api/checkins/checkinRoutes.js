@@ -1,7 +1,8 @@
 var checkinController = require('./checkinController.js');
 
 module.exports = function (app) {
-  app.get('/venuesearch/:facebookID/:lat/:lng', checkinController.searchFoursquareVenues);
+  app.get('/venuesearchweb/:facebookID/:query/:near', checkinController.searchFoursquareVenuesWeb);
+  app.get('/venuesearchmobile/:facebookID/:lat/:lng', checkinController.searchFoursquareVenuesMobile);
   app.post('/nativecheckin', checkinController.handleNativeCheckin);
   app.get('/sign_s3', checkinController.sign_s3);
   app.post('/realtimefsqdata', checkinController.realtimeFoursquareData);

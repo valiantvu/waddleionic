@@ -91,7 +91,7 @@ utils.getFoursquareCheckinHistory = function (userAccessToken, offset) {
   var deferred = Q.defer();
 
   var query = {
-    v: '20140806',
+    v: '20141122',
     limit: '250',
     offset: offset.toString(),
     oauth_token: userAccessToken
@@ -125,6 +125,7 @@ utils.parseFoursquareCheckins = function(foursquareCheckinArray) {
 };
 
 utils.parseNativeCheckin = function (venue) {
+  var deferred = Q.defer();
 
   var formattedCheckin = {
     'checkinID': uuid.v4(),
@@ -137,14 +138,24 @@ utils.parseNativeCheckin = function (venue) {
     'photoLarge': 'null',
     'caption': 'null',
     'foursquareID': venue.id,
+    'address': 'null',
+    'city': 'null',
     'country': venue.location.country,
+    'postalCode': 'null',
     'category': 'null',
     'source': 'waddle'
   };
- 
 
   if (venue.categories[0]) {
     formattedCheckin.category = venue.categories[0].name;
+  }
+
+  if (venue.location.address) {
+    formattedCheckin.address = venue.location.address;
+  }
+
+  if (venue.location.postalCode) {
+    formattedCheckin.postalCode = venue.location.postalCode;
   }
 
    if (venue.footprintCaption) {
@@ -157,10 +168,24 @@ utils.parseNativeCheckin = function (venue) {
     formattedCheckin.photoLarge = venue.photo;
   }
 
-  return formattedCheckin;
+  if (venue.location.city) {
+    formattedCheckin.city = venue.location.city;
+    deferred.resolve(formattedCheckin);
+  }
+  else {
+    helpers.findCityByReverseGeocoding(formattedCheckin.lat, formattedCheckin.lng)
+    .then(function (geocodeData) {
+      console.log(geocodeData);
+      formattedCheckin.city = geocodeData.features[0].place_name;
+      deferred.resolve(formattedCheckin);
+    })
+  }
+  return deferred.promise;
 }
 
 utils.parseCheckin = function (checkin) {
+  // var deferred = Q.defer();
+
   var formattedCheckin = {
     'checkinID': checkin.id,
     'name': checkin.venue.name,
@@ -172,13 +197,24 @@ utils.parseCheckin = function (checkin) {
     'photoLarge': 'null',
     'caption': 'null',
     'foursquareID': checkin.venue.id,
+    'address': 'null',
+    'city': 'null',
     'country': checkin.venue.location.country,
+    'postalCode': 'null',
     'category': 'null',
     'source': 'foursquare'
   };
 
   if (checkin.venue.categories[0]) {
     formattedCheckin.category = checkin.venue.categories[0].name;
+  }
+
+  if (checkin.venue.location.address) {
+    formattedCheckin.address = checkin.venue.location.address;
+  }
+
+  if (checkin.venue.location.postalCode) {
+    formattedCheckin.postalCode = checkin.venue.location.postalCode;
   }
 
   if (checkin.photos && checkin.photos.count > 0) {
@@ -189,10 +225,58 @@ utils.parseCheckin = function (checkin) {
     formattedCheckin.caption = checkin.shout;
   }
 
+  if(checkin.venue.location.city) {
+    formattedCheckin.city = checkin.venue.location.city;
+    // deferred.resolve(formattedCheckin);
+  }
+  // else {
+  //   helpers.findCityByReverseGeocoding(formattedCheckin.lat, formattedCheckin.lng)
+  //   .then(function (geocodeData) {
+  //     console.log(geocodeData);
+  //     formattedCheckin.city = geocodeData.features[0].place_name;
+  //     // deferred.resolve(formattedCheckin);
+  //   })
+  // }
+
+  // return deferred.promise;
   return formattedCheckin;
 };
 
-utils.searchFoursquareVenues = function (user, latlng) {
+utils.searchFoursquareVenuesWeb = function (user, near, query) {
+  var deferred = Q.defer();
+
+  var query = {
+    v: '20141111',
+    near: near,
+    query: query,
+    intent: 'checkin'
+  };
+
+  var oauthToken = user.getProperty('fsqToken');
+
+  if (oauthToken) {
+    query.oauth_token = oauthToken;
+  } else {
+    query.client_id = process.env.WADDLE_FOURSQUARE_CLIENT_ID;
+    query.client_secret = process.env.WADDLE_FOURSQUARE_CLIENT_SECRET;
+  }
+
+  var queryPath = 'https://api.foursquare.com/v2/venues/search?' + qs.stringify(query);
+  console.log(queryPath);
+
+  helpers.httpsGet(queryPath)
+  .then(function (data) {
+    var venues = JSON.parse(data).response.venues;
+    deferred.resolve(venues);
+  })
+  .catch(function (e) {
+    deferred.reject(e);
+  });
+
+  return deferred.promise;
+}
+
+utils.searchFoursquareVenuesMobile = function (user, latlng) {
   var deferred = Q.defer();
 
   var query = {

@@ -6,6 +6,7 @@ var UserRequests = function ($http){
 
   return {
     allData: userData,
+    userProfileData: null,
 
     // Sends request to server with relevant user data 
     // for creation of new user or retrieval of existing user' checkins/data
@@ -20,7 +21,6 @@ var UserRequests = function ($http){
     },
 
     getUserInfo: function (userFbID) {
-      console.log(userFbID);
       if (userFbID) {
         return $http({
           method: 'GET',
@@ -34,11 +34,17 @@ var UserRequests = function ($http){
     // Pass in the viewerID so that there is a context to the data returned
     // this allows the viewer to see whether they have liked another user's checkin
 
-    getUserData: function (userFbID, viewerID, page) {
+    getUserData: function (userFbID, viewerID) {
       var url = '/api/users/' + userFbID + "/" + viewerID;
       
-      if (page) {
+      if (arguments[2] !== undefined) {
+          var page = arguments[2]
           url +=  "/" + page;
+      }
+
+      if (arguments[3] !== undefined) {
+          var skip = arguments[3]
+          url +=  "/" + skip;
       }
 
       if (userFbID) {
@@ -49,12 +55,20 @@ var UserRequests = function ($http){
       }
     },
 
-    getAggregatedFeedData:function (userFbID, page) {
+    getAggregatedFeedData:function (userFbID) {
       var url = '/api/users/aggregatefeed/' + userFbID;
       
-      if (page) {
+      if (arguments[1] !== undefined) {
+          var page = arguments[1]
           url +=  "/" + page;
+          console.log(url);
       }
+
+      if (arguments[2] !== undefined) {
+          var skip = arguments[2]
+          url +=  "/" + skip;
+      }
+      console.log(url);
 
       if (userFbID) {
         return $http({
@@ -65,13 +79,58 @@ var UserRequests = function ($http){
     },
 
     getBucketList: function (userFbID) {
+      var url = '/api/users/bucketlist/' + userFbID      
+
+      if (arguments[1] !== undefined) {
+          var page = arguments[1]
+          url +=  "/" + page;
+          console.log(url);
+      }
+
+      if (arguments[2] !== undefined) {
+          var skip = arguments[2]
+          url +=  "/" + skip;
+      }
+
       if (userFbID) {
         return $http({
           method: 'GET',
-          url: '/api/users/bucketlist/' + userFbID
+          url: url
+        });
+      }
+    },
+
+    searchUserFootprints: function (userFbID, query) {
+      if (userFbID && query) {
+        return $http({
+          method: 'GET',
+          url: '/api/users/searchfootprints/' + userFbID + '/' + query
+        });
+      }
+    },
+
+    getFriendsList: function (userFbID) {
+      var url = '/api/users/friendslist/' + userFbID      
+
+      if (arguments[1] !== undefined) {
+          var page = arguments[1]
+          url +=  "/" + page;
+          console.log(url);
+      }
+
+      if (arguments[2] !== undefined) {
+          var skip = arguments[2]
+          url +=  "/" + skip;
+      }
+
+      if (userFbID) {
+        return $http({
+          method: 'GET',
+          url: url
         });
       }
     }
+
   }; 
 };
 

@@ -1,7 +1,7 @@
 var Q = require('q');
 var _ = require('lodash');
 var aws = require('aws-sdk');
-var uuid = require('node-uuid')
+var uuid = require('node-uuid');
 
 var Checkin = require('./checkinModel.js');
 var User = require('../users/userModel.js');
@@ -36,7 +36,27 @@ checkinController.handleNativeCheckin = function (req, res) {
   res.status(200).end();
 };
 
-checkinController.searchFoursquareVenues = function (req, res) {
+checkinController.searchFoursquareVenuesWeb = function (req, res) {
+  var user, foursquareToken;
+  var facebookID = req.params.facebookID;
+  var near = req.params.near;
+  var query = req.params.query;
+
+  User.find({facebookID: facebookID})
+  .then(function (userNode) {
+    user = userNode;
+    return foursquareUtils.searchFoursquareVenuesWeb(user, near, query);
+  })
+  .then(function (venues) {
+    res.json(venues);
+  })
+  .catch(function (err){
+    console.log(err);
+    res.status(500).end();
+  });
+}
+
+checkinController.searchFoursquareVenuesMobile = function (req, res) {
   var user, foursquareToken;
   var facebookID = req.params.facebookID;
   var latlng = req.params.lat + ',' + req.params.lng;
@@ -44,7 +64,7 @@ checkinController.searchFoursquareVenues = function (req, res) {
   User.find({facebookID: facebookID})
   .then(function (userNode) {
     user = userNode;
-    return foursquareUtils.searchFoursquareVenues(user, latlng);
+    return foursquareUtils.searchFoursquareVenuesMobile(user, latlng);
   })
   .then(function (venues) {
     res.json(venues);
@@ -174,7 +194,6 @@ checkinController.addToBucketList = function (req, res){
 };
 
 checkinController.removeFromBucketList = function (req, res){
-  console.log('in the controller!');
   var checkinID = req.body.checkinID;
   var facebookID = req.body.facebookID;
 
@@ -209,10 +228,8 @@ checkinController.addComment = function (req, res){
       res.status(500).end();
     });
 };
-// remove comment
 
 checkinController.removeComment = function (req, res){
-  console.log('in the controller!');
   var checkinID = req.body.checkinID;
   var facebookID = req.body.facebookID;
   var commentID = req.body.commentID ;
@@ -227,6 +244,7 @@ checkinController.removeComment = function (req, res){
       res.status(500).end();
     });
 }
+
 checkinController.giveProps = function (req, res){
   var clickerID = req.body.clickerID;
   var checkinID = req.body.checkinID;
@@ -307,5 +325,30 @@ checkinController.sign_s3 = function (req, res) {
         }
     });
 }
+
+  //executed once to convert waddle checkins;kept here for future reference
+// checkin.convertTime = function (req, res) {
+
+  // Checkin.convertNativeWaddleCheckinTime()
+  // .then(function (data) {
+  //   var convertedTime = [];
+  //    _.each(data, function (datum) {
+  //     if(datum['checkin.checkinID'] != '0771b0c0-9822-46a0-8553-6e174c37ff33') {
+  //       var newObj = {'checkinID': datum['checkin.checkinID'], 'checkinTime': null};
+  //       var newDate = new Date(datum['checkin.checkinTime']);
+  //       newObj.checkinTime = newDate;
+  //       convertedTime.push(newObj);
+  //     }
+  //   })
+  //   console.log(convertedTime)
+  //   return Checkin.updateCheckinTime(convertedTime);
+  // })
+  // .then(function (data) {
+  //   console.log(data)
+  // })
+  // .catch(function (err) {
+  //   console.log(err);
+  // })
+// }
 
 module.exports = checkinController;

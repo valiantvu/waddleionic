@@ -38,7 +38,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
     .state('footprints-map', {
       url: '/footprints-map',
       templateUrl: 'modules/map/map.html',
-      controller: 'FootprintsController'
+      controller: 'HomeController'
     })
     .state('tab', {
       url: "/tab",
@@ -97,6 +97,33 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         'profile-tab': {
           templateUrl: 'tabs/profile/profile.html',
           controller: 'ProfileController'
+        }
+      }
+    })
+    .state('tab.profile-friend', {
+      url: '/profile-friend',
+      views: {
+        'profile_friend-tab': {
+          templateUrl: 'tabs/profile/profile.html',
+          controller: 'ProfileController'
+        }
+      }
+    })
+    .state('tab.comments', {
+      url: '/comments',
+      views: {
+        'home-tab': {
+          templateUrl: 'tabs/comments/comments.html',
+          controller: 'CommentsController'
+        }
+      }
+    })
+    .state('tab.hypers', {
+      url: '/hypers',
+      views: {
+        'home-tab': {
+          templateUrl: 'tabs/hypers/hypers.html',
+          controller: 'HypersController'
         }
       }
     });

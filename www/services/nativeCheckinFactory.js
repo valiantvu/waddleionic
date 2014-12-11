@@ -8,7 +8,7 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation){
       if (currentLocation) {
         return $http({
           method: 'GET',
-          url: '/api/checkins/venuesearch/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng
+          url: '/api/checkins/venuesearchmobile/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng
         });
       }
     },
