@@ -79,10 +79,23 @@ var UserRequests = function ($http){
     },
 
     getBucketList: function (userFbID) {
+      var url = '/api/users/bucketlist/' + userFbID      
+
+      if (arguments[1] !== undefined) {
+          var page = arguments[1]
+          url +=  "/" + page;
+          console.log(url);
+      }
+
+      if (arguments[2] !== undefined) {
+          var skip = arguments[2]
+          url +=  "/" + skip;
+      }
+
       if (userFbID) {
         return $http({
           method: 'GET',
-          url: '/api/users/bucketlist/' + userFbID
+          url: url
         });
       }
     },
@@ -94,7 +107,30 @@ var UserRequests = function ($http){
           url: '/api/users/searchfootprints/' + userFbID + '/' + query
         });
       }
+    },
+
+    getFriendsList: function (userFbID) {
+      var url = '/api/users/friendslist/' + userFbID      
+
+      if (arguments[1] !== undefined) {
+          var page = arguments[1]
+          url +=  "/" + page;
+          console.log(url);
+      }
+
+      if (arguments[2] !== undefined) {
+          var skip = arguments[2]
+          url +=  "/" + skip;
+      }
+
+      if (userFbID) {
+        return $http({
+          method: 'GET',
+          url: url
+        });
+      }
     }
+
   }; 
 };
 

@@ -2,11 +2,11 @@
 
 var ProfileController = function ($scope, $state, UserRequests) {
 
+	var footprints, hypelist, friends;
 	var page = 0;
 	var skip = 5;
 
 	$scope.getUserProfileData = function () {
-		console.log(UserRequests.userProfileData);
 		if(UserRequests.userProfileData) {
 			getFriendProfileData();
 		}
@@ -15,23 +15,75 @@ var ProfileController = function ($scope, $state, UserRequests) {
 		}
 	}
 
+	$scope.showFriendsList = function () {
+		$scope.hypelist = null;
+		$scope.footprints = null;
+
+		if(friends) {
+			$scope.friends = friends;
+		}
+		else {
+			UserRequests.getFriendsList($scope.userInfo.facebookID, page, skip)
+			.then(function (data) {
+				console.log(data);
+				friends = data.data;
+				$scope.friends = friends;
+			})
+		}
+	}
+
+	$scope.showFootprints = function () {
+		$scope.hypelist = null;
+		$scope.friends = null;
+		$scope.footprints = footprints;
+	}
+
+	$scope.showHypeList = function () {
+		$scope.footprints = null;
+		$scope.friends = null;
+		if(hypelist) {
+			console.log(hypelist);
+			$scope.hypelist = hypelist;
+		}
+		else {
+			UserRequests.getBucketList($scope.userInfo.facebookID, page, skip)
+			.then(function (data) {
+				hypelist = data.data;
+				$scope.hypelist = hypelist;
+			})
+		}
+	}
+
+	$scope.loadFriendPage = function (userInfo) {
+		UserRequests.userProfileData = userInfo;
+		$scope.getUserProfileData();
+		hypelist = null;
+		friends = null;
+	}
+
 	var getFriendProfileData = function () {
 		$scope.userInfo = UserRequests.userProfileData;
 		UserRequests.userProfileData = null;
-			UserRequests.getUserData($scope.userInfo.facebookID, window.sessionStorage.userFbID, page, skip)
-			.then(function (data) {
-				$scope.footprints = data.data.footprints;
-			})
+		UserRequests.getUserData($scope.userInfo.facebookID, window.sessionStorage.userFbID, page, skip)
+		.then(function (data) {
+			console.log(data.data)
+			footprints = data.data.footprints;
+			$scope.footprints = footprints;
+		})
 	}
 
 	var getOwnProfileData = function () {
+		console.log(UserRequests.allData);
 		UserRequests.getUserData(window.sessionStorage.userFbID, window.sessionStorage.userFbID, page, skip)
 		.then(function (data) {
 			console.log(data.data);
 			$scope.userInfo = data.data.user;
-			$scope.footprints = data.data.footprints;
+			footprints = data.data.footprints;
+			$scope.footprints = footprints;
 		})
 	}
+
+
 
 
 	$scope.getUserProfileData();

@@ -231,6 +231,19 @@ User.prototype.findAllFriends = function () {
 // Basic query to find all user's checkins
 // Uses this.getProperty to grab instantiated user's facebookID as query parameter
 User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
+  var page, skipAmount;
+  if(arguments[1]) {
+    page = arguments[1];
+  }
+  else {
+    page = 0;
+  }
+   if(arguments[2]) {
+    skipAmount = arguments[2];
+  }
+  else {
+    skipAmount = 0;
+  }
   var deferred = Q.defer();
 
   var query = [
@@ -535,13 +548,13 @@ User.prototype.getReadNotifications = function (limit) {
 // Find all bucketList items for a user
 // Takes a facebookID and returns a footprint object with
 // checkin and place keys, containing checkin and place data
-User.getBucketList = function (facebookID, page){
+User.getBucketList = function (facebookID, page, skipAmount){
   var deferred = Q.defer();
 
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})-[:hasBucket]->(checkin:Checkin)-[:hasPlace]->(p:Place)',
     'RETURN checkin, p',
-       // 'ORDER BY checkin.checkinTime DESC',
+    'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
   ].join('\n');
