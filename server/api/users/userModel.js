@@ -320,7 +320,7 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
 //   ]
 // 
 
-User.prototype.getAggregatedFootprintList = function (facebookID, page, skipAmount) {
+User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) {
   var deferred = Q.defer();
 
   var query = [
@@ -365,7 +365,11 @@ User.prototype.getAggregatedFootprintList = function (facebookID, page, skipAmou
         if(item['hypers'].length) {
           var hypesArray = [];
           for(var i = 0; i < item['hypers'].length; i++) {
+
             hypesArray.push(item['hypers'][i].data);
+            if(item['hypers'][i].data.facebookID = viewer) {
+              singleResult["bucketed"] = true;
+            }
           }
           singleResult.hypes = hypesArray;
         }

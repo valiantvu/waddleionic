@@ -298,10 +298,10 @@ userController.getAggregatedListOfCheckins = function (req, res){
     user = userNode;
     return user.getAggregatedFootprintList(params.facebookID, params.page, params.skipAmount);
   })
-  .then(function (aggregatedFootprintsFromFriends) {
-    aggregatedFootprints.push(aggregatedFootprintsFromFriends);
-    return user.findAllCheckins(params.facebookID, params.page, params.skipAmount);
-  })
+  // .then(function (aggregatedFootprintsFromFriends) {
+  //   aggregatedFootprints.push(aggregatedFootprintsFromFriends);
+  //   return user.findAllCheckins(params.facebookID, params.page, params.skipAmount);
+  // })
   .then(function (userFootprints) {
     aggregatedFootprints.push(userFootprints);
     res.json(_.flatten(aggregatedFootprints));
