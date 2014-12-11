@@ -1,14 +1,17 @@
 (function(){
 
 var FootprintRequests = function ($http){
-  // var footprintData;
-  // var openFootprint;
+  var footprintData;
+  var openFootprint;
+  var footprints;
 
   return {
     // Contains comments and props
     // currentFootprint: footprintData,
     // Contains all open footprint data
-    // openFootprint: openFootprint,
+    openFootprint: openFootprint,
+
+    footprints: footprints,
 
     addToBucketList: function (data) {
       if (data) {
@@ -30,25 +33,25 @@ var FootprintRequests = function ($http){
       }
     },
 
-    // addComment: function (data) {
-    //   if (data && data.text) {
-    //     return $http({
-    //       method: 'POST',
-    //       data: data,
-    //       url: '/api/checkins/comment'
-    //     });
-    //   }
-    // },
+    addComment: function (data) {
+      if (data && data.text) {
+        return $http({
+          method: 'POST',
+          data: data,
+          url: '/api/checkins/comment'
+        });
+      }
+    },
 
-    // removeComment : function(data) {
-    //   if (data) {
-    //     return $http({
-    //       method : 'POST',
-    //       data : data ,
-    //       url : 'api/checkins/removecomment'
-    //     });
-    //   }
-    // },
+    removeComment : function(data) {
+      if (data) {
+        return $http({
+          method : 'POST',
+          data : data ,
+          url : 'api/checkins/removecomment'
+        });
+      }
+    },
 
     getFootprintInteractions: function (checkinID) {
       if (checkinID) {

@@ -5,6 +5,8 @@ angular.module('waddle.controllers', [
     'waddle.checkin',
     'waddle.hypelist',
     'waddle.profile',
-    'waddle.frontpage'
+    'waddle.frontpage',
+    'waddle.comments',
+    'waddle.hypers'
     ]);
 })();
