@@ -4,10 +4,11 @@ var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequ
     
     $scope.footprints = [];
     var page = 0;
+    var skipAmount = 5;
     $scope.moreDataCanBeLoaded = true;
 
     $scope.getBucketList = function () {
-        UserRequests.getBucketList(window.sessionStorage.userFbID, page)
+        UserRequests.getBucketList(window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {
             if (data.data.length > 0) {
               $scope.footprints = $scope.footprints.concat(data.data);

@@ -7,11 +7,17 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     var skipAmount = 5;
     $scope.moreDataCanBeLoaded = true;
 
+    $scope.openFootprint = function(footprint) {
+      FootprintRequests.openFootprint = footprint;
+    };
+
     $scope.getAggregatedFeedData = function () {
         UserRequests.getAggregatedFeedData(window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {
           if (data.data.length > 0) {
+              console.log(data);
               $scope.footprints = $scope.footprints.concat(data.data);
+              FootprintRequests.footprints = $scope.footprints;
               page++;
               console.log('page: ', page);
             } else {
@@ -22,15 +28,6 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     };
 
     $scope.getAggregatedFeedData();
-
-    $scope.getFootprintInteractions = function() {
-        FootprintRequests.getFootprintInteractions("53188abe498eddb85a3f3f9c")
-            .then(function (data) {
-                // console.dir(data);
-            });
-    };
-
-    $scope.getFootprintInteractions();
 
     $scope.addCheckinToBucketList = function (footprint){
       
@@ -75,9 +72,9 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       })
         .setView([20.00, 0.00], 2);
 
-      for(var i = 0; i < $scope.footprints.length; i++) {
-          var place = $scope.footprints[i].place;
-          var checkin = $scope.footprints[i].checkin;
+      for(var i = 0; i < FootprintRequests.footprints.length; i++) {
+          var place = FootprintRequests.footprints[i].place;
+          var checkin = FootprintRequests.footprints[i].checkin;
 
           var placeName = place.name;
           var latLng = [place.lat, place.lng];
@@ -114,55 +111,82 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       }
     }
 
-    // $scope.selectedFootprintInteractions = null;
-
-    // $scope.getFootprint = function (footprint) {
-    //     $scope.footprint = footprint;
-
-    //     var checkinID = footprint.checkin.checkinID;
-    //     FootprintRequests.openFootprint = footprint;
-
-    //     FootprintRequests.getFootprintInteractions(checkinID)
-    //     .then(function (data) {
-    //         FootprintRequests.currentFootprint = data.data;
-    //         $scope.selectedFootprintInteractions = FootprintRequests.currentFootprint;
-    //     });
-    // };
-
-    // $scope.closeFootprintWindow = function (){
-    //   FootprintRequests.openFootprint = undefined;
-    //   $state.go('map.feed')
-    // };
-
-    // Ensure that a user comment is posted in the database before displaying
-    // $scope.updateFootprint = function (footprint){
-    //   var checkinID = footprint.checkin.checkinID;
-    //   FootprintRequests.getFootprintInteractions(checkinID)
-    //   .then(function (data) {
-    //     $scope.selectedFootprintInteractions.comments = data.data.comments;
-    //   });  
-    // };
-
-    // $scope.removeComment = function (footprint, comment){
-    //   console.log(footprint);
-    //   console.log(comment);
-    //   var commentData = {
-    //     facebookID: comment.commenter.facebookID,
-    //     checkinID: footprint.checkin.checkinID,
-    //     commentID : comment.comment.commentID 
-    //   };
-    //   console.log(commentData);
-    //   FootprintRequests.removeComment(commentData)
-    //   .then(function (data){
-    //     console.log("success");
-    //     //MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
-    //   });
-    // };
 };
 
 HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state'];
 
-angular.module('waddle.home', [])
-  .controller('HomeController', HomeController);
+  // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 
+var CustomSubmitDirective = function(FootprintRequests) {
+  return {
+    restrict: 'A',
+    link: function( scope , element , attributes ){
+      console.log('psoting a comment');
+      var $element = angular.element(element);
+      
+      // Add novalidate to the form element.
+      attributes.$set( 'novalidate' , 'novalidate' );
+      
+      $element.bind( 'submit' , function( e ) {
+        e.preventDefault();
+        
+        // Remove the class pristine from all form elements.
+        $element.find( '.ng-pristine' ).removeClass( 'ng-pristine' );
+        
+        // Get the form object.
+        var form = scope[ attributes.name ];
+        
+        // Set all the fields to dirty and apply the changes on the scope so that
+        // validation errors are shown on submit only.
+        angular.forEach( form , function( formElement , fieldName ) {
+          // If the fieldname starts with a '$' sign, it means it's an Angular
+          // property or function. Skip those items.
+          if ( fieldName[0] === '$' ) return;
+          
+          formElement.$pristine = false;
+          formElement.$dirty = true;
+        });
+        
+        // Do not continue if the form is invalid.
+        if ( form.$invalid ) {
+          // Focus on the first field that is invalid.
+          $element.find( '.ng-invalid' ).first().focus();
+          
+          return false;
+        }
+        
+        // From this point and below, we can assume that the form is valid.
+        scope.$eval( attributes.customSubmit );
+
+        //Text can be found with $element[0][0].value or scope.data.currentComment
+        //ID can be found with $element.context.dataset['customSubmit']
+        var commentData = {
+          clickerID: window.sessionStorage.userFbID,
+          checkinID: scope.footprint.checkin.checkinID,
+          // commentID: scope.footprint.comments[0],
+          text: scope.comment
+        };
+
+        FootprintRequests.addComment(commentData)
+        .then(function (data) {
+          // Socket.emit('comment posted', commentData);
+          if (FootprintRequests.openFootprint){
+            scope.updateFootprint(FootprintRequests.openFootprint);
+          }
+          // scope.data.currentComment = '';
+          //$element[0][0].value = ''
+        });
+        console.log(commentData);
+        scope.comment = "";
+        scope.$apply();
+      });
+    }
+  };
+};
+
+CustomSubmitDirective.$inject = ['FootprintRequests'];
+
+angular.module('waddle.home', [])
+  .controller('HomeController', HomeController)
+  .directive( 'customSubmit' , CustomSubmitDirective);
 })();

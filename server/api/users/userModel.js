@@ -330,8 +330,8 @@ User.prototype.getAggregatedFootprintList = function (facebookID, page, skipAmou
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
     'RETURN user, friend, checkin, place, collect(comment), collect(commenter), collect(hyper) AS hypers',
     'ORDER BY checkin.checkinTime DESC',
-    'SKIP {skipNum}',
-    'LIMIT {skipAmount}'
+    'SKIP { skipNum }',
+    'LIMIT {skipAmount }'
   ].join('\n');
 
   var params = {
