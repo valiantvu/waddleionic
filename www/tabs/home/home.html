@@ -56,8 +56,8 @@
       </div>
 
       <div class="item item-divider tabs tabs-secondary tabs-icon-left">
-        <a class="tab-item" ng-click="addCheckinToBucketList({{ footprint }})">
-          <i class="icon ion-arrow-up-a"></i>
+        <a class="tab-item" ng-click="addCheckinToBucketList(footprint)">
+          <i ng-if="!footprint.bucketed" class="icon ion-arrow-up-a"></i>
           Hype
         </a>
         <a class="tab-item" ui-sref="tab.comments" ng-click="openFootprint(footprint)">

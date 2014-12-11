@@ -58,7 +58,10 @@ var ProfileController = function ($scope, $state, UserRequests) {
 		UserRequests.userProfileData = userInfo;
 		$scope.getUserProfileData();
 		hypelist = null;
+		$scope.hypelist = null;
+		$scope.friends = null;
 		friends = null;
+
 	}
 
 	var getFriendProfileData = function () {

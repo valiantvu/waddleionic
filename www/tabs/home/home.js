@@ -30,6 +30,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $scope.getAggregatedFeedData();
 
     $scope.addCheckinToBucketList = function (footprint){
+      footprint.bucketed = true;
       
       var bucketListData = {
         facebookID: window.sessionStorage.userFbID,
@@ -38,6 +39,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
       FootprintRequests.addToBucketList(bucketListData)
       .then(function (data){
+        console.log(data);
         footprint.bucketed = true;
       });
     };
