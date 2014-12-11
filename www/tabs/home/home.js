@@ -46,6 +46,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     $scope.removeCheckinFromBucketList = function (footprint){
       console.log('removed?');
+      footprint.bucketed = false;
 
       var bucketListData = {
         facebookID: window.sessionStorage.userFbID,
