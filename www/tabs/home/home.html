@@ -48,7 +48,7 @@
       </div>
 
       <!-- Comments -->
-      <div ng-repeat="comment in footprint.comments | orderBy:'comment.time' | limitTo:3" class="item item-avatar item-text-wrap" ui-sref="tab.comments" ng-click="openFootprint(footprint)">  
+      <div ng-repeat="comment in footprint.comments | orderBy:'comment.time' | limitTo:-3" class="item item-avatar item-text-wrap" ui-sref="tab.comments" ng-click="openFootprint(footprint)">  
         <img ng-src='{{comment.commenter.fbProfilePicture}}'>
         <h2>{{comment.commenter.name}}</h2>
         <p>{{comment.comment.text}}</p>

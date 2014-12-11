@@ -7,6 +7,8 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     var skipAmount = 5;
     $scope.moreDataCanBeLoaded = true;
 
+    FootprintRequests.currentTab = 'home';
+
     $scope.openFootprint = function(footprint) {
       FootprintRequests.openFootprint = footprint;
     };

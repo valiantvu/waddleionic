@@ -7,6 +7,8 @@ var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequ
     var skipAmount = 5;
     $scope.moreDataCanBeLoaded = true;
 
+    FootprintRequests.currentTab = 'hypelist';
+
      $scope.openFootprint = function(footprint) {
       FootprintRequests.openFootprint = footprint;
     };

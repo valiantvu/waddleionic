@@ -8,6 +8,8 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
     var page = 0;
     var skipAmount = 5;
 
+    FootprintRequests.currentTab = 'footprints';
+
     $scope.openFootprint = function(footprint) {
       FootprintRequests.openFootprint = footprint;
     };
@@ -16,6 +18,7 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
         UserRequests.getUserData(window.sessionStorage.userFbID, window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {
             if (data.data.footprints.length > 0) {
+              console.dir(data.data.footprints);
               $scope.footprints = $scope.footprints.concat(data.data.footprints);
               FootprintRequests.footprints = $scope.footprints;
               page++;
