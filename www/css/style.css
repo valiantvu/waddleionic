@@ -6,3 +6,39 @@ body { margin:0; padding:0; }
 	background-image: none;
 }*/
 
+.frontpage-bg{
+	background-color:#00C0A1;
+	text-align: center;
+	height: 100%;
+	width: 100%;
+}
+.centered{
+	position: relative;
+   top: 50%;
+   transform: translate(0, -50%);
+   text-align:center;
+   margin-right: auto;
+   margin-left: auto;
+}
+
+h1{
+	font-family: 'Open Sans', sans-serif;
+	font-size: 28px;
+	font-weight: 700;
+}
+h2{
+	font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
+	font-weight: 400;
+}
+h3{
+	font-size: 11px;
+}
+
+.logo{
+	width: 125px;
+	height: auto;
+}
+.letswaddlebutton{
+	padding-top: 7px;
+}
