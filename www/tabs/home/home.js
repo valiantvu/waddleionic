@@ -1,7 +1,9 @@
 (function(){
 
 var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
-    
+
+  Auth.checkLogin()
+  .then(function () {
     $scope.footprints = [];
     var page = 0;
     var skipAmount = 5;
@@ -113,6 +115,8 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
           marker.addTo(map);
       }
     }
+  })
+    
 
 };
 

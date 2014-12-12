@@ -1,7 +1,8 @@
 (function(){
 
 var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
-
+  Auth.checkLogin()
+  .then(function () {
     $scope.footprints = [];
     $scope.search = {};
     $scope.moreDataCanBeLoaded = true;
@@ -166,6 +167,8 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
     //     //MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
     //   });
     // };
+  })
+
 };
 
 FootprintsController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state'];

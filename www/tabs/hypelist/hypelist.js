@@ -1,7 +1,10 @@
 (function(){
 
 var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
-    
+
+  Auth.checkLogin()
+  .then(function () {
+
     $scope.footprints = [];
     var page = 0;
     var skipAmount = 5;
@@ -175,6 +178,8 @@ var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequ
     //     //MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
     //   });
     // };
+  })
+    
 };
 
 HypelistController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state'];

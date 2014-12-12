@@ -18,7 +18,7 @@ var FootprintRequests = function ($http){
         return $http({
           method: 'POST',
           data: data,
-          url: '/api/checkins/bucketlist'
+          url: 'https://waddleionic.herokuapp.com/api/checkins/bucketlist'
         });
       }
     },
@@ -28,7 +28,7 @@ var FootprintRequests = function ($http){
         return $http({
           method: 'POST',
           data: data,
-          url: 'api/checkins/removebucket'
+          url: 'https://waddleionic.herokuapp.com/api/checkins/removebucket'
         });
       }
     },
@@ -38,7 +38,7 @@ var FootprintRequests = function ($http){
         return $http({
           method: 'POST',
           data: data,
-          url: '/api/checkins/comment'
+          url: 'https://waddleionic.herokuapp.com/api/checkins/comment'
         });
       }
     },
@@ -48,7 +48,7 @@ var FootprintRequests = function ($http){
         return $http({
           method : 'POST',
           data : data ,
-          url : 'api/checkins/removecomment'
+          url : 'https://waddleionic.herokuapp.com/api/checkins/removecomment'
         });
       }
     },
@@ -57,7 +57,7 @@ var FootprintRequests = function ($http){
       if (checkinID) {
         return $http({
           method: 'GET',
-          url: '/api/checkins/interactions/' + checkinID
+          url: 'https://waddleionic.herokuapp.com/api/checkins/interactions/' + checkinID
         });
       }
     }
