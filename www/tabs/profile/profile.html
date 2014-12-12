@@ -11,7 +11,9 @@
 
 <ion-view title="Profile">
   <ion-content class="padding">
-    <img ng-src='{{userInfo.fbProfilePicture}}'>
+    <div class="profpicframe">
+    <img ng-src='{{userInfo.fbProfilePicture}}' class="profpic">
+    </div>
     <h2>{{userInfo.name}}</h2>
     <h3>{{userInfo.footprintsCount}} footprints</h3>
 
@@ -19,6 +21,17 @@
       <a class="button" ng-click="showFriendsList()">Friends</a>
       <a class="button" ng-click="showFootprints()">Footprints</a>
       <a class="button" ng-click="showHypeList()">Hype List</a>
+    </div>
+
+    <div class="list">
+      <div class="item item-input-inset">
+      <label class="item-input-wrapper">
+        <i class="icon ion-ios7-search-strong placeholder-icon"></i>
+        <input type="text" placeholder="Search your footprints" ng-model="search.query">
+      </label>
+        <button class="button button-small" type="submit" ng-click="searchUserFootprints()">Submit</button>
+        <button class="button button-clear" ng-if="search.query" ng-click="clearSearch()">x</button>
+      </div>
     </div>
 
     <div ng-repeat="footprint in footprints" class="list card">
@@ -53,10 +66,10 @@
         </div>
 
         <!-- Default Photo (if no photo) -->
-        <div ng-if="footprint.checkin.photoLarge === 'null'" ng-if="footprint.checkin.caption === 'null'" class='captioncontainer'>
+       <!--  <div ng-if="footprint.checkin.photoLarge === 'null'" ng-if="footprint.checkin.caption === 'null'" class='captioncontainer'>
           <img class="full-image defaultpeng" ng-click="getFootprint(footprint)" ng-src="https://s3-us-west-2.amazonaws.com/waddle/WaddlePenguinLogo.png"/>
           <h4 ng-if="footprint.checkin.caption !== 'null' && footprint.checkin.photoLarge === 'null'">"{{footprint.checkin.caption}}"</h4>
-        </div>
+        </div> -->
       </div>
 
     </div>
