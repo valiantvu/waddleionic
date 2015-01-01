@@ -55,8 +55,9 @@
         <p>{{comment.comment.time | date : shortDate}}<P>
       </div>
 
+      <!-- Hype and Comment Buttons -->
       <div class="item item-divider tabs tabs-secondary tabs-icon-left">
-        <a ng-if="!footprint.bucketed" class="tab-item" ng-click="addCheckinToBucketList(footprint)">
+        <a class="tab-item" ng-click="addCheckinToBucketList({{ footprint }}, {{ $index }})">
           <i class="icon ion-arrow-up-a"></i>
           Hype
         </a>

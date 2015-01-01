@@ -1,7 +1,7 @@
 (function(){
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
-    
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope) {
+    $scope.numHypes = 0;
     $scope.footprints = [];
     var page = 0;
     var skipAmount = 5;
@@ -31,8 +31,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     $scope.getAggregatedFeedData();
 
-    $scope.addCheckinToBucketList = function (footprint){
-      footprint.bucketed = true;
+    $scope.addCheckinToBucketList = function (footprint, index){
       
       var bucketListData = {
         facebookID: window.sessionStorage.userFbID,
@@ -43,6 +42,12 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       .then(function (data){
         console.log(data);
         footprint.bucketed = true;
+
+        if (!$scope.footprints[index].hypes) {
+          $scope.footprints[index].hypes = [];
+        }
+
+        $scope.footprints[index].hypes.push('new hype');
       });
     };
 
