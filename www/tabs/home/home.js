@@ -5,6 +5,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
   Auth.checkLogin()
   .then(function () {
     $scope.footprints = [];
+    $scope.search = {};
     var page = 0;
     var skipAmount = 5;
     $scope.moreDataCanBeLoaded = true;
@@ -63,6 +64,24 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       UserRequests.userProfileData = userInfo;
       $state.go('tab.profile');
     }
+
+    $scope.searchFeed = function () {
+      if($scope.search.query) {
+        UserRequests.searchFeed(window.sessionStorage.userFbID, $scope.search.query)
+        .then(function(footprints) {
+          $scope.footprints = footprints.data;
+          $scope.moreDataCanBeLoaded = false;
+        })
+      }
+    };
+
+     $scope.clearSearch = function () {
+      $scope.search = {};
+      $scope.footprints = [];
+      page = 0;
+      $scope.moreDataCanBeLoaded = true;
+      $scope.getUserData();
+    };
 
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);

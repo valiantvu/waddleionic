@@ -109,6 +109,15 @@ var UserRequests = function ($http){
       }
     },
 
+    searchFeed: function (userFbID, query) {
+      if (userFbID && query) {
+        return $http({
+          method: 'GET',
+          url: '/api/users/searchfeed/' + userFbID + '/' + query
+        })
+      }
+    },
+
     getFriendsList: function (userFbID) {
       var url = '/api/users/friendslist/' + userFbID      
 

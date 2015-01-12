@@ -458,6 +458,76 @@ User.findFootprintsByPlaceName = function (facebookID, placeName) {
   return deferred.promise;
 }
 
+User.findFeedItemsByPlaceName = function (facebookID, placeName) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User{facebookID:{facebookID}})-[:hasFriend]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'WHERE place.name =~ {placeName} OR place.city =~ {placeName} OR place.country =~ {placeName}',
+    'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
+    'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
+    'RETURN friend, checkin, place, collect(comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
+  ].join('\n');
+
+  //params.placeName includes regexp to search nodes containing placeName string. (?i) makes query case insensitive
+  var params = {
+    facebookID: facebookID,
+    placeName: '(?i).*' + placeName + '.*'
+  };
+
+  console.log('dis b ma params:', params);
+
+  db.query(query, params, function (err, results) {
+    if (err) {
+      deferred.reject(err);
+    }
+    else {
+      var parsedResults = _.map(results, function (item) {
+        
+        var singleResult = {
+          "place": item.place.data,
+          "checkin": item.checkin.data,
+          "user": item.friend.data
+        }
+
+        if(item['comments'].length && item['commenters'].length) {
+          var commentsArray = [];
+          for(var i = 0; i < item['comments'].length; i++) {
+            var commentData = {
+              comment: item['comments'][i].data,
+              commenter: item['commenters'][i].data
+            }
+            commentsArray.push(commentData);
+          }
+
+          singleResult.comments = commentsArray;
+          console.log('singleResult: ', singleResult.comments);
+
+        }
+
+        if(item['hypers'].length) {
+          var hypesArray = [];
+          for(var i = 0; i < item['hypers'].length; i++) {
+            hypesArray.push(item['hypers'][i].data);
+          }
+          singleResult.hypes = hypesArray;
+        }
+
+        if (item.liker){
+          singleResult.checkin.liked = true;
+        }
+        if (item.bucketer){
+          singleResult.checkin.bucketed = true;
+        }
+        return singleResult
+      });
+      deferred.resolve(parsedResults);
+
+    }
+  })
+  return deferred.promise;
+}
+
 User.prototype.updateNotificationReadStatus = function () {
   var deferred = Q.defer();
 
