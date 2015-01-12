@@ -24,7 +24,7 @@ var UserRequests = function ($http){
       if (userFbID) {
         return $http({
           method: 'GET',
-          url: 'http://localhost:8000/api/users/userinfo/' + userFbID
+          url: '/api/users/userinfo/' + userFbID
         });
       }
 
@@ -35,7 +35,7 @@ var UserRequests = function ($http){
     // this allows the viewer to see whether they have liked another user's checkin
 
     getUserData: function (userFbID, viewerID) {
-      var url = 'https://waddleionic.herokuapp.com/api/users/' + userFbID + "/" + viewerID;
+      var url = '/api/users/' + userFbID + "/" + viewerID;
       
       if (arguments[2] !== undefined) {
           var page = arguments[2]
@@ -56,7 +56,7 @@ var UserRequests = function ($http){
     },
 
     getAggregatedFeedData:function (userFbID) {
-      var url = 'https://waddleionic.herokuapp.com/api/users/aggregatefeed/' + userFbID;
+      var url = '/api/users/aggregatefeed/' + userFbID;
       
       if (arguments[1] !== undefined) {
           var page = arguments[1]
@@ -79,7 +79,7 @@ var UserRequests = function ($http){
     },
 
     getBucketList: function (userFbID) {
-      var url = 'https://waddleionic.herokuapp.com/api/users/bucketlist/' + userFbID      
+      var url = '/api/users/bucketlist/' + userFbID      
 
       if (arguments[1] !== undefined) {
           var page = arguments[1]
@@ -104,13 +104,13 @@ var UserRequests = function ($http){
       if (userFbID && query) {
         return $http({
           method: 'GET',
-          url: 'https://waddleionic.herokuapp.com/api/users/searchfootprints/' + userFbID + '/' + query
+          url: '/api/users/searchfootprints/' + userFbID + '/' + query
         });
       }
     },
 
     getFriendsList: function (userFbID) {
-      var url = 'https://waddleionic.herokuapp.com/api/users/friendslist/' + userFbID      
+      var url = '/api/users/friendslist/' + userFbID      
 
       if (arguments[1] !== undefined) {
           var page = arguments[1]

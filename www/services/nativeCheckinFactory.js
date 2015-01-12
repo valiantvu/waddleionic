@@ -8,7 +8,7 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation){
       if (currentLocation) {
         return $http({
           method: 'GET',
-          url: 'https://waddleionic.herokuapp.com/api/checkins/venuesearchmobile/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng
+          url: '/api/checkins/venuesearchmobile/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng
         });
       }
     },
@@ -18,7 +18,7 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation){
         return $http({
           method: 'POST',
           data: checkinData,
-          url: 'https://waddleionic.herokuapp.com/api/checkins/nativecheckin/'
+          url: '/api/checkins/nativecheckin/'
         });
       }
     },
@@ -31,7 +31,7 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation){
 
         var s3upload = new S3Upload({
           file_dom_selector: 'files',
-          s3_sign_put_url: 'https://waddleionic.herokuapp.com/api/checkins/sign_s3',
+          s3_sign_put_url: '/api/checkins/sign_s3',
           onProgress: function(percent, message) {
               console.log('Upload progress: ' + percent + '% ' + message);
               // status_elem.innerHTML = 'Upload progress: ' + percent + '% ' + message;

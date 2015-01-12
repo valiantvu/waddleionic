@@ -1,6 +1,6 @@
 (function(){
 
-var ProfileController = function ($scope, $state, UserRequests, Auth) {
+var ProfileController = function ($scope, $state, UserRequests, Auth, $ionicModal) {
 
 	Auth.checkLogin()
   .then(function () {
@@ -68,6 +68,15 @@ var ProfileController = function ($scope, $state, UserRequests, Auth) {
 
 		$scope.logout = Auth.logout;
 
+		$scope.addFoursquare = function () {
+			console.log('hiiii');
+			window.location.href = "https://foursquare.com/oauth2/authenticate?client_id=3XX0HGXBG4ZNKNFPN5F1LBSS4JCT3J0P3UBKLDMSR3BQNJKU&response_type=code&redirect_uri=http://waddleionic.herokuapp.com/fsqredirect"
+		}
+
+		$scope.addInstagram= function () {
+			console.log('addInstagram');
+		}
+
 		var getFriendProfileData = function () {
 			$scope.userInfo = UserRequests.userProfileData;
 			UserRequests.userProfileData = null;
@@ -89,16 +98,45 @@ var ProfileController = function ($scope, $state, UserRequests, Auth) {
 				$scope.footprints = footprints;
 			})
 		}
-		$scope.getUserProfileData();
-  })
 
+		$scope.getUserProfileData();
+
+	  $ionicModal.fromTemplateUrl('add-platforms.html', {
+	    scope: $scope,
+	    animation: 'slide-in-up'
+	  }).then(function(modal) {
+	    $scope.modal = modal;
+	  });
+
+	  $scope.openModal = function() {
+	    $scope.modal.show();
+	  };
+
+	  $scope.closeModal = function() {
+	    $scope.modal.hide();
+	  };
+
+	  //Cleanup the modal when we're done with it!
+	  $scope.$on('$destroy', function() {
+	    $scope.modal.remove();
+	  });
+
+	  // Execute action on hide modal
+	  $scope.$on('modal.hidden', function() {
+	    // Execute action
+	  });
+	  // Execute action on remove modal
+	  $scope.$on('modal.removed', function() {
+	    // Execute action
+	  });
+  })
 
 
 
 
 };
 
-ProfileController.$inject = ['$scope', '$state', 'UserRequests', 'Auth']
+ProfileController.$inject = ['$scope', '$state', 'UserRequests', 'Auth', '$ionicModal']
 
 angular.module('waddle.profile', [])
   .controller('ProfileController', ProfileController);

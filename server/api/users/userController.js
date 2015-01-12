@@ -116,7 +116,7 @@ userController.userLogin = function (req, res) {
     })
     .then(function (fbRawPhotoList) {
       // parse Photo data
-      // console.log("# of photos", fbRawPhotoList.length)
+      console.log("# of photos: ", fbRawPhotoList.length)
       return facebookUtils.parseFBData(user, fbRawPhotoList); 
     })
     .then(function (fbParsedPhotoData) {

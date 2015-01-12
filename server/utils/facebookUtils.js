@@ -103,7 +103,8 @@ utils.makeFBPaginatedRequest = function (queryPath, container) {
       container.push(dataObj.data)
       console.log("makeFBPaginatedRequest container: " + JSON.stringify(container));
 
-      if (! dataObj.paging) {
+      if (!dataObj.paging.next) {
+        console.log('no more results!');
         deferred.resolve(_.flatten(container, true));
       } else {
         deferred.resolve(utils.makeFBPaginatedRequest(dataObj.paging.next, container));
@@ -268,8 +269,8 @@ utils.parseFBData = function (user, data) {
         place.checkinTime = new Date(datum.updated_time);
       }
 
-      if(datum.message) {
-        place.caption = datum.message;
+      if(datum.name) {
+        place.caption = datum.name;
       }
 
       if (datum.picture) {
@@ -287,7 +288,8 @@ utils.parseFBData = function (user, data) {
       foursquareVenueQueries.push(foursquareUtils.generateFoursquarePlaceID(user, place.name, latlng));
     }
   });
-  console.log("parsedData before: ", parsedData)
+  console.log("parsedData before: ", parsedData);
+  console.log(foursquareVenueQueries);
   
 
   Q.all(foursquareVenueQueries)
