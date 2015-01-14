@@ -41,6 +41,8 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicModal) {
 		console.log($scope.checkinInfo.footprintCaption);
 	}
 
+	$scope.searchFoursquareVenues();
+
 	$ionicModal.fromTemplateUrl('checkin-post.html', {
     scope: $scope,
     animation: 'slide-in-up'
