@@ -1,6 +1,6 @@
 (function(){
 
-var Auth = function ($q, $state){
+var Auth = function ($q, $state, $window){
   var checkLogin = function () {
     var deferred = $q.defer();
 
@@ -25,7 +25,7 @@ var Auth = function ($q, $state){
     window.localStorage.clear();
     
 
-    $state.go('frontpage',{},{reload: true});
+    $state.go('frontpage', {}, {reload: true});
   };
 
   return {
@@ -34,7 +34,7 @@ var Auth = function ($q, $state){
   };
 };
 
-Auth.$inject = ['$q', '$state'];
+Auth.$inject = ['$q', '$state', '$window'];
 
 angular.module('waddle.services.auth', [])
   .factory('Auth', Auth);

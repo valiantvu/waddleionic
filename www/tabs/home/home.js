@@ -1,11 +1,17 @@
 (function(){
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
-    
+
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope) {
+  Auth.checkLogin()
+  .then(function () {
+    $scope.numHypes = 0;
     $scope.footprints = [];
+    $scope.search = {};
     var page = 0;
     var skipAmount = 5;
     $scope.moreDataCanBeLoaded = true;
+
+    FootprintRequests.currentTab = 'home';
 
     $scope.openFootprint = function(footprint) {
       FootprintRequests.openFootprint = footprint;
@@ -29,8 +35,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     $scope.getAggregatedFeedData();
 
-    $scope.addCheckinToBucketList = function (footprint){
-      footprint.bucketed = true;
+    $scope.addCheckinToBucketList = function (footprint, index){
       
       var bucketListData = {
         facebookID: window.sessionStorage.userFbID,
@@ -41,6 +46,12 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       .then(function (data){
         console.log(data);
         footprint.bucketed = true;
+
+        if (!$scope.footprints[index].hypes) {
+          $scope.footprints[index].hypes = [];
+        }
+
+        $scope.footprints[index].hypes.push('new hype');
       });
     };
 
@@ -60,7 +71,25 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       console.log(userInfo);
       UserRequests.userProfileData = userInfo;
       $state.go('tab.profile');
-    }
+    };
+
+    $scope.searchFeed = function () {
+      if($scope.search.query) {
+        UserRequests.searchFeed(window.sessionStorage.userFbID, $scope.search.query)
+        .then(function(footprints) {
+          $scope.footprints = footprints.data;
+          $scope.moreDataCanBeLoaded = false;
+        })
+      }
+    };
+
+     $scope.clearSearch = function () {
+      $scope.search = {};
+      $scope.footprints = [];
+      page = 0;
+      $scope.moreDataCanBeLoaded = true;
+      $scope.getUserData();
+    };
 
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);
@@ -113,12 +142,14 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
           marker.addTo(map);
       }
     }
+  })
+    
 
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope'];
 
-  // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
+// Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 
 var CustomSubmitDirective = function(FootprintRequests) {
   return {

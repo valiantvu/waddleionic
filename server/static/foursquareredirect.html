@@ -24,7 +24,7 @@ to each user, which is handled in the userRoutes) -->
         request.send(JSON.stringify({facebookID: window.sessionStorage.userFbID, foursquareCode: code}));
       };
 
-      window.location.assign('http://waddle.herokuapp.com/#/map');
+      window.location.assign('http://waddleionic.herokuapp.com/#/home');
       sendFoursquareCodeToServer(parseFoursquareCode());
 
     </script>

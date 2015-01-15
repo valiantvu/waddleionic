@@ -31,7 +31,7 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation){
 
         var s3upload = new S3Upload({
           file_dom_selector: 'files',
-          s3_sign_put_url: 'api/checkins/sign_s3',
+          s3_sign_put_url: '/api/checkins/sign_s3',
           onProgress: function(percent, message) {
               console.log('Upload progress: ' + percent + '% ' + message);
               // status_elem.innerHTML = 'Upload progress: ' + percent + '% ' + message;

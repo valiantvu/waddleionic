@@ -11,14 +11,18 @@
   <ion-content class="padding">
 <div class="backgroundgrey">
     <!-- Search bar -->
-    <div class="search">
-      <label class="item item-input">
+    <div class="list">
+      <div class="item item-input-inset">
+      <label class="item-input-wrapper">
         <i class="icon ion-ios7-search-strong placeholder-icon"></i>
-        <input type="text" placeholder="search footprints" ng-model="search">
+        <input type="text" placeholder="Search your Feed" ng-model="search.query">
       </label>
+        <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button>
+        <button class="button button-clear" ng-if="search.query" ng-click="clearSearch()">x</button>
+      </div>
     </div>
 
-    <div ng-repeat="footprint in footprints | filter:search" class="list card">
+    <div ng-repeat="footprint in footprints" class="list card">
 
       <div class="item item-avatar">
 
@@ -64,8 +68,9 @@
         <p>{{comment.comment.time | date : shortDate}}<P>
       </div>
 
+      <!-- Hype and Comment Buttons -->
       <div class="item item-divider tabs tabs-secondary tabs-icon-left">
-        <a ng-if="!footprint.bucketed" class="tab-item" ng-click="addCheckinToBucketList(footprint)">
+        <a ng-if="!footprint.bucketed" class="tab-item" ng-click="addCheckinToBucketList({{ footprint }}, {{ $index }})">
           <i class="icon ion-arrow-up-a"></i>
           <span>Hype</span>
         </a>

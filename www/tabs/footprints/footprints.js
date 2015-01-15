@@ -1,18 +1,27 @@
 (function(){
 
 var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
-
+  Auth.checkLogin()
+  .then(function () {
     $scope.footprints = [];
     $scope.search = {};
     $scope.moreDataCanBeLoaded = true;
     var page = 0;
     var skipAmount = 5;
 
+    FootprintRequests.currentTab = 'footprints';
+
+    $scope.openFootprint = function(footprint) {
+      FootprintRequests.openFootprint = footprint;
+    };
+
     $scope.getUserData = function () {
         UserRequests.getUserData(window.sessionStorage.userFbID, window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {
             if (data.data.footprints.length > 0) {
+              console.dir(data.data.footprints);
               $scope.footprints = $scope.footprints.concat(data.data.footprints);
+              FootprintRequests.footprints = $scope.footprints;
               page++;
               console.log('page: ', page);
             } else {
@@ -39,10 +48,7 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
 
       FootprintRequests.addToBucketList(bucketListData)
       .then(function (data){
-        // Add bucketed property to checkin, updating markerQuadTree and refreshing inBounds
-        // The second and third arguments to addPropertyToCheckin add to footprint.checkin 
-        // MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', true);
-        // filterFeedByBounds();
+        footprint.bucketed = true;
       });
     };
 
@@ -54,10 +60,7 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
         checkinID: footprint.checkin.checkinID
       };
 
-      FootprintRequests.removeFromBucketList(bucketListData)
-      .then(function (data){
-        // MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
-      });
+      FootprintRequests.removeFromBucketList(bucketListData);
     };
 
     $scope.searchUserFootprints = function () {
@@ -121,7 +124,6 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
           marker.addTo(map);
       }
     }
-
     // $scope.selectedFootprintInteractions = null;
 
     // $scope.getFootprint = function (footprint) {
@@ -166,11 +168,84 @@ var FootprintsController = function (Auth, UserRequests, MapFactory, FootprintRe
     //     //MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
     //   });
     // };
+  })
 };
 
 FootprintsController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state'];
 
+// Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
+
+var CustomSubmitDirective = function(FootprintRequests) {
+  return {
+    restrict: 'A',
+    link: function( scope , element , attributes ){
+      console.log('psoting a comment');
+      var $element = angular.element(element);
+      
+      // Add novalidate to the form element.
+      attributes.$set( 'novalidate' , 'novalidate' );
+      
+      $element.bind( 'submit' , function( e ) {
+        e.preventDefault();
+        
+        // Remove the class pristine from all form elements.
+        $element.find( '.ng-pristine' ).removeClass( 'ng-pristine' );
+        
+        // Get the form object.
+        var form = scope[ attributes.name ];
+        
+        // Set all the fields to dirty and apply the changes on the scope so that
+        // validation errors are shown on submit only.
+        angular.forEach( form , function( formElement , fieldName ) {
+          // If the fieldname starts with a '$' sign, it means it's an Angular
+          // property or function. Skip those items.
+          if ( fieldName[0] === '$' ) return;
+          
+          formElement.$pristine = false;
+          formElement.$dirty = true;
+        });
+        
+        // Do not continue if the form is invalid.
+        if ( form.$invalid ) {
+          // Focus on the first field that is invalid.
+          $element.find( '.ng-invalid' ).first().focus();
+          
+          return false;
+        }
+        
+        // From this point and below, we can assume that the form is valid.
+        scope.$eval( attributes.customSubmit );
+
+        //Text can be found with $element[0][0].value or scope.data.currentComment
+        //ID can be found with $element.context.dataset['customSubmit']
+        var commentData = {
+          clickerID: window.sessionStorage.userFbID,
+          checkinID: scope.footprint.checkin.checkinID,
+          // commentID: scope.footprint.comments[0],
+          text: scope.comment
+        };
+
+        FootprintRequests.addComment(commentData)
+        .then(function (data) {
+          // Socket.emit('comment posted', commentData);
+          if (FootprintRequests.openFootprint){
+            scope.updateFootprint(FootprintRequests.openFootprint);
+          }
+          // scope.data.currentComment = '';
+          //$element[0][0].value = ''
+        });
+        console.log(commentData);
+        scope.comment = "";
+        scope.$apply();
+      });
+    }
+  };
+};
+
+CustomSubmitDirective.$inject = ['FootprintRequests'];
+
 angular.module('waddle.footprints', [])
-  .controller('FootprintsController', FootprintsController);
+  .controller('FootprintsController', FootprintsController)
+  .directive( 'customSubmit' , CustomSubmitDirective);
 
 })();

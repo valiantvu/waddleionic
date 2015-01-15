@@ -24,7 +24,7 @@ var UserRequests = function ($http){
       if (userFbID) {
         return $http({
           method: 'GET',
-          url: 'http://localhost:8000/api/users/userinfo/' + userFbID
+          url: '/api/users/userinfo/' + userFbID
         });
       }
 
@@ -59,13 +59,13 @@ var UserRequests = function ($http){
       var url = '/api/users/aggregatefeed/' + userFbID;
       
       if (arguments[1] !== undefined) {
-          var page = arguments[1]
+          var page = arguments[1];
           url +=  "/" + page;
           console.log(url);
       }
 
       if (arguments[2] !== undefined) {
-          var skip = arguments[2]
+          var skip = arguments[2];
           url +=  "/" + skip;
       }
       console.log(url);
@@ -79,8 +79,7 @@ var UserRequests = function ($http){
     },
 
     getBucketList: function (userFbID) {
-      var url = '/api/users/bucketlist/' + userFbID      
-
+      var url = '/api/users/bucketlist/' + userFbID;
       if (arguments[1] !== undefined) {
           var page = arguments[1]
           url +=  "/" + page;
@@ -109,19 +108,29 @@ var UserRequests = function ($http){
       }
     },
 
+    searchFeed: function (userFbID, query) {
+      if (userFbID && query) {
+        return $http({
+          method: 'GET',
+          url: '/api/users/searchfeed/' + userFbID + '/' + query
+        })
+      }
+    },
+
     getFriendsList: function (userFbID) {
       var url = '/api/users/friendslist/' + userFbID      
 
       if (arguments[1] !== undefined) {
-          var page = arguments[1]
+          var page = arguments[1];
           url +=  "/" + page;
           console.log(url);
       }
 
       if (arguments[2] !== undefined) {
-          var skip = arguments[2]
+          var skip = arguments[2];
           url +=  "/" + skip;
       }
+      console.log(url);
 
       if (userFbID) {
         return $http({
@@ -130,8 +139,8 @@ var UserRequests = function ($http){
         });
       }
     }
+  };
 
-  }; 
 };
 
 UserRequests.$inject = ['$http'];

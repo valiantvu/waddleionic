@@ -47,7 +47,7 @@ userController.userLogin = function (req, res) {
   })
   .then(function (userNode) { 
     user = userNode;
-    return user.findAllCheckins(userData.facebookID)
+    return user.findAllCheckins(userData.facebookID, 0, 0)
   })
   //Path forks here for existing vs new users
   .then(function (checkinsAlreadyStored) {
@@ -95,7 +95,7 @@ userController.userLogin = function (req, res) {
       // return facebookUtils.getFBFeedItemsWithLocation(user);
 
       //get tagged places
-      // return facebookUtils.getFBTaggedPosts(user);
+      return facebookUtils.getFBTaggedPosts(user);
     })
     // .then(function (fbRawFeedItemsWithLocation) {
     //   console.log("RAW data RAWRRRRR: " + JSON.stringify(fbRawFeedItemsWithLocation));
@@ -110,13 +110,13 @@ userController.userLogin = function (req, res) {
       return facebookUtils.parseFBData(user, fbRawTaggedPostsData);
     })
     .then(function (fbParsedTaggedPostsData) {
-      // userFBTaggedPostsData = fbParsedTaggedPostsData;
+      userFBTaggedPostsData = fbParsedTaggedPostsData;
       // get Picture data
       return facebookUtils.getFBPhotos(user);
     })
     .then(function (fbRawPhotoList) {
       // parse Photo data
-      // console.log("# of photos", fbRawPhotoList.length)
+      console.log("# of photos: ", fbRawPhotoList.length)
       return facebookUtils.parseFBData(user, fbRawPhotoList); 
     })
     .then(function (fbParsedPhotoData) {
@@ -124,18 +124,18 @@ userController.userLogin = function (req, res) {
       userFBPhotoData = fbParsedPhotoData;
       combinedFBCheckins = userFBTaggedPostsData.concat(userFBPhotoData);
       //get statuses posted by user
-      // return facebookUtils.getFBStatuses(user);
+      return facebookUtils.getFBStatuses(user);
+      // return user.addCheckins(combinedFBCheckins);
+    })
+    .then(function (fbRawStatusList) {
+      return facebookUtils.parseFBData(user, fbRawStatusList);
+    })
+    .then(function (fbParsedStatusesData) {
+      userFBStatusesData = fbParsedStatusesData;
+      combinedFBCheckins = combinedFBCheckins.concat(userFBStatusesData);
+      console.log("combinedCheckins: " + combinedFBCheckins);
       return user.addCheckins(combinedFBCheckins);
     })
-    // .then(function (fbRawStatusList) {
-    //   return facebookUtils.parseFBData(user, fbRawStatusList);
-    // })
-    // .then(function (fbParsedStatusesData) {
-    //   userFBStatusesData = fbParsedStatusesData;
-    //   combinedFBCheckins = combinedFBCheckins.concat(userFBStatusesData);
-    //   console.log("combinedCheckins: " + combinedFBCheckins);
-    //   return user.addCheckins(combinedFBCheckins);
-    // })
     .then(function (data) {
       return user.findAllCheckins(userData.facebookID);
     })
@@ -202,6 +202,8 @@ userController.addInstagramData = function (req, res) {
   var userData = req.body;
   var user;
   var igUserData;
+
+  console.log('ma user: ', req.body);
 
   User.find(userData)
   .then(function (userNode) { 
@@ -388,30 +390,30 @@ userController.getUserInfo = function (req, res) {
     console.log(err);
     res.status(500).end();
   });
-
-}
+};
 
 // Takes a facebookID and returns a footprint object with
 // checkin and place keys, containing checkin and place data
 userController.getBucketList = function (req, res){
-  var page, skipAmount
-  var facebookID = req.params.user;
+  var params = {};
+  params.facebookID = req.params.user;
 
   if(req.params.page) {
-    page = parseInt(req.params.page);
+    params.page = parseInt(req.params.page);
   }
   else {
-    page = 0;
+    params.page = 0;
   }
 
   if(req.params.skip) {
-    skipAmount = parseInt(req.params.skip);
+    params.skipAmount = parseInt(req.params.skip);
   }
   else {
-    skipAmount = 0;
+    params.skipAmount = 0;
   }
 
-  User.getBucketList(facebookID, page, skipAmount)
+  User.getBucketList(params.facebookID, params.page, params.skipAmount)
+
   .then(function (footprints) {
     res.json(footprints);
     res.status(200).end();
@@ -426,6 +428,20 @@ userController.searchUserFootprints = function (req, res) {
   var facebookID = req.params.user;
   var query = req.params.query;
   User.findFootprintsByPlaceName(facebookID, query)
+  .then(function (footprints) {
+    res.json(footprints);
+    res.status(200).end();
+  })
+  .catch(function(err) {
+    console.log(err);
+    res.status(500).end();
+  })
+}
+
+userController.searchUserFeed = function (req, res) {
+  var facebookID = req.params.user;
+  var query = req.params.query;
+  User.findFeedItemsByPlaceName(facebookID, query)
   .then(function (footprints) {
     res.json(footprints);
     res.status(200).end();

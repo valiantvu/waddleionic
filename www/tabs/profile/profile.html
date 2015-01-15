@@ -5,7 +5,8 @@
   </div>
   <h1 class="title">Profile</h1>
   <div class="buttons">
-    <button ng-click="logout();" class="transparentbutton button button-icon icon"><i class="icon ion-log-out light"></i></button>
+    <button ng-click="openModal();" class="transparentbutton button button-icon icon"><i class="icon ion-gear-a light"></i></button>
+
   </div>
 </ion-header-bar>
 
@@ -140,5 +141,38 @@
 
   </ion-content>
 </ion-view>
+
+<script id="settings.html" type="text/ng-template">
+  <ion-modal-view>
+    <ion-header-bar>
+      <h1 class="title">Connect Accounts</h1>
+    </ion-header-bar>
+    <ion-content>
+      <ul class="list">
+      <h4>Connect Accounts</h4>
+        <li class="item item-toggle">
+          Foursquare
+          <label class="toggle toggle-assertive">
+            <input type="checkbox"  ng-checked="foursquareConnected" ng-disabled="foursquareConnected" ng-click="addFoursquare()">
+            <div class="track">
+              <div class="handle"></div>
+            </div>
+          </label>
+       </li>
+
+       <li class="item item-toggle">
+          Instagram
+          <label class="toggle toggle-assertive">
+            <input type="checkbox" ng-checked="instagramConnected" ng-disabled="instagramConnected" ng-click="addInstagram()">
+            <div class="track">
+              <div class="handle"></div>
+            </div>
+          </label>
+       </li>
+     </ul>
+     <h5 ng-click="logout()">Logout</h5>
+    </ion-content>
+  </ion-modal-view>
+</script>
 
 
