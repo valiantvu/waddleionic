@@ -21,18 +21,30 @@ body { margin:0; padding:0; }
    margin-left: auto;
 }
 
+p{
+	font-family: 'Open Sans', sans-serif;
+}
+
 h1{
 	font-family: 'Open Sans', sans-serif;
 	font-size: 28px;
-	font-weight: 700;
+	font-weight: 400;
 }
 h2{
+	color:#33e6e4;
 	font-family: 'Open Sans', sans-serif;
-	font-size: 14px;
+	font-size: 18px;
 	font-weight: 400;
 }
 h3{
-	font-size: 11px;
+	color:#33e6e4;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 20px;
+	font-weight: 400;
+}
+
+span{
+	font-family: 'Open Sans', sans-serif;
 }
 
 .logo{
@@ -44,19 +56,92 @@ h3{
 }
 .profpicframe{
 	text-align: center;
-	width: 100px;
-	height: 100px;
+	margin-left:-65px;
+	width: 50px;
+	height: 50px;
 	overflow: hidden;
-	border-radius: 10px;
-	background-position:center center;
+	border-radius: 100%;
+	float:left;
+	background-color:#000;
 }
 .profpic{
-	height:100px;
-	width:auto;
-	left:100%;
-	margin-left:-25%;
+	height:50px;
+	width:100%;
+	left:50%;
+	margin-left:0%;
+	margin-top:0%;
 }
 .transparentbutton{
 	background:none;
 	border:0px;
+}
+.checkindiv{
+	background-color: #fff;
+	padding:5px;
+	margin:5px;
+	border-bottom:1px #999 solid;
+}
+.item-input{
+	border-radius:0px;
+	border:0px;
+	height:40px;
+	margin-top:-10px;
+	margin-bottom:-15px;
+	-webkit-box-shadow: 0px 0px 0px 0px #ccc
+	-moz-box-shadow: 0px 0px 0px #888;
+	box-shadow: 0px 0px 0px #888;
+}
+.full-image{
+	border-radius:0px;
+	margin-top:-17px;
+	margin-left:-18px;
+	margin-right:-18px;
+	width:110%;
+	height:auto;
+	border:0px;
+}
+.backgroundgrey{
+	background-color:#e5e5e5;
+	margin:-10px;
+	margin-top:-10px;
+}
+.item-avatar{
+	border:0px;
+	-webkit-box-shadow: 0px 0px 0px 0px #ccc
+	-moz-box-shadow: 0px 0px 0px #888;
+	box-shadow: 0px 0px 0px #888;
+}
+.item-body{
+	border:0px;
+	margin-top:-12px;
+	margin-bottom:-10px;
+}
+.card{
+	margin-bottom:-10px;
+}
+
+#welcome{
+	height:100%;
+	width:100%;
+	background-image: url("https://s3-us-west-2.amazonaws.com/waddle/mobilewelcomescreenimgs/waddlewelcomescreen1.png");
+	background-size:100%;
+}
+
+.welcomeimage{
+	position:relative;
+	z-index:1;
+	height:100%;
+	width:100%;
+}
+
+.footprinttabimg{
+	margin-top:30px;
+}
+
+.hypelisttabimg{
+	margin-top:15px;
+}
+
+.hypelistplace{
+	margin-left:-30px;
 }

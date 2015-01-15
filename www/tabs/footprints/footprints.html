@@ -30,7 +30,9 @@
       <div class="item item-avatar">
 
         <!-- Profile Picture -->
-        <img ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
+        <div class="profpicframe">
+           <img ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'class="profpic">
+       </div>
 
         <!-- User Name -->
         <a href="#" class="subdued">{{footprint.user.name}}</a>
