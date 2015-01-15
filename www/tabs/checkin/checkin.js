@@ -5,19 +5,18 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicModal) {
 	$scope.checkinInfo = {footprintCaption: null};
 
 	$scope.searchFoursquareVenues = function () {
-		// NativeCheckin.getCurrentLocation()
-		// .then(function (location) {
-		// 	// $scope.location = location.coords.latitude;
-		// 	var currentLocation = {
-		// 		lat: location.coords.latitude,
-		// 		lng: location.coords.longitude
-		// 	};
-		  var currentLocation = {lat:40.753522 , lng: -74.272922}
-			NativeCheckin.searchFoursquareVenues("10202833487341857", currentLocation)
+		NativeCheckin.getCurrentLocation()
+		.then(function (location) {
+			var currentLocation = {
+				lat: location.coords.latitude,
+				lng: location.coords.longitude
+			};
+		  // var currentLocation = {lat:40.753522 , lng: -74.272922}
+			NativeCheckin.searchFoursquareVenues(window.sessionStorage.userFbID, currentLocation)
 			.then(function (venues) {
 				$scope.venues = venues.data;
 			})
-		// });
+		});
 	}
 
 	$scope.passSelectedVenueInfoToPostModal = function (venueInfo) {
@@ -25,8 +24,7 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicModal) {
 	}
 
 	$scope.sendCheckinDataToServer = function(venueInfo) {
-		// venueInfo.facebookID = window.sessionStorage.userFbID;
-		venueInfo.facebookID = "10202833487341857";
+		venueInfo.facebookID = window.sessionStorage.userFbID;
 		venueInfo.footprintCaption = $scope.checkinInfo.footprintCaption;
 		NativeCheckin.s3_upload()
 		.then(function (public_url) {
@@ -42,6 +40,8 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicModal) {
 	$scope.showCaption = function() {
 		console.log($scope.checkinInfo.footprintCaption);
 	}
+
+	$scope.searchFoursquareVenues();
 
 	$ionicModal.fromTemplateUrl('checkin-post.html', {
     scope: $scope,

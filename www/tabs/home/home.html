@@ -11,14 +11,18 @@
   <ion-content class="padding">
 
     <!-- Search bar -->
-    <div class="list list-inset">
-      <label class="item item-input">
+    <div class="list">
+      <div class="item item-input-inset">
+      <label class="item-input-wrapper">
         <i class="icon ion-ios7-search-strong placeholder-icon"></i>
-        <input type="text" placeholder="Search footprints" ng-model="search">
+        <input type="text" placeholder="Search your Feed" ng-model="search.query">
       </label>
+        <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button>
+        <button class="button button-clear" ng-if="search.query" ng-click="clearSearch()">x</button>
+      </div>
     </div>
 
-    <div ng-repeat="footprint in footprints | filter:search" class="list card">
+    <div ng-repeat="footprint in footprints" class="list card">
 
       <div class="item item-avatar">
 

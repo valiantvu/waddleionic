@@ -31,7 +31,7 @@ var FootprintRequests = function ($http){
         return $http({
           method: 'POST',
           data: data,
-          url: 'api/checkins/removebucket'
+          url: '/api/checkins/removebucket'
         });
       }
     },
@@ -51,7 +51,7 @@ var FootprintRequests = function ($http){
         return $http({
           method : 'POST',
           data : data ,
-          url : 'api/checkins/removecomment'
+          url : '/api/checkins/removecomment'
         });
       }
     },

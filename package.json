@@ -2,6 +2,13 @@
   "name": "ionic-project",
   "version": "1.0.0",
   "description": "An Ionic project",
+  "engines": {
+    "node": "0.10.x"
+  },
+  "scripts": {
+    "start": "node server/server.js",
+    "postinstall": "bower install"
+  },
   "dependencies": {
     "angular": "~1.3.0",
     "angular-ui-router": "~0.2.10",

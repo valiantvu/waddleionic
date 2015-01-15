@@ -1,8 +1,12 @@
 (function(){
 
+
 var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope) {
+  Auth.checkLogin()
+  .then(function () {
     $scope.numHypes = 0;
     $scope.footprints = [];
+    $scope.search = {};
     var page = 0;
     var skipAmount = 5;
     $scope.moreDataCanBeLoaded = true;
@@ -69,6 +73,24 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       $state.go('tab.profile');
     };
 
+    $scope.searchFeed = function () {
+      if($scope.search.query) {
+        UserRequests.searchFeed(window.sessionStorage.userFbID, $scope.search.query)
+        .then(function(footprints) {
+          $scope.footprints = footprints.data;
+          $scope.moreDataCanBeLoaded = false;
+        })
+      }
+    };
+
+     $scope.clearSearch = function () {
+      $scope.search = {};
+      $scope.footprints = [];
+      page = 0;
+      $scope.moreDataCanBeLoaded = true;
+      $scope.getUserData();
+    };
+
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);
       L.mapbox.accessToken = 'pk.eyJ1Ijoid2FkZGxldXNlciIsImEiOiItQWlwaU5JIn0.mTIpotbZXv5KVgP4pkcYrA';
@@ -120,10 +142,12 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
           marker.addTo(map);
       }
     }
+  })
+    
 
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 

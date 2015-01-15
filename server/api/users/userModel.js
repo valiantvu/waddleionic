@@ -253,9 +253,12 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
     'OPTIONAL MATCH (bucketer:User {facebookID: {viewerID}})-[:hasBucket]->(checkin)' : ""),
     'RETURN user, checkin, place, collect(comment), collect(commenter)' + (viewer ? ', liker, bucketer' : ""),
     'ORDER BY checkin.checkinTime DESC',
-    'SKIP { skipNum }',
-    'LIMIT { skipAmount }'
+    'SKIP { skipNum }'
   ].join('\n');
+
+  if(skipAmount > 0) {
+    query.concat('\n', 'LIMIT { skipAmount }');
+  }
 
   var params = {
     facebookID: this.getProperty('facebookID')
@@ -265,6 +268,7 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
   }
   params['skipAmount'] = skipAmount;
   params['skipNum'] = page ? page * skipAmount : 0;
+
 
 
   db.query(query, params, function (err, results) {
@@ -302,7 +306,6 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
         }
         return singleResult
       });
-
       deferred.resolve(parsedResults);
     }
   });
@@ -418,6 +421,76 @@ User.findFootprintsByPlaceName = function (facebookID, placeName) {
           "place": item.place.data,
           "checkin": item.checkin.data,
           "user": item.user.data
+        }
+
+        if(item['comments'].length && item['commenters'].length) {
+          var commentsArray = [];
+          for(var i = 0; i < item['comments'].length; i++) {
+            var commentData = {
+              comment: item['comments'][i].data,
+              commenter: item['commenters'][i].data
+            }
+            commentsArray.push(commentData);
+          }
+
+          singleResult.comments = commentsArray;
+          console.log('singleResult: ', singleResult.comments);
+
+        }
+
+        if(item['hypers'].length) {
+          var hypesArray = [];
+          for(var i = 0; i < item['hypers'].length; i++) {
+            hypesArray.push(item['hypers'][i].data);
+          }
+          singleResult.hypes = hypesArray;
+        }
+
+        if (item.liker){
+          singleResult.checkin.liked = true;
+        }
+        if (item.bucketer){
+          singleResult.checkin.bucketed = true;
+        }
+        return singleResult
+      });
+      deferred.resolve(parsedResults);
+
+    }
+  })
+  return deferred.promise;
+}
+
+User.findFeedItemsByPlaceName = function (facebookID, placeName) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User{facebookID:{facebookID}})-[:hasFriend]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'WHERE place.name =~ {placeName} OR place.city =~ {placeName} OR place.country =~ {placeName}',
+    'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
+    'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
+    'RETURN friend, checkin, place, collect(comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
+  ].join('\n');
+
+  //params.placeName includes regexp to search nodes containing placeName string. (?i) makes query case insensitive
+  var params = {
+    facebookID: facebookID,
+    placeName: '(?i).*' + placeName + '.*'
+  };
+
+  console.log('dis b ma params:', params);
+
+  db.query(query, params, function (err, results) {
+    if (err) {
+      deferred.reject(err);
+    }
+    else {
+      var parsedResults = _.map(results, function (item) {
+        
+        var singleResult = {
+          "place": item.place.data,
+          "checkin": item.checkin.data,
+          "user": item.friend.data
         }
 
         if(item['comments'].length && item['commenters'].length) {

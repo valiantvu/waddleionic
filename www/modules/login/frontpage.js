@@ -1,7 +1,7 @@
 
 (function(){
 
-var FrontpageController = function (UserRequests, $scope, $state) {
+var FrontpageController = function (UserRequests, $scope, $state, $window) {
   var enterSiteWhenConnected = function (fbToken) {
     openFB.api({
       path: '/me',
@@ -22,7 +22,8 @@ var FrontpageController = function (UserRequests, $scope, $state) {
       fbToken: fbToken
     };
 //when sucessfully connected to fb account , loading screen is made active 
-    $state.go('tab.home');
+    // $state.go('tab.home');
+    console.log(userData);
 
     UserRequests.sendUserData(userData)
     .then(function(storedUserData){
@@ -59,7 +60,7 @@ var FrontpageController = function (UserRequests, $scope, $state) {
 };
 
 //Injects the services needed by the controller
-FrontpageController.$inject = ['UserRequests', '$scope', '$state']
+FrontpageController.$inject = ['UserRequests', '$scope', '$state', '$window']
 
 //Start creating Angular module
 angular.module('waddle.frontpage', [])

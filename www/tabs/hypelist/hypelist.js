@@ -1,7 +1,10 @@
 (function(){
 
 var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
-    
+
+  Auth.checkLogin()
+  .then(function () {
+
     $scope.footprints = [];
     var page = 0;
     var skipAmount = 5;
@@ -114,6 +117,53 @@ var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequ
           marker.addTo(map);
       }
     }
+
+    // $scope.selectedFootprintInteractions = null;
+
+    // $scope.getFootprint = function (footprint) {
+    //     $scope.footprint = footprint;
+
+    //     var checkinID = footprint.checkin.checkinID;
+    //     FootprintRequests.openFootprint = footprint;
+
+    //     FootprintRequests.getFootprintInteractions(checkinID)
+    //     .then(function (data) {
+    //         FootprintRequests.currentFootprint = data.data;
+    //         $scope.selectedFootprintInteractions = FootprintRequests.currentFootprint;
+    //     });
+    // };
+
+    // $scope.closeFootprintWindow = function (){
+    //   FootprintRequests.openFootprint = undefined;
+    //   $state.go('map.feed')
+    // };
+
+    // Ensure that a user comment is posted in the database before displaying
+    // $scope.updateFootprint = function (footprint){
+    //   var checkinID = footprint.checkin.checkinID;
+    //   FootprintRequests.getFootprintInteractions(checkinID)
+    //   .then(function (data) {
+    //     $scope.selectedFootprintInteractions.comments = data.data.comments;
+    //   });  
+    // };
+
+    // $scope.removeComment = function (footprint, comment){
+    //   console.log(footprint);
+    //   console.log(comment);
+    //   var commentData = {
+    //     facebookID: comment.commenter.facebookID,
+    //     checkinID: footprint.checkin.checkinID,
+    //     commentID : comment.comment.commentID 
+    //   };
+    //   console.log(commentData);
+    //   FootprintRequests.removeComment(commentData)
+    //   .then(function (data){
+    //     console.log("success");
+    //     //MapFactory.markerQuadTree.addPropertyToCheckin(footprint, 'bucketed', false);
+    //   });
+    // };
+  })
+    
 };
 
 HypelistController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state'];
