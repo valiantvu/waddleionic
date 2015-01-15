@@ -205,6 +205,8 @@ userController.addInstagramData = function (req, res) {
   var user;
   var igUserData;
 
+  console.log('ma user: ', req.body);
+
   User.find(userData)
   .then(function (userNode) { 
     user = userNode;
