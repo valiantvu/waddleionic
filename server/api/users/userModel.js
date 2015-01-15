@@ -230,7 +230,7 @@ User.prototype.findAllFriends = function () {
 
 // Basic query to find all user's checkins
 // Uses this.getProperty to grab instantiated user's facebookID as query parameter
-User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
+User.prototype.findAllCheckins = function (viewer) {
   var page, skipAmount;
   if(arguments[1]) {
     page = arguments[1];
@@ -265,6 +265,7 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
   }
   params['skipAmount'] = skipAmount;
   params['skipNum'] = page ? page * skipAmount : 0;
+
 
 
   db.query(query, params, function (err, results) {
@@ -303,6 +304,7 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
         return singleResult
       });
 
+    console.log('inside user model!', parsedResults);
       deferred.resolve(parsedResults);
     }
   });
