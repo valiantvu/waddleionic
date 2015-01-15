@@ -3,6 +3,7 @@
 var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicActionSheet) {
     
     $scope.footprint = FootprintRequests.openFootprint;
+    $scope.currentTab = FootprintRequests.currentTab;
     $scope.selectedFootprintInteractions = {};
 
     // Ensure that a user comment is posted in the database before displaying

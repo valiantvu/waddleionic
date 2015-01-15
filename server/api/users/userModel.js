@@ -557,7 +557,9 @@ User.getBucketList = function (facebookID, page, skipAmount){
 
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})-[:hasBucket]->(checkin:Checkin)-[:hasPlace]->(p:Place)',
-    'RETURN checkin, p',
+    'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
+    'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
+    'RETURN user, checkin, p, collect(comment), collect(commenter), collect(hyper) AS hypers',
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
@@ -574,22 +576,40 @@ User.getBucketList = function (facebookID, page, skipAmount){
     else {
       var parsedResults = _.map(results, function (item) {
         var singleResult = {
-          checkin: item.checkin.data,
-          place: item.p.data
+          // "user": item.user.data,
+          "checkin": item.checkin.data,
+          "place": item.p.data,
         }
-        singleResult.checkin.bucketed = true;
-        if (singleResult.checkin.likes.length){
-          singleResult.checkin.liked = true;
+
+        if(item['collect(comment)'].length && item['collect(commenter)'].length) {
+          var commentsArray = [];
+          for(var i = 0; i < item['collect(comment)'].length; i++) {
+            var commentData = {
+              comment: item['collect(comment)'][i].data,
+              commenter: item['collect(commenter)'][i].data
+            }
+            commentsArray.push(commentData);
+          }
+          singleResult.comments = commentsArray;
         }
+
+        if(item['hypers'].length) {
+          var hypesArray = [];
+          for(var i = 0; i < item['hypers'].length; i++) {
+            hypesArray.push(item['hypers'][i].data);
+          }
+          singleResult.hypes = hypesArray;
+        }
+
         return singleResult;
-      })
+      });
 
       deferred.resolve(parsedResults);
     }
   });
 
   return deferred.promise;
-}
+};
 
 // Find a single user in the database, requires facebookID as input
 // If user is not in database, promise will resolve to error 'user does not exist'

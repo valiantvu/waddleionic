@@ -4,6 +4,7 @@ var FootprintRequests = function ($http){
   var footprintData;
   var openFootprint;
   var footprints;
+  var currentTab;
 
   return {
     // Contains comments and props
@@ -12,6 +13,8 @@ var FootprintRequests = function ($http){
     openFootprint: openFootprint,
 
     footprints: footprints,
+
+    currentTab: currentTab,
 
     addToBucketList: function (data) {
       if (data) {

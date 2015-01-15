@@ -1,11 +1,13 @@
 (function(){
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
-    
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope) {
+    $scope.numHypes = 0;
     $scope.footprints = [];
     var page = 0;
     var skipAmount = 5;
     $scope.moreDataCanBeLoaded = true;
+
+    FootprintRequests.currentTab = 'home';
 
     $scope.openFootprint = function(footprint) {
       FootprintRequests.openFootprint = footprint;
@@ -29,8 +31,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     $scope.getAggregatedFeedData();
 
-    $scope.addCheckinToBucketList = function (footprint){
-      footprint.bucketed = true;
+    $scope.addCheckinToBucketList = function (footprint, index){
       
       var bucketListData = {
         facebookID: window.sessionStorage.userFbID,
@@ -41,6 +42,12 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       .then(function (data){
         console.log(data);
         footprint.bucketed = true;
+
+        if (!$scope.footprints[index].hypes) {
+          $scope.footprints[index].hypes = [];
+        }
+
+        $scope.footprints[index].hypes.push('new hype');
       });
     };
 
@@ -60,7 +67,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       console.log(userInfo);
       UserRequests.userProfileData = userInfo;
       $state.go('tab.profile');
-    }
+    };
 
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);
@@ -118,7 +125,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
 HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state'];
 
-  // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
+// Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 
 var CustomSubmitDirective = function(FootprintRequests) {
   return {
