@@ -95,7 +95,7 @@ userController.userLogin = function (req, res) {
       // return facebookUtils.getFBFeedItemsWithLocation(user);
 
       //get tagged places
-      // return facebookUtils.getFBTaggedPosts(user);
+      return facebookUtils.getFBTaggedPosts(user);
     })
     // .then(function (fbRawFeedItemsWithLocation) {
     //   console.log("RAW data RAWRRRRR: " + JSON.stringify(fbRawFeedItemsWithLocation));
@@ -110,7 +110,7 @@ userController.userLogin = function (req, res) {
       return facebookUtils.parseFBData(user, fbRawTaggedPostsData);
     })
     .then(function (fbParsedTaggedPostsData) {
-      // userFBTaggedPostsData = fbParsedTaggedPostsData;
+      userFBTaggedPostsData = fbParsedTaggedPostsData;
       // get Picture data
       return facebookUtils.getFBPhotos(user);
     })
@@ -124,18 +124,18 @@ userController.userLogin = function (req, res) {
       userFBPhotoData = fbParsedPhotoData;
       combinedFBCheckins = userFBTaggedPostsData.concat(userFBPhotoData);
       //get statuses posted by user
-      // return facebookUtils.getFBStatuses(user);
+      return facebookUtils.getFBStatuses(user);
+      // return user.addCheckins(combinedFBCheckins);
+    })
+    .then(function (fbRawStatusList) {
+      return facebookUtils.parseFBData(user, fbRawStatusList);
+    })
+    .then(function (fbParsedStatusesData) {
+      userFBStatusesData = fbParsedStatusesData;
+      combinedFBCheckins = combinedFBCheckins.concat(userFBStatusesData);
+      console.log("combinedCheckins: " + combinedFBCheckins);
       return user.addCheckins(combinedFBCheckins);
     })
-    // .then(function (fbRawStatusList) {
-    //   return facebookUtils.parseFBData(user, fbRawStatusList);
-    // })
-    // .then(function (fbParsedStatusesData) {
-    //   userFBStatusesData = fbParsedStatusesData;
-    //   combinedFBCheckins = combinedFBCheckins.concat(userFBStatusesData);
-    //   console.log("combinedCheckins: " + combinedFBCheckins);
-    //   return user.addCheckins(combinedFBCheckins);
-    // })
     .then(function (data) {
       return user.findAllCheckins(userData.facebookID);
     })
