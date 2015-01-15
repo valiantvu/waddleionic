@@ -230,7 +230,7 @@ User.prototype.findAllFriends = function () {
 
 // Basic query to find all user's checkins
 // Uses this.getProperty to grab instantiated user's facebookID as query parameter
-User.prototype.findAllCheckins = function (viewer) {
+User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
   var page, skipAmount;
   if(arguments[1]) {
     page = arguments[1];
@@ -253,9 +253,12 @@ User.prototype.findAllCheckins = function (viewer) {
     'OPTIONAL MATCH (bucketer:User {facebookID: {viewerID}})-[:hasBucket]->(checkin)' : ""),
     'RETURN user, checkin, place, collect(comment), collect(commenter)' + (viewer ? ', liker, bucketer' : ""),
     'ORDER BY checkin.checkinTime DESC',
-    'SKIP { skipNum }',
-    'LIMIT { skipAmount }'
+    'SKIP { skipNum }'
   ].join('\n');
+
+  if(skipAmount > 0) {
+    query.concat('\n', 'LIMIT { skipAmount }');
+  }
 
   var params = {
     facebookID: this.getProperty('facebookID')
@@ -303,8 +306,6 @@ User.prototype.findAllCheckins = function (viewer) {
         }
         return singleResult
       });
-
-    console.log('inside user model!', parsedResults);
       deferred.resolve(parsedResults);
     }
   });

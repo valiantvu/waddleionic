@@ -47,14 +47,12 @@ userController.userLogin = function (req, res) {
   })
   .then(function (userNode) { 
     user = userNode;
-    return user.findAllCheckins(userData.facebookID)
+    return user.findAllCheckins(userData.facebookID, 0, 0)
   })
   //Path forks here for existing vs new users
   .then(function (checkinsAlreadyStored) {
     // console.log('fb checkins: ', checkinsAlreadyStored.length);
     // For existing users
-    console.log("is dis dorothy? ", userData.facebookID);
-    console.log(checkinsAlreadyStored)
     if (checkinsAlreadyStored.length) {
       user.setProperty('footprintsCount', checkinsAlreadyStored.length);
       user.findAllFriends()
