@@ -48,7 +48,7 @@
 
         <div class="row">
           <!-- Location -->
-          <div class="col col-73">
+          <div class="col col-73 hypelistplace">
             <h2 class='feeditemname' ng-click="getFootprint(footprint)">
               {{footprint.place.name}}
             </h2>
@@ -63,7 +63,7 @@
         
         <!-- Photo & Caption -->
         <div ng-if="footprint.checkin.photoLarge !== 'null'" ng-click="getFootprint(footprint)">
-          <img class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
+          <img class="full-image hypelisttabimg" ng-src="{{footprint.checkin.photoLarge}}">
           <h4 ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</h4>
         </div>
 

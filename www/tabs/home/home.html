@@ -3,18 +3,18 @@
   <div class="buttons">
     <button class="button button-icon icon ion-arrow-left-b" ng-click="doSomething()"></button>
   </div>
-  <h1 class="title">Home</h1>
+  <h1 class="title">home</h1>
 </ion-header-bar>
 
 <ion-view title="Home">
 
   <ion-content class="padding">
-
+<div class="backgroundgrey">
     <!-- Search bar -->
-    <div class="list list-inset">
+    <div class="search">
       <label class="item item-input">
         <i class="icon ion-ios7-search-strong placeholder-icon"></i>
-        <input type="text" placeholder="Search footprints" ng-model="search">
+        <input type="text" placeholder="search footprints" ng-model="search">
       </label>
     </div>
 
@@ -23,33 +23,42 @@
       <div class="item item-avatar">
 
         <!-- Profile Picture -->
-        <img ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
-
+        <div class="profpicframe">
+          <div class="profpic">
+            <img ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
+          </div>
+        </div>
         <!-- User Name -->
         <a href="#" class="subdued">{{footprint.user.name}}</a>
         <br>
         <!-- Place Name -->
         <a ng-click="getFootprint(footprint)">
-          {{footprint.place.name}}
-        </h2>
+          <h2>{{footprint.place.name}}</h2>
 
         <!-- Check-in Time -->
         <p>{{footprint.checkin.checkinTime | date : shortDate}}</p>
       </div>
 
       <div class="item item-body">
-        <img ng-if="footprint.checkin.photoLarge !== 'null'" ng-click="getFootprint(footprint)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
+        <div class="checkinphoto">
+          <img ng-if="footprint.checkin.photoLarge !== 'null'" ng-click="getFootprint(footprint)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
+        </div>
+        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint)" class="subdued">{{ footprint.comments.length }} Comments</a>
+          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint)" class="subdued">{{ footprint.hypes.length }} Hypes</a>
+          </p>
         <p ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
 
-        <p>
+        <!-- <p>
           <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint)" class="subdued">{{ footprint.comments.length }} Comments</a>
           <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint)" class="subdued">{{ footprint.hypes.length }} Hypes</a>
-        </p>
+        </p> -->
       </div>
 
       <!-- Comments -->
       <div ng-repeat="comment in footprint.comments | orderBy:'comment.time' | limitTo:3" class="item item-avatar item-text-wrap" ui-sref="tab.comments" ng-click="openFootprint(footprint)">  
-        <img ng-src='{{comment.commenter.fbProfilePicture}}'>
+        <div class="profpicframe">
+          <img ng-src='{{comment.commenter.fbProfilePicture}}' class="profpic">
+        </div>
         <h2>{{comment.commenter.name}}</h2>
         <p>{{comment.comment.text}}</p>
         <p>{{comment.comment.time | date : shortDate}}<P>
@@ -58,15 +67,15 @@
       <div class="item item-divider tabs tabs-secondary tabs-icon-left">
         <a ng-if="!footprint.bucketed" class="tab-item" ng-click="addCheckinToBucketList(footprint)">
           <i class="icon ion-arrow-up-a"></i>
-          Hype
+          <span>Hype</span>
         </a>
         <a ng-if="footprint.bucketed" class="tab-item" ng-click="removeCheckinFromBucketList(footprint)">
           <i class="icon ion-arrow-up-a positive"></i>
-          Hyped!
+          <span>Hyped!</span>
         </a>
         <a class="tab-item" ui-sref="tab.comments" ng-click="openFootprint(footprint)">
           <i class="icon ion-chatbox"></i>
-          Comment
+          <span>Comment</span>
         </a>
       </div>
 
@@ -119,7 +128,7 @@
     <!-- <img ng-if="footprint.checkin.bucketed" class='addbucketactive feedactions' title="Add to Bucket List" ng-click="removeCheckinFromBucketList(footprint)"/> -->
 
   <!-- </div> -->
-
+</div>
   <ion-infinite-scroll
     on-infinite="getAggregatedFeedData()"
     ng-if="moreDataCanBeLoaded"

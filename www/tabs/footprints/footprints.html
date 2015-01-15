@@ -41,8 +41,11 @@
       <div class="item item-avatar">
 
         <!-- Profile Picture -->
-        <img ng-src='{{footprint.user.fbProfilePicture}}'>
-
+        <div class="profpicframe">
+          <div class="profpic">
+          <img ng-src='{{footprint.user.fbProfilePicture}}'>
+          </div>
+        </div>
         <!-- User Name -->
         <!-- <h2>{{footprint.user.name}}</h2> -->
 
@@ -63,7 +66,7 @@
         
         <!-- Photo & Caption -->
         <div ng-if="footprint.checkin.photoLarge !== 'null'" ng-click="getFootprint(footprint)">
-          <img class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
+          <img class="full-image footprinttabimg" ng-src="{{footprint.checkin.photoLarge}}">
           <h4 ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</h4>
         </div>
 
