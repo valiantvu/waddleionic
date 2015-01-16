@@ -46,13 +46,22 @@ h3{
 span{
 	font-family: 'Open Sans', sans-serif;
 }
-
+.waddlebadge{
+	float:right;
+	height:35px;
+	width:auto;
+}
 .logo{
 	width: 125px;
 	height: auto;
 }
 .letswaddlebutton{
-	padding-top: 7px;
+	position:fixed;
+	top:100%;
+	left:20%;
+	padding:20px;
+	width:225px;
+	border-radius:25px;
 }
 .profpicframe{
 	text-align: center;
@@ -74,6 +83,10 @@ span{
 .transparentbutton{
 	background:none;
 	border:0px;
+}
+#checkinbutton{
+	height:200%;
+	width:auto;
 }
 .checkindiv{
 	background-color: #fff;
@@ -118,12 +131,13 @@ span{
 }
 .card{
 	margin-bottom:-10px;
+	border-radius:10px;
 }
 
 #welcome{
 	height:100%;
 	width:100%;
-	background-image: url("https://s3-us-west-2.amazonaws.com/waddle/mobilewelcomescreenimgs/waddlewelcomescreen1.png");
+	background-image: url("https://s3-us-west-2.amazonaws.com/waddle/mobilewelcomescreenimgs/waddlewelcomescreen2.png");
 	background-size:100%;
 }
 
