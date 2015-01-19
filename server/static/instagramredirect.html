@@ -11,6 +11,7 @@
         var url = window.location.href;
         var processedUrl = url.split('code=');
         var userCode = processedUrl[1].split('#');
+        console.log(userCode[0]);
         return userCode[0];
       };
 
