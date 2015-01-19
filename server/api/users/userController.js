@@ -213,6 +213,7 @@ userController.addInstagramData = function (req, res) {
   })
   .then(function (igData) {
     igUserData = igData;
+    console.log(igUserData);
     return user.setProperty('igToken', igUserData.access_token);
   })
   .then(function (userNode) { 
