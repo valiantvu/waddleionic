@@ -198,6 +198,7 @@ userController.addFoursquareData = function (req, res) {
 };
 
 userController.addInstagramData = function (req, res) {
+  console.log('weisheme, weisheme!!');
 
   var userData = req.body;
   var user;
