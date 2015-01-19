@@ -83,7 +83,7 @@ utils.exchangeIGUserCodeForToken = function (igCode) {
     client_id: process.env.WADDLE_INSTAGRAM_CLIENT_ID,
     client_secret: process.env.WADDLE_INSTAGRAM_CLIENT_SECRET,
     grant_type: 'authorization_code',
-    redirect_uri: 'http://waddle.herokuapp.com/instagramredirect',
+    redirect_uri: 'http://waddleionic.herokuapp.com/instagramredirect',
     code: igCode
   };
 
