@@ -261,8 +261,7 @@ utils.parseIGData = function (posts, user) {
   var foursquareVenueQueries = [];
 
   _.each(posts, function (post) {
-    console.log("this is ma datum: " + datum);
-    if (datum !== undefined && datum.place) {
+    if (post.location && post.location.name) {
       var checkin = {
       'checkinID': post.id,
       'name': post.location.name,
@@ -309,8 +308,8 @@ utils.parseIGData = function (posts, user) {
 
   Q.all(foursquareVenueQueries)
     .then(function (foursquareVenueIDs) {
-      _.each(parsedData, function (datum, index) {
-        datum.foursquareID = foursquareVenueIDs[index];
+      _.each(parsedData, function (post, index) {
+        post.foursquareID = foursquareVenueIDs[index];
       });
       console.log("parsedData: ", parsedData)
       deferred.resolve(parsedData);
