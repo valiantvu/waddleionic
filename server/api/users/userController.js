@@ -221,20 +221,12 @@ userController.addInstagramData = function (req, res) {
     return instagramUtils.tabThroughInstagramPosts(user);
   })
   .then(function (rawInstagramPosts) {
-    console.log('rawInstagramPosts', JSON.stringify(rawInstagramPosts));
-    // var allParsedInstagramCheckins = instagramUtils.processInstagramPosts(rawInstagramPosts, user);
-    // console.log("allParsedInstagramCheckins: " + JSON.stringify(allParsedInstagramCheckins))
+    // console.log('rawInstagramPosts', JSON.stringify(rawInstagramPosts));
     return instagramUtils.parseIGData(rawInstagramPosts, user)
-    // return user.addCheckins(allParsedInstagramCheckins);
   })
-  .then(function (allParsedInstagramCheckins) {
-    console.log("allParsedInstagramCheckins: " + JSON.stringify(allParsedInstagramCheckins));
-    // var filteredInstagramCheckins = _.filter(allParsedInstagramCheckins, function (checkin) {
-    //   return checkin !== undefined;
-    // });
-    // console.log("filteredInstagramCheckins: " + JSON.stringify(filteredInstagramCheckins));
-    // return filteredInstagramCheckins;
-    return 'done'
+  .then(function (parsedInstagramCheckins) {
+    console.log("allParsedInstagramCheckins: " + JSON.stringify(parsedInstagramCheckins));
+    return user.addCheckins(parsedInstagramCheckins);
   })
   .then(function (data) {
     // console.log('ig: ', data);
