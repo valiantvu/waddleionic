@@ -103,7 +103,11 @@ utils.makeFBPaginatedRequest = function (queryPath, container) {
       container.push(dataObj.data)
       console.log("makeFBPaginatedRequest container: " + JSON.stringify(container));
 
-      if (!dataObj.paging.next) {
+
+      if (!dataObj.paging) {
+        console.log('no paging for this parameter');
+        deferred.resolve(_.flatten(container, true));
+      } else if (!dataObj.paging.next) {
         console.log('no more results!');
         deferred.resolve(_.flatten(container, true));
       } else {

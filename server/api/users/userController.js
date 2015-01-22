@@ -184,7 +184,6 @@ userController.addFoursquareData = function (req, res) {
   .then(function (foursquareHistoryBucket) {
     var allFoursquareCheckins = foursquareUtils.convertFoursquareHistoryToSingleArrayOfCheckins(foursquareHistoryBucket);
     var allParsedFoursquareCheckins = foursquareUtils.parseFoursquareCheckins(allFoursquareCheckins);
-    console.log("4s checkin len:", allParsedFoursquareCheckins.length);
     return user.addCheckins(allParsedFoursquareCheckins);
   })
   .then(function (data) {
@@ -198,13 +197,11 @@ userController.addFoursquareData = function (req, res) {
 };
 
 userController.addInstagramData = function (req, res) {
-  console.log('weisheme, weisheme!!');
 
   var userData = req.body;
   var user;
   var igUserData;
 
-  console.log('ma user: ', req.body);
 
   User.find(userData)
   .then(function (userNode) { 
@@ -213,19 +210,21 @@ userController.addInstagramData = function (req, res) {
   })
   .then(function (igData) {
     igUserData = igData;
-    console.log(igUserData);
     return user.setProperty('igToken', igUserData.access_token);
   })
   .then(function (userNode) { 
     user = userNode;
-    return user.setProperty('instagramID', igUserData.user.id);
+    user.setProperty('instagramID', igUserData.user.id);
+    return instagramUtils.tabThroughInstagramFeed(user);
   })
-  .then(function (userNode) { 
-    user = userNode;
-    return 'done';
+  .then(function (rawInstagramFeedData) { 
+    var allParsedInstagramCheckins = instagramUtils.parseInstagramCheckins(rawInstagramFeedData, user);
+    console.log("allParsedInstagramCheckins: ", allParsedInstagramCheckins)
+    return allParsedInstagramCheckins;
+    // return user.addCheckins(allParsedInstagramCheckins);
   })
   .then(function (data) {
-    console.log('ig: ', data);
+    // console.log('ig: ', data);
     res.status(204).end();
   })
   .catch(function(err) {

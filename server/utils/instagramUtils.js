@@ -76,6 +76,50 @@ utils.makeRequestForMedia = function (user, timestamp) {
   //   }
 };
 
+utils.tabThroughInstagramFeed = function (user) {
+  var deferred = Q.defer();
+
+  var accessToken = user.getProperty('igToken');
+
+  var query = {
+    access_token: accessToken,
+    count: 20
+  }
+
+  var queryPath = 'https://api.instagram/v1/users/self/feed?' + qs.stringify(query);
+  var userFeedContainer = [];
+
+  deferred.resolve(utils.makeIGPaginatedRequest(queryPath, userFeedContainer));
+
+  return deferred.promise;
+}
+
+utils.makeIGPaginatedRequest = function (queryPath, container) {
+  var deferred = Q.defer();
+
+    helpers.httpsGet(queryPath)
+    .then(function (data) {
+      console.log('instagram dataaaa:  ', data)
+      var dataObj = JSON.parse(data);
+
+      container.push(dataObj.data)
+      if (!dataObj.pagination) {
+        console.log('no paging for this parameter');
+        deferred.resolve(_.flatten(container, true));
+      } else if (!dataObj.pagination.next_url) {
+        console.log('no more results!');
+        deferred.resolve(_.flatten(container, true));
+      } else {
+        deferred.resolve(utils.makeFBPaginatedRequest(dataObj.paging.next, container));
+      }
+    })
+    .catch(function (e) {
+      deferred.reject(e);
+    });
+
+  return deferred.promise;
+}
+
 utils.exchangeIGUserCodeForToken = function (igCode) {
   var deferred = Q.defer();
 
@@ -115,6 +159,14 @@ utils.exchangeIGUserCodeForToken = function (igCode) {
   return deferred.promise;
 };
 
+utils.parseInstagramCheckins = function(instagramCheckinArray, user) {
+  return _.map(instagramCheckinArray, function (post) {
+    if(post.location && post.location.name) {
+      return utils.parseIGPost(post, user);
+    }
+  });
+};
+
 utils.parseIGPost = function (post, user) {
   //data[i].location.latitude
   //.data.location.longitude
@@ -127,10 +179,10 @@ utils.parseIGPost = function (post, user) {
   //.data.id
   var deferred = Q.defer();
 
-  console.log(post.created_time);
-  console.log(parseInt(post.created_time));
-  console.log(parseInt(post.created_time)*1000);
-  console.log(new Date(parseInt(post.created_time)*1000));
+  // console.log(post.created_time);
+  // console.log(parseInt(post.created_time));
+  // console.log(parseInt(post.created_time)*1000);
+  // console.log(new Date(parseInt(post.created_time)*1000));
 
 
   var checkin = {

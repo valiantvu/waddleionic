@@ -39,8 +39,9 @@ Checkin.addToBucketList = function(facebookID, checkinID){
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})',
     'MATCH (checkin:Checkin {checkinID: {checkinID}})',
-    'MERGE (user)-[:hasBucket]->(checkin)',
-    'RETURN checkin'
+    'MERGE (user)-[bucket:hasBucket]->(checkin)',
+    'SET bucket.createdAt = timestamp()',
+    'RETURN checkin, bucket'
   ].join('\n');
 
 
