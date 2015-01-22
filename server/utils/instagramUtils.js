@@ -157,26 +157,33 @@ utils.exchangeIGUserCodeForToken = function (igCode) {
   return deferred.promise;
 };
 
-// utils.parseInstagramPosts = function(instagramPosts, user) {
-//   // var parsedInstagramCheckins = []
-//   return _.map(instagramPosts, function (post) {
-//     if(post.location && post.location.name) {
-//       // parsedInstagramCheckins.push(utils.parseIGPost(post, user));
-//       return utils.parseIGPost(post, user);
-//     }
-//   });
-//   // return parsedInstagramCheckins;
-// };
+utils.parseInstagramPosts = function(instagramPosts, user) {
+  // var parsedInstagramCheckins = []
+  return _.map(instagramPosts, function (post) {
+    if(post.location && post.location.name) {
+      // parsedInstagramCheckins.push(utils.parseIGPost(post, user));
+      return utils.parseIGPost(post, user);
+    }
+  });
+  // return parsedInstagramCheckins;
+};
 
 utils.processInstagramPosts = function(instagramPosts, user) {
-  return _.chain(instagramPosts)
-    _.filter(function (post) {
-        return post.location.name === true;
-    })
-    _,map(function (post) {
+  // return _.chain(instagramPosts)
+  //   _.filter(function (post) {
+  //       return post.location.name === true;
+  //   })
+  //   _,map(function (post) {
+  //     return utils.parseIGPost(post, user);
+  //   })
+  //   .value();
+
+      return _.map(instagramPosts, function (post) {
+    if(post.location && post.location.name) {
+      // parsedInstagramCheckins.push(utils.parseIGPost(post, user));
       return utils.parseIGPost(post, user);
-    })
-    .value();
+    }
+  });
 }
 
 utils.parseIGPost = function (post, user) {
