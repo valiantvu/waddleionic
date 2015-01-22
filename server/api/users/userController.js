@@ -218,7 +218,7 @@ userController.addInstagramData = function (req, res) {
   })
   .then(function (userNode) {
     user = userNode
-    return instagramUtils.tabThroughInstagramFeed(user);
+    return instagramUtils.tabThroughInstagramPosts(user);
   })
   .then(function (rawInstagramFeedData) { 
     var allParsedInstagramCheckins = instagramUtils.parseInstagramCheckins(rawInstagramFeedData, user);
