@@ -86,7 +86,7 @@ utils.tabThroughInstagramFeed = function (user) {
     count: 20
   }
 
-  var queryPath = 'https://api.instagram/v1/users/self/feed?' + qs.stringify(query);
+  var queryPath = 'https://api.instagram.com/v1/users/self/feed?' + qs.stringify(query);
   var userFeedContainer = [];
 
   deferred.resolve(utils.makeIGPaginatedRequest(queryPath, userFeedContainer));
