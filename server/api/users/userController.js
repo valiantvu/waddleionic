@@ -214,7 +214,10 @@ userController.addInstagramData = function (req, res) {
   })
   .then(function (userNode) { 
     user = userNode;
-    user.setProperty('instagramID', igUserData.user.id);
+    return user.setProperty('instagramID', igUserData.user.id);
+  })
+  .then(function (userNode) {
+    user = userNode
     return instagramUtils.tabThroughInstagramFeed(user);
   })
   .then(function (rawInstagramFeedData) { 

@@ -76,9 +76,10 @@ utils.makeRequestForMedia = function (user, timestamp) {
   //   }
 };
 
-utils.tabThroughInstagramFeed = function (user) {
+utils.tabThroughInstagramPosts = function (user) {
   var deferred = Q.defer();
 
+  var igUserID = user.getProperty('instagramID');
   var accessToken = user.getProperty('igToken');
 
   var query = {
@@ -86,7 +87,7 @@ utils.tabThroughInstagramFeed = function (user) {
     count: 20
   }
 
-  var queryPath = 'https://api.instagram.com/v1/users/self/feed?' + qs.stringify(query);
+  var queryPath = 'https://api.instagram.com/v1/users/' + igUserID + '/media/recent?' + qs.stringify(query);
   var userFeedContainer = [];
 
   deferred.resolve(utils.makeIGPaginatedRequest(queryPath, userFeedContainer));
