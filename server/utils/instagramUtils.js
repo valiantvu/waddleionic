@@ -171,9 +171,7 @@ utils.exchangeIGUserCodeForToken = function (igCode) {
 utils.processInstagramPosts = function(instagramPosts, user) {
   return _.chain(instagramPosts)
     _.filter(function (post) {
-      if(post.location && post.location.name) {
-        return post;
-      }
+        return post.location.name === true;
     })
     _,map(function (post) {
       return utils.parseIGPost(post, user);
