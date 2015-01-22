@@ -220,9 +220,9 @@ userController.addInstagramData = function (req, res) {
     user = userNode
     return instagramUtils.tabThroughInstagramPosts(user);
   })
-  .then(function (rawInstagramFeedData) { 
-    var allParsedInstagramCheckins = instagramUtils.parseInstagramCheckins(rawInstagramFeedData, user);
-    console.log("allParsedInstagramCheckins: ", allParsedInstagramCheckins)
+  .then(function (rawInstagramPosts) {
+    var allParsedInstagramCheckins = instagramUtils.parseInstagramPosts(rawInstagramPosts, user);
+    console.log("allParsedInstagramCheckins: " + JSON.stringify(allParsedInstagramCheckins))
     return allParsedInstagramCheckins;
     // return user.addCheckins(allParsedInstagramCheckins);
   })

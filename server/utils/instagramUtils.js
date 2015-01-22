@@ -104,14 +104,11 @@ utils.makeIGPaginatedRequest = function (queryPath, container) {
       var dataObj = JSON.parse(data);
 
       container.push(dataObj.data)
-      if (!dataObj.pagination) {
-        console.log('no paging for this parameter');
-        deferred.resolve(_.flatten(container, true));
-      } else if (!dataObj.pagination.next_url) {
+      if (!dataObj.pagination || !dataObj.pagination.next_url) {
         console.log('no more results!');
         deferred.resolve(_.flatten(container, true));
       } else {
-        deferred.resolve(utils.makeFBPaginatedRequest(dataObj.paging.next, container));
+        deferred.resolve(utils.makeFBPaginatedRequest(dataObj.pagination.next_url, container));
       }
     })
     .catch(function (e) {
@@ -160,12 +157,14 @@ utils.exchangeIGUserCodeForToken = function (igCode) {
   return deferred.promise;
 };
 
-utils.parseInstagramCheckins = function(instagramCheckinArray, user) {
-  return _.map(instagramCheckinArray, function (post) {
+utils.parseInstagramPosts = function(instagramPosts, user) {
+  var parsedInstagramCheckins = []
+  _.each(instagramPosts, function (post) {
     if(post.location && post.location.name) {
-      return utils.parseIGPost(post, user);
+      parsedInstagramCheckins.push(utils.parseIGPost(post, user));
     }
   });
+  return parsedInstagramCheckins;
 };
 
 utils.parseIGPost = function (post, user) {
