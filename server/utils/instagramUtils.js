@@ -100,7 +100,6 @@ utils.makeIGPaginatedRequest = function (queryPath, container) {
 
     helpers.httpsGet(queryPath)
     .then(function (data) {
-      console.log('instagram dataaaa:  ', data)
       var dataObj = JSON.parse(data);
 
       container.push(dataObj.data)
@@ -251,6 +250,74 @@ utils.parseIGPost = function (post, user) {
   .catch(function (err) {
     deferred.reject(err);
   });
+
+  return deferred.promise;
+};
+
+utils.parseIGData = function (posts, user) {
+  var deferred = Q.defer();
+
+  var parsedData = [];
+  var foursquareVenueQueries = [];
+
+  _.each(posts, function (post) {
+    console.log("this is ma datum: " + datum);
+    if (datum !== undefined && datum.place) {
+      var checkin = {
+      'checkinID': post.id,
+      'name': post.location.name,
+      'lat': post.location.latitude,
+      'lng': post.location.longitude,
+      'checkinTime': new Date(parseInt(post.created_time)*1000),
+      'likes': 'null',
+      'photoSmall': 'null',
+      'photoLarge': 'null',
+      'caption': 'null',
+      'foursquareID': 'null',
+      'country': 'null',
+      'city': 'null',
+      'category': 'null',
+      'source': 'instagram'
+    };
+
+    if (post.likes) {
+      checkin.likes = post.likes.count;
+    }
+
+    if(post.caption) {
+      checkin.caption = post.caption.text;
+    }
+
+    if (post.images) {
+      if (post.images.thumbnail){
+        checkin.photoSmall = post.images.thumbnail.url;
+      }
+      if (post.images.standard_resolution){
+        checkin.photoLarge = post.images.standard_resolution.url;
+      }
+    }
+
+    var latlng = checkin.lat.toString() + ',' + checkin.lng.toString();
+        parsedData.push(checkin);
+        console.log(user, checkin.name, latlng);
+        foursquareVenueQueries.push(foursquareUtils.generateFoursquarePlaceID(user, checkin.name, latlng));
+    }
+  });
+  console.log("parsedData before: ", parsedData);
+  console.log(foursquareVenueQueries);
+  
+
+  Q.all(foursquareVenueQueries)
+    .then(function (foursquareVenueIDs) {
+      _.each(parsedData, function (datum, index) {
+        datum.foursquareID = foursquareVenueIDs[index];
+      });
+      console.log("parsedData: ", parsedData)
+      deferred.resolve(parsedData);
+    })
+    .catch(function (err) {
+      deferred.reject(err);
+    });
 
   return deferred.promise;
 };
