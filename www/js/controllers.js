@@ -7,6 +7,7 @@ angular.module('waddle.controllers', [
     'waddle.profile',
     'waddle.frontpage',
     'waddle.comments',
-    'waddle.hypers'
+    'waddle.hypers',
+    'waddle.walkthrough'
     ]);
 })();

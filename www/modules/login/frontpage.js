@@ -22,14 +22,16 @@ var FrontpageController = function (UserRequests, $scope, $state, $window) {
       fbToken: fbToken
     };
 //when sucessfully connected to fb account , loading screen is made active 
-    $state.go('tab.home');
+    $state.go('walkthrough');
     console.log(userData);
 
     UserRequests.sendUserData(userData)
     .then(function(storedUserData){
       UserRequests.allData = storedUserData.data
-      //Here map state is set to active
-      $state.go('tab.home');
+      console.log(UserRequests.allData)
+      if(UserRequests.allData.footprintsCount) {
+        $state.go('tab.home');
+      }
     });
   };
 

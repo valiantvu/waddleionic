@@ -42,7 +42,8 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
     })
     .state('walkthrough', {
       url: '/walkthrough',
-      templateUrl: 'modules/walkthrough/walkthrough.html'
+      templateUrl: 'modules/walkthrough/walkthrough.html',
+      controller: 'WalkthroughController'
     })
     .state('tab', {
       url: "/tab",

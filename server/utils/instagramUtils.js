@@ -107,7 +107,7 @@ utils.makeIGPaginatedRequest = function (queryPath, container) {
         console.log('no more results!');
         deferred.resolve(_.flatten(container, true));
       } else {
-        deferred.resolve(utils.makeFBPaginatedRequest(dataObj.pagination.next_url, container));
+        deferred.resolve(utils.makeIGPaginatedRequest(dataObj.pagination.next_url, container));
       }
     })
     .catch(function (e) {
