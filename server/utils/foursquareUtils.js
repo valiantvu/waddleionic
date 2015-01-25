@@ -308,7 +308,7 @@ utils.searchFoursquareVenuesMobile = function (user, latlng) {
   return deferred.promise;
 }
 
-utils.generateFoursquarePlaceID = function (user, name, latlng) {
+utils.generateFoursquarePlaceIDAndCategory = function (user, name, latlng) {
   var deferred = Q.defer();
 
   var query = {
@@ -333,9 +333,14 @@ utils.generateFoursquarePlaceID = function (user, name, latlng) {
     .then(function (data) {
       var venue = JSON.parse(data).response.venues[0];
       if (venue) {
-        deferred.resolve(venue.id);
+        if(venue.categories[0]) {
+          deferred.resolve({foursquareID: venue.id, category:categories[0].name});
+        }
+        else {
+          deferred.resolve({foursquareID: venue.id});
+        }
       } else {
-        deferred.resolve(name);
+        deferred.resolve({foursquareID: name});
       }
     })
     .catch(function (e) {

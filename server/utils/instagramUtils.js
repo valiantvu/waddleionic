@@ -299,7 +299,7 @@ utils.parseIGData = function (posts, user) {
     var latlng = checkin.lat.toString() + ',' + checkin.lng.toString();
         parsedData.push(checkin);
         console.log(user, checkin.name, latlng);
-        foursquareVenueQueries.push(foursquareUtils.generateFoursquarePlaceID(user, checkin.name, latlng));
+        foursquareVenueQueries.push(foursquareUtils.generateFoursquarePlaceIDAndCategory(user, checkin.name, latlng));
     }
   });
   console.log("parsedData before: ", parsedData);
@@ -309,7 +309,10 @@ utils.parseIGData = function (posts, user) {
   Q.all(foursquareVenueQueries)
     .then(function (foursquareVenueIDs) {
       _.each(parsedData, function (post, index) {
-        post.foursquareID = foursquareVenueIDs[index];
+        post.foursquareID = foursquareVenueIDs[index]["foursquareID"];
+        if(foursquareIDs[index]["category"]) {
+          post.category = foursquareIDs[index]["category"];
+        }
       });
       console.log("parsedData: ", parsedData)
       deferred.resolve(parsedData);
