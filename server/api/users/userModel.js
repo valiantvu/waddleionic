@@ -163,7 +163,7 @@ User.prototype.addCheckins = function(combinedCheckins){
     'ON CREATE SET place = {name: {name}, lat: {lat}, lng: {lng}, country: {country}, province:{province}, city:{city}, category: {category}}',
     'ON MATCH SET place.name = {name}, place.lat = {lat}, place.lng = {lng}, place.country = {country}, place.province = {province}, place.city = {city}, place.category = {category}',
     'MERGE (country:Country {name: {country}})',
-    'MERGE (province:Province {name: {province}})'
+    'MERGE (province:Province {name: {province}})',
     'MERGE (city:City {name: {city}})',
     'MERGE (user)-[:hasCheckin]->(checkin)-[:hasPlace]->(place)-[:hasCity]->(city)-[:hasCountry]->(country)',
     'MERGE (city)-[:hasProvince]->(province)-[:hasCountry]->(country)',
