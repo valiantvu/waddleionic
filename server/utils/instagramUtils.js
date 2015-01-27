@@ -216,6 +216,7 @@ utils.parseIGPost = function (post, user) {
     'foursquareID': 'null',
     'country': 'null',
     'city': 'null',
+    'province': 'null',
     'category': 'null',
     'source': 'instagram'
   };
@@ -240,8 +241,11 @@ utils.parseIGPost = function (post, user) {
   var latlng = checkin.lat.toString() + ',' + checkin.lng.toString();
     
   foursquareUtils.generateFoursquarePlaceID(user, checkin.name, latlng)
-  .then(function (foursquareVenueID) {
-    checkin.foursquareID = foursquareVenueID;
+  .then(function (foursquareVenue) {
+    checkin.foursquareID = foursquareVenue.foursquareID;
+    if(foursquareVenue.category) {
+      checkin.category = foursquareVenue.category;
+    }
     deferred.resolve({
       checkin: checkin,
       user: user

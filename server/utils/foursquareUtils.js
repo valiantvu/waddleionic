@@ -140,6 +140,7 @@ utils.parseNativeCheckin = function (venue) {
     'foursquareID': venue.id,
     'address': 'null',
     'city': 'null',
+    'province': 'null',
     'country': venue.location.country,
     'postalCode': 'null',
     'category': 'null',
@@ -158,33 +159,39 @@ utils.parseNativeCheckin = function (venue) {
     formattedCheckin.postalCode = venue.location.postalCode;
   }
 
-   if (venue.footprintCaption) {
+  if (venue.footprintCaption) {
     formattedCheckin.caption = venue.footprintCaption;
   }
 
   //TODO: figure out how to generate different size images from AWS url
 
-   if (venue.photo) {
+  if (venue.photo) {
     formattedCheckin.photoLarge = venue.photo;
   }
 
-  if (venue.location.city) {
-    formattedCheckin.city = venue.location.city;
-    deferred.resolve(formattedCheckin);
-  }
-  else {
-    helpers.findCityByReverseGeocoding(formattedCheckin.lat, formattedCheckin.lng)
-    .then(function (geocodeData) {
-      console.log(geocodeData);
-      formattedCheckin.city = geocodeData.features[0].place_name;
-      deferred.resolve(formattedCheckin);
+  helpers.findCityStateAndCountry(formattedCheckin.lat, formattedCheckin.lng)
+  .then(function (geocodeData) {
+    console.log(geocodeData);
+    _.each(geocodeData.features, function (feature) {
+      if(feature.id.indexOf("city")) {
+        formattedCheckin.city = feature.text;
+      }
+      else if(feature.id.indexOf("province")) {
+        formattedCheckin.state = feature.text;
+
+      }
+      else if(feature.id.indexOf("country")) {
+        formattedCheckin.country = feature.text;
+      }
     })
-  }
+
+    deferred.resolve(formattedCheckin);
+  })
   return deferred.promise;
 }
 
 utils.parseCheckin = function (checkin) {
-  // var deferred = Q.defer();
+  var deferred = Q.defer();
 
   var formattedCheckin = {
     'checkinID': checkin.id,
@@ -199,6 +206,7 @@ utils.parseCheckin = function (checkin) {
     'foursquareID': checkin.venue.id,
     'address': 'null',
     'city': 'null',
+    'province': 'null',
     'country': checkin.venue.location.country,
     'postalCode': 'null',
     'category': 'null',
@@ -225,21 +233,24 @@ utils.parseCheckin = function (checkin) {
     formattedCheckin.caption = checkin.shout;
   }
 
-  if(checkin.venue.location.city) {
-    formattedCheckin.city = checkin.venue.location.city;
-    // deferred.resolve(formattedCheckin);
-  }
-  // else {
-  //   helpers.findCityByReverseGeocoding(formattedCheckin.lat, formattedCheckin.lng)
-  //   .then(function (geocodeData) {
-  //     console.log(geocodeData);
-  //     formattedCheckin.city = geocodeData.features[0].place_name;
-  //     // deferred.resolve(formattedCheckin);
-  //   })
-  // }
+  helpers.findCityStateAndCountry(formattedCheckin.lat, formattedCheckin.lng)
+  .then(function (geocodeData) {
+    console.log(geocodeData);
+    _.each(geocodeData.features, function (feature) {
+      if(feature.id.indexOf("city")) {
+        formattedCheckin.city = feature.text;
+      }
+      else if(feature.id.indexOf("province")) {
+        formattedCheckin.state = feature.text;
 
-  // return deferred.promise;
-  return formattedCheckin;
+      }
+      else if(feature.id.indexOf("country")) {
+        formattedCheckin.country = feature.text;
+      }
+    })
+    deferred.resolve(formattedCheckin);
+  })
+  return deferred.promise;
 };
 
 utils.searchFoursquareVenuesWeb = function (user, near, query) {
@@ -334,7 +345,7 @@ utils.generateFoursquarePlaceIDAndCategory = function (user, name, latlng) {
       var venue = JSON.parse(data).response.venues[0];
       if (venue) {
         if(venue.categories[0]) {
-          deferred.resolve({foursquareID: venue.id, category:categories[0].name});
+          deferred.resolve({foursquareID: venue.id, category: venue.categories[0].name});
         }
         else {
           deferred.resolve({foursquareID: venue.id});

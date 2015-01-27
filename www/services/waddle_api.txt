@@ -1,0 +1,126 @@
+WADDLE API GUIDE:
+
+BASE URL: http://waddleionic.herokuapp.com/api
+
+USER ENDPOINTS: http://waddleionic.herokuapp.com/api/users
+
+    POST REQUESTS:
+
+        1) /userdata
+            User facebook login endpoint. This request must be sent with JSON in the following format:
+            {facebookID: facebookID, 
+              name: name, 
+              fbToken: fbToken
+            }
+            The facebook token (fbToken) is a short-term access token provided by faceboook via a request sent on the client side.  
+            The server exchanges the short-term token for a long-term token that then gets persisted in the database. The long-term token must get appended to every call to the FB API made on the behalf of a user.
+            The facebookID and name parameters should also be provided by facebook along with the short-term token.
+
+        2) /userfoursquarecode
+            This endpoint is used to exchange the code that foursquare provides us with a long-term access token that is appended to requests to foursquare's API on behalf of a user.  The endpoint expects to recevive JSON in the following format:
+            {facebookID: facebookID,
+             foursquareCode: foursquareCode
+            }
+
+        3) /userinstagramcode
+            Same as above, but for instagram auth.  Endpoint expects to receive JSON in the following format:
+            {facebookID: facebookID,
+              instagramCode: instagramCode
+            }
+
+        4) /notifications
+            Used to notify the server that a user has read their unread notifications.  This results in the status of notifications being changed from unread to read. The endpoint expects JSON in the following format:
+            {facebookID: facebookID}
+
+
+    GET REQUESTS:
+        For the following, anytime :user appears, it refers to the user's facebook ID, which is used as each user's unique identifier.  
+
+        1) /aggregatefeed/:user/:page?/:skip?
+            Provides the relevant data for the home feed.  The :user parameter requires the user''s facebookID.  The skip parameter defines how many items are returned from the DB, while the page parameter keeps
+            track of the pagination. 
+            For example, to get the first 5 footprints in a specific user's feed, the call would be: /aggregatefeed/123456789/0/5. To get the next 5 footprints, the paging parameter must be increased by 1, 
+            so the call would then be /aggregatefeed/123456789/1/5. (note that the facebookID used here is made up and does not correspond to a real user);
+
+        2) /bucketlist/:user/:page?/:skip?
+            This endpoint provides the list of footprints that a user has "hyped".  See above for discussion of the user, page, and skip parameters.
+
+        3) /notifications/:user
+            Provides list of unread notifications to alert the user when a friend has interacted with one of their footprints (i.e. hyped or commented on footprint)
+        
+        4) /readnotifications/:user/:limit
+            Provides list of already read notifications, with a limit specified by the client.  Can be used to populate notifications tab in the case that there are no unread notifications
+
+        5) /userinfo/:user
+            Provides basic information about the specified user.  
+        
+        6) /searchfootprints/:user/:query
+            Searches through specified user's footprints and returns those foortprints that match the query.  Query must be sanitized on client before being sent to server via the request to this endpoint 
+            (i.e. trimmed of spaces, handle plurals, etc.).  
+       
+        7) /searchfeed/:user/:query
+            Same as above, but searches the specified user's home feed instead of their footprints (i.e. searches friends' footprints in addition to their own).
+       
+        8) /friendslist/:user/:page?/:skip?
+            Fetch list of friends for a specified user.  
+
+        9) /:friend/:viewer/:page?/:skip?
+            Gets specified user's list of checkins.  Used to get a 
+
+CHECKIN ENDPOINTS:  http://waddleionic.herokuapp.com/api/checkins
+
+    POST REQUESTS:
+        1) /nativecheckin
+            Post a native waddle checkin to the DB.  Expects JSON from foursquare API related to selected venue, in addition to parameters specified in the client.  For example:
+            {
+              beenHere: object,
+              categories:
+              contact:
+              hereNow:
+              id:
+              location:
+              name:
+              etc etc (the above are all the properties specifed for a particular venue and are provided by the foursquare API after posting a get request to the /venuesearchmobile endpoint below)
+              facebookID:
+              footprintCaption:
+              photo: 
+              (the above are properties added by the client that represent user-generated content on the waddle app)
+            }
+
+        2) /bucketlist
+            Add a footprint to a user's hype list. Expects JSON formatted like so:
+            {
+              facebookID: facebookID(the logged-in user's facebook ID)
+              checkinID: checkinID (the ID of the checkin that the user has hyped.  should be served up by the aggregatefeed endpoint.)
+            }
+
+        3) /removebucket
+            Used to remove a footprint from a user's hype list. Format of JSON is same as /bucketlist endpoint.
+
+        4) /comment
+            Post a comment to the DB. Expects JSON to formatted like so:
+            {
+              clickerID: clickerID (logged in user's facebook ID, sorry about the name being different),
+              checkinID: checkinID,
+              text: text (text of comment; comment text should be sanitized on client side before being posted to DB);
+            };
+
+        5) /removecomment
+            Delete a comment.  Expects JSON to formatted like so:
+            {
+            facebookID: facebookID, (commenter's facebook ID. note this is NOT the logged in user's facebook ID!)
+            checkinID: checkinID (ID of the checkin where comment was posted)
+            commentID : commentID (ID of comment to be removed, generated by server when comment is added to DB)
+          }
+
+
+    GET REQUESTS:
+
+        1) /venuesearchmobile/:facebookID/:lat/:lng
+            Queries the foursquare API to get a list of venues that are located near the specified lat/lng.  Facebook ID is logged in user's facebook ID
+
+        2) /sign_s3
+            Used to post pictures to Amazon S3.  I can walk you through the process of using Amazon s3 to store pictures.  
+
+        3) /interactions/:checkinid
+            Used to fetch all comments and hypes that a checkin has received.

@@ -159,11 +159,15 @@ User.prototype.addCheckins = function(combinedCheckins){
     'ON CREATE SET checkin = {checkinID: {checkinID}, likes: {likes}, photoSmall: {photoSmall}, photoLarge: {photoLarge}, caption: {caption}, checkinTime: {checkinTime}, source: {source}}',
     'ON MATCH SET checkin.checkinTime = {checkinTime}, checkin.likes = {likes}, checkin.photoSmall = {photoSmall}, checkin.photoLarge = {photoLarge}, checkin.caption = {caption}, checkin.source = {source}',
     //change to merge on foursquareID only
-    'MERGE (place:Place {name: {name}, lat: {lat}, lng: {lng}, country: {country}, city:{city}, category: {category}, foursquareID: {foursquareID}})',
+    'MERGE (place:Place {foursquareID: {foursquareID}})',
+    'ON CREATE SET place = {name: {name}, lat: {lat}, lng: {lng}, country: {country}, province:{province}, city:{city}, category: {category}}',
+    'ON MATCH SET place.name = {name}, place.lat = {lat}, place.lng = {lng}, place.country = {country}, place.province = {province}, place.city = {city}, place.category = {category}',
     'MERGE (country:Country {name: {country}})',
+    'MERGE (province:Province {name: {province}})'
     'MERGE (city:City {name: {city}})',
     'MERGE (user)-[:hasCheckin]->(checkin)-[:hasPlace]->(place)-[:hasCity]->(city)-[:hasCountry]->(country)',
-    'RETURN user, checkin, place, city, country',
+    'MERGE (city)-[:hasProvince]->(province)-[:hasCountry]->(country)',
+    'RETURN user, checkin, place, city, province, country',
   ].join('\n');
 
   // Map over the friends and return a list of objects
@@ -328,7 +332,8 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
 
   var query = [
     // 'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
-    'MATCH (user:User {facebookID: {facebookID}})-[:hasFriend]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    // 'MATCH (user:User {facebookID: {facebookID}})-[:hasFriend]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasFriend*0..1]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
     'RETURN user, friend, checkin, place, collect(comment), collect(commenter), collect(hyper) AS hypers',

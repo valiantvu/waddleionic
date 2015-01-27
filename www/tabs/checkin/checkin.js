@@ -34,6 +34,7 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicModal, $i
 
 	$scope.passSelectedVenueInfoToPostModal = function (venueInfo) {
 		$scope.venue = venueInfo;
+		console.log(venueInfo);
 	}
 
 	$scope.sendCheckinDataToServer = function(venueInfo) {
