@@ -61,7 +61,6 @@ var UserRequests = function ($http){
       if (arguments[1] !== undefined) {
           var page = arguments[1];
           url +=  "/" + page;
-          console.log(url);
       }
 
       if (arguments[2] !== undefined) {

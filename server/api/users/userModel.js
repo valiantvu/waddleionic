@@ -333,6 +333,7 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
 // 
 
 User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) {
+  console.log('getAggregatedFootprintList', skipAmount);
   var deferred = Q.defer();
 
   var query = [
@@ -341,12 +342,13 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
     'RETURN user, friend, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
     'ORDER BY checkin.checkinTime DESC',
-    'SKIP { skipNum }'
+    'SKIP { skipNum }',
+    'LIMIT { skipAmount }'
   ].join('\n');
 
-  if(skipAmount > 0) {
-    query.concat('\n', 'LIMIT { skipAmount }');
-  }
+  // if(skipAmount > 0) {
+  //   query.concat('\n', 'LIMIT { skipAmount }');
+  // }
 
   var params = {
     facebookID: this.getProperty('facebookID'),
@@ -645,12 +647,13 @@ User.getBucketList = function (facebookID, page, skipAmount){
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
     'RETURN user, checkin, p, collect(DISTINCT comment) AS comments, collect(commenter), collect(hyper) AS hypers',
     'ORDER BY checkin.checkinTime DESC',
-    'SKIP { skipNum }'
+    'SKIP { skipNum }', 
+    'LIMIT { skipAmount }'
   ].join('\n');
 
-  if(skipAmount > 0) {
-    query.concat('\n', 'LIMIT { skipAmount }');
-  }
+  // if(skipAmount > 0) {
+  //   query.concat('\n', 'LIMIT { skipAmount }');
+  // }
 
   var params = {
     'facebookID': facebookID,
