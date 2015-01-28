@@ -202,7 +202,6 @@ userController.addInstagramData = function (req, res) {
   var user;
   var igUserData;
 
-
   User.find(userData)
   .then(function (userNode) { 
     user = userNode;
@@ -283,7 +282,6 @@ userController.getAggregatedListOfCheckins = function (req, res){
   // var users = req.params.userlist;
   var user;
   var params = {};
-  var aggregatedFootprints = [];
   // var friendCheckins;
   params.facebookID = req.params.user;
   
@@ -306,13 +304,8 @@ userController.getAggregatedListOfCheckins = function (req, res){
     user = userNode;
     return user.getAggregatedFootprintList(params.facebookID, params.page, params.skipAmount);
   })
-  // .then(function (aggregatedFootprintsFromFriends) {
-  //   aggregatedFootprints.push(aggregatedFootprintsFromFriends);
-  //   return user.findAllCheckins(params.facebookID, params.page, params.skipAmount);
-  // })
-  .then(function (userFootprints) {
-    aggregatedFootprints.push(userFootprints);
-    res.json(_.flatten(aggregatedFootprints));
+  .then(function (aggregatedFootprints) {
+    res.json(aggregatedFootprints);
     res.status(200).end();
   })
   .catch(function (err) {

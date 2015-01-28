@@ -41,7 +41,7 @@ Checkin.addToBucketList = function(facebookID, checkinID){
     'MATCH (checkin:Checkin {checkinID: {checkinID}})',
     'MERGE (user)-[bucket:hasBucket]->(checkin)',
     'SET bucket.createdAt = timestamp()',
-    'RETURN checkin, bucket'
+    'RETURN checkin'
   ].join('\n');
 
 
@@ -243,68 +243,68 @@ Checkin.getComments = function (checkinID){
 };
 
 //executed one time to convert native waddle checkins' checkinTime from ms to new Date() in DB; kept here for future reference
-Checkin.convertNativeWaddleCheckinTime = function () {
-  var deferred = Q.defer();
-  var query = [
-  'MATCH (checkin:Checkin {source: {source}})',
-  'RETURN checkin.checkinID, checkin.checkinTime'
-  ].join('\n');
+// Checkin.convertNativeWaddleCheckinTime = function () {
+//   var deferred = Q.defer();
+//   var query = [
+//   'MATCH (checkin:Checkin {source: {source}})',
+//   'RETURN checkin.checkinID, checkin.checkinTime'
+//   ].join('\n');
 
-  var params = {
-    'source': 'waddle'
-  };
+//   var params = {
+//     'source': 'waddle'
+//   };
 
-  db.query(query, params, function (err, results)  {
-    if (err) { deferred.reject(err) }
-    else {
-      console.log(results)
-      deferred.resolve(results)
-    }
-  });
-  return deferred.promise;
-}
+//   db.query(query, params, function (err, results)  {
+//     if (err) { deferred.reject(err) }
+//     else {
+//       console.log(results)
+//       deferred.resolve(results)
+//     }
+//   });
+//   return deferred.promise;
+// }
 
 //executed one time to convert native waddle checkins' checkinTime from ms to new Date() in DB; kept here for future reference
-Checkin.updateCheckinTime = function (updatedCheckins) {
-  var deferred = Q.defer();
+// Checkin.updateCheckinTime = function (updatedCheckins) {
+//   var deferred = Q.defer();
 
-  var query = [
-  'MATCH (checkin:Checkin {checkinID: {checkinID}})',
-  'SET checkin.checkinTime = {checkinTime}',
-  'RETURN checkin'
-  ].join('\n');
+//   var query = [
+//   'MATCH (checkin:Checkin {checkinID: {checkinID}})',
+//   'SET checkin.checkinTime = {checkinTime}',
+//   'RETURN checkin'
+//   ].join('\n');
 
-   var batchRequest = _.map(updatedCheckins, function (checkin, index) {
+//    var batchRequest = _.map(updatedCheckins, function (checkin, index) {
 
-    var singleRequest = {
-      'method': "POST",
-      'to': "/cypher",
-      'body': {
-        'query': query,
-        'params': checkin
-      },
-      'id': index
-    };
+//     var singleRequest = {
+//       'method': "POST",
+//       'to': "/cypher",
+//       'body': {
+//         'query': query,
+//         'params': checkin
+//       },
+//       'id': index
+//     };
 
-    return singleRequest;
-  });
+//     return singleRequest;
+//   });
 
-  var options = {
-    'url': neo4jUrl + '/db/data/batch',
-    'method': 'POST',
-    'json': true,
-    'body': JSON.stringify(batchRequest)
-  };
+//   var options = {
+//     'url': neo4jUrl + '/db/data/batch',
+//     'method': 'POST',
+//     'json': true,
+//     'body': JSON.stringify(batchRequest)
+//   };
 
-  request.post(options, function(err, response, body) {
-    if (err) { deferred.reject(err) }
-    else {
-      deferred.resolve(body);
-    }
-  });
+//   request.post(options, function(err, response, body) {
+//     if (err) { deferred.reject(err) }
+//     else {
+//       deferred.resolve(body);
+//     }
+//   });
 
-  return deferred.promise;
-}
+//   return deferred.promise;
+// }
 
 
 module.exports = Checkin;

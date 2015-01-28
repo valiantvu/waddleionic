@@ -21,7 +21,7 @@ utils.exchangeFoursquareUserCodeForToken = function (fsqCode) {
     client_id: process.env.WADDLE_FOURSQUARE_CLIENT_ID,
     client_secret: process.env.WADDLE_FOURSQUARE_CLIENT_SECRET,
     grant_type: 'authorization_code',
-    redirect_uri: 'http://waddle.herokuapp.com/fsqredirect',
+    redirect_uri: 'http://waddleionic.herokuapp.com/fsqredirect',
     code: fsqCode
   };
 
@@ -141,7 +141,7 @@ utils.parseNativeCheckin = function (venue) {
     'address': 'null',
     'city': 'null',
     'province': 'null',
-    'country': venue.location.country,
+    'country': 'null',
     'postalCode': 'null',
     'category': 'null',
     'source': 'waddle'
@@ -169,22 +169,18 @@ utils.parseNativeCheckin = function (venue) {
     formattedCheckin.photoLarge = venue.photo;
   }
 
-  helpers.findCityStateAndCountry(formattedCheckin.lat, formattedCheckin.lng)
+  helpers.findCityProvinceAndCountry(formattedCheckin.lat, formattedCheckin.lng)
   .then(function (geocodeData) {
     console.log(geocodeData);
-    _.each(geocodeData.features, function (feature) {
-      if(feature.id.indexOf("city")) {
-        formattedCheckin.city = feature.text;
+      if(geocodeData.city) {
+        formattedCheckin.city = geocodeData.city;
       }
-      else if(feature.id.indexOf("province")) {
-        formattedCheckin.state = feature.text;
-
+      if(geocodeData.province) {
+        formattedCheckin.province = geocodeData.province;
       }
-      else if(feature.id.indexOf("country")) {
-        formattedCheckin.country = feature.text;
+      if(geocodeData.country) {
+        formattedCheckin.country = geocodeData.country;
       }
-    })
-
     deferred.resolve(formattedCheckin);
   })
   return deferred.promise;
@@ -233,21 +229,17 @@ utils.parseCheckin = function (checkin) {
     formattedCheckin.caption = checkin.shout;
   }
 
-  helpers.findCityStateAndCountry(formattedCheckin.lat, formattedCheckin.lng)
+  helpers.findCityProvinceAndCountry(formattedCheckin.lat, formattedCheckin.lng)
   .then(function (geocodeData) {
-    console.log(geocodeData);
-    _.each(geocodeData.features, function (feature) {
-      if(feature.id.indexOf("city")) {
-        formattedCheckin.city = feature.text;
+      if(geocodeData.city) {
+        formattedCheckin.city = geocodeData.city;
       }
-      else if(feature.id.indexOf("province")) {
-        formattedCheckin.state = feature.text;
-
+      if(geocodeData.province) {
+        formattedCheckin.province = geocodeData.province;
       }
-      else if(feature.id.indexOf("country")) {
-        formattedCheckin.country = feature.text;
+      if(geocodeData.country) {
+        formattedCheckin.country = geocodeData.country;
       }
-    })
     deferred.resolve(formattedCheckin);
   })
   return deferred.promise;

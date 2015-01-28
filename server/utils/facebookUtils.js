@@ -103,7 +103,6 @@ utils.makeFBPaginatedRequest = function (queryPath, container) {
       container.push(dataObj.data)
       console.log("makeFBPaginatedRequest container: " + JSON.stringify(container));
 
-
       if (!dataObj.paging) {
         console.log('no paging for this parameter');
         deferred.resolve(_.flatten(container, true));
@@ -152,7 +151,7 @@ utils.getFBStatuses = function (user) {
 
   var queryPath = 'https://graph.facebook.com/'+fbID+'/statuses?' + qs.stringify(query);
 
-  var statusContainer = ['BROUHAHA'];
+  var statusContainer = [];
 
   deferred.resolve(utils.makeFBPaginatedRequest(queryPath, statusContainer));
 
@@ -196,14 +195,15 @@ utils.handleUpdateObject = function (update) {
     })
     .then(function (fbResponse) {
       var feedItems = fbResponse.data;
-      console.log("dis be ma response data: " + JSON.stringify(feedItems));
-
       return utils.parseFBData(user, feedItems);
     })
     .then(function (parsedCheckins) {
+      return helpers.addCityCountryAndProvinceInfoToParsedCheckins(parsedCheckins);
+    })
+    .then(function (parsedCheckinsWithLocation) {
       deferred.resolve({
         user: user,
-        checkins: parsedCheckins
+        checkins: parsedCheckinsWithLocation
       });
     })
     .catch(function (e) {
@@ -246,7 +246,6 @@ utils.parseFBData = function (user, data) {
   var foursquareVenueQueries = [];
 
   _.each(data, function (datum) {
-    console.log("this is ma datum: " + datum);
     if (datum !== undefined && datum.place) {
       var place = {
         'checkinID': datum.id,
@@ -293,9 +292,6 @@ utils.parseFBData = function (user, data) {
       foursquareVenueQueries.push(foursquareUtils.generateFoursquarePlaceIDAndCategory(user, place.name, latlng));
     }
   });
-  console.log("parsedData before: ", parsedData);
-  console.log(foursquareVenueQueries);
-  
 
   Q.all(foursquareVenueQueries)
     .then(function (foursquareVenueIDs) {

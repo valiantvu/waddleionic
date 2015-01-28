@@ -156,52 +156,9 @@ utils.exchangeIGUserCodeForToken = function (igCode) {
   return deferred.promise;
 };
 
-utils.parseInstagramPosts = function(instagramPosts, user) {
-  // var parsedInstagramCheckins = []
-  return _.map(instagramPosts, function (post) {
-    if(post.location && post.location.name) {
-      // parsedInstagramCheckins.push(utils.parseIGPost(post, user));
-      return utils.parseIGPost(post, user);
-    }
-  });
-  // return parsedInstagramCheckins;
-};
-
-utils.processInstagramPosts = function(instagramPosts, user) {
-  // return _.chain(instagramPosts)
-  //   _.filter(function (post) {
-  //       return post.location.name === true;
-  //   })
-  //   _,map(function (post) {
-  //     return utils.parseIGPost(post, user);
-  //   })
-  //   .value();
-
-      return _.map(instagramPosts, function (post) {
-    if(post.location && post.location.name) {
-      // parsedInstagramCheckins.push(utils.parseIGPost(post, user));
-      return utils.parseIGPost(post, user);
-    }
-  });
-}
-
 utils.parseIGPost = function (post, user) {
-  //data[i].location.latitude
-  //.data.location.longitude
-  //.data.location.name
-  //.data.caption.text
-  //.data.createdAt
-  //.data.[picturessmalllarge]
-  //.data.images.thumbnail
-  //.data.images.standard_resolution
-  //.data.id
+
   var deferred = Q.defer();
-
-  // console.log(post.created_time);
-  // console.log(parseInt(post.created_time));
-  // console.log(parseInt(post.created_time)*1000);
-  // console.log(new Date(parseInt(post.created_time)*1000));
-
 
   var checkin = {
     'checkinID': post.id,
@@ -240,15 +197,27 @@ utils.parseIGPost = function (post, user) {
 
   var latlng = checkin.lat.toString() + ',' + checkin.lng.toString();
     
-  foursquareUtils.generateFoursquarePlaceID(user, checkin.name, latlng)
+  foursquareUtils.generateFoursquarePlaceIDAndCategory(user, checkin.name, latlng)
   .then(function (foursquareVenue) {
     checkin.foursquareID = foursquareVenue.foursquareID;
     if(foursquareVenue.category) {
       checkin.category = foursquareVenue.category;
     }
-    deferred.resolve({
-      checkin: checkin,
-      user: user
+    helpers.findCityProvinceAndCountry(checkin.lat, checkin.lng)
+    .then(function (geocodeData) {
+        if(geocodeData.city) {
+          checkin.city = geocodeData.city;
+        }
+        if (geocodeData.province){
+          checkin.province = geocodeData.province;
+        }
+        if (geocodeData.country){
+          checkin.country = geocodeData.country;
+        }
+      deferred.resolve({
+        checkin: checkin,
+        user: user
+      })
     });
   })
   .catch(function (err) {
@@ -278,6 +247,7 @@ utils.parseIGData = function (posts, user) {
       'caption': 'null',
       'foursquareID': 'null',
       'country': 'null',
+      'province': 'null',
       'city': 'null',
       'category': 'null',
       'source': 'instagram'
@@ -318,7 +288,6 @@ utils.parseIGData = function (posts, user) {
           post.category = foursquareIDs[index]["category"];
         }
       });
-      console.log("parsedData: ", parsedData)
       deferred.resolve(parsedData);
     })
     .catch(function (err) {

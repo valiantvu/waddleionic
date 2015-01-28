@@ -158,15 +158,19 @@ User.prototype.addCheckins = function(combinedCheckins){
     'MERGE (checkin:Checkin {checkinID: {checkinID}})',
     'ON CREATE SET checkin = {checkinID: {checkinID}, likes: {likes}, photoSmall: {photoSmall}, photoLarge: {photoLarge}, caption: {caption}, checkinTime: {checkinTime}, source: {source}}',
     'ON MATCH SET checkin.checkinTime = {checkinTime}, checkin.likes = {likes}, checkin.photoSmall = {photoSmall}, checkin.photoLarge = {photoLarge}, checkin.caption = {caption}, checkin.source = {source}',
-    //change to merge on foursquareID only
     'MERGE (place:Place {foursquareID: {foursquareID}})',
     'ON CREATE SET place = {name: {name}, lat: {lat}, lng: {lng}, country: {country}, province:{province}, city:{city}, category: {category}}',
     'ON MATCH SET place.name = {name}, place.lat = {lat}, place.lng = {lng}, place.country = {country}, place.province = {province}, place.city = {city}, place.category = {category}',
     'MERGE (country:Country {name: {country}})',
-    'MERGE (province:Province {name: {province}})',
-    'MERGE (city:City {name: {city}})',
-    'MERGE (user)-[:hasCheckin]->(checkin)-[:hasPlace]->(place)-[:hasCity]->(city)-[:hasCountry]->(country)',
-    'MERGE (city)-[:hasProvince]->(province)-[:hasCountry]->(country)',
+    'MERGE (province:Province {name: {province}, country: {country}})',
+    'MERGE (city:City {name: {city}, province:{province}, country:{country}})',
+    'MERGE (category:Category {name:{category}})',
+    'MERGE (user)-[:hasCheckin]->(checkin)-[:hasPlace]->(place)',
+    'MERGE (place)-[:hasCity]->(city)',
+    'MERGE (place)-[:hasCategory]->(category)',
+    'MERGE (city)-[:hasCountry]->(country)',
+    'MERGE (province)-[:hasCountry]->(country)',
+    'MERGE (city)-[:hasProvince]->(province)',
     'RETURN user, checkin, place, city, province, country',
   ].join('\n');
 
@@ -235,6 +239,8 @@ User.prototype.findAllFriends = function () {
 // Basic query to find all user's checkins
 // Uses this.getProperty to grab instantiated user's facebookID as query parameter
 User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
+  var deferred = Q.defer();
+
   var page, skipAmount;
   if(arguments[1]) {
     page = arguments[1];
@@ -248,14 +254,13 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
   else {
     skipAmount = 0;
   }
-  var deferred = Q.defer();
 
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     (viewer ? 'OPTIONAL MATCH (liker:User {facebookID: {viewerID}})-[:givesProps]->(checkin)' +
     'OPTIONAL MATCH (bucketer:User {facebookID: {viewerID}})-[:hasBucket]->(checkin)' : ""),
-    'RETURN user, checkin, place, collect(comment), collect(commenter)' + (viewer ? ', liker, bucketer' : ""),
+    'RETURN user, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter)' + (viewer ? ', liker, bucketer' : ""),
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }'
   ].join('\n');
@@ -287,11 +292,11 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
           "comments": null
         }
 
-        if(item['collect(comment)'].length && item['collect(commenter)'].length) {
+        if(item['comments'].length && item['collect(commenter)'].length) {
           var commentsArray = [];
-          for(var i = 0; i < item['collect(comment)'].length; i++) {
+          for(var i = 0; i < item['comments'].length; i++) {
             var commentData = {
-              comment: item['collect(comment)'][i].data,
+              comment: item['comments'][i].data,
               commenter: item['collect(commenter)'][i].data
             }
             commentsArray.push(commentData);
@@ -331,16 +336,17 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
   var deferred = Q.defer();
 
   var query = [
-    // 'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
-    // 'MATCH (user:User {facebookID: {facebookID}})-[:hasFriend]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'MATCH (user:User {facebookID: {facebookID}})-[:hasFriend*0..1]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
-    'RETURN user, friend, checkin, place, collect(comment), collect(commenter), collect(hyper) AS hypers',
+    'RETURN user, friend, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
     'ORDER BY checkin.checkinTime DESC',
-    'SKIP { skipNum }',
-    'LIMIT {skipAmount }'
+    'SKIP { skipNum }'
   ].join('\n');
+
+  if(skipAmount > 0) {
+    query.concat('\n', 'LIMIT { skipAmount }');
+  }
 
   var params = {
     facebookID: this.getProperty('facebookID'),
@@ -358,12 +364,12 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
           "place": item.place.data,
         }
 
-        if(item['collect(comment)'].length && item['collect(commenter)'].length) {
+        if(item['comments'].length && item['commenters'].length) {
           var commentsArray = [];
-          for(var i = 0; i < item['collect(comment)'].length; i++) {
+          for(var i = 0; i < item['comments'].length; i++) {
             var commentData = {
-              comment: item['collect(comment)'][i].data,
-              commenter: item['collect(commenter)'][i].data
+              comment: item['comments'][i].data,
+              commenter: item['commenters'][i].data
             }
             commentsArray.push(commentData);
           }
@@ -404,7 +410,7 @@ User.findFootprintsByPlaceName = function (facebookID, placeName) {
     'WHERE place.name =~ {placeName} OR place.city =~ {placeName} OR place.country =~ {placeName}',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
-    'RETURN user, checkin, place, collect(comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
+    'RETURN user, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
   ].join('\n');
 
   //params.placeName includes regexp to search nodes containing placeName string. (?i) makes query case insensitive
@@ -637,11 +643,14 @@ User.getBucketList = function (facebookID, page, skipAmount){
     'MATCH (user:User {facebookID: {facebookID}})-[:hasBucket]->(checkin:Checkin)-[:hasPlace]->(p:Place)',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
-    'RETURN user, checkin, p, collect(comment), collect(commenter), collect(hyper) AS hypers',
+    'RETURN user, checkin, p, collect(DISTINCT comment) AS comments, collect(commenter), collect(hyper) AS hypers',
     'ORDER BY checkin.checkinTime DESC',
-    'SKIP { skipNum }',
-    'LIMIT { skipAmount }'
+    'SKIP { skipNum }'
   ].join('\n');
+
+  if(skipAmount > 0) {
+    query.concat('\n', 'LIMIT { skipAmount }');
+  }
 
   var params = {
     'facebookID': facebookID,
@@ -659,11 +668,11 @@ User.getBucketList = function (facebookID, page, skipAmount){
           "place": item.p.data,
         }
 
-        if(item['collect(comment)'].length && item['collect(commenter)'].length) {
+        if(item['comments'].length && item['collect(commenter)'].length) {
           var commentsArray = [];
-          for(var i = 0; i < item['collect(comment)'].length; i++) {
+          for(var i = 0; i < item['comments'].length; i++) {
             var commentData = {
-              comment: item['collect(comment)'][i].data,
+              comment: item['comments'][i].data,
               commenter: item['collect(commenter)'][i].data
             }
             commentsArray.push(commentData);

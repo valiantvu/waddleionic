@@ -115,7 +115,6 @@ checkinController.facebookHubChallenge = function (req, res) {
 
 checkinController.handleFBPost = function (req, res) {
   var updateArr = req.body.entry;
-  console.log("dis be ma bodayy: " + JSON.stringify(req.body));
   console.log("dis be ma boday's entray: " + JSON.stringify(updateArr));
 
   var posts = _.map(updateArr, function(update) {
@@ -125,7 +124,6 @@ checkinController.handleFBPost = function (req, res) {
   Q.all(posts)
     .then(function (postArr) {
       // write to db using batch query?
-      console.log("ARR, dis be da postarr: " + JSON.stringify(postArr));
 
       var flatPostArr = _.flatten(postArr);
 
@@ -232,7 +230,7 @@ checkinController.addComment = function (req, res){
 checkinController.removeComment = function (req, res){
   var checkinID = req.body.checkinID;
   var facebookID = req.body.facebookID;
-  var commentID = req.body.commentID ;
+  var commentID = req.body.commentID;
   console.log(req.body);
   Checkin.removeComment(facebookID, checkinID , commentID)
     .then(function (data){
