@@ -58,10 +58,15 @@ userController.userLogin = function (req, res) {
       user.setProperty('footprintsCount', checkinsCount);
       user.findAllFriends()
       .then(function (friendsList){
+        userFBFriendsData = friendsList;
+        return user.getAggregatedFootprintList(user.node._data.data.facebookID, 0, 5)
+      })
+      .then(function (aggregatedFootprints) {
         var allData = {
           user: user.node._data.data,
-          friends: friendsList,
-        }
+          friends: userFBFriendsData,
+          aggregatedFootprints: aggregatedFootprints
+        };
         console.log('alldata!!', allData);
         res.json(allData);
         res.status(200).end();
