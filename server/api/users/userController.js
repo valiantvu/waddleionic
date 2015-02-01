@@ -3,6 +3,7 @@ var _ = require('lodash');
 var foursquareUtils = require('../../utils/foursquareUtils.js');
 var facebookUtils = require('../../utils/facebookUtils.js');
 var instagramUtils = require('../../utils/instagramUtils.js');
+var helpers = require('../../utils/helpers.js');
 
 var User = require('./userModel.js');
 var Place = require('../places/placeModel.js');
@@ -58,16 +59,19 @@ userController.userLogin = function (req, res) {
       user.findAllFriends()
       .then(function (friendsList){
         var allData = {
+          user: user.node._data.data,
+          name: user.getProperty('name'),
           friends: friendsList,
           fbProfilePicture: user.getProperty('fbProfilePicture'),
-          name: user.getProperty('name'),
           footprintsCount: checkinsCount
         }
+        console.log('alldata!!', allData);
         res.json(allData);
         res.status(200).end();
       })
     } else {
       // For new users, start chain of facebook requests.
+      console.log('initiate get and parse fbdata');
       getAndParseFBData();
     }
   })
@@ -133,17 +137,22 @@ userController.userLogin = function (req, res) {
       userFBStatusesData = fbParsedStatusesData;
       combinedFBCheckins = combinedFBCheckins.concat(userFBStatusesData);
       console.log("combinedCheckins: " + combinedFBCheckins);
-      return user.addCheckins(combinedFBCheckins);
+      return helpers.addCityProvinceAndCountryInfoToParsedCheckins(combinedFBCheckins);
+    })
+    .then(function (combinedFBCheckinsWithLocation) {
+      return user.addCheckins(combinedFBCheckinsWithLocation);
     })
     .then(function (data) {
-      return user.findAllCheckins(userData.facebookID);
+      return user.countAllCheckins(userData.facebookID);
     })
-    .then(function (checkinsStored) {
+    .then(function (checkinsCount) {
+      user.setProperty('footprintsCount', checkinsCount);
       // console.log('fb checkins: ', checkinsStored.length);
       var allData = {
-        allCheckins: checkinsStored,
+        user: user.node._data.data,
         friends: userFBFriendsData
       };
+      console.log('allData', allData)
       res.json(allData);
       res.status(200).end();
     })

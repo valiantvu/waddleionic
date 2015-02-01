@@ -297,8 +297,8 @@ utils.parseFBData = function (user, data) {
     .then(function (foursquareVenueIDs) {
       _.each(parsedData, function (datum, index) {
         datum.foursquareID = foursquareVenueIDs[index]["foursquareID"]
-        if(foursquareIDs[index]["category"]) {
-          datum.category = foursquareIDs[index]["category"];
+        if(foursquareVenueIDs[index]["category"]) {
+          datum.category = foursquareVenueIDs[index]["category"];
         }
       });
       console.log("parsedData: ", parsedData)
