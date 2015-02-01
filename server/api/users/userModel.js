@@ -322,15 +322,27 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
   return deferred.promise;
 };
 
-//TO-DO: implement query to get all footprints associated with a user and their friends
+User.prototype.countAllCheckins = function (facebookID) {
+  var deferred = Q.defer();
 
-// User.getAggregatedFootprintList = function (viewer) {
-//   var deferred = Q.defer();
+  var query = [
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin]->(checkin:Checkin)',
+    'RETURN count(checkin)'
+  ].join('\n');
 
-//   var query = [
-//     'M'
-//   ]
-// 
+  var params = {
+    facebookID: this.getProperty('facebookID')
+  }
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      deferred.resolve(results[0]['count(checkin)']);
+    }
+  });
+
+  return deferred.promise;
+}
 
 User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) {
   console.log('getAggregatedFootprintList', skipAmount);
@@ -383,7 +395,7 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
           for(var i = 0; i < item['hypers'].length; i++) {
 
             hypesArray.push(item['hypers'][i].data);
-            if(item['hypers'][i].data.facebookID = viewer) {
+            if(item['hypers'][i].data.facebookID === viewer) {
               singleResult["bucketed"] = true;
             }
           }

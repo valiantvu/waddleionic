@@ -47,22 +47,21 @@ userController.userLogin = function (req, res) {
   })
   .then(function (userNode) { 
     user = userNode;
-    return user.findAllCheckins(userData.facebookID, 0, 0)
+    return user.countAllCheckins(userData.facebookID);
   })
   //Path forks here for existing vs new users
-  .then(function (checkinsAlreadyStored) {
+  .then(function (checkinsCount) {
     // console.log('fb checkins: ', checkinsAlreadyStored.length);
     // For existing users
-    if (checkinsAlreadyStored.length) {
-      user.setProperty('footprintsCount', checkinsAlreadyStored.length);
+    if (checkinsCount) {
+      user.setProperty('footprintsCount', checkinsCount);
       user.findAllFriends()
-      .then(function (neoUserData){
+      .then(function (friendsList){
         var allData = {
-          allCheckins: checkinsAlreadyStored,
-          friends: neoUserData,
+          friends: friendsList,
           fbProfilePicture: user.getProperty('fbProfilePicture'),
           name: user.getProperty('name'),
-          footprintsCount: checkinsAlreadyStored.length
+          footprintsCount: checkinsCount
         }
         res.json(allData);
         res.status(200).end();
@@ -224,8 +223,10 @@ userController.addInstagramData = function (req, res) {
     return instagramUtils.parseIGData(rawInstagramPosts, user)
   })
   .then(function (parsedInstagramCheckins) {
-    console.log("allParsedInstagramCheckins: " + JSON.stringify(parsedInstagramCheckins));
-    return user.addCheckins(parsedInstagramCheckins);
+      return helpers.addCityCountryAndProvinceInfoToParsedCheckins(parsedInstagramCheckins);
+  })
+  .then(function (parsedInstagramCheckinsWithLocationInfo) {
+    return user.addCheckins(parsedInstagramCheckinsWithLocationInfo);
   })
   .then(function (data) {
     // console.log('ig: ', data);
