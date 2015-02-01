@@ -60,10 +60,7 @@ userController.userLogin = function (req, res) {
       .then(function (friendsList){
         var allData = {
           user: user.node._data.data,
-          name: user.getProperty('name'),
           friends: friendsList,
-          fbProfilePicture: user.getProperty('fbProfilePicture'),
-          footprintsCount: checkinsCount
         }
         console.log('alldata!!', allData);
         res.json(allData);
