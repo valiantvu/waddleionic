@@ -175,25 +175,28 @@ utils.parseIGPost = function (post, user) {
     'city': 'null',
     'province': 'null',
     'category': 'null',
+    'pointValue': 3,
     'source': 'instagram'
-  };
+    };
 
-  if (post.likes) {
-    checkin.likes = post.likes.count;
-  }
-
-  if(post.caption) {
-    checkin.caption = post.caption.text;
-  }
-
-  if (post.images) {
-    if (post.images.thumbnail){
-      checkin.photoSmall = post.images.thumbnail.url;
+    if (post.likes) {
+      checkin.likes = post.likes.count;
     }
-    if (post.images.standard_resolution){
-      checkin.photoLarge = post.images.standard_resolution.url;
+
+    if(post.caption) {
+      checkin.caption = post.caption.text;
+      checkin.pointValue += 3;
     }
-  }
+
+    if (post.images) {
+      if (post.images.thumbnail){
+        checkin.photoSmall = post.images.thumbnail.url;
+      }
+      if (post.images.standard_resolution){
+        checkin.photoLarge = post.images.standard_resolution.url;
+      }
+      checkin.pointValue += 3;
+    }
 
   var latlng = checkin.lat.toString() + ',' + checkin.lng.toString();
     
@@ -250,6 +253,7 @@ utils.parseIGData = function (posts, user) {
       'province': 'null',
       'city': 'null',
       'category': 'null',
+      'pointValue': 3,
       'source': 'instagram'
     };
 
@@ -259,6 +263,7 @@ utils.parseIGData = function (posts, user) {
 
     if(post.caption) {
       checkin.caption = post.caption.text;
+      checkin.pointValue += 3;
     }
 
     if (post.images) {
@@ -268,6 +273,7 @@ utils.parseIGData = function (posts, user) {
       if (post.images.standard_resolution){
         checkin.photoLarge = post.images.standard_resolution.url;
       }
+      checkin.pointValue += 3;
     }
 
     var latlng = checkin.lat.toString() + ',' + checkin.lng.toString();

@@ -234,7 +234,7 @@ userController.addInstagramData = function (req, res) {
     return instagramUtils.parseIGData(rawInstagramPosts, user)
   })
   .then(function (parsedInstagramCheckins) {
-      return helpers.addCityCountryAndProvinceInfoToParsedCheckins(parsedInstagramCheckins);
+      return helpers.addCityProvinceAndCountryInfoToParsedCheckins(parsedInstagramCheckins);
   })
   .then(function (parsedInstagramCheckinsWithLocationInfo) {
     return user.addCheckins(parsedInstagramCheckinsWithLocationInfo);

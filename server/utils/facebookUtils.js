@@ -262,6 +262,7 @@ utils.parseFBData = function (user, data) {
         'province': 'null',
         'country': 'null',
         'category': 'null',
+        'pointValue': 3,
         'source': 'facebook'
       }
 
@@ -275,14 +276,19 @@ utils.parseFBData = function (user, data) {
 
       if(datum.name) {
         place.caption = datum.name;
+        place.pointValue += 3;
       }
 
       if (datum.picture) {
         place.photoSmall = datum.picture;
+        place.pointValue += 3;
       }
 
       if (datum.source) {
         place.photoLarge = datum.source;
+        if(place.photoSmall === 'null') {
+          place.pointValue += 3;
+        }
       }
 
       var latlng = place.lat.toString() + ',' + place.lng.toString();

@@ -144,6 +144,7 @@ utils.parseNativeCheckin = function (venue) {
     'country': 'null',
     'postalCode': 'null',
     'category': 'null',
+    'pointValue': 5,
     'source': 'waddle'
   };
 
@@ -161,12 +162,14 @@ utils.parseNativeCheckin = function (venue) {
 
   if (venue.footprintCaption) {
     formattedCheckin.caption = venue.footprintCaption;
+    formattedCheckin.pointValue += 3;
   }
 
   //TODO: figure out how to generate different size images from AWS url
 
   if (venue.photo) {
     formattedCheckin.photoLarge = venue.photo;
+    formattedCheckin.pointValue += 3;
   }
 
   helpers.findCityProvinceAndCountry(formattedCheckin.lat, formattedCheckin.lng)
@@ -206,6 +209,7 @@ utils.parseCheckin = function (checkin) {
     'country': checkin.venue.location.country,
     'postalCode': 'null',
     'category': 'null',
+    'pointValue': 3,
     'source': 'foursquare'
   };
 
@@ -224,9 +228,11 @@ utils.parseCheckin = function (checkin) {
   if (checkin.photos && checkin.photos.count > 0) {
     formattedCheckin.photoSmall = checkin.photos.items[0].prefix + 'cap300' + checkin.photos.items[0].suffix;
     formattedCheckin.photoLarge = checkin.photos.items[0].prefix + 'original' + checkin.photos.items[0].suffix;
+    formattedCheckin.pointValue += 3;
   }
   if (checkin.shout) {
     formattedCheckin.caption = checkin.shout;
+    formattedCheckin.pointValue += 3;
   }
 
   helpers.findCityProvinceAndCountry(formattedCheckin.lat, formattedCheckin.lng)
