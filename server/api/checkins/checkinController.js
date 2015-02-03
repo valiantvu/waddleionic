@@ -217,8 +217,11 @@ checkinController.addComment = function (req, res){
 
   Checkin.addComment(clickerID, checkinID, text)
     .then(function (data){
-      console.log(data);
-      res.json(data);
+      return Checkin.getComments(checkinID);
+    })
+    .then(function (commentsArray) {
+      console.log('added comment!', commentsArray);
+      res.json(commentsArray);
       res.status(201).end();
     })
     .catch(function (err) {
@@ -231,10 +234,14 @@ checkinController.removeComment = function (req, res){
   var checkinID = req.body.checkinID;
   var facebookID = req.body.facebookID;
   var commentID = req.body.commentID;
-  console.log(req.body);
+ 
   Checkin.removeComment(facebookID, checkinID , commentID)
     .then(function (data){
-      res.json(data);
+      return Checkin.getComments(checkinID);
+    })
+    .then(function (commentsArray) {
+      console.log('removed comment!', commentsArray);
+      res.json(commentsArray);
       res.status(201).end();
     })
     .catch(function(err) {

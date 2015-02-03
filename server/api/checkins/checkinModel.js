@@ -93,10 +93,10 @@ Checkin.addComment = function (clickerID, checkinID, text){
   var query = [
   'MATCH (clicker:User {facebookID: {facebookID}})',
   'MATCH (commentReceiver:User)-[:hasCheckin]->(checkin:Checkin {checkinID: {checkinID}})',
-  'MERGE (clicker)-[:madeComment]->(comment:Comment {text: {text}, commentID : {commentID}, time: timestamp() })' + 
+  'MERGE (clicker)-[:madeComment]->(newComment:Comment {text: {text}, commentID : {commentID}, time: timestamp() })' + 
   '-[:gotComment]->(checkin)',
   'MERGE (commentReceiver)-[:hasUnreadNotification]->(comment)',
-  'RETURN comment'
+  'RETURN newComment'
   ].join('\n');
   var params = {
     'facebookID': clickerID,
@@ -223,8 +223,8 @@ Checkin.getComments = function (checkinID){
   var deferred = Q.defer();
 
   var query = [
-  'MATCH (user)-[:madeComment]->(comment:Comment)-[:gotComment]->(checkin:Checkin {checkinID: {checkinID}})',
-  'RETURN user, comment'
+  'MATCH (commenter)-[:madeComment]->(comment:Comment)-[:gotComment]->(checkin:Checkin {checkinID: {checkinID}})',
+  'RETURN commenter, comment'
   ].join('\n');
 
   var params = {
@@ -234,8 +234,16 @@ Checkin.getComments = function (checkinID){
   db.query(query, params, function (err, results){
     if (err) { deferred.reject(err) }
     else {
-      console.log("comments query: ", results)
-      deferred.resolve(results)
+      var parsedResults = _.map(results, function (item) {
+        
+        var singleResult = {
+          "comment": item.comment.data,
+          "commenter": item.commenter.data
+        };
+
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
     }
   });
 
