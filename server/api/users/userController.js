@@ -54,7 +54,7 @@ userController.userLogin = function (req, res) {
   .then(function (checkinsCount) {
     // console.log('fb checkins: ', checkinsAlreadyStored.length);
     // For existing users
-    if (checkinsCount) {
+    if (user.getProperty('footprintsCount') >= 0) {
       user.setProperty('footprintsCount', checkinsCount);
       user.findAllFriends()
       .then(function (friendsList){
@@ -67,7 +67,6 @@ userController.userLogin = function (req, res) {
           friends: userFBFriendsData,
           aggregatedFootprints: aggregatedFootprints
         };
-        console.log('alldata!!', allData);
         res.json(allData);
         res.status(200).end();
       })
