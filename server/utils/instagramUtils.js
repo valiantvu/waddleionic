@@ -235,6 +235,7 @@ utils.parseIGData = function (posts, user) {
 
   var parsedData = [];
   var foursquareVenueQueries = [];
+  var categoryList = [];
 
   _.each(posts, function (post) {
     if (post.location && post.location.name) {
@@ -292,9 +293,10 @@ utils.parseIGData = function (posts, user) {
         post.foursquareID = foursquareVenueIDs[index]["foursquareID"];
         if(foursquareIDs[index]["category"]) {
           post.category = foursquareIDs[index]["category"];
+          categoryList.push(post.category);
         }
       });
-      deferred.resolve(parsedData);
+      deferred.resolve({checkins: parsedData, categories:categoryList});
     })
     .catch(function (err) {
       deferred.reject(err);

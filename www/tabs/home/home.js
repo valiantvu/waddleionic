@@ -75,7 +75,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     $scope.searchFeed = function () {
       if($scope.search.query) {
-        UserRequests.searchFeed(window.sessionStorage.userFbID, $scope.search.query)
+        UserRequests.searchFeed(window.sessionStorage.userFbID, $scope.search.query, 0, 10)
         .then(function(footprints) {
           $scope.footprints = footprints.data;
           $scope.moreDataCanBeLoaded = false;

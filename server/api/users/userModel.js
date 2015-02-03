@@ -486,30 +486,68 @@ User.findFootprintsByPlaceName = function (facebookID, placeName) {
   return deferred.promise;
 }
 
-User.prototype.assignCategoryRank = function (com) {
+User.prototype.assignCategoryRank = function (categoryList) {
   var deferred = Q.defer();
+  var facebookID = this.getProperty('facebookID');
 
   var query = [
-    'MATCH (user:User{facebookID:{facebookID}})-[:hasCheckin]->(checkin:Checkin)-[]->(place:Place)-[]->(category:Category{name: {}'
-
+    'MATCH (user:User{facebookID:{facebookID}})-[:hasCheckin]->(checkin:Checkin)-[]->(place:Place)-[]->(category:Category{name:{category}})',
+    'MERGE (user)-[:hasRank]->(rank:Rank)-[:ofCategory]->(category)',
+    'SET rank.pointValue = sum(checkin.pointValue)'
   ].join('\n');
+
+  var batchRequest = _.map(categoryList, function (checkin, index) {
+
+    var singleRequest = {
+      'method': "POST",
+      'to': "/cypher",
+      'body': {
+        'query': query,
+        'params': checkin
+      },
+      'id': index
+    };
+
+    singleRequest.body.params.facebookID = facebookID;
+    return singleRequest;
+  });
+
+  var options = {
+    'url': neo4jUrl + '/db/data/batch',
+    'method': 'POST',
+    'json': true,
+    'body': JSON.stringify(batchRequest)
+  };
+
+  request.post(options, function(err, response, body) {
+    if (err) { deferred.reject(err) }
+    else {
+      deferred.resolve(body);
+    }
+  });
+  return deferred.promise;
 }
 
-User.findFeedItemsByPlaceName = function (facebookID, placeName) {
+User.findFeedItemsByPlaceName = function (facebookID, placeName, page, skipAmount) {
   var deferred = Q.defer();
 
   var query = [
-    'MATCH (user:User{facebookID:{facebookID}})-[:hasFriend]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasFriend*0..1]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'WHERE place.name =~ {placeName} OR place.city =~ {placeName} OR place.country =~ {placeName}',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
     'RETURN friend, checkin, place, collect(comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
+    'ORDER BY checkin.checkinTime DESC',
+    'SKIP { skipNum }',
+    'LIMIT { skipAmount }'
   ].join('\n');
 
   //params.placeName includes regexp to search nodes containing placeName string. (?i) makes query case insensitive
   var params = {
     facebookID: facebookID,
-    placeName: '(?i).*' + placeName + '.*'
+    placeName: '(?i).*' + placeName + '.*',
+    skipNum: page ? page * skipAmount : 0,
+    skipAmount: skipAmount
   };
 
   console.log('dis b ma params:', params);

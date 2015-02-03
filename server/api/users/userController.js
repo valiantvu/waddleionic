@@ -450,9 +450,24 @@ userController.searchUserFootprints = function (req, res) {
 }
 
 userController.searchUserFeed = function (req, res) {
+  var params = {};
   var facebookID = req.params.user;
   var query = req.params.query;
-  User.findFeedItemsByPlaceName(facebookID, query)
+
+  if(req.params.page) {
+    params.page = parseInt(req.params.page);
+  }
+  else {
+    params.page = 0;
+  }
+
+  if(req.params.skip) {
+    params.skipAmount = parseInt(req.params.skip);
+  }
+  else {
+    params.skipAmount = 0;
+  }
+  User.findFeedItemsByPlaceName(facebookID, query, params.page, params.skipAmount)
   .then(function (footprints) {
     res.json(footprints);
     res.status(200).end();
