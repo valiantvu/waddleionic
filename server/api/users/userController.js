@@ -170,6 +170,7 @@ userController.userLogin = function (req, res) {
 userController.addFoursquareData = function (req, res) {
 
   var userData = req.body;
+  console.log('thsi is ma body', req.body)
   var user;
 
   console.log('add 4s data');
@@ -180,6 +181,7 @@ userController.addFoursquareData = function (req, res) {
     return foursquareUtils.exchangeFoursquareUserCodeForToken(userData.foursquareCode, userData.redirect_uri);
   })
   .then(function (foursquareAccessToken) {
+    console.log('foursquareAccessToken: ', foursquareAccessToken);
     return user.setProperty('fsqToken', foursquareAccessToken.access_token);
   })
   .then(function (userNode) {
