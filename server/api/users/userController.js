@@ -175,21 +175,63 @@ userController.addFoursquareData = function (req, res) {
 
   console.log('add 4s data');
 
+  //if client is ios app, then fousquareCode that is returned is actually the access token
+  if(userData.build_type === 'ios') {
+    console.log('inside ios client')
+    userController.addFoursquareDataFromIOSClient(userData.foursquareCode);
+  }
+
+  else {
+
+    User.find(userData)
+    .then(function (userNode) { 
+      user = userNode;
+      return foursquareUtils.exchangeFoursquareUserCodeForToken(userData.foursquareCode, userData.redirect_uri);
+    })
+    .then(function (foursquareAccessToken) {
+      console.log('foursquareAccessToken: ', foursquareAccessToken);
+      return user.setProperty('fsqToken', foursquareAccessToken.access_token);
+    })
+    .then(function (userNode) {
+      user = userNode;
+      return foursquareUtils.getUserFoursquareIDFromToken(user);
+    })
+    .then(function (userFoursquareData) {
+      console.log('foursquare response data')
+      return user.setProperty('foursquareID', userFoursquareData.response.user.id);
+    })
+    .then(function (userNode) {
+      user = userNode;
+      return foursquareUtils.tabThroughFoursquareCheckinHistory(user);
+    })
+    .then(function (foursquareHistoryBucket) {
+      var allFoursquareCheckins = foursquareUtils.convertFoursquareHistoryToSingleArrayOfCheckins(foursquareHistoryBucket);
+      var allParsedFoursquareCheckins = foursquareUtils.parseFoursquareCheckins(allFoursquareCheckins);
+      return user.addCheckins(allParsedFoursquareCheckins);
+    })
+    .then(function (data) {
+      console.log('4s: ', data);
+      res.status(204).end();
+    })
+    .catch(function(err) {
+      console.log(err);
+      res.status(500).end();
+    })
+  }
+};
+
+userController.addFoursquareDataFromIOSClient = function (accessToken) {
   User.find(userData)
   .then(function (userNode) { 
     user = userNode;
-    return foursquareUtils.exchangeFoursquareUserCodeForToken(userData.foursquareCode, userData.redirect_uri);
-  })
-  .then(function (foursquareAccessToken) {
-    console.log('foursquareAccessToken: ', foursquareAccessToken);
-    return user.setProperty('fsqToken', foursquareAccessToken.access_token);
+    return user.setProperty('fsqToken', accessToken);
   })
   .then(function (userNode) {
     user = userNode;
     return foursquareUtils.getUserFoursquareIDFromToken(user);
   })
   .then(function (userFoursquareData) {
-    console.log('foursquare response data')
+    console.log('foursquare response data ios')
     return user.setProperty('foursquareID', userFoursquareData.response.user.id);
   })
   .then(function (userNode) {
@@ -202,14 +244,14 @@ userController.addFoursquareData = function (req, res) {
     return user.addCheckins(allParsedFoursquareCheckins);
   })
   .then(function (data) {
-    console.log('4s: ', data);
+    console.log('4s ios: ', data);
     res.status(204).end();
   })
   .catch(function(err) {
     console.log(err);
     res.status(500).end();
   })
-};
+}
 
 userController.addInstagramData = function (req, res) {
 
