@@ -194,7 +194,7 @@ utils.parseNativeCheckin = function (venue) {
 }
 
 utils.parseCheckin = function (checkin) {
-  var deferred = Q.defer();
+  // var deferred = Q.defer();
 
   var formattedCheckin = {
     'checkinID': checkin.id,
@@ -250,9 +250,10 @@ utils.parseCheckin = function (checkin) {
       if(geocodeData.country) {
         formattedCheckin.country = geocodeData.country;
       }
-    deferred.resolve(formattedCheckin);
+    // deferred.resolve(formattedCheckin);
+    return formattedCheckin;
   })
-  return deferred.promise;
+  // return deferred.promise;
 };
 
 utils.searchFoursquareVenuesWeb = function (user, near, query) {
