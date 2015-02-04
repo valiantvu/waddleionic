@@ -178,7 +178,7 @@ userController.addFoursquareData = function (req, res) {
   //if client is ios app, then fousquareCode that is returned is actually the access token
   if(userData.build_type === 'ios') {
     console.log('inside ios client')
-    userController.addFoursquareDataFromIOSClient(userData);
+    addFoursquareDataFromIOSClient(userData);
   }
 
   else {
@@ -220,7 +220,7 @@ userController.addFoursquareData = function (req, res) {
   }
 };
 
-userController.addFoursquareDataFromIOSClient = function (userData) {
+ var addFoursquareDataFromIOSClient = function (userData) {
   User.find(userData)
   .then(function (userNode) { 
     user = userNode;
@@ -242,7 +242,7 @@ userController.addFoursquareDataFromIOSClient = function (userData) {
     return foursquareUtils.parseFoursquareCheckins(allFoursquareCheckins);
   })
   .then(function (allParsedFoursquareCheckins) {
-    console.log('allParsedFoursquareChekcins', allParsedFoursquareCheckins);
+    console.log('allParsedFoursquareChekcins: ' +  JSON.stringify(allParsedFoursquareCheckins));
     return user.addCheckins(allParsedFoursquareCheckins);
   })
   .then(function (data) {
