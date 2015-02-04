@@ -206,7 +206,10 @@ userController.addFoursquareData = function (req, res) {
     })
     .then(function (foursquareHistoryBucket) {
       var allFoursquareCheckins = foursquareUtils.convertFoursquareHistoryToSingleArrayOfCheckins(foursquareHistoryBucket);
-      var allParsedFoursquareCheckins = foursquareUtils.parseFoursquareCheckins(allFoursquareCheckins);
+      return foursquareUtils.parseFoursquareCheckins(allFoursquareCheckins);
+    })
+    .then(function (allParsedFoursquareCheckins) {
+      console.log('allParsedFoursquareCheckins: ', JSON.stringify(allParsedFoursquareCheckins));
       return user.addCheckins(allParsedFoursquareCheckins);
     })
     .then(function (data) {
