@@ -148,10 +148,13 @@ userController.userLogin = function (req, res) {
     })
     .then(function (checkinsCount) {
       user.setProperty('footprintsCount', checkinsCount);
-      // console.log('fb checkins: ', checkinsStored.length);
+      return user.getAggregatedFootprintList(user.user.node._data.data.facebookID, 0, 5);
+    })
+    .then(function (aggregatedFootprints) {
       var allData = {
         user: user.node._data.data,
-        friends: userFBFriendsData
+        friends: userFBFriendsData,
+        aggregatedFootprints: aggregatedFootprints
       };
       console.log('allData', allData)
       res.json(allData);

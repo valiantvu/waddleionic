@@ -269,33 +269,16 @@ checkinController.giveProps = function (req, res){
 
 checkinController.getHypesAndComments = function (req, res){
   var checkinID = req.params.checkinid;
-  var data = {}
+  var parsedData = {}
 
   Checkin.getHypes(checkinID)
-    .then(function (hypes){
-      data['hypes'] = hypes;
+    .then(function (hypesArray){
+      parsedData.hypes = hypesArray;
       return Checkin.getComments(checkinID);
     })
-    .then(function (comments){
-      if (typeof comments === "object")
-      data['comments'] = comments;
-      var parsedData = {
-        hypes: data.hypes.length,
-        hypeGivers: [],
-        comments: []
-      };
-     
-      parsedData.hypeGivers = _.map(data.hypes, function (hype) {
-        return hype.user._data.data
-      });
-
-      parsedData.comments = _.map(data.comments, function (comment) {
-        return {
-          commenter: comment.user._data.data, 
-          comment: comment.comment._data.data
-        }
-      });
-
+    .then(function (commentsArray){
+      parsedData.comments = commentsArray;
+      console.log(parsedData);
       res.json(parsedData);
       res.status(200).end();
     })

@@ -200,7 +200,7 @@ Checkin.getHypes = function (checkinID) {
 
   var query = [
   'MATCH (user)-[connection:hasBucket]->(checkin:Checkin {checkinID: {checkinID}})',
-  'RETURN user, connection'
+  'RETURN user, connection.createdAt'
   ].join('\n');
 
   var params = {
@@ -210,8 +210,17 @@ Checkin.getHypes = function (checkinID) {
   db.query(query, params, function (err, results)  {
     if (err) { deferred.reject(err); }
     else {
-      console.log(results);
-      deferred.resolve(results);
+      var parsedResults = _.map(results, function (item) {
+        console.log('item!!', item);
+        
+        var singleResult = {
+          "hypeGiver": item.user.data,
+          "hypeTime": item['connection.createdAt']
+        };
+
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
     }
   });
 
