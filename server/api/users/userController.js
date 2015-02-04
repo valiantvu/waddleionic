@@ -231,7 +231,6 @@ userController.addFoursquareDataFromIOSClient = function (userData) {
     return foursquareUtils.getUserFoursquareIDFromToken(user);
   })
   .then(function (userFoursquareData) {
-    console.log('foursquare response data ios')
     return user.setProperty('foursquareID', userFoursquareData.response.user.id);
   })
   .then(function (userNode) {
@@ -240,7 +239,10 @@ userController.addFoursquareDataFromIOSClient = function (userData) {
   })
   .then(function (foursquareHistoryBucket) {
     var allFoursquareCheckins = foursquareUtils.convertFoursquareHistoryToSingleArrayOfCheckins(foursquareHistoryBucket);
-    var allParsedFoursquareCheckins = foursquareUtils.parseFoursquareCheckins(allFoursquareCheckins);
+    return foursquareUtils.parseFoursquareCheckins(allFoursquareCheckins);
+  })
+  .then(function (allParsedFoursquareCheckins) {
+    console.log('allParsedFoursquareChekcins', allParsedFoursquareCheckins);
     return user.addCheckins(allParsedFoursquareCheckins);
   })
   .then(function (data) {
