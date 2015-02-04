@@ -20,18 +20,18 @@ utils.exchangeFoursquareUserCodeForToken = function (fsqCode, redirect_uri) {
   var query = {
     client_id: process.env.WADDLE_FOURSQUARE_CLIENT_ID,
     client_secret: process.env.WADDLE_FOURSQUARE_CLIENT_SECRET,
-    grant_type: 'authorization_code',
-    redirect_uri: redirect_uri,
-    code: fsqCode
+    grant_type: 'authorization_code'
   };
 
 
 
   var queryPath = 'https://foursquare.com/oauth2/access_token?' + qs.stringify(query);
+  var appendedQueryPath = queryPath + '&redirect_uri=' + redirect_uri + '&code=' + fsqCode;
 
   console.log('foursquare token query:  ', queryPath);
+  console.log('appendedQueryPath:  ', appendedQueryPath);
 
-  helpers.httpsGet(queryPath)
+  helpers.httpsGet(appendedQueryPath)
     .then(function (data) {
       deferred.resolve(JSON.parse(data));
     })
