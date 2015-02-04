@@ -25,7 +25,11 @@ utils.exchangeFoursquareUserCodeForToken = function (fsqCode, redirect_uri) {
     code: fsqCode
   };
 
+
+
   var queryPath = 'https://foursquare.com/oauth2/access_token?' + qs.stringify(query);
+
+  console.log('foursquare token query:  ', queryPath);
 
   helpers.httpsGet(queryPath)
     .then(function (data) {
