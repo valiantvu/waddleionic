@@ -177,7 +177,7 @@ userController.addFoursquareData = function (req, res) {
   User.find(userData)
   .then(function (userNode) { 
     user = userNode;
-    return foursquareUtils.exchangeFoursquareUserCodeForToken(userData.foursquareCode);
+    return foursquareUtils.exchangeFoursquareUserCodeForToken(userData.foursquareCode, userData.redirect_uri);
   })
   .then(function (foursquareAccessToken) {
     return user.setProperty('fsqToken', foursquareAccessToken.access_token);

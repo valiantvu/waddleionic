@@ -14,14 +14,14 @@ var utils = {};
 
 //FOURSQUARE HELPER METHODS
 
-utils.exchangeFoursquareUserCodeForToken = function (fsqCode) {
+utils.exchangeFoursquareUserCodeForToken = function (fsqCode, redirect_uri) {
   var deferred = Q.defer();
 
   var query = {
     client_id: process.env.WADDLE_FOURSQUARE_CLIENT_ID,
     client_secret: process.env.WADDLE_FOURSQUARE_CLIENT_SECRET,
     grant_type: 'authorization_code',
-    redirect_uri: 'http://waddleionic.herokuapp.com/fsqredirect',
+    redirect_uri: redirect_uri,
     code: fsqCode
   };
 
