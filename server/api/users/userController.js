@@ -187,6 +187,7 @@ userController.addFoursquareData = function (req, res) {
     return foursquareUtils.getUserFoursquareIDFromToken(user);
   })
   .then(function (userFoursquareData) {
+    console.log('foursquare response data')
     return user.setProperty('foursquareID', userFoursquareData.response.user.id);
   })
   .then(function (userNode) {

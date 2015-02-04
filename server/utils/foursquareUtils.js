@@ -51,6 +51,7 @@ utils.getUserFoursquareIDFromToken = function (user) {
 
   helpers.httpsGet(queryPath)
     .then(function (data) {
+      console.log('data from foursquare', data);
       deferred.resolve(JSON.parse(data));
     })
     .catch(function (e) {

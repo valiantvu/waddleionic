@@ -124,13 +124,13 @@ utils.exchangeIGUserCodeForToken = function (igCode, buildType) {
   if(buildType === 'ios') {
     client_id = process.env.WADDLE_INSTAGRAM_IOS_CLIENT_ID;
     client_secret = process.env.WADDLE_INSTAGRAM_IOS_CLIENT_SECRET;
-    redirect_uri = 'igec8b26c4080e463bad5b6a4ffc6d7d3c://redirect'
+    redirect_uri = 'igec8b26c4080e463bad5b6a4ffc6d7d3c://redirect';
   }
 
   else if (buildType === 'ionic') {
     client_id = process.env.WADDLE_INSTAGRAM_CLIENT_ID,
     client_secret = process.env.WADDLE_INSTAGRAM_CLIENT_SECRET,
-    redirect_uri = 'http://waddleionic.herokuapp.com/instagramredirect'
+    redirect_uri = 'http://waddleionic.herokuapp.com/instagramredirect';
   }
 
 
