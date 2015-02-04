@@ -217,7 +217,7 @@ userController.addInstagramData = function (req, res) {
   User.find(userData)
   .then(function (userNode) { 
     user = userNode;
-    return instagramUtils.exchangeIGUserCodeForToken(userData.instagramCode);
+    return instagramUtils.exchangeIGUserCodeForToken(userData.instagramCode, userData.build_type);
   })
   .then(function (igData) {
     igUserData = igData;

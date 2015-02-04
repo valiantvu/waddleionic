@@ -117,14 +117,28 @@ utils.makeIGPaginatedRequest = function (queryPath, container) {
   return deferred.promise;
 }
 
-utils.exchangeIGUserCodeForToken = function (igCode) {
+utils.exchangeIGUserCodeForToken = function (igCode, buildType) {
+  var client_id, client_secret, redirect_uri;
   var deferred = Q.defer();
 
+  if(buildType === 'ios') {
+    client_id = process.env.WADDLE_INSTAGRAM_IOS_CLIENT_ID;
+    client_secret = process.env.WADDLE_INSTAGRAM_IOS_CLIENT_SECRET;
+    redirect_uri = 'ig45be920fd11a4a5b98014e92d16d5117://redirect'
+  }
+
+  else if (buildType === 'ionic') {
+    client_id = process.env.WADDLE_INSTAGRAM_CLIENT_ID,
+    client_secret = process.env.WADDLE_INSTAGRAM_CLIENT_SECRET,
+    redirect_uri = 'http://waddleionic.herokuapp.com/instagramredirect'
+  }
+
+
   var query = {
-    client_id: process.env.WADDLE_INSTAGRAM_CLIENT_ID,
-    client_secret: process.env.WADDLE_INSTAGRAM_CLIENT_SECRET,
+    client_id: client_id,
+    client_secret: client_secret,
     grant_type: 'authorization_code',
-    redirect_uri: 'http://waddleionic.herokuapp.com/instagramredirect',
+    redirect_uri: redirect_uri,
     code: igCode
   };
 
