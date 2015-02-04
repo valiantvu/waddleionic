@@ -352,7 +352,7 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
     'MATCH (user:User {facebookID: {facebookID}})-[:hasFriend*0..1]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
-    'RETURN user, friend, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
+    'RETURN user, friend, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers',
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
