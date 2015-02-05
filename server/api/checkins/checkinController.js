@@ -164,7 +164,10 @@ checkinController.realtimeFoursquareData = function (req, res) {
     return foursquareUtils.parseCheckin(checkin);
   })
   .then(function (parsedCheckin) {
-    return user.addCheckins([parsedCheckin]);
+    return helpers.addCityProvinceAndCountryInfoToParsedCheckins([parsedCheckin])
+  })
+  .then(function (parsedCheckinWithLocationInfo) {
+    return user.addCheckins(parsedCheckinWithLocationInfo);
   })
   .then(function (data) {
     console.log(data);

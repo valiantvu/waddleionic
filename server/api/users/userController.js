@@ -238,6 +238,7 @@ userController.addFoursquareData = function (req, res) {
     return foursquareUtils.getUserFoursquareIDFromToken(user);
   })
   .then(function (userFoursquareData) {
+    console.log('foursquare response data')
     return user.setProperty('foursquareID', userFoursquareData.response.user.id);
   })
   .then(function (userNode) {
@@ -246,14 +247,18 @@ userController.addFoursquareData = function (req, res) {
   })
   .then(function (foursquareHistoryBucket) {
     var allFoursquareCheckins = foursquareUtils.convertFoursquareHistoryToSingleArrayOfCheckins(foursquareHistoryBucket);
+    console.log('allFOursquareChekcins', JSON.stringify(allFoursquareCheckins));
     return foursquareUtils.parseFoursquareCheckins(allFoursquareCheckins);
   })
   .then(function (allParsedFoursquareCheckins) {
-    console.log('allParsedFoursquareChekcins: ' +  JSON.stringify(allParsedFoursquareCheckins));
-    return user.addCheckins(allParsedFoursquareCheckins);
+    return helpers.addCityProvinceAndCountryInfoToParsedCheckins(allParsedFoursquareCheckins);
+  })
+  .then(function (allParsedFoursquareCheckinsWithLocationInfo) {
+    console.log('allParsedFoursquareCheckins: ', JSON.stringify(allParsedFoursquareCheckinsWithLocationInfo));
+    return user.addCheckins(allParsedFoursquareCheckinsWithLocationInfo);
   })
   .then(function (data) {
-    console.log('4s ios: ', data);
+    console.log('4s: ', data);
     res.status(204).end();
   })
   .catch(function(err) {
