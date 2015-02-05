@@ -239,20 +239,20 @@ utils.parseCheckin = function (checkin) {
     formattedCheckin.pointValue += 3;
   }
 
-  helpers.findCityProvinceAndCountry(formattedCheckin.lat, formattedCheckin.lng)
-  .then(function (geocodeData) {
-      if(geocodeData.city) {
-        formattedCheckin.city = geocodeData.city;
-      }
-      if(geocodeData.province) {
-        formattedCheckin.province = geocodeData.province;
-      }
-      if(geocodeData.country) {
-        formattedCheckin.country = geocodeData.country;
-      }
+  // helpers.findCityProvinceAndCountry(formattedCheckin.lat, formattedCheckin.lng)
+  // .then(function (geocodeData) {
+  //     if(geocodeData.city) {
+  //       formattedCheckin.city = geocodeData.city;
+  //     }
+  //     if(geocodeData.province) {
+  //       formattedCheckin.province = geocodeData.province;
+  //     }
+  //     if(geocodeData.country) {
+  //       formattedCheckin.country = geocodeData.country;
+  //     }
     // deferred.resolve(formattedCheckin);
     return formattedCheckin;
-  })
+  // })
   // return deferred.promise;
 };
 

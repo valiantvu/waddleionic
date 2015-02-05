@@ -210,8 +210,11 @@ userController.addFoursquareData = function (req, res) {
       return foursquareUtils.parseFoursquareCheckins(allFoursquareCheckins);
     })
     .then(function (allParsedFoursquareCheckins) {
-      console.log('allParsedFoursquareCheckins: ', JSON.stringify(allParsedFoursquareCheckins));
-      return user.addCheckins(allParsedFoursquareCheckins);
+      return helpers.addCityProvinceAndCountryInfoToParsedCheckins(allParsedFoursquareCheckins);
+    })
+    .then(function (allParsedFoursquareCheckinsWithLocationInfo) {
+      console.log('allParsedFoursquareCheckins: ', JSON.stringify(allParsedFoursquareCheckinsWithLocationInfo));
+      return user.addCheckins(allParsedFoursquareCheckinsWithLocationInfo);
     })
     .then(function (data) {
       console.log('4s: ', data);
