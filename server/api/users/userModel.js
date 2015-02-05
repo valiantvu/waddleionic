@@ -387,8 +387,13 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
             }
             commentsArray.push(commentData);
           }
-          singleResult.comments = commentsArray;
+          var sortedComments = _.sortBy(commentsArray, function(commentObj) {
+            return commentObj.comment.time;
+          });
+          console.log(sortedComments);
+          singleResult.comments = sortedComments;
         }
+
 
         if(item['hypers'].length) {
           var hypesArray = [];

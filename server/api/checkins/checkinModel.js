@@ -252,7 +252,11 @@ Checkin.getComments = function (checkinID){
 
         return singleResult;
       });
-      deferred.resolve(parsedResults);
+      var sortedParsedResults = _.sortBy(parsedResults, function (item) {
+        return item.comment.time;
+      });
+
+      deferred.resolve(sortedParsedResults);
     }
   });
 
