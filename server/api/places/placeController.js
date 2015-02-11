@@ -5,35 +5,123 @@ var placeController = {};
 
 var categoryList = [
 	{name: "Burger Joint",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/burger-1/Burger',
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/burger-1/Burger-',
 	 suffix: '-1.png'
 	},
 	{name: "BBQ Joint",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/burger-1/Burger',
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/burger-1/Burger-',
 	 suffix: '-1.png'
 	},
 	{name: "National Park",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree90x90',
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
 	 suffix: '-1.png'
 	},
 	{name: "Nature Preserve",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree90x90',
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
 	 suffix: '-1.png'
 	},
 	{name: "Other Great Outdoors",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree90x90',
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
 	 suffix: '-1.png'
 	},
 	{name: "Park",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree90x90',
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
 	 suffix: '-1.png'
 	},
 	{name: "Trail",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree90x90',
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
 	 suffix: '-1.png'
 	},
 	{name: "Tree",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree90x90',
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
+	 suffix: '-1.png'
+	},
+	{name: "Japanese Restaurant",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-1/ramen-',
+	 suffix: '-1.png'
+	},
+	{name: "Ramen / Noodle House",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-1/ramen-',
+	 suffix: '-1.png'
+	},
+	{name: "Soup Place",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-1/ramen-',
+	 suffix: '-1.png'
+	},
+	{name: "Vietnamese Restaurant",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-1/ramen-',
+	 suffix: '-1.png'
+	},
+	{name: "Bar",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
+	 suffix: '-1.png'
+	},
+		{name: "Beach Bar",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
+	 suffix: '-1.png'
+	},
+	{name: "Brewery",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
+	 suffix: '-1.png'
+	},
+	{name: "Pub",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
+	 suffix: '-1.png'
+	},
+	{name: "Sports Bar",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
+	 suffix: '-1.png'
+	},
+	{name: "Beer Garden",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
+	 suffix: '-1.png'
+	},
+	{name: "Champagne Bar",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	 suffix: '-1.png'
+	},
+	{name: "Cocktail Bar",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	 suffix: '-1.png'
+	},
+	{name: "Gay Bar",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	 suffix: '-1.png'
+	},
+	{name: "Hotel Bar",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	 suffix: '-1.png'
+	},
+	{name: "Lounge",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	 suffix: '-1.png'
+	},
+	{name: "Speakeasy",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	 suffix: '-1.png'
+	},
+	{name: "Nightclub",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	 suffix: '-1.png'
+	},
+	{name: "Other Nightlife",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	 suffix: '-1.png'
+	},
+	{name: "Whisky Bar",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	 suffix: '-1.png'
+	},
+	{name: "Wine Bar",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	 suffix: '-1.png'
+	},
+	{name: "Sake Bar",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	 suffix: '-1.png'
+	},
+	{name: "Karaoke Bar",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
 	 suffix: '-1.png'
 	}
 ]

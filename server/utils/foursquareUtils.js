@@ -134,14 +134,14 @@ utils.parseNativeCheckin = function (venue) {
   var formattedCheckin = {
     'checkinID': uuid.v4(),
     'name': venue.name,
-    'lat': venue.location.lat,
-    'lng': venue.location.lng,
+    'lat': venue.lat,
+    'lng': venue.lng,
     'checkinTime': new Date(),
+    'foursquareID': venue.id,
     'likes': 'null',
     'photoSmall': 'null',
     'photoLarge': 'null',
     'caption': 'null',
-    'foursquareID': venue.id,
     'address': 'null',
     'city': 'null',
     'province': 'null',
@@ -149,23 +149,28 @@ utils.parseNativeCheckin = function (venue) {
     'postalCode': 'null',
     'category': 'null',
     'pointValue': 5,
+    'rating': venue.rating,
     'source': 'waddle'
   };
 
-  if (venue.categories[0]) {
-    formattedCheckin.category = venue.categories[0].name;
+  if (venue.categories) {
+    formattedCheckin.category = venue.categories;
   }
 
-  if (venue.location.address) {
-    formattedCheckin.address = venue.location.address;
+  if (venue.address) {
+    formattedCheckin.address = venue.address;
   }
 
-  if (venue.location.postalCode) {
-    formattedCheckin.postalCode = venue.location.postalCode;
+  if (venue.postalCode) {
+    formattedCheckin.postalCode = venue.postalCode;
   }
 
   if (venue.footprintCaption) {
     formattedCheckin.caption = venue.footprintCaption;
+    formattedCheckin.pointValue += 3;
+  }
+
+  if (venue.rating > 0) {
     formattedCheckin.pointValue += 3;
   }
 
@@ -175,6 +180,7 @@ utils.parseNativeCheckin = function (venue) {
     formattedCheckin.photoLarge = venue.photo;
     formattedCheckin.pointValue += 3;
   }
+
 
   helpers.findCityProvinceAndCountry(formattedCheckin.lat, formattedCheckin.lng)
   .then(function (geocodeData) {
@@ -201,12 +207,12 @@ utils.parseCheckin = function (checkin) {
     'name': checkin.venue.name,
     'lat': checkin.venue.location.lat,
     'lng': checkin.venue.location.lng,
+    'foursquareID': checkin.venue.id,
     'checkinTime': new Date(checkin.createdAt*1000),
     'likes': 'null',
     'photoSmall': 'null',
     'photoLarge': 'null',
     'caption': 'null',
-    'foursquareID': checkin.venue.id,
     'address': 'null',
     'city': 'null',
     'province': 'null',

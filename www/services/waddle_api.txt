@@ -19,13 +19,15 @@ USER ENDPOINTS: http://waddleionic.herokuapp.com/api/users
         2) /userfoursquarecode
             This endpoint is used to exchange the code that foursquare provides us with a long-term access token that is appended to requests to foursquare's API on behalf of a user.  The endpoint expects to recevive JSON in the following format:
             {facebookID: facebookID,
-             foursquareCode: foursquareCode
+             foursquareCode: foursquareCode,
+             build_type: (should be set to either 'ios' or 'ionic')
             }
 
         3) /userinstagramcode
             Same as above, but for instagram auth.  Endpoint expects to receive JSON in the following format:
             {facebookID: facebookID,
-              instagramCode: instagramCode
+              instagramCode: instagramCode,
+              build_type: (should be set to either 'ios' or 'ionic')
             }
 
         4) /notifications
@@ -119,8 +121,11 @@ CHECKIN ENDPOINTS:  http://waddleionic.herokuapp.com/api/checkins
         1) /venuesearchmobile/:facebookID/:lat/:lng
             Queries the foursquare API to get a list of venues that are located near the specified lat/lng.  Facebook ID is logged in user's facebook ID
 
-        2) /sign_s3
+        2) /venuesearchweb/:facebookID/:query/:near
+            Query is something like "thai, coffee, etc." whereas near must be some place in the world (i.e. city, state etc)
+
+        3) /sign_s3
             Used to post pictures to Amazon S3.  I can walk you through the process of using Amazon s3 to store pictures.  
 
-        3) /interactions/:checkinid
+        4) /interactions/:checkinid
             Used to fetch all comments and hypes that a checkin has received.

@@ -165,7 +165,8 @@ User.prototype.addCheckins = function(combinedCheckins){
     'MERGE (province:Province {name: {province}, country: {country}})',
     'MERGE (city:City {name: {city}, province:{province}, country:{country}})',
     'MERGE (category:Category {name:{category}})',
-    'MERGE (user)-[:hasCheckin]->(checkin)-[:hasPlace]->(place)',
+    'MERGE (user)-[:hasCheckin]->(checkin)',
+    'MERGE (checkin)-[:hasPlace]->(place)',
     'MERGE (place)-[:hasCity]->(city)',
     'MERGE (place)-[:hasCategory]->(category)',
     'MERGE (city)-[:hasCountry]->(country)',
@@ -350,9 +351,10 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
 
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})-[:hasFriend*0..1]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'OPTIONAL MATCH (place)-[:hasCategory]-(category:Category)',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
-    'RETURN user, friend, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers',
+    'RETURN user, friend, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers, category',
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
@@ -376,6 +378,10 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
           "user": item.user.data,
           "checkin": item.checkin.data,
           "place": item.place.data,
+        };
+
+        if(item.category) {
+          singleResult.category = item.category.data;
         }
 
         if(item['comments'].length && item['commenters'].length) {
