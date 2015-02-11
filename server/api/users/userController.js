@@ -148,7 +148,7 @@ userController.userLogin = function (req, res) {
     })
     .then(function (checkinsCount) {
       user.setProperty('footprintsCount', checkinsCount);
-      return user.getAggregatedFootprintList(user.user.node._data.data.facebookID, 0, 5);
+      return user.getAggregatedFootprintList(user.node._data.data.facebookID, 0, 5);
     })
     .then(function (aggregatedFootprints) {
       var allData = {

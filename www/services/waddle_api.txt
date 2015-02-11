@@ -102,7 +102,7 @@ CHECKIN ENDPOINTS:  http://waddleionic.herokuapp.com/api/checkins
         4) /comment
             Post a comment to the DB. Expects JSON to formatted like so:
             {
-              clickerID: clickerID (logged in user's facebook ID, sorry about the name being different),
+              clickerID: clickerID (logged in user's facebook ID),
               checkinID: checkinID,
               text: text (text of comment; comment text should be sanitized on client side before being posted to DB);
             };
@@ -125,7 +125,7 @@ CHECKIN ENDPOINTS:  http://waddleionic.herokuapp.com/api/checkins
             Query is something like "thai, coffee, etc." whereas near must be some place in the world (i.e. city, state etc)
 
         3) /sign_s3
-            Used to post pictures to Amazon S3.  I can walk you through the process of using Amazon s3 to store pictures.  
+            Used to post pictures to Amazon S3.
 
         4) /interactions/:checkinid
             Used to fetch all comments and hypes that a checkin has received.

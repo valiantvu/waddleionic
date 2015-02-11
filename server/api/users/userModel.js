@@ -159,7 +159,7 @@ User.prototype.addCheckins = function(combinedCheckins){
     'ON CREATE SET checkin = {checkinID: {checkinID}, likes: {likes}, photoSmall: {photoSmall}, photoLarge: {photoLarge}, caption: {caption}, checkinTime: {checkinTime}, pointValue: {pointValue}, source: {source}}',
     'ON MATCH SET checkin.checkinTime = {checkinTime}, checkin.likes = {likes}, checkin.photoSmall = {photoSmall}, checkin.photoLarge = {photoLarge}, checkin.caption = {caption}, checkin.source = {source}',
     'MERGE (place:Place {foursquareID: {foursquareID}})',
-    'ON CREATE SET place = {name: {name}, lat: {lat}, lng: {lng}, country: {country}, province:{province}, city:{city}, category: {category}}',
+    'ON CREATE SET place = {name: {name}, foursquareID: {foursquareID}, lat: {lat}, lng: {lng}, country: {country}, province:{province}, city:{city}, category: {category}}',
     'ON MATCH SET place.name = {name}, place.lat = {lat}, place.lng = {lng}, place.country = {country}, place.province = {province}, place.city = {city}, place.category = {category}',
     'MERGE (country:Country {name: {country}})',
     'MERGE (province:Province {name: {province}, country: {country}})',
