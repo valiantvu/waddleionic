@@ -497,9 +497,24 @@ userController.getBucketList = function (req, res){
 };
 
 userController.searchUserFootprints = function (req, res) {
+  var params = {};
   var facebookID = req.params.user;
   var query = req.params.query;
-  User.findFootprintsByPlaceName(facebookID, query)
+
+  if(req.params.page) {
+    params.page = parseInt(req.params.page);
+  }
+  else {
+    params.page = 0;
+  }
+
+  if(req.params.skip) {
+    params.skipAmount = parseInt(req.params.skip);
+  }
+  else {
+    params.skipAmount = 0;
+  }
+  User.findFootprintsByPlaceName(facebookID, query, params.page, params.skipAmount)
   .then(function (footprints) {
     res.json(footprints);
     res.status(200).end();

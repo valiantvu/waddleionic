@@ -427,7 +427,7 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
   return deferred.promise;
 }
 
-User.findFootprintsByPlaceName = function (facebookID, placeName) {
+User.findFootprintsByPlaceName = function (facebookID, placeName, page, skipAmount) {
   var deferred = Q.defer();
 
   var query = [
@@ -436,12 +436,17 @@ User.findFootprintsByPlaceName = function (facebookID, placeName) {
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
     'RETURN user, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
+    'ORDER BY checkin.checkinTime DESC',
+    'SKIP { skipNum }',
+    'LIMIT { skipAmount }'
   ].join('\n');
 
   //params.placeName includes regexp to search nodes containing placeName string. (?i) makes query case insensitive
   var params = {
     facebookID: facebookID,
-    placeName: '(?i).*' + placeName + '.*'
+    placeName: '(?i).*' + placeName + '.*',
+    skipNum: page ? page * skipAmount : 0,
+    skipAmount: skipAmount
   };
 
   console.log('dis b ma params:', params);
