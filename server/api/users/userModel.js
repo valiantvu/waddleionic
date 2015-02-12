@@ -643,7 +643,7 @@ User.prototype.getUnreadNotifications = function () {
   var deferred = Q.defer();
 
   var query = [
-    'MATCH (user:User {facebookID: {facebookID}})-[:hasUnreadNotification]->(comment:Comment)-[]->(checkin:Checkin)-[]->(place:Place)',
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasUnreadNotification]->(comment:Comment)-[:gotComment]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'MATCH (commenter:User)-[:madeComment]->(comment)',
     'RETURN user, comment, checkin, place, commenter'
   ].join('\n');
@@ -675,7 +675,7 @@ User.prototype.getReadNotifications = function (limit) {
   var deferred = Q.defer();
 
   var query = [
-    'MATCH (user:User {facebookID: {facebookID}})-[:hasReadNotification]->(comment:Comment)-[]->(checkin:Checkin)-[]->(place:Place)',
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasReadNotification]->(comment:Comment)-[:gotComment]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'MATCH (commenter:User)-[:madeComment]->(comment)',
     'RETURN user, comment, checkin, place, commenter',
     'LIMIT ' + limit

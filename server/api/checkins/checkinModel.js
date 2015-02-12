@@ -95,7 +95,7 @@ Checkin.addComment = function (clickerID, checkinID, text){
   'MATCH (commentReceiver:User)-[:hasCheckin]->(checkin:Checkin {checkinID: {checkinID}})',
   'MERGE (clicker)-[:madeComment]->(newComment:Comment {text: {text}, commentID : {commentID}, time: timestamp() })' + 
   '-[:gotComment]->(checkin)',
-  'MERGE (commentReceiver)-[:hasUnreadNotification]->(comment)',
+  'MERGE (commentReceiver)-[:hasUnreadNotification]->(newComment)',
   'RETURN newComment'
   ].join('\n');
   var params = {
