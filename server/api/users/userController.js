@@ -501,6 +501,8 @@ userController.searchUserFootprints = function (req, res) {
   var facebookID = req.params.user;
   var query = req.params.query;
 
+  query = query.trim();
+
   if(req.params.page) {
     params.page = parseInt(req.params.page);
   }
@@ -529,6 +531,8 @@ userController.searchUserFeed = function (req, res) {
   var params = {};
   var facebookID = req.params.user;
   var query = req.params.query;
+
+  query = query.trim();
 
   if(req.params.page) {
     params.page = parseInt(req.params.page);

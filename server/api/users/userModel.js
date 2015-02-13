@@ -433,9 +433,10 @@ User.findFootprintsByPlaceName = function (facebookID, placeName, page, skipAmou
   var query = [
     'MATCH (user:User{facebookID:{facebookID}})-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'WHERE place.name =~ {placeName} OR place.city =~ {placeName} OR place.country =~ {placeName}',
+    'OPTIONAL MATCH (place)-[:hasCategory]->(category:Category)',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
-    'RETURN user, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
+    'RETURN user, checkin, place, category, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
@@ -462,6 +463,10 @@ User.findFootprintsByPlaceName = function (facebookID, placeName, page, skipAmou
           "place": item.place.data,
           "checkin": item.checkin.data,
           "user": item.user.data
+        }
+
+        if(item.category) {
+          singleResult.category = item.category.data;
         }
 
         if(item['comments'].length && item['commenters'].length) {
@@ -550,9 +555,10 @@ User.findFeedItemsByPlaceName = function (facebookID, placeName, page, skipAmoun
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})-[:hasFriend*0..1]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'WHERE place.name =~ {placeName} OR place.city =~ {placeName} OR place.country =~ {placeName}',
+    'OPTIONAL MATCH (place)-[:hasCategory]->(category:Category)',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
-    'RETURN friend, checkin, place, collect(comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
+    'RETURN friend, checkin, place, category, collect(comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
@@ -579,6 +585,10 @@ User.findFeedItemsByPlaceName = function (facebookID, placeName, page, skipAmoun
           "place": item.place.data,
           "checkin": item.checkin.data,
           "user": item.friend.data
+        }
+
+        if(item.category) {
+          singleResult.category = item.category.data;
         }
 
         if(item['comments'].length && item['commenters'].length) {
