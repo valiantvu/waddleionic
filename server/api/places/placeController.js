@@ -194,11 +194,13 @@ placeController.searchWaddleDB = function (req, res) {
 	})
 }
 
-placeController.assignIconToCategory = function () {
+placeController.assignIconToCategory = function (req, res) {
+	var categories = [];
 	Place.assignIconToCategories(categoryList)
 	.then(function (data) {
 		console.log('category icons assigned!');
-    res.status(204).end();
+		res.json(categories);
+    res.status(200).end();
   })
   .catch(function(err) {
     console.log(err);
