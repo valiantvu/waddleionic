@@ -211,16 +211,21 @@ User.prototype.addCheckins = function(combinedCheckins){
 
 // Find all of a user's friends
 // Uses this.getProperty to grab instantiated user's facebookID as query parameter
-User.prototype.findAllFriends = function () {
+User.prototype.findAllFriends = function (page, skipAmount) {
   var deferred = Q.defer();
 
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})-[:hasFriend]->(friend:User)',
     'RETURN friend',
+    'ORDER BY friend.name',
+    'SKIP { skipNum }',
+    'LIMIT { skipAmount }'
   ].join('\n');
 
   var params = {
-    facebookID: this.getProperty('facebookID')
+    facebookID: this.getProperty('facebookID'),
+    skipNum: page ? page * skipAmount : 0,
+    skipAmount: skipAmount
   };
 
   db.query(query, params, function (err, results) {

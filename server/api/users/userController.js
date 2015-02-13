@@ -581,7 +581,7 @@ userController.getFriendsList = function (req, res) {
   User.find(params)
   .then(function(userNode) {
     user = userNode
-    return user.findAllFriends();
+    return user.findAllFriends(page, skipAmount);
   })
   .then(function (friends) {
     res.json(friends);
