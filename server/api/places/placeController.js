@@ -169,7 +169,6 @@ var categoryList = [
 placeController.updatePlace = function (req, res){
 
   var placeData = req.body;
-
   Place.create(placeData)
   .then(function(node) {
     res.status(204).end();
