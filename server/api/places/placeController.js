@@ -1,4 +1,5 @@
 var Place = require('./placeModel.js');
+var Q = require('q');
 var _ = require('lodash');
 
 var placeController = {};
