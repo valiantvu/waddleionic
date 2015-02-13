@@ -42,7 +42,7 @@ Place.assignIconToCategories = function (categoryList) {
 
   var query = [
     'MERGE (category:Category {name: {name}})',
-    'SET category.iconPrefix = {prefix}, category.iconSuffix = {suffix}'
+    'SET category.iconPrefix = {prefix}, category.iconSuffix = {suffix}, category.name = {name}'
   ].join('\n');
 
   var batchRequest = _.map(categoryList, function (category, index) {

@@ -123,8 +123,48 @@ var categoryList = [
 	{name: "Karaoke Bar",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
 	 suffix: '-1.png'
+	},
+		{name: "Karaoke Bar",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	 suffix: '-1.png'
+	},
+	{name: "Café",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-1/coffee-',
+	 suffix: '-1.png'
+	},
+	{name: "Coffee Shop",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-1/coffee-',
+	 suffix: '-1.png'
+	},
+	{name: "Tea Room",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-1/coffee-',
+	 suffix: '-1.png'
+	},
+	{name: "Food Truck",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/foodtruck-1/foodtruck-',
+	 suffix: '-1.png'
+	},
+	{name: "Bagel Shop",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/bagel-1/bagel-',
+	 suffix: '-1.png'
+	},
+	{name: "Bakery",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/bagel-1/bagel-',
+	 suffix: '-1.png'
+	},
+	{name: "Art Gallery",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-1/painting-',
+	 suffix: '-1.png'
+	},
+	{name: "Art Museum",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-1/painting-',
+	 suffix: '-1.png'
+	},
+	{name: "Public Art",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-1/painting-',
+	 suffix: '-1.png'
 	}
-]
+];
 
 placeController.updatePlace = function (req, res){
 
@@ -155,7 +195,7 @@ placeController.searchWaddleDB = function (req, res) {
 	})
 }
 
-placeController.assignIconToCategories = function () {
+placeController.assignIconToCategory = function () {
 	Place.assignIconToCategories(categoryList)
 	.then(function (data) {
 		console.log('category icons assigned!');
