@@ -172,7 +172,7 @@ User.prototype.addCheckins = function(combinedCheckins){
     'MERGE (city)-[:hasCountry]->(country)',
     'MERGE (province)-[:hasCountry]->(country)',
     'MERGE (city)-[:hasProvince]->(province)',
-    'RETURN user, checkin, place, city, province, country',
+    'RETURN category',
   ].join('\n');
 
   // Map over the friends and return a list of objects

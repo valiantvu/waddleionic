@@ -18,6 +18,7 @@
       	<h2 ng-click='passSelectedVenueInfoToPostModal(venue); openModal()'>{{venue.name}}</h2>
       	<h5>{{venue.location.formattedAddress[0]}}, {{venue.location.formattedAddress[1]}}<h5>
       	<h6>{{venue.location.distance}} meters</h6>
+        <img ng-src="{{venue.iconUrlPrefix}}40x40{{venue.iconUrlSuffix}}">
       </div>
     </div>
   </ion-content>

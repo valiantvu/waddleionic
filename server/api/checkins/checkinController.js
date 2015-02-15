@@ -9,6 +9,7 @@ var User = require('../users/userModel.js');
 var foursquareUtils = require('../../utils/foursquareUtils.js');
 var instagramUtils = require('../../utils/instagramUtils.js');
 var facebookUtils = require('../../utils/facebookUtils.js');
+var categoryList = require('../../utils/categoryList.js');
 
 var checkinController = {};
 
@@ -67,6 +68,17 @@ checkinController.searchFoursquareVenuesMobile = function (req, res) {
     return foursquareUtils.searchFoursquareVenuesMobile(user, latlng);
   })
   .then(function (venues) {
+    console.log(JSON.stringify(venues[0]));
+    _.each(venues, function(venue) {
+      if(venue.categories[0].name && categoryList.dictionary[venue.categories[0].name]) {
+        venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
+        venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
+      }
+      else {
+        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.iconUrlSuffix = '-1.png';
+      }
+    })
     res.json(venues);
   })
   .catch(function (err){

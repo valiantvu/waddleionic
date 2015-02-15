@@ -28,6 +28,7 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicModal, $i
 			.then(function (venues) {
 				$scope.hide();
 				$scope.venues = venues.data;
+				console.log(venues.data);
 			})
 		});
 	}
