@@ -37,6 +37,44 @@ Place.prototype.save = function (){
   return deferred.promise;
 };
 
+Place.assignIconToCategories = function (categoryList) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MERGE (category:Category {name: {name}})',
+    'SET category.iconPrefix = {prefix}, category.iconSuffix = {suffix}, category.name = {name}'
+  ].join('\n');
+
+  var batchRequest = _.map(categoryList, function (category, index) {
+
+    var singleRequest = {
+      'method': "POST",
+      'to': "/cypher",
+      'body': {
+        'query': query,
+        'params': checkin
+      },
+      'id': index
+    };
+    return singleRequest;
+  });
+
+  var options = {
+    'url': neo4jUrl + '/db/data/batch',
+    'method': 'POST',
+    'json': true,
+    'body': JSON.stringify(batchRequest)
+  };
+
+  request.post(options, function(err, response, body) {
+    if (err) { deferred.reject(err) }
+    else {
+      deferred.resolve(body);
+    }
+  });
+  return deferred.promise;
+}
+
 Place.create = function(data){
   node = db.createNode(data);
   var place = new Place(node);

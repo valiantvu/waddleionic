@@ -1,10 +1,22 @@
 (function(){
 
-var CheckinController = function ($scope, $state, NativeCheckin, $ionicModal) {	
+var CheckinController = function ($scope, $state, NativeCheckin, $ionicModal, $ionicLoading) {	
 
 	$scope.checkinInfo = {footprintCaption: null};
 
+	$scope.show = function() {
+    $ionicLoading.show({
+      content: '<i class="icon ion-load-c light"></i>',
+      animation: 'fade-in'
+    });
+  };
+
+  $scope.hide = function(){
+    $ionicLoading.hide();
+  };
+
 	$scope.searchFoursquareVenues = function () {
+		$scope.show();
 		NativeCheckin.getCurrentLocation()
 		.then(function (location) {
 			var currentLocation = {
@@ -14,13 +26,16 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicModal) {
 		  // var currentLocation = {lat:40.753522 , lng: -74.272922}
 			NativeCheckin.searchFoursquareVenues(window.sessionStorage.userFbID, currentLocation)
 			.then(function (venues) {
+				$scope.hide();
 				$scope.venues = venues.data;
+				console.log(venues.data);
 			})
 		});
 	}
 
 	$scope.passSelectedVenueInfoToPostModal = function (venueInfo) {
 		$scope.venue = venueInfo;
+		console.log(venueInfo);
 	}
 
 	$scope.sendCheckinDataToServer = function(venueInfo) {
@@ -74,7 +89,7 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicModal) {
 
 };
 
-CheckinController.$inject = ['$scope', '$state', 'NativeCheckin', '$ionicModal']
+CheckinController.$inject = ['$scope', '$state', 'NativeCheckin', '$ionicModal', '$ionicLoading']
 
 angular.module('waddle.checkin', [])
   .controller('CheckinController', CheckinController);

@@ -141,6 +141,25 @@ span{
 	background-size:100%;
 }
 
+.slidebox {
+	height: 100vh;
+}
+
+.image1 {
+	height: 100%;
+	background-image: url('http://www.socialtalent.co/wp-content/uploads/blog-content/Bending_over_backwards_to_find_candidate_No_just_a_young_business_woman_standing_in_flexible_pose_and_looking_in_binocular_researching_field.jpg');
+}
+
+.image2 {
+	height: 100%;
+	background-image: url('http://img.brainjet.com/slides/4/1/8/5/9/9/4185994067/7d5f8dba1d9f4310014ed9da7db0e1665987c3b4.jpeg');
+}
+
+.image3 {
+	height: 100%;
+	background-image: url('http://img.brainjet.com/slides/2/2/8/1/5/6/2281569702/57062690afa3729ff871e10033fc5957ba7f3cba.jpeg');
+}
+
 .welcomeimage{
 	position:relative;
 	z-index:1;

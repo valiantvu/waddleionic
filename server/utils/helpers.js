@@ -1,5 +1,5 @@
 var https = require('https');
-
+var _ = require('lodash');
 var Q = require('q');
 
 var helpers = {};
@@ -22,22 +22,59 @@ helpers.httpsGet = function (queryPath) {
   return deferred.promise;
 };
 
-helpers.findCityByReverseGeocoding = function (lat, lng) {
+helpers.findCityProvinceAndCountry = function (lat, lng) {
   var deferred = Q.defer();
-  var geocodingQueryPath = 'https://api.tiles.mapbox.com/v4/geocode/mapbox.places-city-v1/' 
+  var cityProvinceAndCountryData = {};
+
+  var geocodingQueryPath = 'https://api.tiles.mapbox.com/v4/geocode/mapbox.places-v1/' 
   + lng + ',' + lat + '.json?access_token=pk.eyJ1Ijoid2FkZGxldXNlciIsImEiOiItQWlwaU5JIn0.mTIpotbZXv5KVgP4pkcYrA';
-  console.log(geocodingQueryPath);
 
   helpers.httpsGet(geocodingQueryPath)
   .then(function (data) {
-    console.log(data)
-    deferred.resolve(JSON.parse(data))
+    var geocodeData = JSON.parse(data);
+    _.each(geocodeData.features, function (feature) {
+      if(feature.id.indexOf("city") > -1) {
+        cityProvinceAndCountryData.city = feature.text;
+      } else if(feature.id.indexOf("province") > -1) {
+        cityProvinceAndCountryData.province = feature.text;
+      } else if(feature.id.indexOf("country") > -1) {
+        cityProvinceAndCountryData.country = feature.text;
+      }
+    })
+    deferred.resolve(cityProvinceAndCountryData);
   })
   .catch(function (err) {
     deferred.reject(err);
   });
-
   return deferred.promise
+}
+
+helpers.addCityProvinceAndCountryInfoToParsedCheckins = function (parsedCheckins) {
+  var deferred = Q.defer();
+  var geocodeQueries = []
+  _.each(parsedCheckins, function (parsedCheckin) {
+    geocodeQueries.push(helpers.findCityProvinceAndCountry(parsedCheckin.lat, parsedCheckin.lng));
+  });
+  Q.all(geocodeQueries)
+  .then(function (geocodeData) {
+    _.each(parsedCheckins, function (parsedCheckin, index) {
+        if(geocodeData[index].city) {
+          parsedCheckin.city = geocodeData[index].city;
+        }
+        if(geocodeData[index].province) {
+          parsedCheckin.province = geocodeData[index].province;
+        }
+        if(geocodeData[index].country) {
+          parsedCheckin.country = geocodeData[index].country;
+        }
+    })
+    deferred.resolve(parsedCheckins);
+  })
+  .catch(function (err) {
+      deferred.reject(err);
+  })
+
+  return deferred.promise;
 }
 
 module.exports = helpers;

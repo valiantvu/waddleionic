@@ -9,6 +9,7 @@ var User = require('../users/userModel.js');
 var foursquareUtils = require('../../utils/foursquareUtils.js');
 var instagramUtils = require('../../utils/instagramUtils.js');
 var facebookUtils = require('../../utils/facebookUtils.js');
+var categoryList = require('../../utils/categoryList.js');
 
 var checkinController = {};
 
@@ -67,6 +68,17 @@ checkinController.searchFoursquareVenuesMobile = function (req, res) {
     return foursquareUtils.searchFoursquareVenuesMobile(user, latlng);
   })
   .then(function (venues) {
+    console.log(JSON.stringify(venues[0]));
+    _.each(venues, function(venue) {
+      if(venue.categories[0].name && categoryList.dictionary[venue.categories[0].name]) {
+        venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
+        venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
+      }
+      else {
+        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.iconUrlSuffix = '-1.png';
+      }
+    })
     res.json(venues);
   })
   .catch(function (err){
@@ -115,7 +127,6 @@ checkinController.facebookHubChallenge = function (req, res) {
 
 checkinController.handleFBPost = function (req, res) {
   var updateArr = req.body.entry;
-  console.log("dis be ma bodayy: " + JSON.stringify(req.body));
   console.log("dis be ma boday's entray: " + JSON.stringify(updateArr));
 
   var posts = _.map(updateArr, function(update) {
@@ -125,7 +136,6 @@ checkinController.handleFBPost = function (req, res) {
   Q.all(posts)
     .then(function (postArr) {
       // write to db using batch query?
-      console.log("ARR, dis be da postarr: " + JSON.stringify(postArr));
 
       var flatPostArr = _.flatten(postArr);
 
@@ -166,7 +176,10 @@ checkinController.realtimeFoursquareData = function (req, res) {
     return foursquareUtils.parseCheckin(checkin);
   })
   .then(function (parsedCheckin) {
-    return user.addCheckins([parsedCheckin]);
+    return helpers.addCityProvinceAndCountryInfoToParsedCheckins([parsedCheckin])
+  })
+  .then(function (parsedCheckinWithLocationInfo) {
+    return user.addCheckins(parsedCheckinWithLocationInfo);
   })
   .then(function (data) {
     console.log(data);
@@ -219,8 +232,11 @@ checkinController.addComment = function (req, res){
 
   Checkin.addComment(clickerID, checkinID, text)
     .then(function (data){
-      console.log(data);
-      res.json(data);
+      return Checkin.getComments(checkinID);
+    })
+    .then(function (commentsArray) {
+      console.log('added comment!', commentsArray);
+      res.json(commentsArray);
       res.status(201).end();
     })
     .catch(function (err) {
@@ -232,11 +248,15 @@ checkinController.addComment = function (req, res){
 checkinController.removeComment = function (req, res){
   var checkinID = req.body.checkinID;
   var facebookID = req.body.facebookID;
-  var commentID = req.body.commentID ;
-  console.log(req.body);
+  var commentID = req.body.commentID;
+ 
   Checkin.removeComment(facebookID, checkinID , commentID)
     .then(function (data){
-      res.json(data);
+      return Checkin.getComments(checkinID);
+    })
+    .then(function (commentsArray) {
+      console.log('removed comment!', commentsArray);
+      res.json(commentsArray);
       res.status(201).end();
     })
     .catch(function(err) {
@@ -264,33 +284,16 @@ checkinController.giveProps = function (req, res){
 
 checkinController.getHypesAndComments = function (req, res){
   var checkinID = req.params.checkinid;
-  var data = {}
+  var parsedData = {}
 
   Checkin.getHypes(checkinID)
-    .then(function (hypes){
-      data['hypes'] = hypes;
+    .then(function (hypesArray){
+      parsedData.hypes = hypesArray;
       return Checkin.getComments(checkinID);
     })
-    .then(function (comments){
-      if (typeof comments === "object")
-      data['comments'] = comments;
-      var parsedData = {
-        hypes: data.hypes.length,
-        hypeGivers: [],
-        comments: []
-      };
-     
-      parsedData.hypeGivers = _.map(data.hypes, function (hype) {
-        return hype.user._data.data
-      });
-
-      parsedData.comments = _.map(data.comments, function (comment) {
-        return {
-          commenter: comment.user._data.data, 
-          comment: comment.comment._data.data
-        }
-      });
-
+    .then(function (commentsArray){
+      parsedData.comments = commentsArray;
+      console.log(parsedData);
       res.json(parsedData);
       res.status(200).end();
     })

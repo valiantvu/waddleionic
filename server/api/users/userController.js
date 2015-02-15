@@ -3,6 +3,7 @@ var _ = require('lodash');
 var foursquareUtils = require('../../utils/foursquareUtils.js');
 var facebookUtils = require('../../utils/facebookUtils.js');
 var instagramUtils = require('../../utils/instagramUtils.js');
+var helpers = require('../../utils/helpers.js');
 
 var User = require('./userModel.js');
 var Place = require('../places/placeModel.js');
@@ -47,28 +48,31 @@ userController.userLogin = function (req, res) {
   })
   .then(function (userNode) { 
     user = userNode;
-    return user.findAllCheckins(userData.facebookID, 0, 0)
+    return user.countAllCheckins(userData.facebookID);
   })
   //Path forks here for existing vs new users
-  .then(function (checkinsAlreadyStored) {
+  .then(function (checkinsCount) {
     // console.log('fb checkins: ', checkinsAlreadyStored.length);
     // For existing users
-    if (checkinsAlreadyStored.length) {
-      user.setProperty('footprintsCount', checkinsAlreadyStored.length);
+    if (user.getProperty('footprintsCount') >= 0) {
+      user.setProperty('footprintsCount', checkinsCount);
       user.findAllFriends()
-      .then(function (neoUserData){
+      .then(function (friendsList){
+        userFBFriendsData = friendsList;
+        return user.getAggregatedFootprintList(user.node._data.data.facebookID, 0, 5)
+      })
+      .then(function (aggregatedFootprints) {
         var allData = {
-          allCheckins: checkinsAlreadyStored,
-          friends: neoUserData,
-          fbProfilePicture: user.getProperty('fbProfilePicture'),
-          name: user.getProperty('name'),
-          footprintsCount: checkinsAlreadyStored.length
-        }
+          user: user.node._data.data,
+          friends: userFBFriendsData,
+          aggregatedFootprints: aggregatedFootprints
+        };
         res.json(allData);
         res.status(200).end();
       })
     } else {
       // For new users, start chain of facebook requests.
+      console.log('initiate get and parse fbdata');
       getAndParseFBData();
     }
   })
@@ -134,17 +138,25 @@ userController.userLogin = function (req, res) {
       userFBStatusesData = fbParsedStatusesData;
       combinedFBCheckins = combinedFBCheckins.concat(userFBStatusesData);
       console.log("combinedCheckins: " + combinedFBCheckins);
-      return user.addCheckins(combinedFBCheckins);
+      return helpers.addCityProvinceAndCountryInfoToParsedCheckins(combinedFBCheckins);
+    })
+    .then(function (combinedFBCheckinsWithLocation) {
+      return user.addCheckins(combinedFBCheckinsWithLocation);
     })
     .then(function (data) {
-      return user.findAllCheckins(userData.facebookID);
+      return user.countAllCheckins(userData.facebookID);
     })
-    .then(function (checkinsStored) {
-      // console.log('fb checkins: ', checkinsStored.length);
+    .then(function (checkinsCount) {
+      user.setProperty('footprintsCount', checkinsCount);
+      return user.getAggregatedFootprintList(user.node._data.data.facebookID, 0, 5);
+    })
+    .then(function (aggregatedFootprints) {
       var allData = {
-        allCheckins: checkinsStored,
-        friends: userFBFriendsData
+        user: user.node._data.data,
+        friends: userFBFriendsData,
+        aggregatedFootprints: aggregatedFootprints
       };
+      console.log('allData', allData)
       res.json(allData);
       res.status(200).end();
     })
@@ -158,23 +170,75 @@ userController.userLogin = function (req, res) {
 userController.addFoursquareData = function (req, res) {
 
   var userData = req.body;
+  console.log('thsi is ma body', req.body)
   var user;
 
   console.log('add 4s data');
 
+  //if client is ios app, then fousquareCode that is returned is actually the access token
+  if(userData.build_type === 'ios') {
+    console.log('inside ios client')
+    addFoursquareDataFromIOSClient(userData);
+  }
+
+  else {
+
+    User.find(userData)
+    .then(function (userNode) { 
+      user = userNode;
+      return foursquareUtils.exchangeFoursquareUserCodeForToken(userData.foursquareCode, userData.redirect_uri);
+    })
+    .then(function (foursquareAccessToken) {
+      console.log('foursquareAccessToken: ', foursquareAccessToken);
+      return user.setProperty('fsqToken', foursquareAccessToken.access_token);
+    })
+    .then(function (userNode) {
+      user = userNode;
+      return foursquareUtils.getUserFoursquareIDFromToken(user);
+    })
+    .then(function (userFoursquareData) {
+      console.log('foursquare response data')
+      return user.setProperty('foursquareID', userFoursquareData.response.user.id);
+    })
+    .then(function (userNode) {
+      user = userNode;
+      return foursquareUtils.tabThroughFoursquareCheckinHistory(user);
+    })
+    .then(function (foursquareHistoryBucket) {
+      var allFoursquareCheckins = foursquareUtils.convertFoursquareHistoryToSingleArrayOfCheckins(foursquareHistoryBucket);
+      console.log('allFOursquareChekcins', JSON.stringify(allFoursquareCheckins));
+      return foursquareUtils.parseFoursquareCheckins(allFoursquareCheckins);
+    })
+    .then(function (allParsedFoursquareCheckins) {
+      return helpers.addCityProvinceAndCountryInfoToParsedCheckins(allParsedFoursquareCheckins);
+    })
+    .then(function (allParsedFoursquareCheckinsWithLocationInfo) {
+      console.log('allParsedFoursquareCheckins: ', JSON.stringify(allParsedFoursquareCheckinsWithLocationInfo));
+      return user.addCheckins(allParsedFoursquareCheckinsWithLocationInfo);
+    })
+    .then(function (data) {
+      console.log('4s: ', data);
+      res.status(204).end();
+    })
+    .catch(function(err) {
+      console.log(err);
+      res.status(500).end();
+    })
+  }
+};
+
+ var addFoursquareDataFromIOSClient = function (userData) {
   User.find(userData)
   .then(function (userNode) { 
     user = userNode;
-    return foursquareUtils.exchangeFoursquareUserCodeForToken(userData.foursquareCode);
-  })
-  .then(function (foursquareAccessToken) {
-    return user.setProperty('fsqToken', foursquareAccessToken.access_token);
+    return user.setProperty('fsqToken', userData.foursquareCode);
   })
   .then(function (userNode) {
     user = userNode;
     return foursquareUtils.getUserFoursquareIDFromToken(user);
   })
   .then(function (userFoursquareData) {
+    console.log('foursquare response data')
     return user.setProperty('foursquareID', userFoursquareData.response.user.id);
   })
   .then(function (userNode) {
@@ -183,9 +247,15 @@ userController.addFoursquareData = function (req, res) {
   })
   .then(function (foursquareHistoryBucket) {
     var allFoursquareCheckins = foursquareUtils.convertFoursquareHistoryToSingleArrayOfCheckins(foursquareHistoryBucket);
-    var allParsedFoursquareCheckins = foursquareUtils.parseFoursquareCheckins(allFoursquareCheckins);
-    console.log("4s checkin len:", allParsedFoursquareCheckins.length);
-    return user.addCheckins(allParsedFoursquareCheckins);
+    console.log('allFOursquareChekcins', JSON.stringify(allFoursquareCheckins));
+    return foursquareUtils.parseFoursquareCheckins(allFoursquareCheckins);
+  })
+  .then(function (allParsedFoursquareCheckins) {
+    return helpers.addCityProvinceAndCountryInfoToParsedCheckins(allParsedFoursquareCheckins);
+  })
+  .then(function (allParsedFoursquareCheckinsWithLocationInfo) {
+    console.log('allParsedFoursquareCheckins: ', JSON.stringify(allParsedFoursquareCheckinsWithLocationInfo));
+    return user.addCheckins(allParsedFoursquareCheckinsWithLocationInfo);
   })
   .then(function (data) {
     console.log('4s: ', data);
@@ -195,7 +265,7 @@ userController.addFoursquareData = function (req, res) {
     console.log(err);
     res.status(500).end();
   })
-};
+}
 
 userController.addInstagramData = function (req, res) {
 
@@ -203,12 +273,10 @@ userController.addInstagramData = function (req, res) {
   var user;
   var igUserData;
 
-  console.log('ma user: ', req.body);
-
   User.find(userData)
   .then(function (userNode) { 
     user = userNode;
-    return instagramUtils.exchangeIGUserCodeForToken(userData.instagramCode);
+    return instagramUtils.exchangeIGUserCodeForToken(userData.instagramCode, userData.build_type);
   })
   .then(function (igData) {
     igUserData = igData;
@@ -218,12 +286,22 @@ userController.addInstagramData = function (req, res) {
     user = userNode;
     return user.setProperty('instagramID', igUserData.user.id);
   })
-  .then(function (userNode) { 
-    user = userNode;
-    return 'done';
+  .then(function (userNode) {
+    user = userNode
+    return instagramUtils.tabThroughInstagramPosts(user);
+  })
+  .then(function (rawInstagramPosts) {
+    // console.log('rawInstagramPosts', JSON.stringify(rawInstagramPosts));
+    return instagramUtils.parseIGData(rawInstagramPosts, user)
+  })
+  .then(function (parsedInstagramCheckins) {
+      return helpers.addCityProvinceAndCountryInfoToParsedCheckins(parsedInstagramCheckins);
+  })
+  .then(function (parsedInstagramCheckinsWithLocationInfo) {
+    return user.addCheckins(parsedInstagramCheckinsWithLocationInfo);
   })
   .then(function (data) {
-    console.log('ig: ', data);
+    // console.log('ig: ', data);
     res.status(204).end();
   })
   .catch(function(err) {
@@ -277,7 +355,6 @@ userController.getAggregatedListOfCheckins = function (req, res){
   // var users = req.params.userlist;
   var user;
   var params = {};
-  var aggregatedFootprints = [];
   // var friendCheckins;
   params.facebookID = req.params.user;
   
@@ -300,13 +377,8 @@ userController.getAggregatedListOfCheckins = function (req, res){
     user = userNode;
     return user.getAggregatedFootprintList(params.facebookID, params.page, params.skipAmount);
   })
-  // .then(function (aggregatedFootprintsFromFriends) {
-  //   aggregatedFootprints.push(aggregatedFootprintsFromFriends);
-  //   return user.findAllCheckins(params.facebookID, params.page, params.skipAmount);
-  // })
-  .then(function (userFootprints) {
-    aggregatedFootprints.push(userFootprints);
-    res.json(_.flatten(aggregatedFootprints));
+  .then(function (aggregatedFootprints) {
+    res.json(aggregatedFootprints);
     res.status(200).end();
   })
   .catch(function (err) {
@@ -425,9 +497,26 @@ userController.getBucketList = function (req, res){
 };
 
 userController.searchUserFootprints = function (req, res) {
+  var params = {};
   var facebookID = req.params.user;
   var query = req.params.query;
-  User.findFootprintsByPlaceName(facebookID, query)
+
+  query = query.trim();
+
+  if(req.params.page) {
+    params.page = parseInt(req.params.page);
+  }
+  else {
+    params.page = 0;
+  }
+
+  if(req.params.skip) {
+    params.skipAmount = parseInt(req.params.skip);
+  }
+  else {
+    params.skipAmount = 0;
+  }
+  User.findFootprintsByPlaceName(facebookID, query, params.page, params.skipAmount)
   .then(function (footprints) {
     res.json(footprints);
     res.status(200).end();
@@ -439,9 +528,26 @@ userController.searchUserFootprints = function (req, res) {
 }
 
 userController.searchUserFeed = function (req, res) {
+  var params = {};
   var facebookID = req.params.user;
   var query = req.params.query;
-  User.findFeedItemsByPlaceName(facebookID, query)
+
+  query = query.trim();
+
+  if(req.params.page) {
+    params.page = parseInt(req.params.page);
+  }
+  else {
+    params.page = 0;
+  }
+
+  if(req.params.skip) {
+    params.skipAmount = parseInt(req.params.skip);
+  }
+  else {
+    params.skipAmount = 0;
+  }
+  User.findFeedItemsByPlaceName(facebookID, query, params.page, params.skipAmount)
   .then(function (footprints) {
     res.json(footprints);
     res.status(200).end();
@@ -475,7 +581,7 @@ userController.getFriendsList = function (req, res) {
   User.find(params)
   .then(function(userNode) {
     user = userNode
-    return user.findAllFriends();
+    return user.findAllFriends(page, skipAmount);
   })
   .then(function (friends) {
     res.json(friends);

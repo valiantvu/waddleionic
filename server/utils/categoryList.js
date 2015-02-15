@@ -1,10 +1,169 @@
-var Place = require('./placeModel.js');
-var Q = require('q');
-var _ = require('lodash');
+var categories = {};
 
-var placeController = {};
+categories.dictionary = {
+  "Burger Joint": {
+		prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/burger-1/Burger-',
+	  suffix: '-1.png'
+	},
+	"BBQ Joint": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/burger-1/Burger-',
+	  suffix: '-1.png'
+	},
+	"National Park": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
+	  suffix: '-1.png'
+	},
+	"Nature Preserve": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
+	  suffix: '-1.png'
+	},
+	"Other Great Outdoors": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
+	  suffix: '-1.png'
+	},
+	"Park": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
+	  suffix: '-1.png'
+	},
+	"Trail": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
+	  suffix: '-1.png'
+	},
+	"Tree": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
+	  suffix: '-1.png'
+	},
+	"Japanese Restaurant": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-1/ramen-',
+	  suffix: '-1.png'
+	},
+	"Ramen / Noodle House": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-1/ramen-',
+	  suffix: '-1.png'
+	},
+	"Soup Place": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-1/ramen-',
+	  suffix: '-1.png'
+	},
+	"Vietnamese Restaurant": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-1/ramen-',
+	  suffix: '-1.png'
+	},
+	"Bar": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
+	  suffix: '-1.png'
+	},
+	"Beach Bar": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
+	  suffix: '-1.png'
+	},
+	"Brewery": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
+	  suffix: '-1.png'
+	},
+	"Pub": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
+	  suffix: '-1.png'
+	},
+	"Sports Bar": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
+	  suffix: '-1.png'
+	},
+	"Beer Garden": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
+	  suffix: '-1.png'
+	},
+	"Champagne Bar": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	  suffix: '-1.png'
+	},
+	"Cocktail Bar": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	  suffix: '-1.png'
+	},
+	"Gay Bar": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	  suffix: '-1.png'
+	},
+	"Hotel Bar": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	  suffix: '-1.png'
+	},
+	"Lounge": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	  suffix: '-1.png'
+	},
+	"Speakeasy": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	  suffix: '-1.png'
+	},
+	"Nightclub": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	  suffix: '-1.png'
+	},
+	"Other Nightlife": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	  suffix: '-1.png'
+	},
+	"Whisky Bar": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	  suffix: '-1.png'
+	},
+	"Wine Bar": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	  suffix: '-1.png'
+	},
+	"Sake Bar": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	  suffix: '-1.png'
+	},
+	"Karaoke Bar": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	  suffix: '-1.png'
+	},
+		"Karaoke Bar": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
+	  suffix: '-1.png'
+	},
+	"Café": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-1/coffee-',
+	  suffix: '-1.png'
+	},
+	"Coffee Shop": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-1/coffee-',
+	  suffix: '-1.png'
+	},
+	"Tea Room": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-1/coffee-',
+	  suffix: '-1.png'
+	},
+	"Food Truck": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/foodtruck-1/foodtruck-',
+	  suffix: '-1.png'
+	},
+	"Bagel Shop": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/bagel-1/bagel-',
+	  suffix: '-1.png'
+	},
+	"Bakery": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/bagel-1/bagel-',
+	  suffix: '-1.png'
+	},
+	"Art Gallery": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-1/painting-',
+	  suffix: '-1.png'
+	},
+	"Art Museum": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-1/painting-',
+	  suffix: '-1.png'
+	},
+	"Public Art": {
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-1/painting-',
+	  suffix: '-1.png'
+	}
+};
 
-var categoryList = [
+categories.list = [
 	{name: "Burger Joint",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/burger-1/Burger-',
 	 suffix: '-1.png'
@@ -167,46 +326,6 @@ var categoryList = [
 	}
 ];
 
-placeController.updatePlace = function (req, res){
 
-  var placeData = req.body;
-  Place.create(placeData)
-  .then(function(node) {
-    res.status(204).end();
-  })
-  .catch(function(err) {
-    console.log(err);
-    res.status(500).end();
-  });
-};
 
-placeController.searchWaddleDB = function (req, res) {
-	var facebookID = req.params.user;
-	var searchQuery = req.params.query;
-	Place.findAllByCountryOrCityName(facebookID, searchQuery)
-	.then(function (data) {
-		console.log(data);
-		res.json(data);
-		res.status(200).end();
-	})
-	.catch(function (err) {
-		console.log(err);
-		res.status(500).end();
-	})
-}
-
-placeController.assignIconToCategory = function (req, res) {
-	var categories = [];
-	Place.assignIconToCategories(categoryList)
-	.then(function (data) {
-		console.log('category icons assigned!');
-		res.json(categories);
-    res.status(200).end();
-  })
-  .catch(function(err) {
-    console.log(err);
-    res.status(500).end();
-  })
-}
-
-module.exports = placeController;
+module.exports = categories

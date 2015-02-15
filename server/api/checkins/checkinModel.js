@@ -39,7 +39,8 @@ Checkin.addToBucketList = function(facebookID, checkinID){
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})',
     'MATCH (checkin:Checkin {checkinID: {checkinID}})',
-    'MERGE (user)-[:hasBucket]->(checkin)',
+    'MERGE (user)-[bucket:hasBucket]->(checkin)',
+    'SET bucket.createdAt = timestamp()',
     'RETURN checkin'
   ].join('\n');
 
@@ -92,10 +93,10 @@ Checkin.addComment = function (clickerID, checkinID, text){
   var query = [
   'MATCH (clicker:User {facebookID: {facebookID}})',
   'MATCH (commentReceiver:User)-[:hasCheckin]->(checkin:Checkin {checkinID: {checkinID}})',
-  'MERGE (clicker)-[:madeComment]->(comment:Comment {text: {text}, commentID : {commentID}, time: timestamp() })' + 
+  'MERGE (clicker)-[:madeComment]->(newComment:Comment {text: {text}, commentID : {commentID}, time: timestamp() })' + 
   '-[:gotComment]->(checkin)',
-  'MERGE (commentReceiver)-[:hasUnreadNotification]->(comment)',
-  'RETURN comment'
+  'MERGE (commentReceiver)-[:hasUnreadNotification]->(newComment)',
+  'RETURN newComment'
   ].join('\n');
   var params = {
     'facebookID': clickerID,
@@ -199,7 +200,7 @@ Checkin.getHypes = function (checkinID) {
 
   var query = [
   'MATCH (user)-[connection:hasBucket]->(checkin:Checkin {checkinID: {checkinID}})',
-  'RETURN user, connection'
+  'RETURN user, connection.createdAt'
   ].join('\n');
 
   var params = {
@@ -209,8 +210,17 @@ Checkin.getHypes = function (checkinID) {
   db.query(query, params, function (err, results)  {
     if (err) { deferred.reject(err); }
     else {
-      console.log(results);
-      deferred.resolve(results);
+      var parsedResults = _.map(results, function (item) {
+        console.log('item!!', item);
+        
+        var singleResult = {
+          "hypeGiver": item.user.data,
+          "hypeTime": item['connection.createdAt']
+        };
+
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
     }
   });
 
@@ -222,8 +232,8 @@ Checkin.getComments = function (checkinID){
   var deferred = Q.defer();
 
   var query = [
-  'MATCH (user)-[:madeComment]->(comment:Comment)-[:gotComment]->(checkin:Checkin {checkinID: {checkinID}})',
-  'RETURN user, comment'
+  'MATCH (commenter)-[:madeComment]->(comment:Comment)-[:gotComment]->(checkin:Checkin {checkinID: {checkinID}})',
+  'RETURN commenter, comment'
   ].join('\n');
 
   var params = {
@@ -233,8 +243,20 @@ Checkin.getComments = function (checkinID){
   db.query(query, params, function (err, results){
     if (err) { deferred.reject(err) }
     else {
-      console.log("comments query: ", results)
-      deferred.resolve(results)
+      var parsedResults = _.map(results, function (item) {
+        
+        var singleResult = {
+          "comment": item.comment.data,
+          "commenter": item.commenter.data
+        };
+
+        return singleResult;
+      });
+      var sortedParsedResults = _.sortBy(parsedResults, function (item) {
+        return item.comment.time;
+      });
+
+      deferred.resolve(sortedParsedResults);
     }
   });
 
@@ -242,68 +264,68 @@ Checkin.getComments = function (checkinID){
 };
 
 //executed one time to convert native waddle checkins' checkinTime from ms to new Date() in DB; kept here for future reference
-Checkin.convertNativeWaddleCheckinTime = function () {
-  var deferred = Q.defer();
-  var query = [
-  'MATCH (checkin:Checkin {source: {source}})',
-  'RETURN checkin.checkinID, checkin.checkinTime'
-  ].join('\n');
+// Checkin.convertNativeWaddleCheckinTime = function () {
+//   var deferred = Q.defer();
+//   var query = [
+//   'MATCH (checkin:Checkin {source: {source}})',
+//   'RETURN checkin.checkinID, checkin.checkinTime'
+//   ].join('\n');
 
-  var params = {
-    'source': 'waddle'
-  };
+//   var params = {
+//     'source': 'waddle'
+//   };
 
-  db.query(query, params, function (err, results)  {
-    if (err) { deferred.reject(err) }
-    else {
-      console.log(results)
-      deferred.resolve(results)
-    }
-  });
-  return deferred.promise;
-}
+//   db.query(query, params, function (err, results)  {
+//     if (err) { deferred.reject(err) }
+//     else {
+//       console.log(results)
+//       deferred.resolve(results)
+//     }
+//   });
+//   return deferred.promise;
+// }
 
 //executed one time to convert native waddle checkins' checkinTime from ms to new Date() in DB; kept here for future reference
-Checkin.updateCheckinTime = function (updatedCheckins) {
-  var deferred = Q.defer();
+// Checkin.updateCheckinTime = function (updatedCheckins) {
+//   var deferred = Q.defer();
 
-  var query = [
-  'MATCH (checkin:Checkin {checkinID: {checkinID}})',
-  'SET checkin.checkinTime = {checkinTime}',
-  'RETURN checkin'
-  ].join('\n');
+//   var query = [
+//   'MATCH (checkin:Checkin {checkinID: {checkinID}})',
+//   'SET checkin.checkinTime = {checkinTime}',
+//   'RETURN checkin'
+//   ].join('\n');
 
-   var batchRequest = _.map(updatedCheckins, function (checkin, index) {
+//    var batchRequest = _.map(updatedCheckins, function (checkin, index) {
 
-    var singleRequest = {
-      'method': "POST",
-      'to': "/cypher",
-      'body': {
-        'query': query,
-        'params': checkin
-      },
-      'id': index
-    };
+//     var singleRequest = {
+//       'method': "POST",
+//       'to': "/cypher",
+//       'body': {
+//         'query': query,
+//         'params': checkin
+//       },
+//       'id': index
+//     };
 
-    return singleRequest;
-  });
+//     return singleRequest;
+//   });
 
-  var options = {
-    'url': neo4jUrl + '/db/data/batch',
-    'method': 'POST',
-    'json': true,
-    'body': JSON.stringify(batchRequest)
-  };
+//   var options = {
+//     'url': neo4jUrl + '/db/data/batch',
+//     'method': 'POST',
+//     'json': true,
+//     'body': JSON.stringify(batchRequest)
+//   };
 
-  request.post(options, function(err, response, body) {
-    if (err) { deferred.reject(err) }
-    else {
-      deferred.resolve(body);
-    }
-  });
+//   request.post(options, function(err, response, body) {
+//     if (err) { deferred.reject(err) }
+//     else {
+//       deferred.resolve(body);
+//     }
+//   });
 
-  return deferred.promise;
-}
+//   return deferred.promise;
+// }
 
 
 module.exports = Checkin;

@@ -61,7 +61,6 @@ var UserRequests = function ($http){
       if (arguments[1] !== undefined) {
           var page = arguments[1];
           url +=  "/" + page;
-          console.log(url);
       }
 
       if (arguments[2] !== undefined) {
@@ -109,10 +108,21 @@ var UserRequests = function ($http){
     },
 
     searchFeed: function (userFbID, query) {
+      var url = '/api/users/searchfeed/' + userFbID + '/' + query
+      if (arguments[2] !== undefined) {
+          var page = arguments[2]
+          url +=  "/" + page;
+          console.log(url);
+      }
+
+      if (arguments[3] !== undefined) {
+          var skip = arguments[3]
+          url +=  "/" + skip;
+      }
       if (userFbID && query) {
         return $http({
           method: 'GET',
-          url: '/api/users/searchfeed/' + userFbID + '/' + query
+          url: url
         })
       }
     },
