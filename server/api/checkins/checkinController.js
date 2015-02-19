@@ -14,7 +14,7 @@ var categoryList = require('../../utils/categoryList.js');
 var checkinController = {};
 
 checkinController.handleNativeCheckin = function (req, res) {
-  var user;
+  var user, categories;
   var nativeCheckin = req.body
   var facebookID = req.body.facebookID
 
@@ -27,8 +27,13 @@ checkinController.handleNativeCheckin = function (req, res) {
     console.log('parsedCheckin: ' + JSON.stringify(parsedCheckin));
     return user.addCheckins([parsedCheckin]);
   })
-  .then(function (data) {
-    console.log(data);
+  .then(function (categoryData) {
+    categories = categoryData[0].body.data[0];
+    console.log('these are the categories: ', categories);
+    user.assignExpertiseToCategory(categories);
+  })
+  .then(function (expertiseData) {
+    console.log(expertiseData);
   })
   .catch(function (err) {
     console.log(err);
@@ -70,7 +75,7 @@ checkinController.searchFoursquareVenuesMobile = function (req, res) {
   .then(function (venues) {
     console.log(JSON.stringify(venues[0]));
     _.each(venues, function(venue) {
-      if(venue.categories[0].name && categoryList.dictionary[venue.categories[0].name]) {
+      if(venue.categories[0] && venue.categories[0].name && categoryList.dictionary[venue.categories[0].name]) {
         venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
         venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
       }

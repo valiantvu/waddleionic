@@ -172,7 +172,7 @@ User.prototype.addCheckins = function(combinedCheckins){
     'MERGE (city)-[:hasCountry]->(country)',
     'MERGE (province)-[:hasCountry]->(country)',
     'MERGE (city)-[:hasProvince]->(province)',
-    'RETURN category',
+    'RETURN DISTINCT category.name',
   ].join('\n');
 
   // Map over the friends and return a list of objects
@@ -203,6 +203,7 @@ User.prototype.addCheckins = function(combinedCheckins){
   request.post(options, function(err, response, body) {
     if (err) { deferred.reject(err) }
     else {
+      console.log(JSON.stringify(response));
       deferred.resolve(body);
     }
   });
@@ -512,29 +513,39 @@ User.findFootprintsByPlaceName = function (facebookID, placeName, page, skipAmou
   return deferred.promise;
 }
 
-User.prototype.assignCategoryRank = function (categoryList) {
+User.prototype.assignExpertiseToCategory = function (categoryList) {
   var deferred = Q.defer();
   var facebookID = this.getProperty('facebookID');
 
   var query = [
-    'MATCH (user:User{facebookID:{facebookID}})-[:hasCheckin]->(checkin:Checkin)-[]->(place:Place)-[]->(category:Category{name:{category}})',
-    'MERGE (user)-[:hasRank]->(rank:Rank)-[:ofCategory]->(category)',
-    'SET rank.pointValue = sum(checkin.pointValue)'
+    'MATCH (user:User{facebookID:{facebookID}})-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category{name:{categoryName}})', 
+    'WITH sum(checkin.pointValue) AS points',
+    'MATCH (user:User{facebookID:{facebookID}})', 
+    'MATCH (category:Category{name:{categoryName}})', 
+    'MERGE (user)-[expertise:hasExpertise]->(category)', 
+    'ON CREATE SET expertise.pointValue = points', 
+    'ON MATCH SET expertise.pointValue = points',
+    'RETURN user, category, expertise.pointValue'
   ].join('\n');
 
-  var batchRequest = _.map(categoryList, function (checkin, index) {
+  var batchRequest = _.map(categoryList, function (categoryName, index) {
 
     var singleRequest = {
       'method': "POST",
       'to': "/cypher",
       'body': {
         'query': query,
-        'params': checkin
+        'params': {
+          categoryName: categoryName,
+          facebookID: facebookID
+        }
       },
       'id': index
     };
 
-    singleRequest.body.params.facebookID = facebookID;
+    // singleRequest.body.params.facebookID = facebookID;
+    // singleRequest.body.params.categoryName = categoryName;
+    console.log(singleRequest.body.params);
     return singleRequest;
   });
 
@@ -805,13 +816,17 @@ User.find = function (data) {
   var params = data;
 
   db.query(query, params, function (err, results) {
-    if (err) { deferred.reject(err); }
+    if (err) { 
+      console.log(err);
+      deferred.reject(err); 
+    }
     else {
       if (results && results[0] && results[0]['user']) {
         console.log(results)
         deferred.resolve(new User(results[0]['user']));
       }
       else {
+        console.log(params);
         deferred.reject(new Error('user does not exist'));
       }
     }

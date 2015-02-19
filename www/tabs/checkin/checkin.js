@@ -39,13 +39,26 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicModal, $i
 	}
 
 	$scope.sendCheckinDataToServer = function(venueInfo) {
-		venueInfo.facebookID = window.sessionStorage.userFbID;
-		venueInfo.footprintCaption = $scope.checkinInfo.footprintCaption;
+		var checkinData = {
+			id: venueInfo.id,
+			name: venueInfo.name,
+			lat: venueInfo.location.lat,
+			lng: venueInfo.location.lng,
+			rating: 0,
+			facebookID: window.sessionStorage.userFbID
+		};
+		if($scope.checkinInfo.footprintCaption) {
+			checkinData.footprintCaption = $scope.checkinInfo.footprintCaption
+		}
+		if(venueInfo.categories[0] && venueInfo.categories[0].name) {
+			checkinData.categories = venueInfo.categories[0].name;
+		}
+
 		NativeCheckin.s3_upload()
 		.then(function (public_url) {
-		  venueInfo.photo = public_url;
-		  console.log('venueInfo: ' + JSON.stringify(venueInfo));
-		  NativeCheckin.sendCheckinDataToServer(venueInfo)
+		  checkinData.photo = public_url;
+		  console.log('venueInfo: ' + JSON.stringify(checkinData));
+		  NativeCheckin.sendCheckinDataToServer(checkinData);
 		})
 		.then(function (data) {
 			console.log(data);

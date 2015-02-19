@@ -56,8 +56,9 @@ userController.userLogin = function (req, res) {
     // For existing users
     if (user.getProperty('footprintsCount') >= 0) {
       user.setProperty('footprintsCount', checkinsCount);
-      user.findAllFriends()
+      user.findAllFriends(0, 100)
       .then(function (friendsList){
+
         userFBFriendsData = friendsList;
         return user.getAggregatedFootprintList(user.node._data.data.facebookID, 0, 5)
       })
