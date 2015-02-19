@@ -27,11 +27,11 @@ checkinController.handleNativeCheckin = function (req, res) {
     console.log('parsedCheckin: ' + JSON.stringify(parsedCheckin));
     return user.addCheckins([parsedCheckin]);
   })
-  .then(function (categoryData) {
-    categories = categoryData[0].body.data[0];
-    console.log('these are the categories: ', categories);
-    user.assignExpertiseToCategory(categories);
-  })
+  // .then(function (categoryData) {
+  //   categories = categoryData[0].body.data[0];
+  //   console.log('these are the categories: ', categories);
+  //   user.assignExpertiseToCategory(categories);
+  // })
   .then(function (expertiseData) {
     console.log(expertiseData);
   })
