@@ -689,7 +689,7 @@ User.prototype.getUnreadNotifications = function () {
       var parsedResults = _.map(results, function (item) {
         var singleResult = {
           "user": item.user.data,
-          "comments:" [{"comment": item.comment.data, "commenter": item.commenter.data}],
+          "comments": [{"comment": item.comment.data, "commenter": item.commenter.data}],
           "checkin": item.checkin.data,
           "place": item.place.data
         }
@@ -722,7 +722,7 @@ User.prototype.getReadNotifications = function (limit) {
       var parsedResults = _.map(results, function (item) {
         var singleResult = {
           "user": item.user.data,
-          "comments:" [{"comment": item.comment.data, "commenter": item.commenter.data}],
+          "comments": [{"comment": item.comment.data, "commenter": item.commenter.data}],
           "checkin": item.checkin.data,
           "place": item.place.data
         }
