@@ -14,9 +14,40 @@ fixtures.testPlace = {
 };
 
 fixtures.testUser = {
-  facebookID: "123456789",
+  facebookID: "000000000",
   name: "Testy McTest"
-}
+};
+
+fixtures.testUser2 = {
+    id: "000000001",
+    name: "Testina McTest"
+};
+
+fixtures.testUser3 = {
+    id: "000000002",
+    name: "Motestin Moproblems"
+};
+
+fixtures.footprint1 = {
+    id: "1",
+    lat: 33.652759, 
+    lng: -117.840664,
+    name: "Testina's Hizzhouse"
+};
+
+fixtures.footprint2 = {
+    id: "2",
+    lat: 33.747968,
+    lng:  -118.037386,
+    name: "The Chill Grill"
+};
+
+fixtures.footprint3 = {
+    id: "3",
+    lat: 37.784000, 
+    lng: -122.409107
+    name: "Hack Reactor"
+};
 
 fixtures.IGdata = {
     "data": [{

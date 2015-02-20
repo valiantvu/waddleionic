@@ -50,18 +50,28 @@ describe('Waddle user routes GET requests', function () {
       User.createUniqueUser(fixtures.testUser).then(function (userNode){
         user = userNode.node._data.data;
         console.log('hiiiii', user);
-        done();
+        userNode.addFriends([fixtures.testUser2, fixtures.testUser3]).then(function (friends) {
+          console.log(friends);
+          done();
+        });
       });
     });
-    it('should work', function (done) {
+    it('should return the information of the specified user', function (done) {
       console.log('hi again', user);
       request(app)
       .get('/api/users/userinfo/' + user.facebookID)
       .expect(200)
       .end(function(err, res) {
         if (err) throw err;
-        console.log('this is my response', res);
-        done()
+        console.log(res.body);
+        expect(res.body.name).to.equal("Testy McTest");
+        expect(res.body.facebookID).to.equal("000000000");
+        done();
       })
     });
+    it('should return the first 5 footprints aggregate feed of the specified user', function(done) {
+      request(app)
+      .get('/aggregatefeed/000000000/0/5')
+
+    })
 })
