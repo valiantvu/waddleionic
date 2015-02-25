@@ -6,9 +6,10 @@ var server = require('../../server/server.js');
 var neo4j = require('neo4j');
 var fixtures = require('../test.fixtures.js');
 var User = require('../../server/api/users/userModel.js');
+var _ = require('lodash');
 
-var neo4jurl = 'http://localhost:7474'
-var db = new neo4j.GraphDatabase(neo4jurl);
+// var neo4jurl = WADDLE_GRAPHENEDB_URL || 'http://localhost:7474'
+// var db = new neo4j.GraphDatabase(neo4jurl);
 
 
 // describe('Get request', function() {
@@ -49,10 +50,16 @@ describe('Waddle user routes GET requests', function () {
     before(function(done){
       User.createUniqueUser(fixtures.testUser).then(function (userNode){
         user = userNode.node._data.data;
-        console.log('hiiiii', user);
+        console.log('hiiiii user');
         userNode.addFriends([fixtures.testUser2, fixtures.testUser3]).then(function (friends) {
-          console.log(friends);
-          done();
+          userNode.addCheckins(fixtures.testUserFootprints)
+          .then(function (categoryNames) {
+            console.log('categoryNames');
+            _.each(friends, function(friend) {
+              console.log(friend.body.data[0][0].data);
+            });
+            done();
+          })
         });
       });
     });
@@ -69,9 +76,15 @@ describe('Waddle user routes GET requests', function () {
         done();
       })
     });
-    it('should return the first 5 footprints aggregate feed of the specified user', function(done) {
-      request(app)
-      .get('/aggregatefeed/000000000/0/5')
+    // it('should return the first 5 footprints aggregate feed of the specified user', function(done) {
+    //   request(app)
+    //   .get('/aggregatefeed/000000000/0/5')
+    //   .expect(200)
+    //   .end(function(err, res) {
+    //     if (err) throw err;
+    //     console.log(res.body);
+    //     expect(res.body)
+    //   })
 
-    })
+    // })
 })

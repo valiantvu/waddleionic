@@ -28,26 +28,65 @@ fixtures.testUser3 = {
     name: "Motestin Moproblems"
 };
 
-fixtures.footprint1 = {
-    id: "1",
-    lat: 33.652759, 
-    lng: -117.840664,
-    name: "Testina's Hizzhouse"
-};
-
-fixtures.footprint2 = {
-    id: "2",
-    lat: 33.747968,
-    lng:  -118.037386,
-    name: "The Chill Grill"
-};
-
-fixtures.footprint3 = {
-    id: "3",
-    lat: 37.784000, 
-    lng: -122.409107
-    name: "Hack Reactor"
-};
+fixtures.testUserFootprints = [
+    {
+        id: "1",
+        lat: 33.652759, 
+        lng: -117.840664,
+        name: "Testina's Hizzhouse",
+        category: "Nightclub",
+        country: "United States",
+        city: "San Francisco",
+        province: "California",
+        photoSmall: "null",
+        photoLarge: 'null',
+        foursquareID: '4239239421234',
+        checkinID: '123kjdfbsokb11e3',
+        checkinTime: '2015-02-17T15:19:02.546Z',
+        caption: 'testina is in the hizzhouse!! bump up the funk!',
+        likes: 0,
+        source: 'waddletest',
+        pointValue: 9
+    },
+    {
+        id: "2",
+        lat: 33.747968,
+        lng:  -118.037386,
+        name: "The Chill Grill",
+        category: "BBQ Joint",
+        country: "United States",
+        city: "Los Angeles",
+        province: "California",
+        photoSmall: "null",
+        photoLarge: 'null',
+        foursquareID: '4239239kjasnd434',
+        checkinID: '123k12912jdfbso1e3',
+        checkinTime: '2015-02-17T15:19:02.546Z',
+        caption: 'they grilled while i chilled.',
+        likes: 0,
+        source: 'waddletest',
+        pointValue: 9
+    },
+    {
+        id: "3",
+        lat: 37.784000, 
+        lng: -122.409107,
+        name: "Hack Reactor",
+        category: "School",
+        country: "United States",
+        city: "San Francisco",
+        province: "California",
+        photoSmall: "null",
+        photoLarge: 'null',
+        foursquareID: '423sbkahs9239434',
+        checkinID: '123kjd23823fbso1e3',
+        checkinTime: '2015-02-17T15:12:16.562Z',
+        caption: 'i learned so much here!',
+        likes: 0,
+        source: 'waddletest',
+        pointValue: 9
+    }
+];
 
 fixtures.IGdata = {
     "data": [{

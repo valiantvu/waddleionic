@@ -203,7 +203,6 @@ User.prototype.addCheckins = function(combinedCheckins){
   request.post(options, function(err, response, body) {
     if (err) { deferred.reject(err) }
     else {
-      console.log(JSON.stringify(response));
       deferred.resolve(body);
     }
   });
