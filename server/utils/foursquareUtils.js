@@ -149,7 +149,7 @@ utils.parseNativeCheckin = function (venue) {
     'postalCode': 'null',
     'category': 'null',
     'pointValue': 5,
-    'rating': venue.rating,
+    'rating': 0,
     'source': 'waddle'
   };
 
@@ -171,6 +171,7 @@ utils.parseNativeCheckin = function (venue) {
   }
 
   if (venue.rating > 0) {
+    formattedCheckin.rating = venue.rating;
     formattedCheckin.pointValue += 3;
   }
 

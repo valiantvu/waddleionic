@@ -28,7 +28,7 @@ var FrontpageController = function (UserRequests, $scope, $state, $window) {
     UserRequests.sendUserData(userData)
     .then(function(storedUserData){
       UserRequests.allData = storedUserData.data
-      console.log('alldata', UserRequests.allData)
+      console.log('alldata:  ', UserRequests.allData)
       if(UserRequests.allData.footprintsCount) {
         $state.go('tab.home');
       }

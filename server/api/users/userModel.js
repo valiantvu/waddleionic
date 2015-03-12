@@ -172,7 +172,7 @@ User.prototype.addCheckins = function(combinedCheckins){
     'MERGE (city)-[:hasCountry]->(country)',
     'MERGE (province)-[:hasCountry]->(country)',
     'MERGE (city)-[:hasProvince]->(province)',
-    'RETURN category',
+    'RETURN DISTINCT category.name',
   ].join('\n');
 
   // Map over the friends and return a list of objects
@@ -512,29 +512,39 @@ User.findFootprintsByPlaceName = function (facebookID, placeName, page, skipAmou
   return deferred.promise;
 }
 
-User.prototype.assignCategoryRank = function (categoryList) {
+User.prototype.assignExpertiseToCategory = function (categoryList) {
   var deferred = Q.defer();
   var facebookID = this.getProperty('facebookID');
 
   var query = [
-    'MATCH (user:User{facebookID:{facebookID}})-[:hasCheckin]->(checkin:Checkin)-[]->(place:Place)-[]->(category:Category{name:{category}})',
-    'MERGE (user)-[:hasRank]->(rank:Rank)-[:ofCategory]->(category)',
-    'SET rank.pointValue = sum(checkin.pointValue)'
+    'MATCH (user:User{facebookID:{facebookID}})-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category{name:{categoryName}})', 
+    'WITH sum(checkin.pointValue) AS points',
+    'MATCH (user:User{facebookID:{facebookID}})', 
+    'MATCH (category:Category{name:{categoryName}})', 
+    'MERGE (user)-[expertise:hasExpertise]->(category)', 
+    'ON CREATE SET expertise.pointValue = points', 
+    'ON MATCH SET expertise.pointValue = points',
+    'RETURN user, category, expertise.pointValue'
   ].join('\n');
 
-  var batchRequest = _.map(categoryList, function (checkin, index) {
+  var batchRequest = _.map(categoryList, function (categoryName, index) {
 
     var singleRequest = {
       'method': "POST",
       'to': "/cypher",
       'body': {
         'query': query,
-        'params': checkin
+        'params': {
+          categoryName: categoryName,
+          facebookID: facebookID
+        }
       },
       'id': index
     };
 
-    singleRequest.body.params.facebookID = facebookID;
+    // singleRequest.body.params.facebookID = facebookID;
+    // singleRequest.body.params.categoryName = categoryName;
+    console.log(singleRequest.body.params);
     return singleRequest;
   });
 
@@ -678,8 +688,7 @@ User.prototype.getUnreadNotifications = function () {
       var parsedResults = _.map(results, function (item) {
         var singleResult = {
           "user": item.user.data,
-          "comment": item.comment.data,
-          "commenter": item.commenter.data,
+          "comments": [{"comment": item.comment.data, "commenter": item.commenter.data}],
           "checkin": item.checkin.data,
           "place": item.place.data
         }
@@ -712,8 +721,7 @@ User.prototype.getReadNotifications = function (limit) {
       var parsedResults = _.map(results, function (item) {
         var singleResult = {
           "user": item.user.data,
-          "comment": item.comment.data,
-          "commenter": item.commenter.data,
+          "comments": [{"comment": item.comment.data, "commenter": item.commenter.data}],
           "checkin": item.checkin.data,
           "place": item.place.data
         }
@@ -791,6 +799,190 @@ User.getBucketList = function (facebookID, page, skipAmount){
   return deferred.promise;
 };
 
+User.addFolder = function (facebookID, folderName, folderDescription) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User {facebookID:{facebookID}})',
+    'MERGE (user)-[:hasFolder]->(folder:Folder {name: {folderName}})',
+    'ON CREATE SET folder.name = {folderName}, folder.description = {folderDescription}, folder.createdAt = timestamp()',
+    'RETURN user, folder'
+  ].join('\n');
+
+  var params = {
+    facebookID: facebookID,
+    folderName: folderName,
+    folderDescription: folderDescription
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      console.log(results);
+      var parsedResults = _.map(results, function (item) {
+        var singleResult = {
+          "user": item.user.data,
+          "folder": item.folder.data
+        }
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
+    }
+  });
+
+  return deferred.promise;
+};
+
+User.fetchFolders = function(facebookID, page, skipAmount) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder)',
+    'RETURN user, folder',
+    'ORDER BY folder.createdAt',
+    'SKIP { skipNum }', 
+    'LIMIT { skipAmount }'
+  ].join('\n');
+
+  var params = {
+    'facebookID': facebookID,
+    'skipAmount': skipAmount,
+    'skipNum': page ? page * skipAmount : 0
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      console.log(results);
+      var parsedResults = _.map(results, function (item) {
+        var singleResult = {
+          "user": item.user.data,
+          "folder": item.folder.data
+        }
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
+    }
+  });
+
+  return deferred.promise;
+};
+
+User.searchFoldersByName = function (facebookID, folderName, page, skipAmount) {
+   var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder)',
+    'WHERE folder.name =~ {folderName}',
+    'RETURN user, folder',
+    'ORDER BY folder.createdAt',
+    'SKIP { skipNum }', 
+    'LIMIT { skipAmount }'
+  ].join('\n');
+
+   var params = {
+    'facebookID': facebookID,
+    'folderName': '(?i).*' + folderName + '.*',
+    'skipNum': page ? page * skipAmount : 0,
+    'skipAmount': skipAmount
+  };
+
+  db.query(query, params, function (err, results) {
+    
+    if (err) { console.log(query); deferred.reject(err); }
+    else {
+      console.log(results);
+      var parsedResults = _.map(results, function (item) {
+        var singleResult = {
+          "user": item.user.data,
+          "folder": item.folder.data
+        }
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
+    }
+  });
+
+  return deferred.promise;
+};
+
+User.fetchFolderContents = function (facebookID, folderName, page, skipAmount) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder {name:{folderName}})-[contains:containsCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'RETURN user, folder, checkin, place, contains',
+    'ORDER BY contains.createdAt',
+    'SKIP { skipNum }', 
+    'LIMIT { skipAmount }'
+  ].join('\n');
+
+  var params = {
+    'facebookID': facebookID,
+    'folderName': folderName,
+    'skipAmount': skipAmount,
+    'skipNum': page ? page * skipAmount : 0
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      console.log(results);
+      var parsedResults = _.map(results, function (item) {
+        var singleResult = {
+          "user": item.user.data,
+          "folder": item.folder.data,
+          "checkin": item.checkin.data,
+          "place": item.place.data
+        }
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
+    }
+  });
+  return deferred.promise;
+}
+
+User.searchFolderContents = function (facebookID, folderName, searchQuery, page, skipAmount) {
+    var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder {name:{folderName}})-[contains:containsCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'WHERE place.name =~ {searchQuery} OR place.city =~ {searchQuery} OR place.country =~ {searchQuery}',
+    'RETURN user, folder, checkin, contains, place',
+    'ORDER BY contains.createdAt',
+    'SKIP { skipNum }', 
+    'LIMIT { skipAmount }'
+  ].join('\n');
+
+  var params = {
+    'facebookID': facebookID,
+    'searchQuery': '(?i).*' + searchQuery + '.*',
+    'folderName': folderName,
+    'skipAmount': skipAmount,
+    'skipNum': page ? page * skipAmount : 0
+  };
+
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      console.log(results);
+      var parsedResults = _.map(results, function (item) {
+        var singleResult = {
+          "user": item.user.data,
+          "folder": item.folder.data,
+          "checkin": item.checkin.data,
+          "place": item.place.data
+        }
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
+    }
+  });
+  return deferred.promise;
+}
+
 // Find a single user in the database, requires facebookID as input
 // If user is not in database, promise will resolve to error 'user does not exist'
 User.find = function (data) {
@@ -805,13 +997,17 @@ User.find = function (data) {
   var params = data;
 
   db.query(query, params, function (err, results) {
-    if (err) { deferred.reject(err); }
+    if (err) { 
+      console.log(err);
+      deferred.reject(err); 
+    }
     else {
       if (results && results[0] && results[0]['user']) {
         console.log(results)
         deferred.resolve(new User(results[0]['user']));
       }
       else {
+        console.log(params);
         deferred.reject(new Error('user does not exist'));
       }
     }

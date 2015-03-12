@@ -305,8 +305,8 @@ utils.parseIGData = function (posts, user) {
     .then(function (foursquareVenueIDs) {
       _.each(parsedData, function (post, index) {
         post.foursquareID = foursquareVenueIDs[index]["foursquareID"];
-        if(foursquareIDs[index]["category"]) {
-          post.category = foursquareIDs[index]["category"];
+        if(foursquareVenueIDs[index]["category"]) {
+          post.category = foursquareVenueIDs[index]["category"];
           categoryList.push(post.category);
         }
       });

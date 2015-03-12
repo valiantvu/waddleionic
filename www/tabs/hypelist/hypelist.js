@@ -1,18 +1,20 @@
 (function(){
 
-var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
+var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicModal) {
 
   Auth.checkLogin()
   .then(function () {
 
     $scope.footprints = [];
+    $scope.folderInfo = {};
     var page = 0;
     var skipAmount = 5;
     $scope.moreDataCanBeLoaded = true;
 
     FootprintRequests.currentTab = 'hypelist';
 
-     $scope.openFootprint = function(footprint) {
+
+    $scope.openFootprint = function(footprint) {
       FootprintRequests.openFootprint = footprint;
     };
 
@@ -32,6 +34,38 @@ var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequ
         });
     };
 
+    $scope.addFolder = function (folderName, folderDescription) {
+      // console.log(folderName);
+      // console.log(folderDescription);
+      UserRequests.addFolder(window.sessionStorage.userFbID, folderName, folderDescription)
+      .then(function (data) {
+        console.log(data);
+      });
+    };
+
+    // $scope.folders = [
+    // {name:"All", createdAt:1425412791739, description: "all the things!!!"},
+    // {name:"nyc faves", createdAt:1425412491739, description: "these are a few of my favorite things"},
+    // ];
+
+    $scope.fetchFolders = function() {
+      UserRequests.fetchFolders(window.sessionStorage.userFbID, 0, 10)
+      .then(function (folders) {
+        $scope.folders = folders.data;
+      //   if (data.data.length > 0) {
+      //     console.log(data);
+      //     $scope.folders = $scope.folders.concat(data.data);
+      //     page++;
+      //     console.log('page: ', page);
+      //   }
+      //   else {
+      //     $scope.moreDataCanBeLoaded = false;
+      //   }
+      //   $scope.$broadcast('scroll.infiniteScrollComplete');
+      })
+  }
+    $scope.fetchFolders();
+    console.log('weishemeee!!!', $scope.folders);
     $scope.getBucketList();
 
     $scope.addCheckinToBucketList = function (footprint){
@@ -65,6 +99,35 @@ var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequ
       $rootScope.$emit('loadProfilePage', userInfo);
       $state.go('tab.profile');
     };
+
+    $ionicModal.fromTemplateUrl('add-folder.html', {
+      scope: $scope,
+      animation: 'slide-in-up'
+    }).then(function(modal) {
+      $scope.modal = modal;
+    });
+
+    $scope.openModal = function() {
+      $scope.modal.show();
+    };
+
+    $scope.closeModal = function() {
+      $scope.modal.hide();
+    };
+
+    //Cleanup the modal when we're done with it!
+    $scope.$on('$destroy', function() {
+      $scope.modal.remove();
+    });
+
+    // Execute action on hide modal
+    $scope.$on('modal.hidden', function() {
+      // Execute action
+    });
+    // Execute action on remove modal
+    $scope.$on('modal.removed', function() {
+      // Execute action
+    });
 
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);
@@ -166,7 +229,7 @@ var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequ
     
 };
 
-HypelistController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state'];
+HypelistController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicModal'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 

@@ -14,9 +14,9 @@ var categoryList = require('../../utils/categoryList.js');
 var checkinController = {};
 
 checkinController.handleNativeCheckin = function (req, res) {
-  var user;
-  var nativeCheckin = req.body
-  var facebookID = req.body.facebookID
+  var user, categories;
+  var nativeCheckin = req.body;
+  var facebookID = req.body.facebookID;
 
   User.find({facebookID: facebookID})
   .then(function (userNode) {
@@ -27,14 +27,36 @@ checkinController.handleNativeCheckin = function (req, res) {
     console.log('parsedCheckin: ' + JSON.stringify(parsedCheckin));
     return user.addCheckins([parsedCheckin]);
   })
-  .then(function (data) {
-    console.log(data);
+  // .then(function (categoryData) {
+  //   categories = categoryData[0].body.data[0];
+  //   console.log('these are the categories: ', categories);
+  //   user.assignExpertiseToCategory(categories);
+  // })
+  .then(function (expertiseData) {
+    console.log(expertiseData);
   })
   .catch(function (err) {
     console.log(err);
   });
 
   res.status(200).end();
+};
+
+checkinController.editNativeCheckin = function (req, res) {
+  var editedCheckin = req.body
+  var facebookID = req.body.facebookID;
+  var checkinID = req.body.checkinID;
+
+  var parsedEditedCheckin = helpers.parseEditedNativeCheckin(req.body);
+
+  Checkin.editNativeCheckin(parsedEditedCheckin)
+  .then(function (data) {
+    res.status(201).end();
+  })
+  .catch(function(err) {
+    console.log(err);
+    res.status(500).end();
+  });
 };
 
 checkinController.searchFoursquareVenuesWeb = function (req, res) {
@@ -70,7 +92,7 @@ checkinController.searchFoursquareVenuesMobile = function (req, res) {
   .then(function (venues) {
     console.log(JSON.stringify(venues[0]));
     _.each(venues, function(venue) {
-      if(venue.categories[0].name && categoryList.dictionary[venue.categories[0].name]) {
+      if(venue.categories[0] && venue.categories[0].name && categoryList.dictionary[venue.categories[0].name]) {
         venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
         venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
       }
@@ -265,6 +287,59 @@ checkinController.removeComment = function (req, res){
     });
 }
 
+checkinController.addToFolder = function (req, res) {
+  var checkinID = req.body.checkinID;
+  var facebookID = req.body.facebookID;
+  var folderName = req.body.folderName;
+
+  Checkin.addToFolder(facebookID, checkinID, folderName)
+    .then(function (data){
+      return User.fetchFolderContents(facebookID, folderName)
+    })
+    .then(function (folderContents) {
+      res.json(folderContents);
+      res.status(201).end();
+    })
+    .catch(function(err) {
+      console.log(err);
+      res.status(500).end();
+    })
+};
+
+checkinController.removeFromFolder = function (req, res) {
+  var checkinID = req.body.checkinID;
+  var facebookID = req.body.facebookID;
+  var folderName = req.body.folderName;
+
+  Checkin.removeFromFolder(facebookID, checkinID, folderName)
+    .then(function (data) {
+      return User.fetchFolderContents(facebookID, folderName)
+    })
+    .then(function (folderContents) {
+      res.json(folderContents);
+      res.status(201).end();
+    })
+    .catch(function(err) {
+      console.log(err);
+      res.status(500).end();
+    })
+};
+
+checkinController.removeFromFavorites = function (req, res) {
+  var checkinID = req.body.checkinID;
+  var facebookID = req.body.facebookID;
+
+  Checkin.removeFromFavorites(facebookID, checkinID)
+  .then(function (data){
+    res.json(data);
+    res.status(201).end();
+  })
+  .catch(function(err) {
+    console.log(err);
+    res.status(500).end();
+  });
+}
+
 checkinController.giveProps = function (req, res){
   var clickerID = req.body.clickerID;
   var checkinID = req.body.checkinID;
@@ -298,6 +373,22 @@ checkinController.getHypesAndComments = function (req, res){
       res.status(200).end();
     })
     .catch(function (err){
+      console.log(err);
+      res.status(500).end();
+    });
+};
+
+checkinController.deleteFootprint = function (req, res) {
+  var facebookID = req.body.facebookID;
+  var checkinID = req.body.checkinID;
+
+  Checkin.deleteFootprint(facebookID, checkinID)
+    .then(function (data) {
+      console.log(data)
+      res.json({on_success: "footprint has been successfully deleted"})
+      res.status(200).end();
+    })
+    .catch(function (err) {
       console.log(err);
       res.status(500).end();
     });

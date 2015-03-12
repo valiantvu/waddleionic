@@ -56,8 +56,9 @@ userController.userLogin = function (req, res) {
     // For existing users
     if (user.getProperty('footprintsCount') >= 0) {
       user.setProperty('footprintsCount', checkinsCount);
-      user.findAllFriends()
+      user.findAllFriends(0, 100)
       .then(function (friendsList){
+
         userFBFriendsData = friendsList;
         return user.getAggregatedFootprintList(user.node._data.data.facebookID, 0, 5)
       })
@@ -495,6 +496,153 @@ userController.getBucketList = function (req, res){
     res.status(500).end();
   });
 };
+
+userController.addFolder = function (req, res) {
+  var user, folderName, folderDescription;
+  user = req.body.facebookID;
+  folderName = req.body.folderName,
+  folderDescription = req.body.folderDescription;
+  console.log(req.body)
+
+  User.addFolder(user, folderName, folderDescription)
+  .then(function (folder) {
+    console.log(folder);
+    res.json(folder);
+    res.status(200).end();
+  })
+  .catch(function (err){
+    console.log(err);
+    res.status(500).end();
+  });
+}
+
+userController.fetchFolders = function (req, res) {
+  var params = {};
+
+  params.facebookID = req.params.user;
+
+  if(req.params.page) {
+    params.page = parseInt(req.params.page);
+  }
+  else {
+    params.page = 0;
+  }
+
+  if(req.params.skip) {
+    params.skipAmount = parseInt(req.params.skip);
+  }
+  else {
+    params.skipAmount = 0;
+  }
+
+  User.fetchFolders(params.facebookID, params.page, params.skipAmount)
+  .then(function (folders) {
+    console.log(folders)
+    res.json(folders);
+    res.status(200).end();
+  })
+  .catch(function(err) {
+    console.log(err)
+    res.status(500).end();
+  });
+}
+
+userController.searchFoldersByName = function (req, res) {
+  var params = {};
+
+  params.facebookID = req.params.user;
+  params.query = req.params.query;
+
+  if(req.params.page) {
+    params.page = parseInt(req.params.page);
+  }
+  else {
+    params.page = 0;
+  }
+
+  if(req.params.skip) {
+    params.skipAmount = parseInt(req.params.skip);
+  }
+  else {
+    params.skipAmount = 0;
+  }
+
+  User.searchFoldersByName(params.facebookID, params.query, params.page, params.skipAmount)
+  .then(function (folders) {
+    console.log(folders)
+    res.json(folders);
+    res.status(200).end();
+  })
+  .catch(function(err) {
+    console.log(err)
+    res.status(500).end();
+  });
+}
+
+userController.fetchFolderContents = function (req, res) {
+  var params = {};
+
+  params.facebookID = req.params.user;
+  params.folderName = req.params.folder;
+
+  if(req.params.page) {
+    params.page = parseInt(req.params.page);
+  }
+  else {
+    params.page = 0;
+  }
+
+  if(req.params.skip) {
+    params.skipAmount = parseInt(req.params.skip);
+  }
+  else {
+    params.skipAmount = 0;
+  }
+
+  User.fetchFolderContents(params.facebookID, params.folderName, params.page, params.skipAmount)
+  .then(function (folderContents) {
+    console.log(folderContents)
+    res.json(folderContents);
+    res.status(200).end();
+  })
+  .catch(function(err) {
+    console.log(err)
+    res.status(500).end();
+  });
+}
+
+userController.searchFolderContents = function (req, res) {
+  var params = {};
+
+  params.facebookID = req.params.user;
+  params.folderName = req.params.folder;
+  params.query = req.params.query;
+
+  if(req.params.page) {
+    params.page = parseInt(req.params.page);
+  }
+  else {
+    params.page = 0;
+  }
+
+  if(req.params.skip) {
+    params.skipAmount = parseInt(req.params.skip);
+  }
+  else {
+    params.skipAmount = 0;
+  }
+
+  User.searchFolderContents(params.facebookID, params.folderName, params.query, params.page, params.skipAmount)
+  .then(function (folderContents) {
+    console.log(folderContents)
+    res.json(folderContents);
+    res.status(200).end();
+  })
+  .catch(function(err) {
+    console.log(err)
+    res.status(500).end();
+  });
+}
 
 userController.searchUserFootprints = function (req, res) {
   var params = {};

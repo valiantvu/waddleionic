@@ -4,6 +4,7 @@ module.exports = function (app) {
   app.get('/venuesearchweb/:facebookID/:query/:near', checkinController.searchFoursquareVenuesWeb);
   app.get('/venuesearchmobile/:facebookID/:lat/:lng', checkinController.searchFoursquareVenuesMobile);
   app.post('/nativecheckin', checkinController.handleNativeCheckin);
+  app.post('/nativecheckin/edit', checkinController.editNativeCheckin);
   app.get('/sign_s3', checkinController.sign_s3);
   app.post('/realtimefsqdata', checkinController.realtimeFoursquareData);
   app.get('/realtimeinstagram', checkinController.instagramHubChallenge);
@@ -14,8 +15,12 @@ module.exports = function (app) {
   //Routes for user actions
   app.post('/bucketlist', checkinController.addToBucketList);
   app.post('/removebucket', checkinController.removeFromBucketList);
+  app.post('/folder', checkinController.addToFolder);
+  app.post('/removefromfolder', checkinController.removeFromFolder);
+  app.post('/removefromfavorites', checkinController.removeFromFavorites);
   app.post('/comment', checkinController.addComment);
   app.post('/removecomment', checkinController.removeComment);
   app.post('/props', checkinController.giveProps);
+  app.post('/delete', checkinController.deleteFootprint);
   app.get('/interactions/:checkinid', checkinController.getHypesAndComments);
 };
