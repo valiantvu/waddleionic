@@ -98,6 +98,61 @@ var UserRequests = function ($http){
       }
     },
 
+    addFolder: function(userFbID, folderName, folderDescription) {
+      var url = '/api/users/folders';
+      if (userFbID) {
+        return $http({
+          method: 'POST',
+          url: url,
+          data: {
+            facebookID: userFbID,
+            folderName: folderName,
+            folderDescription: folderDescription
+          }
+        });
+      }
+    },
+
+    fetchFolders: function(userFbID) {
+      var url = '/api/users/folders/' + userFbID;
+
+      if (arguments[1] !== undefined) {
+          var page = arguments[1]
+          url +=  "/" + page;
+          console.log(url);
+      }
+
+      if (arguments[2] !== undefined) {
+          var skip = arguments[2]
+          url +=  "/" + skip;
+      }
+
+      return $http({
+        method: 'GET',
+        url: url
+      });
+    },
+
+    searchFoldersByName: function(userFbID, query) {
+      var url = '/api/users/folders/search/' + userFbID + '/' + query;
+
+      if (arguments[1] !== undefined) {
+          var page = arguments[1]
+          url +=  "/" + page;
+          console.log(url);
+      }
+
+      if (arguments[2] !== undefined) {
+          var skip = arguments[2]
+          url +=  "/" + skip;
+      }
+
+      return $http({
+        method: 'GET',
+        url: url
+      });
+    },
+    
     searchUserFootprints: function (userFbID, query) {
       if (userFbID && query) {
         return $http({

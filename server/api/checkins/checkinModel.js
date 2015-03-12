@@ -86,6 +86,92 @@ Checkin.removeFromBucketList = function(facebookID, checkinID){
   return deferred.promise;
 };
 
+Checkin.addToFolder = function (facebookID, checkinID, folderName) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User {facebookID: {facebookID}})',
+    'MATCH (checkin:Checkin {checkinID: {checkinID}})',
+    'MATCH (user)-[:hasFolder]->(folder:Folder {name:{folderName}})',
+    'MERGE (user)-[bucket:hasBucket]->(checkin)',
+    'ON CREATE SET bucket.createdAt = timestamp()',
+    'MERGE (folder)-[contains:containsCheckin]->(checkin)',
+    'ON CREATE SET contains.createdAt = timestamp()',
+    'RETURN user, folder, checkin'
+  ].join('\n');
+
+  var params = {
+    facebookID: facebookID,
+    checkinID: checkinID,
+    folderName: folderName,
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      deferred.resolve(results);
+      console.log('query executed!')
+    }
+  });
+
+  return deferred.promise;
+}
+
+Checkin.removeFromFolder = function (facebookID, checkinID, folderName) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User {facebookID: {facebookID}})-[hasBucket:hasBucket]->(checkin:Checkin {checkinID: {checkinID}})',
+    'MATCH (user)-[:hasFolder]->(folder:Folder {name:{folderName}})-[containsCheckin:containsCheckin]->(checkin)',
+    'DELETE containsCheckin',
+    'RETURN user, folder, checkin'
+  ].join('\n');
+
+
+  var params = {
+    facebookID: facebookID,
+    checkinID: checkinID,
+    folderName: folderName,
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      deferred.resolve(results);
+      console.log('query executed!')
+    }
+  });
+
+  return deferred.promise;
+}
+
+Checkin.removeFromFavorites = function (facebookID, checkinID) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User {facebookID: {facebookID}})-[hasBucket:hasBucket]->(checkin:Checkin {checkinID: {checkinID}})',
+    'MATCH (user)-[:hasFolder]->(folder:Folder)-[containsCheckin:containsCheckin]->(checkin)',
+    'DELETE hasBucket, containsCheckin',
+    'RETURN user, folder, checkin'
+  ].join('\n');
+
+
+  var params = {
+    facebookID: facebookID,
+    checkinID: checkinID
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      deferred.resolve(results);
+      console.log('query executed!')
+    }
+  });
+
+  return deferred.promise;
+}
+
 
 Checkin.addComment = function (clickerID, checkinID, text){
   var deferred = Q.defer();
@@ -260,6 +346,56 @@ Checkin.getComments = function (checkinID){
     }
   });
 
+  return deferred.promise;
+};
+
+Checkin.deleteFootprint = function (facebookID, checkinID) {
+  var deferred = Q.defer();
+
+  var query = [
+   'MATCH (user:User {facebookID:{facebookID}})-[hCheckin:hasCheckin]->(checkin:Checkin{checkinID:{checkinID}})-[hPlace:hasPlace]->(place:Place)', 
+   'OPTIONAL MATCH (checkin)<-[hBucket:hasBucket]-(bucketer:User)',
+   'OPTIONAL MATCH (checkin)<-[gComment:gotComment]-(comment:Comment)<-[mComment:madeComment]-(commenter:User)', 
+   'OPTIONAL MATCH (comment)<-[hUnread:hasUnreadNotification]-(usa:User)',
+   'OPTIONAL MATCH (comment)<-[hRead:hasReadNotification]-(usa2:User)',
+   'OPTIONAL MATCH (checkin)<-[cCheckin:containsCheckin]-(folder:Folder)',
+   'DELETE checkin, hCheckin, hPlace, hBucket, gComment, comment, mComment, hUnread, hRead, cCheckin'
+  ].join('\n');
+  
+  var params = {
+    'facebookID': facebookID,
+    'checkinID': checkinID
+  };
+
+  db.query(query, params, function (err, results){
+    if (err) { deferred.reject(err) }
+    else {
+      deferred.resolve(results);
+      console.log('query executed!')
+    }
+  });
+
+  return deferred.promise;
+};
+
+Checkin.editNativeCheckin = function (checkin) {
+    var deferred = Q.defer();
+
+  var query = [
+   'MATCH (user:User {facebookID:{facebookID}})-[hCheckin:hasCheckin]->(checkin:Checkin{checkinID:{checkinID}})',
+   'SET checkin.caption = {caption}, checkin.rating = {rating}, checkin.photo = {photo}, checkin.pointValue = {pointValue}',
+   'RETURN checkin'
+  ].join('\n');
+  
+  var params = checkin;
+
+  db.query(query, params, function (err, results){
+    if (err) { deferred.reject(err) }
+    else {
+      deferred.resolve(results);
+      console.log('query executed!')
+    }
+  });
   return deferred.promise;
 };
 

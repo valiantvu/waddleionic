@@ -799,6 +799,190 @@ User.getBucketList = function (facebookID, page, skipAmount){
   return deferred.promise;
 };
 
+User.addFolder = function (facebookID, folderName, folderDescription) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User {facebookID:{facebookID}})',
+    'MERGE (user)-[:hasFolder]->(folder:Folder {name: {folderName}})',
+    'ON CREATE SET folder.name = {folderName}, folder.description = {folderDescription}, folder.createdAt = timestamp()',
+    'RETURN user, folder'
+  ].join('\n');
+
+  var params = {
+    facebookID: facebookID,
+    folderName: folderName,
+    folderDescription: folderDescription
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      console.log(results);
+      var parsedResults = _.map(results, function (item) {
+        var singleResult = {
+          "user": item.user.data,
+          "folder": item.folder.data
+        }
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
+    }
+  });
+
+  return deferred.promise;
+};
+
+User.fetchFolders = function(facebookID, page, skipAmount) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder)',
+    'RETURN user, folder',
+    'ORDER BY folder.createdAt',
+    'SKIP { skipNum }', 
+    'LIMIT { skipAmount }'
+  ].join('\n');
+
+  var params = {
+    'facebookID': facebookID,
+    'skipAmount': skipAmount,
+    'skipNum': page ? page * skipAmount : 0
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      console.log(results);
+      var parsedResults = _.map(results, function (item) {
+        var singleResult = {
+          "user": item.user.data,
+          "folder": item.folder.data
+        }
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
+    }
+  });
+
+  return deferred.promise;
+};
+
+User.searchFoldersByName = function (facebookID, folderName, page, skipAmount) {
+   var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder)',
+    'WHERE folder.name =~ {folderName}',
+    'RETURN user, folder',
+    'ORDER BY folder.createdAt',
+    'SKIP { skipNum }', 
+    'LIMIT { skipAmount }'
+  ].join('\n');
+
+   var params = {
+    'facebookID': facebookID,
+    'folderName': '(?i).*' + folderName + '.*',
+    'skipNum': page ? page * skipAmount : 0,
+    'skipAmount': skipAmount
+  };
+
+  db.query(query, params, function (err, results) {
+    
+    if (err) { console.log(query); deferred.reject(err); }
+    else {
+      console.log(results);
+      var parsedResults = _.map(results, function (item) {
+        var singleResult = {
+          "user": item.user.data,
+          "folder": item.folder.data
+        }
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
+    }
+  });
+
+  return deferred.promise;
+};
+
+User.fetchFolderContents = function (facebookID, folderName, page, skipAmount) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder {name:{folderName}})-[contains:containsCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'RETURN user, folder, checkin, place, contains',
+    'ORDER BY contains.createdAt',
+    'SKIP { skipNum }', 
+    'LIMIT { skipAmount }'
+  ].join('\n');
+
+  var params = {
+    'facebookID': facebookID,
+    'folderName': folderName,
+    'skipAmount': skipAmount,
+    'skipNum': page ? page * skipAmount : 0
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      console.log(results);
+      var parsedResults = _.map(results, function (item) {
+        var singleResult = {
+          "user": item.user.data,
+          "folder": item.folder.data,
+          "checkin": item.checkin.data,
+          "place": item.place.data
+        }
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
+    }
+  });
+  return deferred.promise;
+}
+
+User.searchFolderContents = function (facebookID, folderName, searchQuery, page, skipAmount) {
+    var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder {name:{folderName}})-[contains:containsCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'WHERE place.name =~ {searchQuery} OR place.city =~ {searchQuery} OR place.country =~ {searchQuery}',
+    'RETURN user, folder, checkin, contains, place',
+    'ORDER BY contains.createdAt',
+    'SKIP { skipNum }', 
+    'LIMIT { skipAmount }'
+  ].join('\n');
+
+  var params = {
+    'facebookID': facebookID,
+    'searchQuery': '(?i).*' + searchQuery + '.*',
+    'folderName': folderName,
+    'skipAmount': skipAmount,
+    'skipNum': page ? page * skipAmount : 0
+  };
+
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      console.log(results);
+      var parsedResults = _.map(results, function (item) {
+        var singleResult = {
+          "user": item.user.data,
+          "folder": item.folder.data,
+          "checkin": item.checkin.data,
+          "place": item.place.data
+        }
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
+    }
+  });
+  return deferred.promise;
+}
+
 // Find a single user in the database, requires facebookID as input
 // If user is not in database, promise will resolve to error 'user does not exist'
 User.find = function (data) {
