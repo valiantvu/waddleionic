@@ -5,7 +5,7 @@
   </div>
   <h1 class="title">Hype List</h1>
   <div class="buttons">
-    <button class="button button-icon icon ion-plus" ng-click="openModal()"></button>
+    <button class="button button-icon icon ion-plus" ng-click="showFolderCreationPopup()"></button>
   </div>
 </ion-header-bar>
 
@@ -26,7 +26,7 @@
     </div>
 
     <div ng-repeat="folder in folders" class="list card">
-      <h2>{{folder.folder.name}}</h4>
+      <h2 ng-click="viewItemsinFolder()">{{folder.folder.name}}</h4>
       <h4>{{folder.folder.description}}</h4>
     </div>
      <div ng-repeat="footprint in footprints" class="list card">
@@ -89,18 +89,14 @@
 </ion-view>
 
 <script id="add-folder.html" type="text/ng-template">
-  <ion-modal-view>
-    <ion-header-bar>
-      <h1 class="title">Add Folder</h1>
-    </ion-header-bar>
-    <ion-content>
     <form class="navbar-form navbar-left" role="search">
       <textarea ng-model="folderInfo.name" type="text" class="form-control" placeholder="Name your folder">
       </textarea>
       <textarea ng-model="folderInfo.description" type="text" class="form-control" placeholder="Write a description">
       </textarea>
-      <button type="submit" ng-click="addFolder(folderInfo.name, folderInfo.description)" ui-sref="tab.hypelist">Post</button>
     </form>
-    </ion-content>
-  </ion-modal-view>
+</script>
+
+<script id="folder-create-success.html" type="text/ng-template">
+    <img class="success-confirm" src="http://cliparts.co/cliparts/BTg/ELe/BTgELekoc.jpg">
 </script>

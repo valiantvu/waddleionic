@@ -37,6 +37,34 @@ Place.prototype.save = function (){
   return deferred.promise;
 };
 
+Place.findFriendsAlreadyBeen = function (facebookID, foursquareID) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User{facebookID:{facebookID}})-[:hasFriend]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place {foursquareID: foursquareID})',
+    'RETURN friend, checkin'
+  ].join('\n');
+
+  db.query(query, params, function (err, results) {
+    if (err) {
+      deferred.reject(err);
+    }
+    else {
+      var parsedResults = _.map(results, function (item) {
+        
+        var singleResult = {
+          "user": item.friend.data,
+          "checkin": item.checkin.data
+        };
+        return singleResult
+      });
+      deferred.resolve(parsedResults);
+
+    }
+  })
+  return deferred.promise;
+}
+
 Place.assignIconToCategories = function (categoryList) {
   var deferred = Q.defer();
 
@@ -123,7 +151,7 @@ Place.findByCheckinID = function (checkinID) {
   var deferred = Q.defer();
 
   var query = [
-    'MATCH (checkin:Checkin {checkinID: {checkinID}})-[]->(place:Place)',
+    'MATCH (checkin:Checkin {checkinID: {checkinID}})-[:hasPlace]->(place:Place)',
     'RETURN place',
   ].join('\n');
 

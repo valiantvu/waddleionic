@@ -3,11 +3,11 @@
 var HypersController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
     
     $scope.footprint = FootprintRequests.openFootprint;
-    FootprintRequests.getFootprintInteractions($scope.footprint.checkin.checkinID)
-      .then(function (data) {
-        console.log('getFootprintInteractions: ', data);
-        $scope.footprint.hypes = data.data.hypeGivers;
-      });
+    // FootprintRequests.getFootprintInteractions($scope.footprint.checkin.checkinID)
+    //   .then(function (data) {
+    //     console.log('getFootprintInteractions: ', data);
+    //     $scope.footprint.hypes = data.data.hypeGivers;
+    //   });
 };
 
 HypersController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state'];

@@ -136,16 +136,50 @@ var UserRequests = function ($http){
     searchFoldersByName: function(userFbID, query) {
       var url = '/api/users/folders/search/' + userFbID + '/' + query;
 
-      if (arguments[1] !== undefined) {
-          var page = arguments[1]
+      if (arguments[2] !== undefined) {
+          var page = arguments[2]
           url +=  "/" + page;
           console.log(url);
       }
 
-      if (arguments[2] !== undefined) {
-          var skip = arguments[2]
+      if (arguments[3] !== undefined) {
+          var skip = arguments[3]
           url +=  "/" + skip;
       }
+
+      return $http({
+        method: 'GET',
+        url: url
+      });
+    },
+
+    addFootprintToFolder: function(userFbID, checkinID, folderName) {
+      var url = '/api/checkins/folder/';
+
+      return $http({
+        method: 'POST',
+        url: url,
+        data: {
+          facebookID: userFbID,
+          checkinID: checkinID,
+          folderName: folderName
+        }
+      });
+    },
+
+    fetchFolderContents: function(userFbID, folderName) {
+      var url = '/api/users/folder/' + userFbID + '/' + folderName;
+
+      if (arguments[2] !== undefined) {
+        var page = arguments[2]
+        url +=  "/" + page;
+        console.log(url);
+      };
+
+      if (arguments[3] !== undefined) {
+        var skip = arguments[3]
+        url +=  "/" + skip;
+      };
 
       return $http({
         method: 'GET',

@@ -62,10 +62,10 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         }
       }
     })
-    .state('tab.footprints', {
-      url: '/footprints',
+    .state('tab.folders', {
+      url: '/folders',
       views: {
-        'footprints-tab': {
+        'folders-tab': {
           templateUrl: 'tabs/footprints/footprints.html',
           controller: 'FootprintsController'
         }

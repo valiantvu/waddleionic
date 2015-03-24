@@ -73,7 +73,7 @@ Checkin.removeFromBucketList = function(facebookID, checkinID){
     facebookID: facebookID,
     checkinID: checkinID
   };
-  console.log(params);
+
 
   db.query(query, params, function (err, results) {
     if (err) { deferred.reject(err); }

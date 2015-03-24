@@ -294,7 +294,7 @@ checkinController.addToFolder = function (req, res) {
 
   Checkin.addToFolder(facebookID, checkinID, folderName)
     .then(function (data){
-      return User.fetchFolderContents(facebookID, folderName)
+      return User.fetchFolderContents(facebookID, folderName, 0, 10)
     })
     .then(function (folderContents) {
       res.json(folderContents);
