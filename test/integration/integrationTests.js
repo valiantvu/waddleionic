@@ -46,25 +46,31 @@ var _ = require('lodash');
 // });
 
 describe('Waddle user routes GET requests', function () {
-   var user;
+    var user;
     before(function(done){
       User.createUniqueUser(fixtures.testUser).then(function (userNode){
+        // console.log(userNode);
         user = userNode.node._data.data;
-        console.log('hiiiii user');
         userNode.addFriends([fixtures.testUser2, fixtures.testUser3]).then(function (friends) {
           userNode.addCheckins(fixtures.testUserFootprints)
           .then(function (categoryNames) {
-            console.log('categoryNames');
-            _.each(friends, function(friend) {
-              console.log(friend.body.data[0][0].data);
+
+            _.each(friends, function(friend, index) {
+              User.find({facebookID: friend.body.data[0][0].data.facebookID})
+                .then(function (friendNode) {
+                  friendNode.addCheckins(fixtures.testFriendFootprints[index])
+                    .then(function (results) {
+                      // console.log(results);
+                    });
+                });
             });
             done();
-          })
+          });
         });
       });
     });
     it('should return the information of the specified user', function (done) {
-      console.log('hi again', user);
+      // console.log('hi again', user);
       request(app)
       .get('/api/users/userinfo/' + user.facebookID)
       .expect(200)

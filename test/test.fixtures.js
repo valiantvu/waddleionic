@@ -88,6 +88,127 @@ fixtures.testUserFootprints = [
     }
 ];
 
+fixtures.testFriendFootprints = [
+    [
+        {
+            id: "11",
+            lat: 33.652759, 
+            lng: -117.840664,
+            name: "Hobbit House",
+            category: "Nightclub",
+            country: "United States",
+            city: "San Francisco",
+            province: "California",
+            photoSmall: "null",
+            photoLarge: 'null',
+            foursquareID: '72349239421234',
+            checkinID: '12123kjdfbsokb11e3',
+            checkinTime: '2014-02-17T15:19:02.546Z',
+            caption: 'testina is in the hizzhouse!! bump up the funk!',
+            likes: 0,
+            source: 'waddletest',
+            pointValue: 9
+        },
+        {
+            id: "21",
+            lat: 33.747968,
+            lng:  -118.037386,
+            name: "The Chill Scythe",
+            category: "BBQ Joint",
+            country: "United States",
+            city: "Los Angeles",
+            province: "California",
+            photoSmall: "null",
+            photoLarge: 'null',
+            foursquareID: '8232349239kjasnd434',
+            checkinID: '128k2312912jdfbso1e3',
+            checkinTime: '2017-02-17T15:19:02.546Z',
+            caption: 'they grilled while i chilled.',
+            likes: 0,
+            source: 'waddletest',
+            pointValue: 9
+        },
+        {
+            id: "13",
+            lat: 37.784000, 
+            lng: -122.409107,
+            name: "50 Shades of Death",
+            category: "School",
+            country: "United States",
+            city: "San Francisco",
+            province: "California",
+            photoSmall: "null",
+            photoLarge: 'null',
+            foursquareID: '92123sbkahs9239434',
+            checkinID: '129k123jd23823fbso1e3',
+            checkinTime: '2019-02-17T15:12:16.562Z',
+            caption: 'i learned so much here!',
+            likes: 0,
+            source: 'waddletest',
+            pointValue: 9
+        }
+    ],
+    [
+        {
+            id: "10",
+            lat: 33.652759, 
+            lng: -117.840664,
+            name: "Hobbit House",
+            category: "Nightclub",
+            country: "United States",
+            city: "San Francisco",
+            province: "California",
+            photoSmall: "null",
+            photoLarge: 'null',
+            foursquareID: '1212339239421234',
+            checkinID: '116kj1231dfbsokb11e3',
+            checkinTime: '2014-02-17T15:19:02.546Z',
+            caption: 'testina is in the hizzhouse!! bump up the funk!',
+            likes: 0,
+            source: 'waddletest',
+            pointValue: 9
+        },
+        {
+            id: "12",
+            lat: 33.747968,
+            lng:  -118.037386,
+            name: "The Chill Scythe",
+            category: "BBQ Joint",
+            country: "United States",
+            city: "Los Angeles",
+            province: "California",
+            photoSmall: "null",
+            photoLarge: 'null',
+            foursquareID: '5212339239kjasnd434',
+            checkinID: '21228k12912jdfbso1e3',
+            checkinTime: '2017-02-17T15:19:02.546Z',
+            caption: 'they grilled while i chilled.',
+            likes: 0,
+            source: 'waddletest',
+            pointValue: 9
+        },
+        {
+            id: "31",
+            lat: 37.784000, 
+            lng: -122.409107,
+            name: "50 Shades of Death",
+            category: "School",
+            country: "United States",
+            city: "San Francisco",
+            province: "California",
+            photoSmall: "null",
+            photoLarge: 'null',
+            foursquareID: '923s45bkahs9239434',
+            checkinID: '229kj333d23823fbso1e3',
+            checkinTime: '2019-02-17T15:12:16.562Z',
+            caption: 'i learned so much here!',
+            likes: 0,
+            source: 'waddletest',
+            pointValue: 9
+        }
+    ]
+];
+
 fixtures.IGdata = {
     "data": [{
         "location": {
