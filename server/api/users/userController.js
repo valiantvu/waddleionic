@@ -644,6 +644,22 @@ userController.searchFolderContents = function (req, res) {
   });
 }
 
+userController.deleteFolderAndContents = function (req, res) {
+  var facebookID = req.body.facebookID;
+  var folderName = req.body.folderName;
+
+  User.deleteFolderAndContents(facebook, folderName)
+  .then(function (data) {
+    res.json({success: "Folder and contents succesfully deleted"});
+    res.status(201).end();
+  })
+  .catch(function (data) {
+    console.log(err)
+    res.status(500).end();
+  })
+
+};
+
 userController.searchUserFootprints = function (req, res) {
   var params = {};
   var facebookID = req.params.user;

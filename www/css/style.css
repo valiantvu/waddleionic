@@ -13,7 +13,7 @@ body { margin:0; padding:0; }
 	width: 100%;
 }
 .centered{
-	position: relative;
+	 position: relative;
    top: 50%;
    transform: translate(0, -50%);
    text-align:center;
@@ -25,26 +25,53 @@ p{
 	font-family: 'Open Sans', sans-serif;
 }
 
+.item-body {
+	text-align: center;
+}
+
+.item-body p {
+	margin: 0px;
+}
+
 h1{
 	font-family: 'Open Sans', sans-serif;
 	font-size: 28px;
 	font-weight: 400;
 }
 h2{
-	color:#33e6e4;
+	color:#e1876a;
 	font-family: 'Open Sans', sans-serif;
 	font-size: 18px;
 	font-weight: 400;
 }
 h3{
-	color:#33e6e4;
+	color:#e1876a;
 	font-family: 'Open Sans', sans-serif;
 	font-size: 20px;
 	font-weight: 400;
 }
 
+.coral {
+	color:#e1876a;
+}
+
+.title {
+	color: #fff;
+}
+
+.float-right {
+	float: right;
+}
+
 span{
 	font-family: 'Open Sans', sans-serif;
+}
+
+.commentername {
+	color:#e1876a;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 18px;
+	font-weight: 400;
 }
 .waddlebadge{
 	float:right;
@@ -80,6 +107,18 @@ span{
 	margin-left:0%;
 	margin-top:0%;
 }
+
+.propic {
+	display: inline;
+	height: 29px;
+	width: 29px;
+	border-radius: 100%;
+	background-color:#000;
+}
+
+.commenterpic {
+	margin-left: -7px;
+}
 .transparentbutton{
 	background:none;
 	border:0px;
@@ -104,6 +143,17 @@ span{
 	-moz-box-shadow: 0px 0px 0px #888;
 	box-shadow: 0px 0px 0px #888;
 }
+
+.item-input-inset {
+	border: none;
+}
+
+.success-confirm {
+	width: 100px;
+	left: 25px;
+}
+
+
 .full-image{
 	border-radius:0px;
 	margin-top:-17px;
@@ -113,25 +163,48 @@ span{
 	height:auto;
 	border:0px;
 }
-.backgroundgrey{
-	background-color:#e5e5e5;
+.bg-scroll{
+	background: url("https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png") no-repeat center center fixed;
+	background-size: cover;
 	margin:-10px;
 	margin-top:-10px;
 }
+
+.bg-header {
+	background: url("https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png") no-repeat center center fixed;
+	background-size: cover; 
+}
+
+.commentfield {
+	border-radius: 15px;
+	-webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+}
+
+.newcomment {
+	margin-right: 5px;
+}
+
 .item-avatar{
 	border:0px;
 	-webkit-box-shadow: 0px 0px 0px 0px #ccc
 	-moz-box-shadow: 0px 0px 0px #888;
 	box-shadow: 0px 0px 0px #888;
 }
+
 .item-body{
 	border:0px;
 	margin-top:-12px;
 	margin-bottom:-10px;
 }
-.card{
-	margin-bottom:-10px;
-	border-radius:10px;
+.list-inset{
+	bottom:30px;
+	-webkit-border-radius: 10px;
+  -webkit-border-top-left-radius: 0;
+  -moz-border-radius: 10px;
+  -moz-border-radius-topleft: 0;
+  border-radius: 10px;
+  border-top-left-radius: 0;
 }
 
 #welcome{
@@ -139,6 +212,58 @@ span{
 	width:100%;
 	background-image: url("https://s3-us-west-2.amazonaws.com/waddle/mobilewelcomescreenimgs/waddlewelcomescreen2.png");
 	background-size:100%;
+}
+
+.savefave {
+	margin-bottom: -10px;
+	border-style: none;
+	padding-right: 0;
+	min-width: 150px;
+	text-align: left;
+	color: #e1876a !important;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 18px;
+	font-weight: 400;
+	text-overflow: ellipsis; 
+  -webkit-border-radius: 0px;
+-moz-border-radius: 0px;
+border-radius: 0px;
+	-webkit-border-top-left-radius: 5px;
+  -moz-border-radius-topleft: 5px;
+  border-top-left-radius: 5px;
+/*  -webkit-border-top-right-radius: 0px;
+  -moz-border-radius-topright: 0px;
+  border-top-right-radius: 0px;
+  -webkit-border-bottom-left-radius: 0px;
+  -moz-border-radius-bottomleft: 0px;
+  border-bottom-left-radius: 0px;*/
+}
+
+.selected {
+	background-color: red;
+}
+
+.folder-tab-curve {
+	display: inline;
+	max-height: 32px;
+	margin-left: -5px;
+/*	margin-bottom: -1px;*/
+}
+
+.folder-tab {
+	display: inline;
+	width: 0;
+	height: 0;
+	border-bottom: 100px solid #fff;
+	border-right: 100px solid transparent;
+	-webkit-border-top-left-radius: 5px;
+  -moz-border-radius-topleft: 5px;
+  border-top-left-radius: 5px;
+}
+
+.options {
+	bottom: 10px;
+	float: right;
 }
 
 .slidebox {
@@ -169,6 +294,10 @@ span{
 
 .footprinttabimg{
 	margin-top:30px;
+}
+
+.footprintcaption {
+	text-align: center;
 }
 
 .hypelisttabimg{

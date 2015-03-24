@@ -1,12 +1,15 @@
 (function(){
 
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope) {
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout) {
   Auth.checkLogin()
   .then(function () {
     $scope.numHypes = 0;
     $scope.footprints = [];
     $scope.search = {};
+    $scope.selectedFolderInfo = {};
+    $scope.selectedFolder = null;
+    $scope.newFolderInfo = {};
     var page = 0;
     var skipAmount = 5;
     $scope.moreDataCanBeLoaded = true;
@@ -15,6 +18,14 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     $scope.openFootprint = function(footprint) {
       FootprintRequests.openFootprint = footprint;
+    };
+
+    $scope.checkUserID = function(facebookID) {
+      if(facebookID === window.sessionStorage.userFbID) {
+        return true;
+      } else {
+        return false;
+      }
     };
 
     $scope.getAggregatedFeedData = function () {
@@ -35,6 +46,16 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     $scope.getAggregatedFeedData();
 
+    $scope.viewFoldersList = function() {
+      UserRequests.fetchFolders(window.sessionStorage.userFbID, 0, 10)
+      .then(function (folders) {
+        $scope.folders = folders.data;
+        console.log($scope.folders)
+      })
+    }
+
+    $scope.viewFoldersList();
+
     $scope.addCheckinToBucketList = function (footprint, index){
       
       var bucketListData = {
@@ -52,6 +73,30 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         }
 
         $scope.footprints[index].hypes.push('new hype');
+      });
+    };
+
+    $scope.addFootprintToFolder = function (checkinID, folderName, index) {
+      UserRequests.addFootprintToFolder(window.sessionStorage.userFbID, checkinID, folderName)
+      .then(function (data) {
+        $scope.footprints[index].folders = [];
+        $scope.footprints[index].folders.push(data.data[0].folder);
+        $scope.showCreationSuccessAlert();
+        // console.log(data);
+      })
+    };
+
+    $scope.createFolderAndAddFootprintToFolder = function (folderName, folderDescription, selectedFootprintCheckinID) {
+      // console.log(folderName);
+      // console.log(folderDescription);
+      UserRequests.addFolder(window.sessionStorage.userFbID, folderName, folderDescription)
+      .then(function (data) {
+        console.log(data);
+        UserRequests.addFootprintToFolder(window.sessionStorage.userFbID, selectedFootprintCheckinID, folderName)
+        .then(function (data) {
+          console.log(data)
+          $scope.showCreationSuccessAlert();
+        })
       });
     };
 
@@ -83,6 +128,12 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       }
     };
 
+    $scope.passSelectedFolderInfo = function(folder, $index) {
+      $scope.selectedFolder = $index;
+      $scope.selectedFolderInfo.name = folder.folder.name;
+      // $scope.selectedFolderInfo.description = folder.folder.description;
+    }
+
      $scope.clearSearch = function () {
       $scope.search = {};
       $scope.footprints = [];
@@ -90,6 +141,109 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       $scope.moreDataCanBeLoaded = true;
       $scope.getUserData();
     };
+
+    $scope.fetchFolderContents = function (folderName) {
+      UserRequests.fetchFolderContents(window.sessionStorage.userFbID, folderName, 0, 15)
+      .then(function (folderContents) {
+        $scope.folderContents = folderContents.data;
+        console.log(folderContents);
+      })
+    }
+
+    $ionicModal.fromTemplateUrl('folder-contents.html', {
+      scope: $scope,
+      animation: 'slide-in-up'
+    }).then(function(modal) {
+      $scope.modal = modal;
+    });
+
+    $scope.openModal = function(folderName) {
+      $scope.fetchFolderContents(folderName);
+      $scope.selectedFolderInfo.name = folderName
+      $scope.modal.show();
+    };
+
+    $scope.closeModal = function() {
+      $scope.modal.hide();
+      //TO-DO: figure out how to propertly implement remove() in order to avoid memory leaks
+      // $scope.modal.remove();
+    };
+
+    //Cleanup the modal when we're done with it!
+    $scope.$on('$destroy', function() {
+      $scope.modal.remove();
+    });
+
+    // Execute action on hide modal
+    $scope.$on('modal.hidden', function() {
+      // Execute action
+    });
+    // Execute action on remove modal
+    $scope.$on('modal.removed', function() {
+      // Execute action
+    });
+
+    $scope.showPopup = function(footprintCheckinID, $index) {
+      console.log('footprint index', $index);
+      $scope.selectedFootprintIndex = $index;
+      $scope.selectedFootprintCheckinID = footprintCheckinID;
+
+      // An elaborate, custom popup
+      $scope.myPopup = $ionicPopup.show({
+        templateUrl: 'folder-list.html',
+        title: 'Create or Select a Folder',
+        // subTitle: 'Please use normal things',
+        scope: $scope,
+        buttons: [
+          { text: 'Cancel' },
+          {
+            text: '<b>Save</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+             $scope.addFootprintToFolder($scope.selectedFootprintCheckinID, $scope.selectedFolderInfo.name, $index);
+            }
+          }
+        ]
+      });
+
+    };
+
+    $scope.showFolderCreationPopup = function() {
+      $scope.newFolderInfo = {};
+      $scope.myPopup.close();
+      // An elaborate, custom popup
+      var folderCreationPopup = $ionicPopup.show({
+        templateUrl: 'add-folder.html',
+        title: 'Add Folder',
+        scope: $scope,
+        buttons: [
+          { text: 'Cancel' },
+          {
+            text: '<b>Save</b>',
+            type: 'button-energized',
+            onTap: function(e) {
+                $scope.createFolderAndAddFootprintToFolder($scope.newFolderInfo.name, $scope.newFolderInfo.description, $scope.selectedFootprintCheckinID);
+            }
+          }
+        ]
+      });
+      // myPopup.then(function(res) {
+      //   console.log('Tapped!', res);
+      // });
+    };
+
+    $scope.showCreationSuccessAlert = function() {
+      var creationSuccessAlert = $ionicPopup.show({
+        title: 'New Folder Added!',
+        templateUrl: 'folder-create-success.html'
+      });
+      // creationSuccessAlert.then(function(res) {
+      // });
+      $timeout(function() {
+       creationSuccessAlert.close(); //close the popup after 1 second
+      }, 1500);
+    };
+
 
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);
@@ -147,7 +301,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 

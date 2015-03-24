@@ -159,8 +159,8 @@ User.prototype.addCheckins = function(combinedCheckins){
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})',
     'MERGE (checkin:Checkin {checkinID: {checkinID}})',
-    'ON CREATE SET checkin = {checkinID: {checkinID}, likes: {likes}, photoSmall: {photoSmall}, photoLarge: {photoLarge}, caption: {caption}, checkinTime: {checkinTime}, pointValue: {pointValue}, source: {source}}',
-    'ON MATCH SET checkin.checkinTime = {checkinTime}, checkin.likes = {likes}, checkin.photoSmall = {photoSmall}, checkin.photoLarge = {photoLarge}, checkin.caption = {caption}, checkin.source = {source}',
+    'ON CREATE SET checkin = {checkinID: {checkinID}, likes: {likes}, photoSmall: {photoSmall}, photoLarge: {photoLarge}, caption: {caption}, checkinTime: {checkinTime}, pointValue: {pointValue}, rating: {rating}, source: {source}}',
+    'ON MATCH SET checkin.checkinTime = {checkinTime}, checkin.likes = {likes}, checkin.photoSmall = {photoSmall}, checkin.photoLarge = {photoLarge}, checkin.caption = {caption}, checkin.rating = {rating}, checkin.source = {source}',
     'MERGE (place:Place {foursquareID: {foursquareID}})',
     'ON CREATE SET place = {name: {name}, foursquareID: {foursquareID}, lat: {lat}, lng: {lng}, country: {country}, province:{province}, city:{city}, category: {category}}',
     'ON MATCH SET place.name = {name}, place.lat = {lat}, place.lng = {lng}, place.country = {country}, place.province = {province}, place.city = {city}, place.category = {category}',
@@ -361,8 +361,9 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
     'MATCH (user:User {facebookID: {facebookID}})-[:hasFriend*0..1]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'OPTIONAL MATCH (place)-[:hasCategory]-(category:Category)',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
-    'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
-    'RETURN user, friend, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers, category',
+    'OPTIONAL MATCH (checkin)<-[:containsCheckin]-(folderHype:Folder)<-[:hasFolder]-(hyper:User)',
+    'OPTIONAL MATCH (checkin)<-[:containsCheckin]-(folder:Folder)<-[:hasFolder]-(user)',
+    'RETURN user, friend, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers, collect(DISTINCT folder) AS folders, category',
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
@@ -414,11 +415,16 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
           for(var i = 0; i < item['hypers'].length; i++) {
 
             hypesArray.push(item['hypers'][i].data);
-            if(item['hypers'][i].data.facebookID === viewer) {
-              singleResult["bucketed"] = true;
-            }
           }
           singleResult.hypes = hypesArray;
+        }
+
+        if(item['folders'].length) {
+          var foldersArray = [];
+           for(var i = 0; i < item['folders'].length; i++) {
+            foldersArray.push(item['folders'][i].data);
+          }
+          singleResult.folders = foldersArray;
         }
 
         if(item.friend) {
@@ -947,7 +953,7 @@ User.fetchFolderContents = function (facebookID, folderName, page, skipAmount) {
 }
 
 User.searchFolderContents = function (facebookID, folderName, searchQuery, page, skipAmount) {
-    var deferred = Q.defer();
+  var deferred = Q.defer();
 
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder {name:{folderName}})-[contains:containsCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
@@ -985,6 +991,31 @@ User.searchFolderContents = function (facebookID, folderName, searchQuery, page,
   });
   return deferred.promise;
 }
+
+User.deleteFolderAndContents = function (facebookID, folderName) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User ({facebookID: facebookID})-[hFolder:hasFolder]->(folder:Folder {name:{folderName}})',
+    'OPTIONAL MATCH (folder)-[contains:containsCheckin]->(checkin:Checkin)',
+    'DELETE hFolder, folder, contains'
+  ].join('\n');
+
+  var params = {
+    'facebookID': facebookID,
+    'folderName': folderName
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      deferred.resolve(results);
+      console.log('query executed!')
+    }
+  });
+
+  return deferred.promise;
+};
 
 // Find a single user in the database, requires facebookID as input
 // If user is not in database, promise will resolve to error 'user does not exist'

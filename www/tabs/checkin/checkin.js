@@ -44,7 +44,7 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicModal, $i
 			name: venueInfo.name,
 			lat: venueInfo.location.lat,
 			lng: venueInfo.location.lng,
-			rating: 0,
+			rating: 4.5,
 			facebookID: window.sessionStorage.userFbID
 		};
 		if($scope.checkinInfo.footprintCaption) {
