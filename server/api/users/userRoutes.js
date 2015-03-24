@@ -11,6 +11,7 @@ module.exports = function(app){
   app.get('/folder/:user/:folder/:page?/:skip?', userController.fetchFolderContents);
   app.get('/folder/search/:user/:folder/:query/:page?/:skip?', userController.searchFolderContents);
 	app.get('/aggregatefeed/:user/:page?/:skip?', userController.getAggregatedListOfCheckins);
+  app.post('/folders/delete/', userController.deleteFolderAndContents)
 	app.post('/notifications', userController.updateNotificationReadStatus);
   app.get('/notifications/:user', userController.getUnreadNotifications);
   app.get('/readnotifications/:user/:limit', userController.getReadNotifications);

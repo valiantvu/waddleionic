@@ -1,6 +1,6 @@
 (function(){
 
-var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicModal) {
+var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicModal, $ionicPopup, $timeout) {
 
   Auth.checkLogin()
   .then(function () {
@@ -39,6 +39,7 @@ var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequ
       // console.log(folderDescription);
       UserRequests.addFolder(window.sessionStorage.userFbID, folderName, folderDescription)
       .then(function (data) {
+        $scope.showCreationSuccessAlert();
         console.log(data);
       });
     };
@@ -49,7 +50,7 @@ var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequ
     // ];
 
     $scope.fetchFolders = function() {
-      UserRequests.fetchFolders(window.sessionStorage.userFbID, 0, 10)
+      UserRequests.fetchFolders(window.sessionStorage.userFbID, 0, 20)
       .then(function (folders) {
         $scope.folders = folders.data;
       //   if (data.data.length > 0) {
@@ -99,6 +100,44 @@ var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequ
       $rootScope.$emit('loadProfilePage', userInfo);
       $state.go('tab.profile');
     };
+
+     $scope.showFolderCreationPopup = function() {
+
+      // An elaborate, custom popup
+      var myPopup = $ionicPopup.show({
+        templateUrl: 'add-folder.html',
+        title: 'Add Folder',
+        // subTitle: 'Please use normal things',
+        scope: $scope,
+        buttons: [
+          { text: 'Cancel' },
+          {
+            text: '<b>Save</b>',
+            type: 'button-energized',
+            onTap: function(e) {
+                $scope.addFolder($scope.folderInfo.name, $scope.folderInfo.description);
+            }
+          }
+        ]
+      });
+      // myPopup.then(function(res) {
+      //   console.log('Tapped!', res);
+      // });
+
+    };
+ 
+    $scope.showCreationSuccessAlert = function() {
+      var creationSuccessAlert = $ionicPopup.show({
+        title: 'New Folder Added!',
+        templateUrl: 'folder-create-success.html'
+      });
+      // creationSuccessAlert.then(function(res) {
+      // });
+      $timeout(function() {
+       creationSuccessAlert.close(); //close the popup after 1 second
+      }, 1500);
+    };
+
 
     $ionicModal.fromTemplateUrl('add-folder.html', {
       scope: $scope,
@@ -229,7 +268,7 @@ var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequ
     
 };
 
-HypelistController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicModal'];
+HypelistController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicModal', '$ionicPopup', '$timeout'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 

@@ -1,17 +1,17 @@
 <!-- Header Bar -->
-<ion-header-bar align-title="center" class="bar-positive">
+<ion-header-bar align-title="center" class="bg-header">
+  <h1 class="title">feed</h1>
   <div class="buttons">
-    <button class="button button-icon icon ion-arrow-left-b" ng-click="doSomething()"></button>
+    <button class="button button-icon icon ion-ios7-search-strong light" ng-click="doSomething()"></button>
   </div>
-  <h1 class="title">home</h1>
 </ion-header-bar>
 
 <ion-view title="Home">
 
-  <ion-content class="padding">
-<div class="backgroundgrey">
+  <ion-content class="padding bg-scroll">
+<!-- <div class="backgroundgrey"> -->
     <!-- Search bar -->
-    <div class="list">
+<!--     <div class="list">
       <div class="item item-input-inset">
       <label class="item-input-wrapper">
         <i class="icon ion-ios7-search-strong placeholder-icon"></i>
@@ -20,9 +20,14 @@
         <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button>
         <button class="button button-clear" ng-if="search.query" ng-click="clearSearch()">x</button>
       </div>
-    </div>
+    </div> -->
 
-    <div ng-repeat="footprint in footprints" class="list card">
+    <div ng-repeat="footprint in footprints" >
+      <button ng-if="!footprint.folders" class="button icon-left ion-star button-small button-light savefave" ng-click="showPopup(footprint.checkin.checkinID, $index)">Save to Folder</button>
+      <button ng-if="footprint.folders" class="button button-small button-light savefave" ng-click="openModal(footprint.folders[0].name)">{{footprint.folders[0].name}}</button>
+      <img src="https://s3-us-west-2.amazonaws.com/waddle/TabCurve-1.png" class="folder-tab-curve">
+      <button class="options button button-icon icon ion-chevron-down light"></button>
+      <div class="list list-inset">
 
       <div class="item item-avatar">
 
@@ -35,43 +40,50 @@
         <!-- Badge -->
         <img src="https://s3-us-west-2.amazonaws.com/waddle/Badges/Burger1.png" class="waddlebadge">
         <!-- User Name -->
-        <a href="#" class="subdued">{{footprint.user.name}}</a>
+        <a href="#" class="subdued"><b>{{footprint.user.name}}</b> rates this {{footprint.checkin.rating}}</a>
         <br>
-        <!-- Place Name -->
+        <!-- Place Name and Location-->
         <a ng-click="getFootprint(footprint)">
           <h2>{{footprint.place.name}}</h2>
-
-        <!-- Check-in Time -->
-        <p>{{footprint.checkin.checkinTime | date : shortDate}}</p>
+          <p> 
+            <a ng-if="footprint.place.city !== 'null'">{{footprint.place.city}}</a><a ng-if="footprint.place.city !== 'null' && footprint.place.province !== 'null'">,</a>
+            <a ng-if="footprint.place.province !== 'null'">{{footprint.place.province}}</a>
+            <span class="float-right">{{footprint.checkin.checkinTime | date : shortDate}}</span>
+          </p>
       </div>
 
       <div class="item item-body">
         <div class="checkinphoto">
           <img ng-if="footprint.checkin.photoLarge !== 'null'" ng-click="getFootprint(footprint)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
         </div>
-        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint)" class="subdued">{{ footprint.comments.length }} Comments</a>
-          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint)" class="subdued">{{ footprint.hypes.length }} Hypes</a>
+        <p class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
+        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint)" class="subdued x-centered"><i class="ion-chatbubble coral"></i>{{ footprint.comments.length }}</a>
+          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint)" class="subdued x-centered"><i class="ion-android-folder coral"></i>{{ footprint.hypes.length }}</a>
           </p>
-        <p ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
-
-        <!-- <p>
-          <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint)" class="subdued">{{ footprint.comments.length }} Comments</a>
-          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint)" class="subdued">{{ footprint.hypes.length }} Hypes</a>
-        </p> -->
       </div>
 
       <!-- Comments -->
-      <div ng-repeat="comment in footprint.comments | orderBy:'comment.time' | limitTo:3" class="item item-avatar item-text-wrap" ui-sref="tab.comments" ng-click="openFootprint(footprint)">  
-        <div class="profpicframe">
-          <img ng-src='{{comment.commenter.fbProfilePicture}}' class="profpic">
-        </div>
-        <h2>{{comment.commenter.name}}</h2>
-        <p>{{comment.comment.text}}</p>
-        <p>{{comment.comment.time | date : shortDate}}<P>
+      <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap" ui-sref="tab.comments" ng-click="openFootprint(footprint)">  
+          <img class="propic commenterpic" ng-src="{{comment.commenter.fbProfilePicture}}">
+          <span class="commentername">{{comment.commenter.name}}</span>
+          <span> {{comment.comment.text}} </span>
+          <span class="subdued float-right">{{comment.comment.time | date : shortDate}}</span>
+      </div>
+
+    <!--     <div class="profpicframe">
+          <div class="profpic">
+            <img ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
+          </div>
+        </div> -->
+       <div class="item item-input-inset">
+              <img class="propic newcomment" ng-src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfp1/v/t1.0-1/s200x200/1476344_10153625108483662_8209874012985593264_n.jpg?oh=91007a07d6d534815f719b6aecb09d9a&oe=5584541F&__gda__=1431308809_91c6fa931fe0f59ed47d42b7b4a4fb77">
+      <label class="item-input-wrapper commentfield">
+        <input type="text" placeholder="Write a comment" ng-model="comment.text">
+      </label>
       </div>
 
       <!-- Hype and Comment Buttons -->
-      <div class="item item-divider tabs tabs-secondary tabs-icon-left">
+<!--       <div class="item item-divider tabs tabs-secondary tabs-icon-left">
         <a ng-if="!footprint.bucketed" class="tab-item" ng-click="addCheckinToBucketList({{ footprint }}, {{ $index }})">
           <i class="icon ion-arrow-up-a"></i>
           <span>Hype</span>
@@ -84,8 +96,10 @@
           <i class="icon ion-chatbox"></i>
           <span>Comment</span>
         </a>
-      </div>
+      </div> -->
 
+
+    </div>
     </div>
 
           <!-- Hype Button -->
@@ -135,7 +149,7 @@
     <!-- <img ng-if="footprint.checkin.bucketed" class='addbucketactive feedactions' title="Add to Bucket List" ng-click="removeCheckinFromBucketList(footprint)"/> -->
 
   <!-- </div> -->
-</div>
+<!-- </div> -->
   <ion-infinite-scroll
     on-infinite="getAggregatedFeedData()"
     ng-if="moreDataCanBeLoaded"
@@ -144,3 +158,45 @@
 
   </ion-content>
 </ion-view>
+
+<script id="folder-list.html" type="text/ng-template">
+    <h2 ng-click="showFolderCreationPopup()">+Create a new folder</h2>
+    <div class="folderList" ng-repeat="folder in folders">
+      <h4 ng-class="{'selected': selectedFolder === $index}" ng-click="passSelectedFolderInfo(folder, $index)">{{folder.folder.name}}</h4>
+    </div>
+</script>
+
+<script id="add-folder.html" type="text/ng-template">
+    <form class="navbar-form navbar-left" role="search">
+      <textarea ng-model="newFolderInfo.name" type="text" class="form-control" placeholder="Name your folder">
+      </textarea>
+      <textarea ng-model="newFolderInfo.description" type="text" class="form-control" placeholder="Write a description">
+      </textarea>
+    </form>
+</script>
+
+<script id="folder-create-success.html" type="text/ng-template">
+    <img class="success-confirm" src="http://cliparts.co/cliparts/BTg/ELe/BTgELekoc.jpg">
+</script>
+
+<script id="folder-contents.html" type="text/ng-template">
+  <ion-modal-view>
+    <ion-header-bar align-title="center" class="bg-header">
+      <h1 class="title">{{selectedFolderInfo.name}}</h1>
+        <div class="buttons">
+          <button class="button button-icon icon ion-close-round light" ng-click="closeModal()"></button>
+        </div>
+    </ion-header-bar>
+    <ion-content class="padding bg-scroll">
+      <div ng-repeat="item in folderContents" class="list list-inset">
+        <img class="propic commenterpic" ng-src="{{item.user.fbProfilePicture}}">
+        <h4>{{item.checkin.rating}}</h4>
+        <h2>{{item.place.name}}</h2>
+        <h4>{{item.place.city}},{{item.place.country}}</h4>
+        <h4 ng-if="checkUserID(item.user.facebookID)">Last here on {{item.checkin.checkinTime | date : shortDate}}</h4>
+        <h4 ng-if="!checkUserID(item.user.facebookID)">Added from {{item.user.name}}</h4>
+        <img ng-if="item.checkin.photoLarge !== 'null'" ng-src="{{item.checkin.photoLarge}}">
+      </div>
+    </ion-content>
+  </ion-modal-view>
+</script>
