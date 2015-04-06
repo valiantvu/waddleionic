@@ -1,0 +1,36 @@
+<!-- Header Bar -->
+<ion-header-bar align-title="center" class="bg-header">
+  <h1 class="title">Folders</h1>
+  <div class="buttons">
+    <button class="button button-icon icon ion-ios7-search-strong light" ng-click="doSomething()"></button>
+  </div>
+</ion-header-bar>
+
+<ion-view title="Folders">
+
+  <ion-content class="padding bg-scroll">
+<!-- <div class="backgroundgrey"> -->
+    <!-- Search bar -->
+<!--     <div class="list">
+      <div class="item item-input-inset">
+      <label class="item-input-wrapper">
+        <i class="icon ion-ios7-search-strong placeholder-icon"></i>
+        <input type="text" placeholder="Search your Feed" ng-model="search.query">
+      </label>
+        <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button>
+        <button class="button button-clear" ng-if="search.query" ng-click="clearSearch()">x</button>
+      </div>
+    </div> -->
+
+    <div ng-repeat="folder in folders">
+      Hello
+    </div>
+
+<!--   <ion-infinite-scroll
+    on-infinite="getAggregatedFeedData()"
+    ng-if="moreDataCanBeLoaded"
+    distance="10%">
+  </ion-infinite-scroll> -->
+
+  </ion-content>
+</ion-view>

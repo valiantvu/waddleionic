@@ -2,6 +2,7 @@
 angular.module('waddle.controllers', [
     'waddle.home',
     'waddle.footprints',
+    'waddle.folders',
     'waddle.checkin',
     'waddle.hypelist',
     'waddle.profile',
