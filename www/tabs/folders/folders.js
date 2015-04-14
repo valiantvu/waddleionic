@@ -1,18 +1,19 @@
 (function(){
 
-var FoldersController = function (Auth, UserRequests, FootprintRequests, $scope, $state) {
+var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicModal, $scope, $state) {
   Auth.checkLogin()
   .then(function () {
-    $scope.footprints = [];
+    $scope.folders = [];
     $scope.search = {};
     $scope.moreDataCanBeLoaded = true;
+    $scope.selectedFolderInfo = {};
+    $scope.selectedFolder = null;
+    $scope.newFolderInfo = {};
     var page = 0;
     var skipAmount = 5;
 
     FootprintRequests.currentTab = 'folders';
     
-    $scope.folders = [1, 2];
-
     $scope.openFootprint = function(footprint) {
       FootprintRequests.openFootprint = footprint;
     };
@@ -22,10 +23,11 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $scope,
         .then(function (data) {
             if (data.data.length > 0) {
               console.dir(data.data);
+              $scope.folders = data.data;
               // $scope.footprints = $scope.footprints.concat(data.data.footprints);
               // FootprintRequests.footprints = $scope.footprints;
-              // page++;
-              // console.log('page: ', page);
+              page++;
+              console.log('page: ', page);
             } else {
               console.log('No more data for folders.');
               // $scope.moreDataCanBeLoaded = false;
@@ -35,6 +37,33 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $scope,
     };
 
     $scope.getUserData();
+
+    $ionicModal.fromTemplateUrl('folder-contents.html', {
+      scope: $scope,
+      animation: 'slide-in-up'
+    }).then(function(modal) {
+      $scope.modal = modal;
+    });
+    
+    $scope.fetchFolderContents = function (folderName) {
+      UserRequests.fetchFolderContents(window.sessionStorage.userFbID, folderName, 0, 15)
+      .then(function (folderContents) {
+        $scope.folderContents = folderContents.data;
+        console.log(folderContents);
+      })
+    };
+
+    $scope.openModal = function(folderName) {
+      $scope.fetchFolderContents(folderName);
+      $scope.selectedFolderInfo.name = folderName;
+      $scope.modal.show();
+    };
+
+    $scope.closeModal = function() {
+      $scope.modal.hide();
+      //TO-DO: figure out how to propertly implement remove() in order to avoid memory leaks
+      // $scope.modal.remove();
+    };
 
     $scope.clearSearch = function () {
       $scope.search = {};
@@ -47,7 +76,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $scope,
   });
 };
 
-FoldersController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$scope', '$state'];
+FoldersController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$ionicModal', '$scope', '$state'];
 
 angular.module('waddle.folders', [])
   .controller('FoldersController', FoldersController);
