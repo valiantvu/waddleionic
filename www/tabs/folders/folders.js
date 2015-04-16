@@ -20,6 +20,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
 
     $scope.openFolder = function(folder) {
       console.log('changing states');
+      FootprintRequests.openFolder = folder;
       $state.transitionTo('tab.folder-footprints');
     };
 

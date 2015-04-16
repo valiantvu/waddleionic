@@ -3,6 +3,7 @@
 var FootprintRequests = function ($http){
   var footprintData;
   var openFootprint;
+  var openFolder;
   var footprints;
   var currentTab;
 
@@ -11,6 +12,8 @@ var FootprintRequests = function ($http){
     // currentFootprint: footprintData,
     // Contains all open footprint data
     openFootprint: openFootprint,
+
+    openFolder: openFolder,
 
     footprints: footprints,
 

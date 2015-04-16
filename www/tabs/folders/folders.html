@@ -8,7 +8,7 @@
 
 <ion-view title="Folders">
 
-  <ion-content class="padding bg-scroll" style="margin-top: 50">
+  <ion-content class="padding bg-scroll">
     <div style="height:50px"></div>
     <svg ng-repeat="folder in folders" style="margin-top: -50" viewBox="0 0 1080 430" ng-click="openFolder(folder.folder.name)">
       <defs>
@@ -28,7 +28,7 @@
       </defs>
       <g>
         <path id="tab-shape" fill="url(#image{{ $index + 1}})" d="M1080,496c0,18.226-14.774,33-33,33H33c-18.226,0-33-14.774-33-33V33C0,14.774,14.774,0,33,0  h477h7l46,63h7h477c18.226,0,33,14.774,33,33V496z"/>
-        <text x="145" y="200" text-anchor="left" alignment-baseline="middle" font-family="Verdana" font-size="55" fill="white">{{ folder.folder.name }}</text>
+        <text x="50%" y="200" text-anchor="middle" alignment-baseline="middle" font-family="Verdana" font-size="50" fill="white">{{ folder.folder.name }}</text>
       </g>
     </svg>
 

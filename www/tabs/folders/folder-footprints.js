@@ -14,7 +14,9 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
 
     // FootprintRequests.currentTab = 'folder-footprints';
     
-    console.log("Inside FolderFootprintsController");
+    $scope.openFolder = FootprintRequests.openFolder;
+
+    console.log($scope.openFolder);
 
     $scope.openFootprint = function(footprint) {
       FootprintRequests.openFootprint = footprint;
