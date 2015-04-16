@@ -341,9 +341,9 @@ border-radius: 0px;
     display: block;
 }*/
 
-/*.folder-svg {
-	width: 100%;
-}*/
+.folder-svg {
+	margin-top: -50;
+}
 /*
 .main-navigation {
   overflow: hidden;

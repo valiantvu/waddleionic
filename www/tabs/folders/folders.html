@@ -8,16 +8,26 @@
 
 <ion-view title="Folders">
 
-  <ion-content class="padding bg-scroll">
-    <svg ng-repeat="folder in folders" class="folder-svg" viewBox="0 0 1080 529" >
+  <ion-content class="padding bg-scroll" style="margin-top: 50">
+    <div style="height:50px"></div>
+    <svg ng-repeat="folder in folders" class="folder-svg" style="margin-top: -50" viewBox="0 0 1080 430" >
       <defs>
-          <pattern id="image" patternContentUnits="objectBoundingBox" height="100%" width="100%">
+          <pattern id="image1" patternContentUnits="objectBoundingBox" height="100%" width="100%">
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png"/>
+          </pattern>
+      </defs>
+      <defs>
+          <pattern id="image2" patternContentUnits="objectBoundingBox" height="100%" width="100%">
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png"/>
+          </pattern>
+      </defs>
+      <defs>
+          <pattern id="image3" patternContentUnits="objectBoundingBox" height="100%" width="100%">
               <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png"/>
           </pattern>
       </defs>
       <g>
-        <path id="tab-shape" fill="url(#image)" d="M1080,496c0-24.75-14.774-38-33-38H564.001l-3.032-1.676L558.334,453L521,400l-2.833-2l-2.667-1H33
-          c-18.226,0-33,15.666-33,31V33C0,14.774,14.774,0,33,0h477h7l46,63h7h477c18.226,0,33,14.774,33,33V496z"/>
+        <path id="tab-shape" fill="url(#image{{ $index + 1}})" d="M1080,496c0,18.226-14.774,33-33,33H33c-18.226,0-33-14.774-33-33V33C0,14.774,14.774,0,33,0  h477h7l46,63h7h477c18.226,0,33,14.774,33,33V496z"/>
         <text x="145" y="200" text-anchor="left" alignment-baseline="middle" font-family="Verdana" font-size="55" fill="white">{{ folder.folder.name }}</text>
       </g>
     </svg>
