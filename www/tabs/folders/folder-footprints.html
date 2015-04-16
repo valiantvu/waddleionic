@@ -20,7 +20,7 @@
         <text x="50%" y="150" text-anchor="middle" alignment-baseline="middle" font-family="Verdana" font-size="45" fill="white">{{ openFolder }}</text>
       </g>
     </svg>
-    <div class="list">
+    <div class="list" style="margin-top:-10px">
       <a ng-repeat="item in folderContents" class="item item-thumbnail-right">
         <img ng-if="item.checkin.photoLarge !== 'null'" ng-src="{{item.checkin.photoLarge}}">
         <img class="folder-propic" style="height:20px" ng-src="{{item.user.fbProfilePicture}}">
