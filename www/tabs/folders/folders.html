@@ -10,7 +10,7 @@
 
   <ion-content class="padding bg-scroll" style="margin-top: 50">
     <div style="height:50px"></div>
-    <svg ng-repeat="folder in folders" class="folder-svg" style="margin-top: -50" viewBox="0 0 1080 430" >
+    <svg ng-repeat="folder in folders" style="margin-top: -50" viewBox="0 0 1080 430" ng-click="openFolder(folder.folder.name)">
       <defs>
           <pattern id="image1" patternContentUnits="objectBoundingBox" height="100%" width="100%">
               <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png"/>
@@ -40,7 +40,7 @@
 
   </ion-content>
 </ion-view>
-
+<!-- 
 <script id="folder-contents.html" type="text/ng-template">
   <ion-modal-view>
     <ion-header-bar align-title="center" class="bg-header">
@@ -61,4 +61,4 @@
       </div>
     </ion-content>
   </ion-modal-view>
-</script>
+</script> -->

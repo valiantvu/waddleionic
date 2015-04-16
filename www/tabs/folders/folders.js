@@ -18,6 +18,11 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
       FootprintRequests.openFootprint = footprint;
     };
 
+    $scope.openFolder = function(folder) {
+      console.log('changing states');
+      $state.transitionTo('tab.folder-footprints');
+    };
+
     $scope.getUserData = function () {
         UserRequests.fetchFolders(window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {
