@@ -16,7 +16,6 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
     
     $scope.openFolder = FootprintRequests.openFolder;
 
-    console.log($scope.openFolder);
 
     $scope.openFootprint = function(footprint) {
       FootprintRequests.openFootprint = footprint;
@@ -27,11 +26,10 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
       .then(function (folderContents) {
         $scope.folderContents = folderContents.data;
         console.log(folderContents);
-      })
+      });
     };
 
-    // $scope.fetchFolderContents(folderName);
-    // $scope.selectedFolderInfo.name = folderName;
+    $scope.fetchFolderContents($scope.openFolder);
 
   });
 };
