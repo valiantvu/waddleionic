@@ -75,6 +75,7 @@ User.createUniqueUser = function (data) {
   db.query(query, params, function (err, results) {
     if (err) { deferred.reject(err); }
     else {
+      // console.log(results[0])
       deferred.resolve(new User(results[0]['user']));
     }
   });
@@ -128,6 +129,8 @@ User.prototype.addFriends = function(friendsList){
   request.post(options, function(err, response, body) {
     if (err) { deferred.reject(err) }
     else {
+      // console.log(body[0].body.data[0][0]);
+      // console.log(response);
       deferred.resolve(body);
     }
   });
