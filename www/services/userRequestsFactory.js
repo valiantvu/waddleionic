@@ -58,6 +58,11 @@ var UserRequests = function ($http){
     },
 
     getAggregatedFeedData:function (userFbID) {
+       var isWebView = ionic.Platform.isWebView();
+       console.log(isWebView);
+      if(isWebView) {
+        console.log('hi web view');
+      }
       var url = '/api/users/aggregatefeed/' + userFbID;
       
       if (arguments[1] !== undefined) {
