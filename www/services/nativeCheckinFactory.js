@@ -3,6 +3,7 @@
 var NativeCheckin = function ($http, $q, $cordovaGeolocation){
 
   return {
+    selectedVenue: null,
 
 	  searchFoursquareVenues: function (facebookID, currentLocation) {
       if (currentLocation) {
@@ -25,9 +26,9 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation){
 
     s3_upload: function() {
         var deferred = $q.defer();
-        var status_elem = document.getElementById("status");
+        // var status_elem = document.getElementById("status");
         var preview_elem = document.getElementById("preview");
-        console.log('status: ' + status_elem + 'preview: ' + preview_elem);
+        // console.log('status: ' + status_elem + 'preview: ' + preview_elem);
 
         var s3upload = new S3Upload({
           file_dom_selector: 'files',
@@ -39,7 +40,7 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation){
           onFinishS3Put: function(public_url) {
               console.log(public_url)
               // status_elem.innerHTML = 'Upload completed. Uploaded to: ' + public_url;
-              // preview_elem.innerHTML = '<img src="' + public_url + '" style="height:45px;border: #455059 4px solid;"/>';
+              // preview_elem.innerHTML = '<img src="' + public_url + '"/>';
               deferred.resolve(public_url);
           },
           onError: function(status) {
@@ -58,6 +59,14 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation){
       }, function (err) {
         return err;
       });
+    },
+
+    editCheckin: function(editedCheckinData) {
+      return $http({
+        method: 'POST',
+        data: editedCheckinData,
+        url: '/api/checkins/nativecheckin/edit'
+      })
     }
 
   }; 

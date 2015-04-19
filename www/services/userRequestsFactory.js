@@ -6,7 +6,9 @@ var UserRequests = function ($http){
 
   return {
     allData: userData,
+    newFootprint: null,
     userProfileData: null,
+    userFolderData: null,
 
     // Sends request to server with relevant user data 
     // for creation of new user or retrieval of existing user' checkins/data
@@ -188,16 +190,25 @@ var UserRequests = function ($http){
     },
     
     searchUserFootprints: function (userFbID, query) {
-      if (userFbID && query) {
-        return $http({
-          method: 'GET',
-          url: '/api/users/searchfootprints/' + userFbID + '/' + query
-        });
+      var url = '/api/users/searchfootprints/' + userFbID + '/' + query;
+      if (arguments[2] !== undefined) {
+          var page = arguments[2]
+          url +=  "/" + page;
+          console.log(url);
       }
+
+      if (arguments[3] !== undefined) {
+          var skip = arguments[3]
+          url +=  "/" + skip;
+      }
+      return $http({
+        method: 'GET',
+        url: url
+      });
     },
 
     searchFeed: function (userFbID, query) {
-      var url = '/api/users/searchfeed/' + userFbID + '/' + query
+      var url = '/api/users/searchfeed/' + userFbID + '/' + query;
       if (arguments[2] !== undefined) {
           var page = arguments[2]
           url +=  "/" + page;
@@ -217,12 +228,11 @@ var UserRequests = function ($http){
     },
 
     getFriendsList: function (userFbID) {
-      var url = '/api/users/friendslist/' + userFbID      
+      var url = '/api/users/friendslist/' + userFbID;     
 
       if (arguments[1] !== undefined) {
           var page = arguments[1];
           url +=  "/" + page;
-          console.log(url);
       }
 
       if (arguments[2] !== undefined) {
@@ -237,6 +247,57 @@ var UserRequests = function ($http){
           url: url
         });
       }
+    },
+
+    searchFriendsList: function (userFbID, query) {
+      var url = '/api/users/friendslist/search/' + userFbID + '/' + query;    
+
+      if (arguments[2] !== undefined) {
+          var page = arguments[2];
+          url +=  "/" + page;
+      }
+
+      if (arguments[3] !== undefined) {
+          var skip = arguments[3];
+          url +=  "/" + skip;
+      }
+      console.log(url);
+
+      if (userFbID) {
+        return $http({
+          method: 'GET',
+          url: url
+        });
+      }
+    },
+
+    fetchUnreadNotifications: function (userFbID) {
+      var url = '/api/users/notifications/unread/' + userFbID;
+
+      return $http ({
+        method: 'GET',
+        url: url
+      });
+    },
+
+    updateNotificationReadStatus: function (userFbID) {
+      var url = '/api/users/notifications/update';
+
+      return $http({
+        method: 'POST',
+        url: url,
+        data: {facebookID: userFbID}
+      });
+    },
+
+    fetchReadNotifications: function (userFbID, limit) {
+      var url = '/api/users/notifications/read/' + userFbID + '/' + limit;
+      
+      console.log(url);
+      return $http({
+        method: 'GET',
+        url: url
+      });
     }
   };
 

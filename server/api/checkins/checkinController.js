@@ -14,7 +14,7 @@ var categoryList = require('../../utils/categoryList.js');
 var checkinController = {};
 
 checkinController.handleNativeCheckin = function (req, res) {
-  var user, categories;
+  var user, categories, newFootprint;
   var nativeCheckin = req.body;
   var facebookID = req.body.facebookID;
 
@@ -27,19 +27,61 @@ checkinController.handleNativeCheckin = function (req, res) {
     console.log('parsedCheckin: ' + JSON.stringify(parsedCheckin));
     return user.addCheckins([parsedCheckin]);
   })
+  .then(function (footprint) {
+    console.log(footprint);
+    newFootprint = footprint
+    if(nativeCheckin.folderName) {
+      addNativeCheckinToFolder();
+    }
+    else {
+      res.json(newFootprint);
+      res.status(201).end();
+    }
+  })
   // .then(function (categoryData) {
   //   categories = categoryData[0].body.data[0];
   //   console.log('these are the categories: ', categories);
   //   user.assignExpertiseToCategory(categories);
   // })
-  .then(function (expertiseData) {
-    console.log(expertiseData);
+  .catch(function (err) {
+    console.log(err);
+    res.status(500).end();
+  });
+
+
+  var addNativeCheckinToFolder = function() {
+    Checkin.addToFolder(newFootprint.user.facebookID, newFootprint.checkin.checkinID, nativeCheckin.folderName)
+    .then(function (data) {
+      newFootprint.folders = {name: nativeCheckin.folderName};
+      res.json(newFootprint);
+      res.status(201).end();
+    })
+    .catch(function(err) {
+      console.log(err);
+      res.status(500).end();
+    });
+  };
+
+};
+
+checkinController.getVenueInfo = function (req, res) {
+  var user;
+  var venueID = req.params.venueID;
+  var facebookID = req.params.facebookID;
+
+  User.find({facebookID: facebookID})
+  .then(function (userNode) {
+    user = userNode;
+    return foursquareUtils.getVenueInfo(venueID, user)
+  })
+  .then(function (venueInfo) {
+    res.json(venueInfo);
+    res.status(200).end()
   })
   .catch(function (err) {
     console.log(err);
-  });
-
-  res.status(200).end();
+    res.status(500).end();
+  })
 };
 
 checkinController.editNativeCheckin = function (req, res) {
@@ -80,7 +122,7 @@ checkinController.searchFoursquareVenuesWeb = function (req, res) {
 }
 
 checkinController.searchFoursquareVenuesMobile = function (req, res) {
-  var user, foursquareToken;
+  var user, foursquareToken, miles;
   var facebookID = req.params.facebookID;
   var latlng = req.params.lat + ',' + req.params.lng;
 
@@ -92,6 +134,11 @@ checkinController.searchFoursquareVenuesMobile = function (req, res) {
   .then(function (venues) {
     console.log(JSON.stringify(venues[0]));
     _.each(venues, function(venue) {
+      if(venue.location.distance) {
+        //convert meters to miles, rounded to the nearest .1 mi;
+        miles = Math.round((venue.location.distance * 0.00062137119) * 10) / 10;
+        venue.location.distance = miles;
+      }
       if(venue.categories[0] && venue.categories[0].name && categoryList.dictionary[venue.categories[0].name]) {
         venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
         venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
@@ -395,6 +442,7 @@ checkinController.deleteFootprint = function (req, res) {
 };
 
 checkinController.sign_s3 = function (req, res) {
+  console.log('inside sign_s3!!');
   aws.config.update({accessKeyId: process.env.AWS_ACCESS_KEY, secretAccessKey: process.env.AWS_SECRET_KEY});
     var s3 = new aws.S3();
     var aws_uuid = uuid.v4();

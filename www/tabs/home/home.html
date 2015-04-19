@@ -1,9 +1,9 @@
 <!-- Header Bar -->
 <ion-header-bar align-title="center" class="bg-header">
-  <h1 class="title">feed</h1>
   <div class="buttons">
     <button class="button button-icon icon ion-ios7-search-strong light" ng-click="doSomething()"></button>
   </div>
+  <h1 class="title">feed</h1>
 </ion-header-bar>
 
 <ion-view title="Home">
@@ -11,22 +11,22 @@
   <ion-content class="padding bg-scroll">
 <!-- <div class="backgroundgrey"> -->
     <!-- Search bar -->
-<!--     <div class="list">
+    <div class="list">
       <div class="item item-input-inset">
       <label class="item-input-wrapper">
         <i class="icon ion-ios7-search-strong placeholder-icon"></i>
-        <input type="text" placeholder="Search your Feed" ng-model="search.query">
+        <input type="text" placeholder="Search your Feed" ng-keyup="searchFeed()" ng-model="search.query">
       </label>
-        <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button>
+        <!-- <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button> -->
         <button class="button button-clear" ng-if="search.query" ng-click="clearSearch()">x</button>
       </div>
-    </div> -->
+    </div>
 
     <div ng-repeat="footprint in footprints" >
       <button ng-if="!footprint.folders" class="button icon-left ion-star button-small button-light savefave" ng-click="showPopup(footprint.checkin.checkinID, $index)">Save to Folder</button>
       <button ng-if="footprint.folders" class="button button-small button-light savefave" ng-click="openModal(footprint.folders[0].name)">{{footprint.folders[0].name}}</button>
       <img src="https://s3-us-west-2.amazonaws.com/waddle/TabCurve-1.png" class="folder-tab-curve">
-      <button class="options button button-icon icon ion-chevron-down light"></button>
+      <button ng-click="openOptions(footprint, $index)" class="options button button-icon icon ion-chevron-down light"></button>
       <div class="list list-inset">
 
       <div class="item item-avatar">
@@ -38,32 +38,32 @@
           </div>
         </div>
         <!-- Badge -->
-        <img src="https://s3-us-west-2.amazonaws.com/waddle/Badges/Burger1.png" class="waddlebadge">
+        <img ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge">
         <!-- User Name -->
-        <a href="#" class="subdued"><b>{{footprint.user.name}}</b> rates this {{footprint.checkin.rating}}</a>
+        <a ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="subdued"><b>{{footprint.user.name}}</b> rates this <b class="rating">{{footprint.checkin.rating}}</b></a>
         <br>
         <!-- Place Name and Location-->
         <a ng-click="getFootprint(footprint)">
-          <h2>{{footprint.place.name}}</h2>
-          <p> 
+          <h2 ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)">{{footprint.place.name}}</h2>
+          <p ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)"> 
             <a ng-if="footprint.place.city !== 'null'">{{footprint.place.city}}</a><a ng-if="footprint.place.city !== 'null' && footprint.place.province !== 'null'">,</a>
             <a ng-if="footprint.place.province !== 'null'">{{footprint.place.province}}</a>
-            <span class="float-right">{{footprint.checkin.checkinTime | date : shortDate}}</span>
+            <span am-time-ago="footprint.checkin.checkinTime" class="float-right"></span><i class="ion-clock float-right"></i>
           </p>
       </div>
 
       <div class="item item-body">
         <div class="checkinphoto">
-          <img ng-if="footprint.checkin.photoLarge !== 'null'" ng-click="getFootprint(footprint)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
+          <img ng-if="footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
         </div>
-        <p class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
-        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint)" class="subdued x-centered"><i class="ion-chatbubble coral"></i>{{ footprint.comments.length }}</a>
-          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint)" class="subdued x-centered"><i class="ion-android-folder coral"></i>{{ footprint.hypes.length }}</a>
+        <p ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
+        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)" class="subdued x-centered"><i class="ion-chatbubble coral"></i>{{ footprint.comments.length }}</a>
+          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint, $index)" class="subdued x-centered"><i class="ion-android-folder coral"></i>{{ footprint.hypes.length }}</a>
           </p>
       </div>
 
       <!-- Comments -->
-      <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap" ui-sref="tab.comments" ng-click="openFootprint(footprint)">  
+      <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)">  
           <img class="propic commenterpic" ng-src="{{comment.commenter.fbProfilePicture}}">
           <span class="commentername">{{comment.commenter.name}}</span>
           <span> {{comment.comment.text}} </span>
@@ -75,10 +75,11 @@
             <img ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
           </div>
         </div> -->
-       <div class="item item-input-inset">
+       <div ui-sref='tab.comments' ng-click='openFootprint(footprint, $index)' class="item item-input-inset">
               <img class="propic newcomment" ng-src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfp1/v/t1.0-1/s200x200/1476344_10153625108483662_8209874012985593264_n.jpg?oh=91007a07d6d534815f719b6aecb09d9a&oe=5584541F&__gda__=1431308809_91c6fa931fe0f59ed47d42b7b4a4fb77">
-      <label class="item-input-wrapper commentfield">
-        <input type="text" placeholder="Write a comment" ng-model="comment.text">
+      <label name="customSubmit" data-custom-submit info='someinfo' class="item-input-wrapper commentfield" novalidate>
+        <input type="text" ng-model='comment' name='comment' placeholder='Leave a comment' data-ng-minlength="1" data-ng-maxlength="120" required>
+        <span class="help-inline" ng-show="customSubmit.comment.$error.maxlength">120 Character Max</span>
       </label>
       </div>
 
@@ -92,7 +93,7 @@
           <i class="icon ion-arrow-up-a positive"></i>
           <span>Hyped!</span>
         </a>
-        <a class="tab-item" ui-sref="tab.comments" ng-click="openFootprint(footprint)">
+        <a class="tab-item" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)">
           <i class="icon ion-chatbox"></i>
           <span>Comment</span>
         </a>
@@ -177,6 +178,18 @@
 
 <script id="folder-create-success.html" type="text/ng-template">
     <img class="success-confirm" src="http://cliparts.co/cliparts/BTg/ELe/BTgELekoc.jpg">
+</script>
+
+<script id="options-menu.html" type="text/ng-template">
+    <button class="button button-icon icon ion-close-round light" ng-click="optionsPopup.close()"></button>
+    <button class="button button-full">Suggest to Friend</button>
+    <button class="button button-full">Share</button>
+    <button ng-if="checkUserID(selectedFootprintUserID)" class="button button-full">Edit</button>
+    <button ng-if="checkUserID(selectedFootprintUserID)" ng-click="openDeleteFootprintPopup()" class="button button-full">Delete</button>
+</script>
+
+<script id="delete-footprint.html" type="text/ng-template">
+   <h4>Are you sure you want to delete this footprint?</h4>
 </script>
 
 <script id="folder-contents.html" type="text/ng-template">

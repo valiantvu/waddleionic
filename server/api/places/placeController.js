@@ -212,12 +212,16 @@ placeController.assignIconToCategory = function (req, res) {
 placeController.findFriendsAlreadyBeen = function (req, res) {
 	var facebookID = req.params.user;
 	var foursquareID = req.params.place;
-	res.status(200).end();
 
 	Place.findFriendsAlreadyBeen(facebookID, foursquareID)
 	.then(function (data) {
 		console.log(data);
-		res.json({success: 'hi'});
+		res.json(data);
+		res.status(200).end();
+	})
+	.catch(function (err) {
+		console.log(err);
+		res.status(500).end();
 	})
 };
 

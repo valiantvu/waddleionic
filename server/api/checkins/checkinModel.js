@@ -97,6 +97,8 @@ Checkin.addToFolder = function (facebookID, checkinID, folderName) {
     'ON CREATE SET bucket.createdAt = timestamp()',
     'MERGE (folder)-[contains:containsCheckin]->(checkin)',
     'ON CREATE SET contains.createdAt = timestamp()',
+    'MERGE (checkin)-[notification:hasUnreadNotification]->(folder)',
+    'ON CREATE SET notification.createdAt = timestamp()',
     'RETURN user, folder, checkin'
   ].join('\n');
 
@@ -181,7 +183,7 @@ Checkin.addComment = function (clickerID, checkinID, text){
   'MATCH (commentReceiver:User)-[:hasCheckin]->(checkin:Checkin {checkinID: {checkinID}})',
   'MERGE (clicker)-[:madeComment]->(newComment:Comment {text: {text}, commentID : {commentID}, time: timestamp() })' + 
   '-[:gotComment]->(checkin)',
-  'MERGE (commentReceiver)-[:hasUnreadNotification]->(newComment)',
+  'MERGE (checkin)-[:hasUnreadNotification]->(newComment)',
   'RETURN newComment'
   ].join('\n');
   var params = {
