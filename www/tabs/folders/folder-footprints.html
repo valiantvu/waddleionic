@@ -1,0 +1,41 @@
+<!-- Header Bar -->
+<ion-header-bar align-title="center" class="bg-header">
+  <h1 class="title">folders</h1>
+  <div class="buttons">
+    <button class="button button-icon icon ion-ios7-search-strong light" ng-click="doSomething()"></button>
+  </div>
+</ion-header-bar>
+
+<ion-view title="Folder-Footprints">
+
+  <ion-content class="padding bg-scroll">
+    <svg viewBox="0 0 1080 200">
+      <defs>
+          <pattern id="image1" patternContentUnits="objectBoundingBox" height="100%" width="100%">
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png"/>
+          </pattern>
+      </defs>
+      <g>
+        <path id="tab-shape" fill="url(#image1)" d="M1080,496c0,18.226-14.774,33-33,33H33c-18.226,0-33-14.774-33-33V33C0,14.774,14.774,0,33,0  h477h7l46,63h7h477c18.226,0,33,14.774,33,33V496z"/>
+        <text x="50%" y="150" text-anchor="middle" alignment-baseline="middle" font-family="Verdana" font-size="45" fill="white">{{ openFolder }}</text>
+      </g>
+    </svg>
+    <div class="list" style="margin-top:-10px">
+      <a ng-repeat="item in folderContents" class="item item-thumbnail-right">
+        <img ng-if="item.checkin.photoLarge !== 'null'" ng-src="{{item.checkin.photoLarge}}">
+        <img class="folder-propic" style="height:20px" ng-src="{{item.user.fbProfilePicture}}">
+        <h4>{{item.checkin.rating}}</h4>
+        <h2>{{item.place.name}}</h2>
+        <h4>{{item.place.city}},{{item.place.country}}</h4>
+        <h4 ng-if="checkUserID(item.user.facebookID)">Last here on {{item.checkin.checkinTime | date : shortDate}}</h4>
+        <h4 ng-if="!checkUserID(item.user.facebookID)">Added from {{item.user.name}}</h4>
+      </a>
+    </div>
+<!--   <ion-infinite-scroll
+    on-infinite="getAggregatedFeedData()"
+    ng-if="moreDataCanBeLoaded"
+    distance="10%">
+  </ion-infinite-scroll> -->
+
+  </ion-content>
+</ion-view>

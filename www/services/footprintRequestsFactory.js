@@ -5,6 +5,7 @@ var FootprintRequests = function ($http){
   var openFootprint;
   var selectedFootprintIndex;
   var deletedFootprint;
+  var openFolder;
   var footprints;
   var currentTab;
 
@@ -17,6 +18,8 @@ var FootprintRequests = function ($http){
     selectedFootprintIndex: selectedFootprintIndex,
 
     deletedFootprint: true,
+
+    openFolder: openFolder,
 
     footprints: footprints,
 

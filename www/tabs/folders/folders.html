@@ -1,0 +1,64 @@
+<!-- Header Bar -->
+<ion-header-bar align-title="center" class="bg-header">
+  <h1 class="title">Folders</h1>
+  <div class="buttons">
+    <button class="button button-icon icon ion-ios7-search-strong light" ng-click="doSomething()"></button>
+  </div>
+</ion-header-bar>
+
+<ion-view title="Folders">
+
+  <ion-content class="padding bg-scroll">
+    <div style="height:50px"></div>
+    <svg ng-repeat="folder in folders" style="margin-top: -50" viewBox="0 0 1080 430" ng-click="openFolder(folder.folder.name)">
+      <defs>
+          <pattern id="image1" patternContentUnits="objectBoundingBox" height="100%" width="100%">
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png"/>
+          </pattern>
+      </defs>
+      <defs>
+          <pattern id="image2" patternContentUnits="objectBoundingBox" height="100%" width="100%">
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png"/>
+          </pattern>
+      </defs>
+      <defs>
+          <pattern id="image3" patternContentUnits="objectBoundingBox" height="100%" width="100%">
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png"/>
+          </pattern>
+      </defs>
+      <g>
+        <path id="tab-shape" fill="url(#image{{ $index + 1}})" d="M1080,496c0,18.226-14.774,33-33,33H33c-18.226,0-33-14.774-33-33V33C0,14.774,14.774,0,33,0  h477h7l46,63h7h477c18.226,0,33,14.774,33,33V496z"/>
+        <text x="50%" y="200" text-anchor="middle" alignment-baseline="middle" font-family="Verdana" font-size="50" fill="white">{{ folder.folder.name }}</text>
+      </g>
+    </svg>
+
+<!--   <ion-infinite-scroll
+    on-infinite="getAggregatedFeedData()"
+    ng-if="moreDataCanBeLoaded"
+    distance="10%">
+  </ion-infinite-scroll> -->
+
+  </ion-content>
+</ion-view>
+<!-- 
+<script id="folder-contents.html" type="text/ng-template">
+  <ion-modal-view>
+    <ion-header-bar align-title="center" class="bg-header">
+      <h1 class="title">{{selectedFolderInfo.name}}</h1>
+        <div class="buttons">
+          <button class="button button-icon icon ion-close-round light" ng-click="closeModal()"></button>
+        </div>
+    </ion-header-bar>
+    <ion-content class="padding bg-scroll">
+      <div ng-repeat="item in folderContents" class="list list-inset">
+        <img class="propic commenterpic" ng-src="{{item.user.fbProfilePicture}}">
+        <h4>{{item.checkin.rating}}</h4>
+        <h2>{{item.place.name}}</h2>
+        <h4>{{item.place.city}},{{item.place.country}}</h4>
+        <h4 ng-if="checkUserID(item.user.facebookID)">Last here on {{item.checkin.checkinTime | date : shortDate}}</h4>
+        <h4 ng-if="!checkUserID(item.user.facebookID)">Added from {{item.user.name}}</h4>
+        <img ng-if="item.checkin.photoLarge !== 'null'" ng-src="{{item.checkin.photoLarge}}">
+      </div>
+    </ion-content>
+  </ion-modal-view>
+</script> -->
