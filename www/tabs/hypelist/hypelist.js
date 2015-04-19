@@ -64,7 +64,8 @@ var HypelistController = function (Auth, UserRequests, MapFactory, FootprintRequ
       //   }
       //   $scope.$broadcast('scroll.infiniteScrollComplete');
       })
-  }
+    }
+    
     $scope.fetchFolders();
     console.log('weishemeee!!!', $scope.folders);
     $scope.getBucketList();
@@ -276,7 +277,7 @@ var CustomSubmitDirective = function(FootprintRequests) {
   return {
     restrict: 'A',
     link: function( scope , element , attributes ){
-      console.log('psoting a comment');
+
       var $element = angular.element(element);
       
       // Add novalidate to the form element.

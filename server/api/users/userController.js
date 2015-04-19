@@ -416,7 +416,7 @@ userController.getUnreadNotifications = function (req, res) {
     return user.getUnreadNotifications();
   })
   .then(function (notifications) {
-    res.json(notifications);
+    res.json(_.flatten(notifications));
     res.status(200).end();
   })
   .catch(function (err) {
@@ -427,10 +427,10 @@ userController.getUnreadNotifications = function (req, res) {
 
 userController.getReadNotifications = function (req, res) {
   var user;
-  var params = {}
+  var params = {};
   var limit = req.params.limit;
   params.facebookID = req.params.user;
-
+  
   User.find(params)
   .then(function (userNode) {
     user = userNode;
@@ -755,6 +755,24 @@ userController.getFriendsList = function (req, res) {
     console.log(err);
     res.status(500).end();
   });
-}
+};
+
+userController.searchFriendsList = function (req, res) {
+  var params = {};
+  params.user = req.params.user;
+  params.query = req.params.query;
+  params.page = parseInt(req.params.page);
+  params.skip = parseInt(req.params.skip);
+
+  User.searchFriends(params.user, params.query, params.page, params.skip)
+  .then(function (friends) {
+    res.json(friends);
+    res.status(200).end();
+  })
+  .catch(function (err) {
+    console.log(err);
+    res.status(500).end();
+  });
+};
 
 module.exports = userController;

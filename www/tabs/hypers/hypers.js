@@ -1,8 +1,12 @@
 (function(){
 
-var HypersController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state) {
+var HypersController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicHistory) {
     
     $scope.footprint = FootprintRequests.openFootprint;
+
+    $scope.goBack = function() {
+    	$ionicHistory.goBack();
+    };
     // FootprintRequests.getFootprintInteractions($scope.footprint.checkin.checkinID)
     //   .then(function (data) {
     //     console.log('getFootprintInteractions: ', data);
@@ -10,7 +14,7 @@ var HypersController = function (Auth, UserRequests, MapFactory, FootprintReques
     //   });
 };
 
-HypersController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state'];
+HypersController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicHistory'];
 
 angular.module('waddle.hypers', [])
   .controller('HypersController', HypersController);

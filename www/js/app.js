@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.services'])
+angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.services', 'angularMoment'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -62,6 +62,15 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         }
       }
     })
+    .state('tab.notifications', {
+      url: '/notifications',
+      views: {
+        'notifications-tab': {
+          templateUrl: 'tabs/notifications/notifications.html',
+          controller: 'NotificationsController'
+        }
+      }
+    })
     .state('tab.folders', {
       url: '/folders',
       views: {
@@ -89,11 +98,13 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         }
       }
     })
-    .state('tab.checkin.post', {
-      url: '/:venue',
+    .state('tab.checkin-post', {
+      url: '/checkin-post',
       views: {
-        templateUrl: 'tabs/checkin/checkin-post.html',
-        controller: 'CheckinController'
+        'checkin-tab': {
+          templateUrl: 'tabs/checkin-post/checkin-post.html',
+          controller: 'CheckinPostController'
+        }
       }
     })
     .state('tab.hypelist', {
@@ -138,6 +149,24 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         'home-tab': {
           templateUrl: 'tabs/hypers/hypers.html',
           controller: 'HypersController'
+        }
+      }
+    })
+    .state('tab.enlarged-footprint', {
+      url: '/enlarged-footprint',
+      views: {
+        'home-tab': {
+            templateUrl: 'tabs/enlarged/enlarged-footprint.html',
+            controller: 'EnlargedFootprintController'
+        }
+      }
+    })
+    .state('tab.enlarged-footprint-profile', {
+      url: '/enlarged-footprint',
+      views: {
+        'profile-tab': {
+            templateUrl: 'tabs/enlarged/enlarged-footprint.html',
+            controller: 'EnlargedFootprintController'
         }
       }
     });

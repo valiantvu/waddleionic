@@ -3,6 +3,8 @@
 var FootprintRequests = function ($http){
   var footprintData;
   var openFootprint;
+  var selectedFootprintIndex;
+  var deletedFootprint;
   var openFolder;
   var footprints;
   var currentTab;
@@ -12,6 +14,10 @@ var FootprintRequests = function ($http){
     // currentFootprint: footprintData,
     // Contains all open footprint data
     openFootprint: openFootprint,
+
+    selectedFootprintIndex: selectedFootprintIndex,
+
+    deletedFootprint: true,
 
     openFolder: openFolder,
 
@@ -53,7 +59,7 @@ var FootprintRequests = function ($http){
       if (data) {
         return $http({
           method : 'POST',
-          data : data ,
+          data : data,
           url : '/api/checkins/removecomment'
         });
       }
@@ -66,6 +72,32 @@ var FootprintRequests = function ($http){
           url: '/api/checkins/interactions/' + checkinID
         });
       }
+    },
+
+    deleteFootprint: function (data) {
+      if (data) {
+         return $http({
+          method : 'POST',
+          data : data,
+          url : '/api/checkins/delete'
+        });
+      }
+    },
+
+    getFoursquareVenueInfo: function (foursquareVenueID, facebookID) {
+      var url = '/api/checkins/venue/' + foursquareVenueID + '/' + facebookID;
+      return $http({
+        method: 'GET',
+        url: url
+      })
+    },
+
+    findUsersAlsoBeenHere: function (foursquareVenueID, facebookID) {
+      var url = '/api/places/beenhere/' + foursquareVenueID + '/' + facebookID;
+      return $http({
+        method: 'GET',
+        url: url
+      })
     }
   };
 };

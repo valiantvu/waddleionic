@@ -1,6 +1,8 @@
 body { margin:0; padding:0; }
 #map { position:absolute; top:0; bottom:0; width:100%; }
 
+#map-location { display: block; width:100vw; height: 200px; margin-bottom: 10px; }
+
 /*.bar-positive{
 	background: rgb(0, 192, 161);
 	background-image: none;
@@ -12,6 +14,13 @@ body { margin:0; padding:0; }
 	height: 100%;
 	width: 100%;
 }
+
+.profile-banner {
+	border-radius: 15px;
+	width: 100vw;
+	height: 250px;
+	background: url('http://hdwallpaperia.com/wp-content/uploads/2013/11/Beautiful-Mountain-Scenery-640x360.jpg') no-repeat;
+}
 .centered{
 	 position: relative;
    top: 50%;
@@ -19,6 +28,10 @@ body { margin:0; padding:0; }
    text-align:center;
    margin-right: auto;
    margin-left: auto;
+}
+
+.inline {
+	display: inline !important;
 }
 
 p{
@@ -294,6 +307,39 @@ border-radius: 0px;
   border-top-left-radius: 5px;
 }
 
+.ratinghex {
+	background-image: url('https://s3-us-west-2.amazonaws.com/waddle/ratinghex-1.svg');
+	background-position: center center;
+	background-repeat: no-repeat;
+	padding: 2px;
+	text-align: center;
+	color: #fff;
+}
+
+/*.ratinghex {
+	z-index: -1;
+	height: 20px;
+	left: -50px;
+}*/
+
+.star-rating li {
+	display: inline;
+}
+
+.rating {
+	text-align: center;
+	color: #A9A9A9;
+}
+
+li .ion-star {
+	/*color: #A9A9A9;*/
+  font-size: 50px;
+}
+
+.rating .filled {
+  color: #e1876a !important;
+}
+
 .options {
 	bottom: 10px;
 	float: right;
@@ -301,6 +347,10 @@ border-radius: 0px;
 
 .slidebox {
 	height: 100vh;
+}
+
+.popup-open .backdrop {
+z-index: 11;
 }
 
 .image1 {
@@ -327,6 +377,10 @@ border-radius: 0px;
 
 .footprinttabimg{
 	margin-top:30px;
+}
+
+#files {
+	display: none;
 }
 
 .footprintcaption {

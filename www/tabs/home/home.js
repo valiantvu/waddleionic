@@ -1,7 +1,7 @@
 (function(){
 
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout) {
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment) {
   Auth.checkLogin()
   .then(function () {
     $scope.numHypes = 0;
@@ -13,11 +13,13 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     var page = 0;
     var skipAmount = 5;
     $scope.moreDataCanBeLoaded = true;
+    $scope.newFootprint = UserRequests.newFootprint;
 
     FootprintRequests.currentTab = 'home';
 
-    $scope.openFootprint = function(footprint) {
+    $scope.openFootprint = function(footprint, index) {
       FootprintRequests.openFootprint = footprint;
+      FootprintRequests.selectedFootprintIndex = index;
     };
 
     $scope.checkUserID = function(facebookID) {
@@ -44,12 +46,33 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         });
     };
 
+    //posts new footprint from checkin screen
+    $scope.$on('newFootprint', function(event, footprint) {
+      $scope.footprints.unshift(footprint.data);
+    })
+
+    $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
+      if($previousRoute.name === 'tab.home' && FootprintRequests.deletedFootprint) {
+        $scope.footprints.splice(FootprintRequests.selectedFootprintIndex, 1);
+        FootprintRequests.deletedFootprint = false;
+      }
+    });
+
+    $scope.updateFeedWithNewFootprint = function() {
+      if(UserRequests.newFootprint) {
+        $scope.footprints.unshift(UserRequests.newFootprint);
+        UserRequests.newFootprint = null;
+      }
+    };
+
     $scope.getAggregatedFeedData();
+    $scope.updateFeedWithNewFootprint();
 
     $scope.viewFoldersList = function() {
       UserRequests.fetchFolders(window.sessionStorage.userFbID, 0, 10)
       .then(function (folders) {
         $scope.folders = folders.data;
+        UserRequests.userFolderData = folders.data
         console.log($scope.folders)
       })
     }
@@ -86,7 +109,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       })
     };
 
-    $scope.createFolderAndAddFootprintToFolder = function (folderName, folderDescription, selectedFootprintCheckinID) {
+    $scope.createFolderAndAddFootprintToFolder = function (folderName, folderDescription, selectedFootprintCheckinID, index) {
       // console.log(folderName);
       // console.log(folderDescription);
       UserRequests.addFolder(window.sessionStorage.userFbID, folderName, folderDescription)
@@ -94,7 +117,9 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         console.log(data);
         UserRequests.addFootprintToFolder(window.sessionStorage.userFbID, selectedFootprintCheckinID, folderName)
         .then(function (data) {
-          console.log(data)
+          // console.log(data)
+          $scope.footprints[index].folders = [];
+          $scope.footprints[index].folders.push(data.data[0].folder);
           $scope.showCreationSuccessAlert();
         })
       });
@@ -119,7 +144,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     };
 
     $scope.searchFeed = function () {
-      if($scope.search.query) {
+      if($scope.search.query.length > 2) {
         UserRequests.searchFeed(window.sessionStorage.userFbID, $scope.search.query, 0, 10)
         .then(function(footprints) {
           $scope.footprints = footprints.data;
@@ -148,7 +173,25 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         $scope.folderContents = folderContents.data;
         console.log(folderContents);
       })
-    }
+    };
+
+    $scope.deleteFootprint = function (checkinID, facebookID, index) {
+      var splicedElem;
+      if(window.sessionStorage.userFbID === facebookID) {
+        console.log('facebookIDs match')
+        var deleteFootprintData = {
+          facebookID: window.sessionStorage.userFbID,
+          checkinID: checkinID
+        };
+        FootprintRequests.deleteFootprint(deleteFootprintData)
+        .then(function(data) {
+          splicedElem = $scope.footprints.splice(index, 1);
+          console.log(splicedElem);
+          $scope.showCreationSuccessAlert();
+          console.log(data);
+        });
+      }
+    };
 
     $ionicModal.fromTemplateUrl('folder-contents.html', {
       scope: $scope,
@@ -222,7 +265,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
             text: '<b>Save</b>',
             type: 'button-energized',
             onTap: function(e) {
-                $scope.createFolderAndAddFootprintToFolder($scope.newFolderInfo.name, $scope.newFolderInfo.description, $scope.selectedFootprintCheckinID);
+                $scope.createFolderAndAddFootprintToFolder($scope.newFolderInfo.name, $scope.newFolderInfo.description, $scope.selectedFootprintCheckinID, $scope.selectedFootprintIndex);
             }
           }
         ]
@@ -244,6 +287,34 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       }, 1500);
     };
 
+    $scope.openOptions = function (footprint, index) {
+        $scope.selectedFootprintUserID = footprint.user.facebookID;
+        $scope.selectedFootprintCheckinID = footprint.checkin.checkinID;
+        $scope.selectedFootprintIndex = index;
+        $scope.optionsPopup = $ionicPopup.show({
+        templateUrl: 'options-menu.html',
+        scope: $scope
+      });
+    };
+
+    $scope.openDeleteFootprintPopup = function () {
+      $scope.optionsPopup.close();
+      var deleteFootprintPopup = $ionicPopup.show({
+        templateUrl: 'delete-footprint.html',
+        // title: 'Add Folder',
+        scope: $scope,
+        buttons: [
+          { text: 'Cancel' },
+          {
+            text: '<b>Yes</b>',
+            type: 'button-energized',
+            onTap: function(e) {
+                $scope.deleteFootprint($scope.selectedFootprintCheckinID, $scope.selectedFootprintUserID, $scope.selectedFootprintIndex);
+            }
+          }
+        ]
+      });
+    };
 
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);
@@ -296,12 +367,29 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
           marker.addTo(map);
       }
     }
+    moment.locale('en', {
+      relativeTime : {
+        future: 'in %s',
+        past:   '%s',
+        s:  '%ds',
+        m:  '1m',
+        mm: '%dm',
+        h:  'h',
+        hh: '%dh',
+        d:  '1d',
+        dd: '%dd',
+        M:  '1mo',
+        MM: '%dmo',
+        y:  '1y',
+        yy: '%dy'
+      }
+    });
   })
     
 
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 
@@ -309,7 +397,7 @@ var CustomSubmitDirective = function(FootprintRequests) {
   return {
     restrict: 'A',
     link: function( scope , element , attributes ){
-      console.log('psoting a comment');
+      // console.log('psoting a comment');
       var $element = angular.element(element);
       
       // Add novalidate to the form element.

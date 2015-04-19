@@ -41,9 +41,14 @@ Place.findFriendsAlreadyBeen = function (facebookID, foursquareID) {
   var deferred = Q.defer();
 
   var query = [
-    'MATCH (user:User{facebookID:{facebookID}})-[:hasFriend]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place {foursquareID: foursquareID})',
-    'RETURN friend, checkin'
+    'MATCH (user:User{facebookID:{facebookID}})-[:hasFriend*0..1]->(friend:User)-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place {foursquareID: {foursquareID}})',
+    'RETURN collect(DISTINCT friend) AS friends'
   ].join('\n');
+
+  var params = {
+    facebookID: facebookID,
+    foursquareID: foursquareID
+  };
 
   db.query(query, params, function (err, results) {
     if (err) {
@@ -51,11 +56,24 @@ Place.findFriendsAlreadyBeen = function (facebookID, foursquareID) {
     }
     else {
       var parsedResults = _.map(results, function (item) {
-        
+        console.log(JSON.stringify(results));
+
         var singleResult = {
-          "user": item.friend.data,
-          "checkin": item.checkin.data
+          users: null
         };
+
+        // if(item['users'].length) {
+        //   singleResult.user = item['users'][0].data;
+        // }
+
+        if(item['friends'].length) {
+          var friendsArray = [];
+           for(var i = 0; i < item['friends'].length; i++) {
+            friendsArray.push(item['friends'][i].data);
+          }
+          singleResult.users = friendsArray;
+        }
+
         return singleResult
       });
       deferred.resolve(parsedResults);
