@@ -949,8 +949,8 @@ User.fetchFolders = function(facebookID, page, skipAmount) {
   var deferred = Q.defer();
 
   var query = [
-    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder)',
-    'RETURN user, folder',
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder)-[contains:containsCheckin]->(checkin:Checkin)',
+    'RETURN user, folder, count(contains) AS checkinCount',
     'ORDER BY folder.createdAt',
     'SKIP { skipNum }', 
     'LIMIT { skipAmount }'
@@ -971,6 +971,7 @@ User.fetchFolders = function(facebookID, page, skipAmount) {
           "user": item.user.data,
           "folder": item.folder.data
         }
+        singleResult.folder.checkinCount = item.checkinCount;
         return singleResult;
       });
       deferred.resolve(parsedResults);
