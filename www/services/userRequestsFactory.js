@@ -3,6 +3,7 @@
 // Requests to server sending and retrieving data for specific users
 var UserRequests = function ($http){
   var userData;
+  var productionServerURL = 'http://waddleionic.herokuapp.com';
 
   return {
     allData: userData,
@@ -13,11 +14,17 @@ var UserRequests = function ($http){
     // Sends request to server with relevant user data 
     // for creation of new user or retrieval of existing user' checkins/data
     sendUserData: function (data) {
+      var url = '/api/users/userdata';
+
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
+
       if(data) {
         return $http({
           method: 'POST',
           data: data,
-          url: '/api/users/userdata'
+          url: url
         });
       }
     },
@@ -49,6 +56,10 @@ var UserRequests = function ($http){
           url +=  "/" + skip;
       }
 
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
+
       if (userFbID) {
         return $http({
           method: 'GET',
@@ -68,6 +79,9 @@ var UserRequests = function ($http){
       if (arguments[2] !== undefined) {
           var skip = arguments[2];
           url +=  "/" + skip;
+      }
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
       }
       console.log(url);
 
@@ -92,6 +106,10 @@ var UserRequests = function ($http){
           url +=  "/" + skip;
       }
 
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
+
       if (userFbID) {
         return $http({
           method: 'GET',
@@ -102,6 +120,9 @@ var UserRequests = function ($http){
 
     addFolder: function(userFbID, folderName, folderDescription) {
       var url = '/api/users/folders';
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
       if (userFbID) {
         return $http({
           method: 'POST',
@@ -129,6 +150,10 @@ var UserRequests = function ($http){
           url +=  "/" + skip;
       }
 
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
+
       return $http({
         method: 'GET',
         url: url
@@ -149,6 +174,10 @@ var UserRequests = function ($http){
           url +=  "/" + skip;
       }
 
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
+
       return $http({
         method: 'GET',
         url: url
@@ -157,6 +186,10 @@ var UserRequests = function ($http){
 
     addFootprintToFolder: function(userFbID, checkinID, folderName) {
       var url = '/api/checkins/folder/';
+
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
 
       return $http({
         method: 'POST',
@@ -183,6 +216,10 @@ var UserRequests = function ($http){
         url +=  "/" + skip;
       };
 
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
+
       return $http({
         method: 'GET',
         url: url
@@ -201,6 +238,11 @@ var UserRequests = function ($http){
           var skip = arguments[3]
           url +=  "/" + skip;
       }
+
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
+
       return $http({
         method: 'GET',
         url: url
@@ -219,6 +261,11 @@ var UserRequests = function ($http){
           var skip = arguments[3]
           url +=  "/" + skip;
       }
+
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
+
       if (userFbID && query) {
         return $http({
           method: 'GET',
@@ -238,6 +285,9 @@ var UserRequests = function ($http){
       if (arguments[2] !== undefined) {
           var skip = arguments[2];
           url +=  "/" + skip;
+      }
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
       }
       console.log(url);
 
@@ -261,6 +311,9 @@ var UserRequests = function ($http){
           var skip = arguments[3];
           url +=  "/" + skip;
       }
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
       console.log(url);
 
       if (userFbID) {
@@ -273,6 +326,9 @@ var UserRequests = function ($http){
 
     fetchUnreadNotifications: function (userFbID) {
       var url = '/api/users/notifications/unread/' + userFbID;
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
 
       return $http ({
         method: 'GET',
@@ -282,6 +338,9 @@ var UserRequests = function ($http){
 
     updateNotificationReadStatus: function (userFbID) {
       var url = '/api/users/notifications/update';
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
 
       return $http({
         method: 'POST',
@@ -292,6 +351,9 @@ var UserRequests = function ($http){
 
     fetchReadNotifications: function (userFbID, limit) {
       var url = '/api/users/notifications/read/' + userFbID + '/' + limit;
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
       
       console.log(url);
       return $http({
