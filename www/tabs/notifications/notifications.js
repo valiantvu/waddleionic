@@ -34,7 +34,30 @@ var NotificationsController = function (Auth, UserRequests, MapFactory, Footprin
       })
     };
 
+    $scope.getUserInfo = function () {
+      UserRequests.getUserInfo(window.sessionStorage.userFbID)
+      .then(function(user) {
+        console.log(user);
+        UserRequests.loggedInUserInfo = user.data;
+      })
+    }
+
+    $scope.openFootprint = function(notification, index) {
+      FootprintRequests.openFootprint = {
+        user: notification.user,
+        checkin: notification.checkin,
+        place: notification.place,
+        category: notification.category
+      };
+      console.log(FootprintRequests.openFootprint);
+      FootprintRequests.selectedFootprintIndex = index;
+    };
+
     $scope.fetchUnreadNotifications();
+
+    if(!UserRequests.loggedInUserInfo) {
+      $scope.getUserInfo();
+    }
 
     moment.locale('en', {
       relativeTime : {

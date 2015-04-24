@@ -2,19 +2,19 @@
 
 var CheckinController = function ($scope, $state, NativeCheckin, UserRequests, $ionicModal, $ionicLoading, $ionicPopup, $timeout) {	
 
-	$scope.show = function() {
-    $ionicLoading.show({
-      content: '<i class="icon ion-load-c light"></i>',
-      animation: 'fade-in'
-    });
-  };
+	// $scope.show = function() {
+ //    $ionicLoading.show({
+ //      content: '<i class="icon ion-load-c light"></i>',
+ //      animation: 'fade-in'
+ //    });
+ //  };
 
-  $scope.hide = function(){
-    $ionicLoading.hide();
-  };
+ //  $scope.hide = function(){
+ //    $ionicLoading.hide();
+ //  };
 
 	$scope.searchFoursquareVenues = function () {
-		$scope.show();
+		// $scope.show();
 		NativeCheckin.getCurrentLocation()
 		.then(function (location) {
 			var currentLocation = {
@@ -23,7 +23,7 @@ var CheckinController = function ($scope, $state, NativeCheckin, UserRequests, $
 			};
 			NativeCheckin.searchFoursquareVenues(window.sessionStorage.userFbID, currentLocation)
 			.then(function (venues) {
-				$scope.hide();
+				// $scope.hide();
 				$scope.venues = venues.data;
 			})
 		});

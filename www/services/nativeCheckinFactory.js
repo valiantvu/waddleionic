@@ -1,38 +1,50 @@
 (function(){
 
 var NativeCheckin = function ($http, $q, $cordovaGeolocation){
+  var productionServerURL = 'http://waddleionic.herokuapp.com';
 
   return {
     selectedVenue: null,
 
 	  searchFoursquareVenues: function (facebookID, currentLocation) {
-      if (currentLocation) {
-        return $http({
-          method: 'GET',
-          url: '/api/checkins/venuesearchmobile/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng
-        });
+      var url = '/api/checkins/venuesearchmobile/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng;
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
       }
+      return $http({
+        method: 'GET',
+        url: url
+      });
     },
 
     sendCheckinDataToServer: function (checkinData) {
+      var url = '/api/checkins/nativecheckin/';
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
       if (checkinData) {
         return $http({
           method: 'POST',
           data: checkinData,
-          url: '/api/checkins/nativecheckin/'
+          url: url
         });
       }
     },
 
     s3_upload: function() {
         var deferred = $q.defer();
+        var url = '/api/checkins/sign_s3';
+
+        if(ionic.Platform.isIOS()) {
+          url = productionServerURL.concat(url);
+        }
         // var status_elem = document.getElementById("status");
         var preview_elem = document.getElementById("preview");
         // console.log('status: ' + status_elem + 'preview: ' + preview_elem);
 
         var s3upload = new S3Upload({
           file_dom_selector: 'files',
-          s3_sign_put_url: '/api/checkins/sign_s3',
+          s3_sign_put_url: url,
           onProgress: function(percent, message) {
               console.log('Upload progress: ' + percent + '% ' + message);
               // status_elem.innerHTML = 'Upload progress: ' + percent + '% ' + message;
@@ -62,10 +74,14 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation){
     },
 
     editCheckin: function(editedCheckinData) {
+      var url = '/api/checkins/nativecheckin/edit';
+      if(ionic.Platform.isIOS()) {
+          url = productionServerURL.concat(url);
+      }
       return $http({
         method: 'POST',
         data: editedCheckinData,
-        url: '/api/checkins/nativecheckin/edit'
+        url: url
       })
     }
 

@@ -80,7 +80,7 @@
       </div>
 
       <!-- Comments -->
-      <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)">  
+      <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap" ui-sref="tab.comments-profile" ng-click="openFootprint(footprint, $index)">  
           <img class="propic commenterpic" ng-src="{{comment.commenter.fbProfilePicture}}">
           <span class="commentername">{{comment.commenter.name}}</span>
           <span> {{comment.comment.text}} </span>
@@ -92,7 +92,7 @@
             <img ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
           </div>
         </div> -->
-       <div ui-sref='tab.comments' ng-click='openFootprint(footprint, $index)' class="item item-input-inset">
+       <div ui-sref='tab.comments-profile' ng-click='openFootprint(footprint, $index)' class="item item-input-inset">
               <img class="propic newcomment" ng-src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfp1/v/t1.0-1/s200x200/1476344_10153625108483662_8209874012985593264_n.jpg?oh=91007a07d6d534815f719b6aecb09d9a&oe=5584541F&__gda__=1431308809_91c6fa931fe0f59ed47d42b7b4a4fb77">
       <label name="customSubmit" data-custom-submit info='someinfo' class="item-input-wrapper commentfield" novalidate>
         <input type="text" ng-model='comment' name='comment' placeholder='Leave a comment' data-ng-minlength="1" data-ng-maxlength="120" required>

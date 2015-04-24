@@ -741,7 +741,7 @@ User.prototype.getUnreadNotifications = function () {
     'WHERE n:Comment OR n:Folder',
     'MATCH (checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
     'MATCH (notificationGiver:User)-[m:madeComment|hasFolder]-(n)',
-    'RETURN user, n, checkin, place, category, notificationGiver, unread',
+    'RETURN user, n, checkin, place, category, notificationGiver, unread.createdAt',
     'ORDER BY unread.createdAt DESC'
   ].join('\n');
 
@@ -760,6 +760,7 @@ User.prototype.getUnreadNotifications = function () {
         }
         if(item.n) {
           singleResult.notificationTrigger = item.n.data;
+          singleResult.notificationTrigger.createdAt = item['unread.createdAt'];
           //change display message on client depending on whether notificationTrigger is a comment or save to folder
           if(singleResult.notificationTrigger.name) {
             singleResult.notificationTrigger.message1 = "saved your footprint at"
@@ -796,7 +797,7 @@ User.prototype.getReadNotifications = function (limit) {
     'WHERE n:Comment OR n:Folder',
     'MATCH (checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
     'MATCH (notificationGiver:User)-[m:madeComment|hasFolder]-(n)',
-    'RETURN user, n, checkin, place, category, notificationGiver, read',
+    'RETURN user, n, checkin, place, category, notificationGiver, read.createdAt',
     'ORDER BY read.createdAt DESC',
     'LIMIT ' + limit
   ].join('\n');
@@ -817,6 +818,7 @@ User.prototype.getReadNotifications = function (limit) {
         }
         if(item.n) {
           singleResult.notificationTrigger = item.n.data;
+          singleResult.notificationTrigger.createdAt = item['read.createdAt'];
           //change display message on client depending on whether notificationTrigger is a comment or save to folder
           if(singleResult.notificationTrigger.name) {
             singleResult.notificationTrigger.message1 = "saved your footprint at"

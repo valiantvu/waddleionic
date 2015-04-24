@@ -8,6 +8,7 @@ var FootprintRequests = function ($http){
   var openFolder;
   var footprints;
   var currentTab;
+  var productionServerURL = 'http://waddleionic.herokuapp.com';
 
   return {
     // Contains comments and props
@@ -46,26 +47,36 @@ var FootprintRequests = function ($http){
     },
 
     addComment: function (data) {
-      if (data && data.text) {
+      var url = '/api/checkins/comment';
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
+      if (data.text) {
         return $http({
           method: 'POST',
           data: data,
-          url: '/api/checkins/comment'
+          url: url
         });
       }
     },
 
     removeComment : function(data) {
-      if (data) {
-        return $http({
-          method : 'POST',
-          data : data,
-          url : '/api/checkins/removecomment'
-        });
+      var url = '/api/checkins/removecomment';
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
       }
+      return $http({
+        method : 'POST',
+        data : data,
+        url : url
+      });
     },
 
     getFootprintInteractions: function (checkinID) {
+      var url = '/api/checkins/interactions/' + checkinID;
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
       if (checkinID) {
         return $http({
           method: 'GET',
@@ -75,17 +86,24 @@ var FootprintRequests = function ($http){
     },
 
     deleteFootprint: function (data) {
+      var url = '/api/checkins/delete';
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
       if (data) {
          return $http({
           method : 'POST',
           data : data,
-          url : '/api/checkins/delete'
+          url : url
         });
       }
     },
 
     getFoursquareVenueInfo: function (foursquareVenueID, facebookID) {
       var url = '/api/checkins/venue/' + foursquareVenueID + '/' + facebookID;
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
       return $http({
         method: 'GET',
         url: url
@@ -94,6 +112,9 @@ var FootprintRequests = function ($http){
 
     findUsersAlsoBeenHere: function (foursquareVenueID, facebookID) {
       var url = '/api/places/beenhere/' + foursquareVenueID + '/' + facebookID;
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
       return $http({
         method: 'GET',
         url: url
