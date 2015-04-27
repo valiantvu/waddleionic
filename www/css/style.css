@@ -406,3 +406,16 @@ z-index: 11;
 .hypelistplace{
 	margin-left:-30px;
 }
+
+.folder-footprint-item {
+}
+
+.folder-footprint-image {
+	top: 0px;
+	right: 0px;
+	height: 100%;
+  position: absolute;
+  max-width: 120px;
+  max-height: 120px;
+  width: 100%;
+}
