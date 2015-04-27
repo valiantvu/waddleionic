@@ -6,6 +6,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 	$scope.selectedFolderInfo = {};
 	$scope.newFolderInfo = {};
 	$scope.selectedFolder = null;
+  $scope.photo = null;
 
 	$scope.venue = NativeCheckin.selectedVenue;
 	console.log($scope.venue)
@@ -53,19 +54,20 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 		if($scope.checkinInfo.folder) {
 			checkinData.folderName = $scope.checkinInfo.folder
 		}
-
-		NativeCheckin.s3_upload()
-		.then(function (public_url) {
-		  checkinData.photo = public_url;
-		  console.log('venueInfo: ' + JSON.stringify(checkinData));
-		  return NativeCheckin.sendCheckinDataToServer(checkinData);
-		})
-		.then(function (footprint) {
-			console.log(footprint);
-      UserRequests.newFootprint = footprint.data;
-      $rootScope.$broadcast('newFootprint', footprint);
-      $state.go('tab.home', {}, {reload: true});
-		});
+    if($scope.photo) {
+  		NativeCheckin.s3_upload()
+  		.then(function (public_url) {
+  		  checkinInfo.photo = public_url;
+  		  console.log('venueInfo: ' + JSON.stringify(checkinData));
+  		  return NativeCheckin.sendCheckinDataToServer(checkinData);
+  		})
+  		.then(function (footprint) {
+  			console.log(footprint);
+        UserRequests.newFootprint = footprint.data;
+        $rootScope.$broadcast('newFootprint', footprint);
+        $state.go('tab.home', {}, {reload: true});
+  		});
+    }
 	}
 
 	$scope.showCheckinInfo = function() {
@@ -217,6 +219,10 @@ var PictureSelectDirective = function () {
             angular.element(document.getElementById('files')).on('change',function(e){
 
                var file=e.target.files[0];
+               scope.$apply(function(){
+                 scope.photo = file;
+               });
+               console.log(angular.element(document.getElementById('files')).val());
 
                angular.element(document.getElementById('files')).val('');
 

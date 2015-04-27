@@ -8,6 +8,7 @@ var UserRequests = function ($http){
   return {
     allData: userData,
     newFootprint: null,
+    loggedInUserInfo: null,
     userProfileData: null,
     userFolderData: null,
 

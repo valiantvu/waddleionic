@@ -143,6 +143,24 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         }
       }
     })
+    .state('tab.comments-profile', {
+      url: '/comments',
+      views: {
+        'profile-tab': {
+          templateUrl: 'tabs/comments/comments.html',
+          controller: 'CommentsController'
+        }
+      }
+    })
+     .state('tab.comments-notifications', {
+      url: '/comments',
+      views: {
+        'profile-tab': {
+          templateUrl: 'tabs/comments/comments.html',
+          controller: 'CommentsController'
+        }
+      }
+    })
     .state('tab.hypers', {
       url: '/hypers',
       views: {
@@ -169,10 +187,19 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
             controller: 'EnlargedFootprintController'
         }
       }
+    })
+    .state('tab.enlarged-footprint-notifications', {
+      url: '/enlarged-footprint',
+      views: {
+        'notifications-tab': {
+            templateUrl: 'tabs/enlarged/enlarged-footprint.html',
+            controller: 'EnlargedFootprintController'
+        }
+      }
     });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/home');
+  $urlRouterProvider.otherwise('/');
 
 });
 

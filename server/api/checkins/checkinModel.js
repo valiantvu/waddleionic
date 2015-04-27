@@ -183,7 +183,8 @@ Checkin.addComment = function (clickerID, checkinID, text){
   'MATCH (commentReceiver:User)-[:hasCheckin]->(checkin:Checkin {checkinID: {checkinID}})',
   'MERGE (clicker)-[:madeComment]->(newComment:Comment {text: {text}, commentID : {commentID}, time: timestamp() })' + 
   '-[:gotComment]->(checkin)',
-  'MERGE (checkin)-[:hasUnreadNotification]->(newComment)',
+  'MERGE (checkin)-[unread:hasUnreadNotification]->(newComment)',
+  'ON CREATE SET unread.createdAt = newComment.time',
   'RETURN newComment'
   ].join('\n');
   var params = {
@@ -231,6 +232,10 @@ Checkin.removeComment = function(facebookID, checkinID, commentID){
   });
   return deferred.promise;
 };
+
+// Checkin.getFolders = function (facebookID, checkinID) {
+//   'MATCH checkin:Checkin{checkinID:{checkinID}})<-[:containsCheckin]-(folder:Folder)<-[:hasFolder]-(user:User)'
+// }
 
 
 Checkin.giveProps = function (clickerID, checkinID){

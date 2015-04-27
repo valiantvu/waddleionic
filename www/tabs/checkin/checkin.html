@@ -19,6 +19,13 @@
       </div>
     </div>
 
+    <ion-infinite-scroll
+    on-infinite="getUserData()"
+    ng-if="!$scope.venues"
+    distance="10%">
+  </ion-infinite-scroll>
+  <h5 ng-if="$scope.venues">No more results to show!</h5>
+
   </ion-content>
 </ion-view>
 

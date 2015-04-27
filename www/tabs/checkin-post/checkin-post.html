@@ -40,8 +40,8 @@
       <textarea ng-model="checkinInfo.footprintCaption" type="text" class="form-control" placeholder="What did you think of this place?">
       </textarea>
      <!--  <input type="file" id="files"/><p id="status">Please select a file</p> -->
-      <button class="button button-large" type="submit" ng-click="sendCheckinDataToServer(venue)">Post</button>
-    <button ng-click="showCheckinInfo()">Info</button>
+      <button class="button button-large" type="submit" ng-disabled="checkinInfo.rating === '--'" ng-click="sendCheckinDataToServer(venue)">Post</button>
+   <!--  <button ng-click="showCheckinInfo()">Info</button> -->
     </form>
     </div>
     </ion-content>
