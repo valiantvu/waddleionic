@@ -20,17 +20,19 @@
         <text x="50%" y="150" text-anchor="middle" alignment-baseline="middle" font-family="Verdana" font-size="45" fill="white">{{ openFolder }}</text>
       </g>
     </svg>
-    <div class="list folder-footprint-item" style="margin-top:-10px">
+    <div class="list" style="margin-top:-10px">
       <a ng-repeat="item in folderContents" class="item item-thumbnail-right">
         <img/>
         <img class="folder-footprint-image" ng-if="item.checkin.photoLarge !== 'null'" ng-src="{{item.checkin.photoLarge}}">
         <img class="folder-propic" style="height:20px" ng-src="{{item.user.fbProfilePicture}}">
         <h4 class="ratinghex-short">{{item.checkin.rating}}</h4>
         <!-- <h4>{{item.checkin.rating}}</h4> -->
-        <h2>{{item.place.name}}</h2>
-        <h4>{{item.place.city}},{{item.place.country}}</h4>
-        <h4 ng-if="checkUserID(item.user.facebookID)">Last here on {{item.checkin.checkinTime | date : shortDate}}</h4>
-        <h4 ng-if="!checkUserID(item.user.facebookID)">Added from {{item.user.name}}</h4>
+        <div class="folder-footprint-item-description">
+          <h2>{{item.place.name}}</h2>
+          <h4>{{item.place.city}},{{item.place.country}}</h4>
+          <h4 ng-if="checkUserID(item.user.facebookID)">Last here on {{item.checkin.checkinTime | date : shortDate}}</h4>
+          <h4 ng-if="!checkUserID(item.user.facebookID)">Added from {{item.user.name}}</h4>
+        </div>
       </a>
     </div>
 <!--   <ion-infinite-scroll

@@ -317,6 +317,7 @@ border-radius: 0px;
 }
 
 .ratinghex-short {
+	position: absolute;
   background-image: url('https://s3-us-west-2.amazonaws.com/waddle/ratinghex-1.svg');
   background-position: left;
   background-repeat: no-repeat;
@@ -407,7 +408,9 @@ z-index: 11;
 	margin-left:-30px;
 }
 
-.folder-footprint-item {
+.folder-footprint-item-description {
+	padding-left: 50px;
+	margin-top: -20px
 }
 
 .folder-footprint-image {
