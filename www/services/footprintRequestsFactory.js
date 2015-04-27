@@ -80,7 +80,7 @@ var FootprintRequests = function ($http){
       if (checkinID) {
         return $http({
           method: 'GET',
-          url: '/api/checkins/interactions/' + checkinID
+          url: url
         });
       }
     },

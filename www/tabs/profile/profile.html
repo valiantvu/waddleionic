@@ -74,7 +74,7 @@
 " ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
         </div>
         <p ui-sref="tab.enlarged-footprint-profile" ng-click="openFootprint(footprint, $index)" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
-        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)" class="subdued x-centered"><i class="ion-chatbubble coral"></i>{{ footprint.comments.length }}</a>
+        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments-profile" ng-click="openFootprint(footprint, $index)" class="subdued x-centered"><i class="ion-chatbubble coral"></i>{{ footprint.comments.length }}</a>
           <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint, $index)" class="subdued x-centered"><i class="ion-android-folder coral"></i>{{ footprint.hypes.length }}</a>
           </p>
       </div>

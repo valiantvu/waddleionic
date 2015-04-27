@@ -8,9 +8,11 @@ var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequ
 
     // Ensure that a user comment is posted in the database before displaying
     $scope.updateFootprint = function (footprint){
+      console.log('is my footprint being updated?');
       var checkinID = footprint.checkin.checkinID;
       FootprintRequests.getFootprintInteractions(checkinID)
       .then(function (data) {
+        console.log('dis be ma data', data.data);
         $scope.footprint.comments = data.data.comments;
       });
     };
@@ -105,6 +107,7 @@ var CustomSubmitDirective = function(FootprintRequests) {
         FootprintRequests.addComment(commentData)
         .then(function (data) {
           if (FootprintRequests.openFootprint){
+            console.log('is my footprint open?');
             scope.updateFootprint(FootprintRequests.openFootprint);
           }
         });

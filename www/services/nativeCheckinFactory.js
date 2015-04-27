@@ -1,6 +1,6 @@
 (function(){
 
-var NativeCheckin = function ($http, $q, $cordovaGeolocation){
+var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
   var productionServerURL = 'http://waddleionic.herokuapp.com';
 
   return {
@@ -63,14 +63,30 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation){
         return deferred.promise;
     },
 
-    getCurrentLocation: function() {
-      return $cordovaGeolocation.getCurrentPosition()
-      .then(function (position) {
-        console.log(position);
-        return position;
-      }, function (err) {
-        return err;
-      });
+    getCurrentLocation: function(callback) {
+      console.log('getting currentLocation');
+      var options = {
+        enableHighAccuracy: false,
+        timeout: 30000,
+        maximumAge: 0
+      };
+      // return $cordovaGeolocation.getCurrentPosition({timeout: 5000, enableHighAccuracy: true})
+      // .then(function (position) {
+      //   console.log(position);
+      //   return position;
+      // }, function (err) {
+      //   return err;
+      // });
+      return navigator.geolocation.getCurrentPosition(
+        function(position) {
+          console.log(position);
+          return callback(position);
+        },
+        function(err) {
+          return err;
+        },
+        options
+      );
     },
 
     editCheckin: function(editedCheckinData) {
@@ -88,7 +104,7 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation){
   }; 
 };
 
-NativeCheckin.$inject = ['$http', '$q', '$cordovaGeolocation'];
+NativeCheckin.$inject = ['$http', '$q', '$cordovaGeolocation', '$ionicPlatform'];
 
 //Start creating Angular module
 angular.module('waddle.services.nativeCheckin', [])  
