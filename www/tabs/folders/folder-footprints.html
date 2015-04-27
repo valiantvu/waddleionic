@@ -24,7 +24,8 @@
       <a ng-repeat="item in folderContents" class="item item-thumbnail-right">
         <img ng-if="item.checkin.photoLarge !== 'null'" ng-src="{{item.checkin.photoLarge}}">
         <img class="folder-propic" style="height:20px" ng-src="{{item.user.fbProfilePicture}}">
-        <h4>{{item.checkin.rating}}</h4>
+        <h4 class="ratinghex-short">{{item.checkin.rating}}</h4>
+        <!-- <h4>{{item.checkin.rating}}</h4> -->
         <h2>{{item.place.name}}</h2>
         <h4>{{item.place.city}},{{item.place.country}}</h4>
         <h4 ng-if="checkUserID(item.user.facebookID)">Last here on {{item.checkin.checkinTime | date : shortDate}}</h4>

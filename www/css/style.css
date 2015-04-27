@@ -316,6 +316,18 @@ border-radius: 0px;
 	color: #fff;
 }
 
+.ratinghex-short {
+  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/ratinghex-1.svg');
+  background-position: left;
+  background-repeat: no-repeat;
+  padding: 2px;
+  padding-right: 10px;
+  text-align: center;
+  color: #fff;
+  width: 50px;
+  background-size: 80%;
+}
+
 /*.ratinghex {
 	z-index: -1;
 	height: 20px;
