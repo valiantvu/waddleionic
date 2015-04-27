@@ -4,29 +4,48 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     
   $scope.footprint = FootprintRequests.openFootprint;
   $scope.selectedFootprintIndex = FootprintRequests.selectedFootprintIndex;
+  $scope.headerTitle = FootprintRequests.currentTab;
 
   $scope.fetchVenueInfo = function() {
-  	FootprintRequests.getFoursquareVenueInfo($scope.footprint.place.foursquareID, window.sessionStorage.userFbID)
-  	.then(function (venueInfo) {
-  		console.log(venueInfo);
-  		$scope.linkToFoursquare = venueInfo.data.venue.canonicalUrl;
-  		$scope.address = venueInfo.data.venue.location.formattedAddress;
-  		if(venueInfo.data.venue.hasMenu) {
-	  		$scope.menu = venueInfo.data.venue.menu;
-  		}
-  		$scope.phone = venueInfo.data.venue.contact.formattedPhone;
-  	})
+    FootprintRequests.getFoursquareVenueInfo($scope.footprint.place.foursquareID, window.sessionStorage.userFbID)
+    .then(function (venueInfo) {
+      console.log(venueInfo);
+      $scope.linkToFoursquare = venueInfo.data.venue.canonicalUrl;
+      $scope.address = venueInfo.data.venue.location.formattedAddress;
+      if(venueInfo.data.venue.hasMenu) {
+        $scope.menu = venueInfo.data.venue.menu;
+      }
+      $scope.phone = venueInfo.data.venue.contact.formattedPhone;
+    })
   };
 
   $scope.findUsersAlsoBeenHere = function() {
-  	FootprintRequests.findUsersAlsoBeenHere($scope.footprint.place.foursquareID, window.sessionStorage.userFbID)
-  	.then(function (users) {
-  		console.log(users);
-  		$scope.usersAlsoBeenHere = users.data[0].users;
-  	});
+    FootprintRequests.findUsersAlsoBeenHere($scope.footprint.place.foursquareID, window.sessionStorage.userFbID)
+    .then(function (users) {
+      console.log(users);
+      $scope.usersAlsoBeenHere = users.data[0].users;
+    });
   }
 
+  $scope.getFootprintInteractions = function () {
+    FootprintRequests.getFootprintInteractions($scope.footprint.checkin.checkinID)
+    .then(function (footprintInteractions) {
+      $scope.footprint.comments = footprintInteractions.data.comments;
+      $scope.footprint.hypes = footprintInteractions.data.hypes;
+    })
+  };
+
   $scope.fetchVenueInfo();
+  if($scope.headerTitle === 'notifications') {
+    $scope.subRouting = '-notifications';
+    $scope.footprint.user = UserRequests.loggedInUserInfo;
+    $scope.getFootprintInteractions();
+  }
+  if($scope.headerTitle === 'me') {
+    $scope.subRouting = '-profile';
+  } else {
+    $scope.subRouting = ''; 
+  }
   $scope.findUsersAlsoBeenHere();
 
   $scope.goBack = function() {

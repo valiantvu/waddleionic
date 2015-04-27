@@ -15,6 +15,8 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		$scope.foursquareConnected = false;
 		$scope.instagramConnected = false;
 
+		FootprintRequests.currentTab = 'me';
+
 		$scope.getUserProfileData = function () {
 			if(UserRequests.userProfileData) {
 				getFriendProfileData();
@@ -134,9 +136,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
 
 		$scope.openFootprint = function(footprint, index) {
-			console.log(FootprintRequests.openFootprint);
       FootprintRequests.openFootprint = footprint;
-			console.log(FootprintRequests.openFootprint);
       FootprintRequests.selectedFootprintIndex = index;
     };
 

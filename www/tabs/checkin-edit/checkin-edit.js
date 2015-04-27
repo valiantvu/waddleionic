@@ -152,88 +152,88 @@ var CheckinEditController = function ($scope, $rootScope, $state, NativeCheckin,
 
 CheckinEditController.$inject = ['$scope', '$rootScope', '$state', 'NativeCheckin', 'UserRequests', 'FootprintRequests', '$ionicModal', '$ionicLoading', '$ionicPopup', '$timeout', '$ionicHistory'];
 
-var StarRatingDirective = function () {
-	return {
-		restrict: 'A',
-		template: '<ul class="rating">'
-		   + ' <li ng-repeat="star in stars" ng-class="star" ng-click="toggle($index)">'
-		   + '  <i class="ion-star checkin"></i>'
-		   + ' </li>'
-		   + '</ul>',
-		scope: {
-		 ratingValue: '=',
-		 max : '=',
-		 onRatingSelected: '&'
-		},
-		link: function(scope, elem, attrs) {
-		 var updateStars = function() {
-		  scope.stars = [];
-		  for (var i = 0; i < scope.max; i++) {
-		   scope.stars.push({
-		    filled : i < scope.ratingValue
-		   });
-		  }
-		 };
+// var StarRatingDirective = function () {
+// 	return {
+// 		restrict: 'A',
+// 		template: '<ul class="rating">'
+// 		   + ' <li ng-repeat="star in stars" ng-class="star" ng-click="toggle($index)">'
+// 		   + '  <i class="ion-star checkin"></i>'
+// 		   + ' </li>'
+// 		   + '</ul>',
+// 		scope: {
+// 		 ratingValue: '=',
+// 		 max : '=',
+// 		 onRatingSelected: '&'
+// 		},
+// 		link: function(scope, elem, attrs) {
+// 		 var updateStars = function() {
+// 		  scope.stars = [];
+// 		  for (var i = 0; i < scope.max; i++) {
+// 		   scope.stars.push({
+// 		    filled : i < scope.ratingValue
+// 		   });
+// 		  }
+// 		 };
 		 
-		 scope.toggle = function(index) {
-		  scope.ratingValue = index + 1;
-		  scope.onRatingSelected({
-		   rating : index + 1
-		  });
-		 };
+// 		 scope.toggle = function(index) {
+// 		  scope.ratingValue = index + 1;
+// 		  scope.onRatingSelected({
+// 		   rating : index + 1
+// 		  });
+// 		 };
 		 
-		 scope.$watch('ratingValue',
-		  function(oldVal, newVal) {
-		    if(newVal) {
-		      updateStars();
-		    }
-		  });
-	  }
-  }
-};
+// 		 scope.$watch('ratingValue',
+// 		  function(oldVal, newVal) {
+// 		    if(newVal) {
+// 		      updateStars();
+// 		    }
+// 		  });
+// 	  }
+//   }
+// };
 
-StarRatingDirective.$inject = [];
+// StarRatingDirective.$inject = [];
 
-var PictureSelectDirective = function () {
-	return {
-        restrict:'AE',
-        template:'<div class="content padding">'
-							    + '<input type="file" id="files" accept="image/*"/>'
-							    + '<img class="full-image" id="preview" ng-click="browseFile()" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/Screen+Shot+2015-03-31+at+2.58.15+PM.png">'
-                  + '<img class="full-image" src'
-							+ '</div>',
-        scope:{
+// var PictureSelectDirective = function () {
+// 	return {
+//         restrict:'AE',
+//         template:'<div class="content padding">'
+// 							    + '<input type="file" id="files" accept="image/*"/>'
+// 							    + '<img class="full-image" id="preview" ng-click="browseFile()" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/Screen+Shot+2015-03-31+at+2.58.15+PM.png">'
+//                   + '<img class="full-image" src'
+// 							+ '</div>',
+//         scope:{
 
-        },
-        replace:true,
-        link:function(scope,elem,attrs){
+//         },
+//         replace:true,
+//         link:function(scope,elem,attrs){
 
-            scope.browseFile=function(){
-                document.getElementById('files').click();
-            }
+//             scope.browseFile=function(){
+//                 document.getElementById('files').click();
+//             }
 
-            angular.element(document.getElementById('files')).on('change',function(e){
+//             angular.element(document.getElementById('files')).on('change',function(e){
 
-               var file=e.target.files[0];
+//                var file=e.target.files[0];
 
-               angular.element(document.getElementById('files')).val('');
+//                angular.element(document.getElementById('files')).val('');
 
-               var fileReader=new FileReader();
+//                var fileReader=new FileReader();
 
-               fileReader.onload=function(event){
-                   console.log(event);
-                   document.getElementById('preview').src = event.target.result;
-                   // $rootScope.$broadcast('event:file:selected',{image:event.target.result,sender:USER.name})
-               }
+//                fileReader.onload=function(event){
+//                    console.log(event);
+//                    document.getElementById('preview').src = event.target.result;
+//                    // $rootScope.$broadcast('event:file:selected',{image:event.target.result,sender:USER.name})
+//                }
 
-               fileReader.readAsDataURL(file);
-            });
+//                fileReader.readAsDataURL(file);
+//             });
 
-        }
-    }
-};
+//         }
+//     }
+// };
 
-PictureSelectDirective.$inject = [];
+// PictureSelectDirective.$inject = [];
 
 angular.module('waddle.checkin-edit', [])
   .controller('CheckinEditController', CheckinEditController)
