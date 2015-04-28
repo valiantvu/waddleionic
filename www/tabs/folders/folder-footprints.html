@@ -66,17 +66,16 @@
       </g>
     </svg>
     <div class="list" style="margin-top:-10px">
-      <a ui-sref="tab.enlarged-footprint-folders" ng-click="openFootprint(item, $index)" ng-repeat="item in folderContents" class="item item-thumbnail-right">
+      <a ui-sref="tab.enlarged-footprint-folders" ng-click="openFootprint(footprint, $index)" ng-repeat="footprint in folderContents" class="item item-thumbnail-right">
         <img/>
-        <img class="folder-footprint-image" ng-if="item.checkin.photoLarge !== 'null'" ng-src="{{item.checkin.photoLarge}}">
-        <img class="folder-footprint-folder-propic" ng-src="{{item.user.fbProfilePicture}}">
-        <h4 class="ratinghex-short">{{item.checkin.rating}}</h4>
-        <!-- <h4>{{item.checkin.rating}}</h4> -->
+        <img class="folder-footprint-image" ng-if="footprint.checkin.photoLarge !== 'null'" ng-src="{{footprint.checkin.photoLarge}}">
+        <img class="folder-footprint-folder-propic" ng-src="{{footprint.user.fbProfilePicture}}">
+        <h4 class="ratinghex-short">{{footprint.checkin.rating}}</h4>
         <div class="folder-footprint-item-description">
-          <h2>{{item.place.name}}</h2>
-          <h4>{{item.place.city}},{{item.place.country}}</h4>
-          <h4 ng-if="checkUserID(item.user.facebookID)">Last here on {{item.checkin.checkinTime | date : shortDate}}</h4>
-          <h4 ng-if="!checkUserID(item.user.facebookID)">Added from {{item.user.name}}</h4>
+          <h2>{{footprint.place.name}}</h2>
+          <h4>{{footprint.place.city}},{{footprint.place.country}}</h4>
+          <h4 ng-if="checkUserID(footprint.user.facebookID)">Last here on {{footprint.checkin.checkinTime | date : shortDate}}</h4>
+          <h4 ng-if="!checkUserID(footprint.user.facebookID)">Added from {{footprint.user.name}}</h4>
         </div>
       </a>
     </div>
