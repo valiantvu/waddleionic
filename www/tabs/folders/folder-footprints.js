@@ -20,9 +20,9 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
     $scope.openFolderIndex = FootprintRequests.openFolderIndex;
     console.log($scope.openFolder);
 
-
-    $scope.openFootprint = function(footprint) {
+    $scope.openFootprint = function(footprint, index) {
       FootprintRequests.openFootprint = footprint;
+      FootprintRequests.selectedFootprintIndex = index;
     };
 
     $scope.fetchFolderContents = function (folderName) {
