@@ -10,7 +10,7 @@
 
   <ion-content class="padding bg-scroll">
     <div style="height:50px"></div>
-    <svg ng-repeat="folder in folders" style="margin-top: -50" viewBox="0 0 1080 430" ng-click="openFolder(folder.folder.name)">
+    <svg ng-repeat="folder in folders" style="margin-top: -50" viewBox="0 0 1080 430" ng-click="openFolder(folder.folder.name, $index)">
       <defs>
           <pattern id="image1" patternContentUnits="objectBoundingBox" height="100%" width="100%">
               <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-1.png"/>

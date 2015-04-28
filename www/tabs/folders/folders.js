@@ -13,14 +13,11 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     var skipAmount = 5;
 
     FootprintRequests.currentTab = 'folders';
-    
-    $scope.openFootprint = function(footprint) {
-      FootprintRequests.openFootprint = footprint;
-    };
 
-    $scope.openFolder = function(folder) {
+    $scope.openFolder = function(folder, index) {
       console.log('changing states');
       FootprintRequests.openFolder = folder;
+      FootprintRequests.openFolderIndex = index;
       $state.transitionTo('tab.folder-footprints');
     };
 
@@ -43,34 +40,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     };
 
     $scope.getUserData();
-
-    $ionicModal.fromTemplateUrl('folder-contents.html', {
-      scope: $scope,
-      animation: 'slide-in-up'
-    }).then(function(modal) {
-      $scope.modal = modal;
-    });
     
-    $scope.fetchFolderContents = function (folderName) {
-      UserRequests.fetchFolderContents(window.sessionStorage.userFbID, folderName, 0, 15)
-      .then(function (folderContents) {
-        $scope.folderContents = folderContents.data;
-        console.log(folderContents);
-      })
-    };
-
-    $scope.openModal = function(folderName) {
-      $scope.fetchFolderContents(folderName);
-      $scope.selectedFolderInfo.name = folderName;
-      $scope.modal.show();
-    };
-
-    $scope.closeModal = function() {
-      $scope.modal.hide();
-      //TO-DO: figure out how to propertly implement remove() in order to avoid memory leaks
-      // $scope.modal.remove();
-    };
-
     $scope.clearSearch = function () {
       $scope.search = {};
       $scope.footprints = [];

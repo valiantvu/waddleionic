@@ -15,6 +15,9 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
     // FootprintRequests.currentTab = 'folder-footprints';
     
     $scope.openFolder = FootprintRequests.openFolder;
+    // Add 2 to index when using background image for SVG due 
+    // to adding 1 before and after % operation to avoid zero-related errors
+    $scope.openFolderIndex = FootprintRequests.openFolderIndex;
     console.log($scope.openFolder);
 
 
