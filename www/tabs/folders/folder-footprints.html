@@ -24,7 +24,7 @@
       <a ng-repeat="item in folderContents" class="item item-thumbnail-right">
         <img/>
         <img class="folder-footprint-image" ng-if="item.checkin.photoLarge !== 'null'" ng-src="{{item.checkin.photoLarge}}">
-        <img class="folder-footprint-folder-propic" style="height:20px" ng-src="{{item.user.fbProfilePicture}}">
+        <img class="folder-footprint-folder-propic" ng-src="{{item.user.fbProfilePicture}}">
         <h4 class="ratinghex-short">{{item.checkin.rating}}</h4>
         <!-- <h4>{{item.checkin.rating}}</h4> -->
         <div class="folder-footprint-item-description">
