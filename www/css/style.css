@@ -426,6 +426,10 @@ z-index: 11;
 	margin-top: 10px
 }
 
+.folder-footprint-item-description h4{
+	color: #808080;
+}
+
 .folder-footprint-image {
 	top: 0px;
 	right: 0px;
