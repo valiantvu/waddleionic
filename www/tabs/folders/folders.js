@@ -29,7 +29,9 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
               $scope.folders = data.data;
               // $scope.footprints = $scope.footprints.concat(data.data.footprints);
               // FootprintRequests.footprints = $scope.footprints;
-              page++;
+              if (data.data.length >= skipAmount) {
+                page++;
+              }
               console.log('page: ', page);
             } else {
               console.log('No more data for folders.');
@@ -50,11 +52,14 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     };
 
     $scope.createFolder = function (folderName, folderDescription) {
-      // console.log(folderName);
-      // console.log(folderDescription);
+      console.log(window.sessionStorage.userFbID);
+      console.log(folderName);
+      console.log(folderDescription);
       UserRequests.addFolder(window.sessionStorage.userFbID, folderName, folderDescription)
       .then(function (data) {
+        console.log('folder created');
         console.log(data);
+        $scope.getUserData();
         $scope.showCreationSuccessAlert();
       });
     };
