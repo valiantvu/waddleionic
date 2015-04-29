@@ -20,12 +20,12 @@
       return console.log('base.onError()', status);
     };
 
-    function S3Upload(options) {
+    function S3Upload(options, file_element) {
       if (options == null) options = {};
       for (option in options) {
         this[option] = options[option];
       }
-      this.handleFileSelect(document.getElementById(this.file_dom_selector));
+      this.handleFileSelect(file_element);
     }
 
     S3Upload.prototype.handleFileSelect = function(file_element) {

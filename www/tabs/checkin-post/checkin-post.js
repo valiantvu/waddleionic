@@ -6,7 +6,6 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 	$scope.selectedFolderInfo = {};
 	$scope.newFolderInfo = {};
 	$scope.selectedFolder = null;
-  $scope.photo = null;
 
 	$scope.venue = NativeCheckin.selectedVenue;
 	console.log($scope.venue)
@@ -37,6 +36,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
   };
 
 	$scope.sendCheckinDataToServer = function(venueInfo) {
+    console.log($scope.checkinInfo.photo);
 		var checkinData = {
 			id: venueInfo.id,
 			name: venueInfo.name,
@@ -54,10 +54,11 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 		if($scope.checkinInfo.folder) {
 			checkinData.folderName = $scope.checkinInfo.folder
 		}
-    if($scope.photo) {
-  		NativeCheckin.s3_upload()
+    if($scope.checkinInfo.photo) {
+      var formattedPhoto = {files: {0:$scope.checkinInfo.photo, length: 1}}
+  		NativeCheckin.s3_upload(formattedPhoto)
   		.then(function (public_url) {
-  		  checkinInfo.photo = public_url;
+  		  checkinData.photo = public_url;
   		  console.log('venueInfo: ' + JSON.stringify(checkinData));
   		  return NativeCheckin.sendCheckinDataToServer(checkinData);
   		})
@@ -67,7 +68,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
         $rootScope.$broadcast('newFootprint', footprint);
         $state.go('tab.home', {}, {reload: true});
   		});
-    }
+    } 
 	}
 
 	$scope.showCheckinInfo = function() {
@@ -206,8 +207,9 @@ var PictureSelectDirective = function () {
 							    + '<input type="file" id="files" accept="image/*"/>'
 							    + '<img class="full-image" id="preview" ng-click="browseFile()" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/Screen+Shot+2015-03-31+at+2.58.15+PM.png">'
 							+ '</div>',
-        scope:{
-
+        scope: {
+          photoFile: '=',
+          onPhotoSelected: '&'
         },
         replace:true,
         link:function(scope,elem,attrs){
@@ -219,9 +221,11 @@ var PictureSelectDirective = function () {
             angular.element(document.getElementById('files')).on('change',function(e){
 
                var file=e.target.files[0];
-               scope.$apply(function(){
-                 scope.photo = file;
+               scope.photoFile = file
+               scope.onPhotoSelected({
+                 photo: file
                });
+               console.log(scope.photoFile);
                console.log(angular.element(document.getElementById('files')).val());
 
                angular.element(document.getElementById('files')).val('');

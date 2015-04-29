@@ -31,7 +31,7 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
       }
     },
 
-    s3_upload: function() {
+    s3_upload: function(file_element) {
         var deferred = $q.defer();
         var url = '/api/checkins/sign_s3';
 
@@ -59,7 +59,7 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
               console.log('Upload error: ' + status);
               // status_elem.innerHTML = 'Upload error: ' + status;
           }
-        });
+        }, file_element);
         return deferred.promise;
     },
 

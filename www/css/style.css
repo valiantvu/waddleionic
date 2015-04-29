@@ -129,6 +129,19 @@ span{
 	background-color:#000;
 }
 
+.footprint-propic {
+	margin-top: .2%;
+	height: 50px !important;
+	width: 50px !important;
+	border-radius: 100%;
+	background-color:#000;
+}
+
+.item-avatar > img:first-child {
+	max-height: 100px;
+	max-width: 100px;
+}
+
 .folder-propic {
 	display: inline;
 	height: 20px;
@@ -343,6 +356,8 @@ li .ion-star {
 .options {
 	bottom: 10px;
 	float: right;
+	width: 8vw;
+	margin-right: 1vw;
 }
 
 .slidebox {
@@ -393,4 +408,74 @@ z-index: 11;
 
 .hypelistplace{
 	margin-left:-30px;
+}
+
+.tabs {
+	padding-top: 0px;
+}
+
+.tabs .tab-item .icon.waddle-feed {
+  background-repeat: no-repeat;
+  background-position: 50%;
+  height: 70%;
+  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/tabicon-feed-1.svg');
+  background-size: contain;
+}
+
+.tabs .tab-item .icon.waddle-checkin {
+  background-repeat: no-repeat;
+  background-position: 50%;
+  height: 100%;
+  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/tabicon-checkin-1.svg');
+  background-size: contain;
+  background-color:#e1876a !important;
+}
+
+.tabs .tab-item .icon.waddle-notifications {
+  background-repeat: no-repeat;
+  background-position: 50%;
+  height: 70%;
+  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/tabicon-notifications-1.svg');
+  background-size: contain;
+}
+
+.tabs .tab-item .icon.waddle-profile {
+  background-repeat: no-repeat;
+  background-position: 50%;
+  height: 70%;
+  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/tabicon-me-1.svg');
+  background-size: contain;
+}
+
+.tabs .tab-item .icon.waddle-folders {
+  background-repeat: no-repeat;
+  background-position: 50%;
+  height: 70%;
+  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/tabicon-folder-1.svg');
+  background-size: contain;
+}
+
+.icon.waddle-search {
+  background-repeat: no-repeat;
+  background-position: 50%;
+  height: 100%;
+  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/search-1.svg');
+  background-size: contain;
+}
+
+.icon.waddle-plus {
+  background-repeat: no-repeat;
+  background-position: 50%;
+  height: 100%;
+  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/plussign-1-50x50.svg');
+  background-size: contain;
+}
+
+.icon.waddle-more {
+  background-repeat: no-repeat;
+  background-position: 100%;
+  height: 100%;
+  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/threedot-1.svg');
+  background-size: 7vw;
+  z-index: 10;
 }
