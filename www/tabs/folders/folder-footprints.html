@@ -1,5 +1,8 @@
 <!-- Header Bar -->
 <ion-header-bar align-title="center" class="bg-header">
+ <div class="buttons">
+    <button class="button button-icon icon ion-arrow-left-b" ng-click="goBack()"></button>
+  </div>
   <h1 class="title">folders</h1>
   <div class="buttons">
     <button class="button button-icon icon ion-ios7-search-strong light" ng-click="doSomething()"></button>
@@ -70,7 +73,8 @@
         <img/>
         <img class="folder-footprint-image" ng-if="footprint.checkin.photoLarge !== 'null'" ng-src="{{footprint.checkin.photoLarge}}">
         <img class="folder-footprint-folder-propic" ng-src="{{footprint.user.fbProfilePicture}}">
-        <h4 class="ratinghex-short">{{footprint.checkin.rating}}</h4>
+        <h4 class="ratinghex-short" ng-if="footprint.checkin.rating">{{footprint.checkin.rating}}</h4>
+        <h4 class="ratinghex-short" ng-if="!footprint.checkin.rating">4</h4>
         <div class="folder-footprint-item-description">
           <h2>{{footprint.place.name}}</h2>
           <h4>{{footprint.place.city}},{{footprint.place.country}}</h4>

@@ -1,6 +1,6 @@
 (function(){
 
-var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests, $scope, $state) {
+var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests, $scope, $state, $ionicHistory) {
   Auth.checkLogin()
   .then(function () {
     $scope.folders = [];
@@ -11,6 +11,10 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
     $scope.newFolderInfo = {};
     var page = 0;
     var skipAmount = 5;
+
+    $scope.goBack = function() {
+      $ionicHistory.goBack();
+    };
 
     // FootprintRequests.currentTab = 'folder-footprints';
     
@@ -90,7 +94,7 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
   });
 };
 
-FolderFootprintsController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$scope', '$state'];
+FolderFootprintsController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$scope', '$state', '$ionicHistory'];
 
 angular.module('waddle.folder-footprints', [])
   .controller('FolderFootprintsController', FolderFootprintsController);
