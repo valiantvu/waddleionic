@@ -1,6 +1,6 @@
 (function(){
 
-var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicModal, $scope, $state) {
+var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicModal, $ionicPopup, $timeout, $scope, $state) {
   Auth.checkLogin()
   .then(function () {
     $scope.folders = [];
@@ -49,10 +49,54 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
       $scope.getUserData();
     };
 
+    $scope.createFolder = function (folderName, folderDescription) {
+      // console.log(folderName);
+      // console.log(folderDescription);
+      UserRequests.addFolder(window.sessionStorage.userFbID, folderName, folderDescription)
+      .then(function (data) {
+        console.log(data);
+        $scope.showCreationSuccessAlert();
+      });
+    };
+
+    $scope.showFolderCreationPopup = function() {
+      $scope.newFolderInfo = {};
+      // An elaborate, custom popup
+      var folderCreationPopup = $ionicPopup.show({
+        templateUrl: 'add-folder.html',
+        title: 'Add Folder',
+        scope: $scope,
+        buttons: [
+          { text: 'Cancel' },
+          {
+            text: '<b>Save</b>',
+            type: 'button-energized',
+            onTap: function(e) {
+                $scope.createFolder($scope.newFolderInfo.name, $scope.newFolderInfo.description);
+            }
+          }
+        ]
+      });
+      // myPopup.then(function(res) {
+      //   console.log('Tapped!', res);
+      // });
+    };
+
+    $scope.showCreationSuccessAlert = function() {
+      var creationSuccessAlert = $ionicPopup.show({
+        title: 'New Folder Added!',
+        templateUrl: 'folder-create-success.html'
+      });
+      // creationSuccessAlert.then(function(res) {
+      // });
+      $timeout(function() {
+       creationSuccessAlert.close(); //close the popup after 1 second
+      }, 1500);
+    };
   });
 };
 
-FoldersController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$ionicModal', '$scope', '$state'];
+FoldersController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$ionicModal', '$ionicPopup', '$timeout', '$scope', '$state'];
 
 angular.module('waddle.folders', [])
   .controller('FoldersController', FoldersController);

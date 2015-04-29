@@ -1,5 +1,8 @@
 <!-- Header Bar -->
 <ion-header-bar align-title="center" class="bg-header">
+  <div class="buttons">
+    <button class="button button-icon icon ion-plus-round light" ng-click="showFolderCreationPopup()"></button>
+  </div>
   <h1 class="title">Folders</h1>
   <div class="buttons">
     <button class="button button-icon icon ion-ios7-search-strong light" ng-click="doSomething()"></button>
@@ -75,25 +78,15 @@
 
   </ion-content>
 </ion-view>
-<!-- 
-<script id="folder-contents.html" type="text/ng-template">
-  <ion-modal-view>
-    <ion-header-bar align-title="center" class="bg-header">
-      <h1 class="title">{{selectedFolderInfo.name}}</h1>
-        <div class="buttons">
-          <button class="button button-icon icon ion-close-round light" ng-click="closeModal()"></button>
-        </div>
-    </ion-header-bar>
-    <ion-content class="padding bg-scroll">
-      <div ng-repeat="item in folderContents" class="list list-inset">
-        <img class="propic commenterpic" ng-src="{{item.user.fbProfilePicture}}">
-        <h4>{{item.checkin.rating}}</h4>
-        <h2>{{item.place.name}}</h2>
-        <h4>{{item.place.city}},{{item.place.country}}</h4>
-        <h4 ng-if="checkUserID(item.user.facebookID)">Last here on {{item.checkin.checkinTime | date : shortDate}}</h4>
-        <h4 ng-if="!checkUserID(item.user.facebookID)">Added from {{item.user.name}}</h4>
-        <img ng-if="item.checkin.photoLarge !== 'null'" ng-src="{{item.checkin.photoLarge}}">
-      </div>
-    </ion-content>
-  </ion-modal-view>
-</script> -->
+<script id="add-folder.html" type="text/ng-template">
+    <form class="navbar-form navbar-left" role="search">
+      <textarea ng-model="newFolderInfo.name" type="text" class="form-control" placeholder="Name your folder">
+      </textarea>
+      <textarea ng-model="newFolderInfo.description" type="text" class="form-control" placeholder="Write a description">
+      </textarea>
+    </form>
+</script>
+
+<script id="folder-create-success.html" type="text/ng-template">
+    <img class="success-confirm" src="http://cliparts.co/cliparts/BTg/ELe/BTgELekoc.jpg">
+</script>
