@@ -6,6 +6,7 @@ var FootprintRequests = function ($http){
   var selectedFootprintIndex;
   var deletedFootprint;
   var openFolder;
+  var openFolderIndex;
   var footprints;
   var currentTab;
   var productionServerURL = 'http://waddleionic.herokuapp.com';
@@ -21,6 +22,8 @@ var FootprintRequests = function ($http){
     deletedFootprint: true,
 
     openFolder: openFolder,
+
+    openFolderIndex: openFolderIndex,
 
     footprints: footprints,
 

@@ -33,9 +33,14 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
       $scope.footprint.comments = footprintInteractions.data.comments;
       $scope.footprint.hypes = footprintInteractions.data.hypes;
     })
-  };
+};
 
   $scope.fetchVenueInfo();
+  if($scope.headerTitle === 'folders') {
+    $scope.subRouting = '-folders';
+    $scope.footprint.user = UserRequests.loggedInUserInfo;
+    $scope.getFootprintInteractions();
+  }
   if($scope.headerTitle === 'notifications') {
     $scope.subRouting = '-notifications';
     $scope.footprint.user = UserRequests.loggedInUserInfo;

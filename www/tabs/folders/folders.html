@@ -10,25 +10,60 @@
 
   <ion-content class="padding bg-scroll">
     <div style="height:50px"></div>
-    <svg ng-repeat="folder in folders" style="margin-top: -50" viewBox="0 0 1080 430" ng-click="openFolder(folder.folder.name)">
+    <svg ng-repeat="folder in folders" style="margin-top: -50" viewBox="0 0 1080 430" ng-click="openFolder(folder.folder.name, $index)">
       <defs>
           <pattern id="image1" patternContentUnits="objectBoundingBox" height="100%" width="100%">
-              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png"/>
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-1.png"/>
           </pattern>
       </defs>
       <defs>
           <pattern id="image2" patternContentUnits="objectBoundingBox" height="100%" width="100%">
-              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png"/>
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-2.png"/>
           </pattern>
       </defs>
       <defs>
           <pattern id="image3" patternContentUnits="objectBoundingBox" height="100%" width="100%">
-              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png"/>
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-3.png"/>
+          </pattern>
+      </defs>
+      <defs>
+          <pattern id="image4" patternContentUnits="objectBoundingBox" height="100%" width="100%">
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-4.png"/>
+          </pattern>
+      </defs>
+      <defs>
+          <pattern id="image5" patternContentUnits="objectBoundingBox" height="100%" width="100%">
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-5.png"/>
+          </pattern>
+      </defs>
+      <defs>
+          <pattern id="image6" patternContentUnits="objectBoundingBox" height="100%" width="100%">
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-6.png"/>
+          </pattern>
+      </defs>
+      <defs>
+          <pattern id="image7" patternContentUnits="objectBoundingBox" height="100%" width="100%">
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-7.png"/>
+          </pattern>
+      </defs>
+      <defs>
+          <pattern id="image8" patternContentUnits="objectBoundingBox" height="100%" width="100%">
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-8.png"/>
+          </pattern>
+      </defs>
+      <defs>
+          <pattern id="image9" patternContentUnits="objectBoundingBox" height="100%" width="100%">
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-9.png"/>
+          </pattern>
+      </defs>
+      <defs>
+          <pattern id="image10" patternContentUnits="objectBoundingBox" height="100%" width="100%">
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-10.png"/>
           </pattern>
       </defs>
       <g>
-        <path id="tab-shape" fill="url(#image{{ $index + 1}})" d="M1080,496c0,18.226-14.774,33-33,33H33c-18.226,0-33-14.774-33-33V33C0,14.774,14.774,0,33,0  h477h7l46,63h7h477c18.226,0,33,14.774,33,33V496z"/>
-        <text x="50%" y="200" text-anchor="middle" alignment-baseline="middle" font-family="Verdana" font-size="50" fill="white">{{ folder.folder.name }}</text>
+        <path id="tab-shape" fill="url(#image{{ ($index + 1) % 10 + 1}})" d="M1080,496c0,18.226-14.774,33-33,33H33c-18.226,0-33-14.774-33-33V33C0,14.774,14.774,0,33,0  h477h7l46,63h7h477c18.226,0,33,14.774,33,33V496z"/>
+        <text x="50%" y="200" text-anchor="middle" alignment-baseline="middle" font-family="Verdana" font-size="50" fill="white">{{ folder.folder.name }} ({{ folder.folder.checkinCount }})</text>
       </g>
     </svg>
 
