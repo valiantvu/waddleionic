@@ -5,7 +5,7 @@
   </div>
   <h1 class="title">Folders</h1>
   <div class="buttons">
-    <button class="button button-icon icon ion-ios7-search-strong light" ng-click="doSomething()"></button>
+    <button class="button button-icon icon ion-ios7-search-strong light" ng-click="toggleFolderSearch()"></button>
   </div>
 </ion-header-bar>
 
@@ -13,7 +13,7 @@
 
   <ion-content class="padding bg-scroll">
     <!-- Search bar -->
-    <div class="list">
+    <div ng-show="showFolderSearch" class="list">
       <div class="item item-input-inset">
       <label class="item-input-wrapper">
         <i class="icon waddle-search"></i>

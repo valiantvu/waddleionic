@@ -5,6 +5,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
   .then(function () {
     $scope.folders = [];
     $scope.searchFolders = {};
+    $scope.showFolderSearch = false;
     $scope.moreDataCanBeLoaded = true;
     $scope.selectedFolderInfo = {};
     $scope.selectedFolder = null;
@@ -42,6 +43,10 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     };
 
     $scope.getUserData();
+
+    $scope.toggleFolderSearch = function() {
+      $scope.showFolderSearch = $scope.showFolderSearch === true ? false : true;
+    }
     
     $scope.searchFoldersByName = function () {
       // console.log($scope.searchFolders.query);
