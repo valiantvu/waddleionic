@@ -1026,7 +1026,8 @@ User.fetchFolderContents = function (facebookID, folderName, page, skipAmount) {
 
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder {name:{folderName}})-[contains:containsCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
-    'RETURN user, folder, checkin, place, contains',
+    'MATCH (checkin)<-[:hasCheckin]-(friend:User)',
+    'RETURN friend, folder, checkin, place, contains',
     'ORDER BY contains.createdAt',
     'SKIP { skipNum }', 
     'LIMIT { skipAmount }'
@@ -1045,7 +1046,7 @@ User.fetchFolderContents = function (facebookID, folderName, page, skipAmount) {
       console.log(results);
       var parsedResults = _.map(results, function (item) {
         var singleResult = {
-          "user": item.user.data,
+          "user": item.friend.data,
           "folder": item.folder.data,
           "checkin": item.checkin.data,
           "place": item.place.data
