@@ -143,6 +143,15 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         }
       }
     })
+    .state('tab.comments-folders', {
+      url: '/comments',
+      views: {
+        'folders-tab': {
+          templateUrl: 'tabs/comments/comments.html',
+          controller: 'CommentsController'
+        }
+      }
+    })
     .state('tab.comments-profile', {
       url: '/comments',
       views: {
@@ -174,6 +183,15 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       url: '/enlarged-footprint',
       views: {
         'home-tab': {
+            templateUrl: 'tabs/enlarged/enlarged-footprint.html',
+            controller: 'EnlargedFootprintController'
+        }
+      }
+    })
+    .state('tab.enlarged-footprint-folders', {
+      url: '/enlarged-footprint',
+      views: {
+        'folders-tab': {
             templateUrl: 'tabs/enlarged/enlarged-footprint.html',
             controller: 'EnlargedFootprintController'
         }
