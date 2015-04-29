@@ -162,8 +162,9 @@ var UserRequests = function ($http){
     },
 
     searchFoldersByName: function(userFbID, query) {
+      console.log(query);
       var url = '/api/users/folders/search/' + userFbID + '/' + query;
-
+      console.log(url);
       if (arguments[2] !== undefined) {
           var page = arguments[2]
           url +=  "/" + page;

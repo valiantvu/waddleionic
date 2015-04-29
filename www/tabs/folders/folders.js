@@ -4,7 +4,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
   Auth.checkLogin()
   .then(function () {
     $scope.folders = [];
-    $scope.search = {};
+    $scope.searchFolders = {};
     $scope.moreDataCanBeLoaded = true;
     $scope.selectedFolderInfo = {};
     $scope.selectedFolder = null;
@@ -43,9 +43,19 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
 
     $scope.getUserData();
     
+    $scope.searchFoldersByName = function () {
+      // console.log($scope.searchFolders.query);
+      if($scope.searchFolders.query.length > 0) {
+        UserRequests.searchFoldersByName(window.sessionStorage.userFbID, $scope.searchFolders.query)
+        .then(function(folders) {
+          $scope.folders = folders.data;
+          $scope.moreDataCanBeLoaded = false;
+        })
+      }
+    };
+
     $scope.clearSearch = function () {
-      $scope.search = {};
-      $scope.footprints = [];
+      $scope.searchFolders = {};
       page = 0;
       $scope.moreDataCanBeLoaded = true;
       $scope.getUserData();
