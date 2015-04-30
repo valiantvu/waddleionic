@@ -11,9 +11,8 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     $scope.selectedFolder = null;
     $scope.newFolderInfo = {};
     var page = 0;
-    var normalSkipAmount = 5;
-    var skipAmount = normalSkipAmount;
-    var numFoldersLoaded;
+    var skipAmount = 5;
+    var reloadPage = false;
 
     FootprintRequests.currentTab = 'folders';
 
@@ -28,18 +27,17 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
         UserRequests.fetchFolders(window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {
           numFoldersLoaded = data.data.length;
-          if (data.data.length > 0) {
+          if (numFoldersLoaded > 0) {
             console.dir(data.data);
             $scope.folders = $scope.folders.concat(data.data);
             page++;
 
-            // Set the skipAmount for the next getUserData call to be the number of 
-            // folders loaded if it is fewer than the normal skip amount
-            // This ensures that any new folders added aren't skipped due to paging
-            if (numFoldersLoaded < normalSkipAmount) {
-              skipAmount = numFoldersLoaded;
-            } else {
-              skipAmount = normalSkipAmount;
+            // Only increment the page count if the number of folders loaded
+            // equals the skip amount. This handles the case where the number of
+            // folders loaded is less than a full page (skip amount) and then new folders
+            // are added. This ensures that any new folders added aren't skipped due to paging
+            if (numFoldersLoaded === skipAmount) {
+              page++;
             }
             console.log('page: ', page);
           } else {
@@ -50,11 +48,9 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
         });
     };
 
-    $scope.getUserData();
-
     $scope.toggleFolderSearch = function() {
       $scope.showFolderSearch = $scope.showFolderSearch === true ? false : true;
-    }
+    };
     
     $scope.searchFoldersByName = function () {
       // console.log($scope.searchFolders.query);
