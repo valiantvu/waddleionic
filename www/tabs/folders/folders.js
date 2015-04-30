@@ -69,7 +69,6 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
       $scope.searchFolders = {};
       page = 0;
       $scope.moreDataCanBeLoaded = true;
-      $scope.getUserData();
     };
 
     $scope.createFolder = function (folderName, folderDescription) {
