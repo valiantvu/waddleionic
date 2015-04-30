@@ -11,7 +11,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     $scope.selectedFolder = null;
     $scope.newFolderInfo = {};
     var page = 0;
-    var skipAmount = 5;
+    var skipAmount = 10;
 
     FootprintRequests.currentTab = 'folders';
 
@@ -57,18 +57,19 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     $scope.searchFoldersByName = function () {
       // console.log($scope.searchFolders.query);
       if($scope.searchFolders.query.length > 0) {
-        UserRequests.searchFoldersByName(window.sessionStorage.userFbID, $scope.searchFolders.query, 0, 10)
+        UserRequests.searchFoldersByName(window.sessionStorage.userFbID, $scope.searchFolders.query, 0, skipAmount)
         .then(function(folders) {
           $scope.folders = folders.data;
           $scope.moreDataCanBeLoaded = false;
-        })
+        });
+      } else {
+        $scope.clearSearch();
       }
     };
 
     $scope.clearSearch = function () {
       $scope.searchFolders = {};
-      page = 0;
-      $scope.moreDataCanBeLoaded = true;
+      $scope.getUserData(true);
     };
 
     $scope.createFolder = function (folderName, folderDescription) {

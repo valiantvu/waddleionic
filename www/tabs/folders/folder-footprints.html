@@ -64,7 +64,7 @@
           </pattern>
       </defs>
       <g>
-        <path id="tab-shape" fill="url(#image{{ openFolderIndex + 2 }})" d="M1080,496c0,18.226-14.774,33-33,33H33c-18.226,0-33-14.774-33-33V33C0,14.774,14.774,0,33,0  h477h7l46,63h7h477c18.226,0,33,14.774,33,33V496z"/>
+        <path id="tab-shape" fill="url(#image{{ (openFolderIndex + 1) % 10 + 1 }})" d="M1080,496c0,18.226-14.774,33-33,33H33c-18.226,0-33-14.774-33-33V33C0,14.774,14.774,0,33,0  h477h7l46,63h7h477c18.226,0,33,14.774,33,33V496z"/>
         <text x="50%" y="150" text-anchor="middle" alignment-baseline="middle" font-family="Verdana" font-size="45" fill="white">{{ openFolder }}</text>
       </g>
     </svg>
@@ -83,11 +83,11 @@
         </div>
       </a>
     </div>
-<!--   <ion-infinite-scroll
-    on-infinite="getAggregatedFeedData()"
+  <ion-infinite-scroll
+    on-infinite="fetchFolderContents()"
     ng-if="moreDataCanBeLoaded"
     distance="10%">
-  </ion-infinite-scroll> -->
+  </ion-infinite-scroll>
 
   </ion-content>
 </ion-view>
