@@ -12,7 +12,6 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     $scope.newFolderInfo = {};
     var page = 0;
     var skipAmount = 5;
-    var reloadPage = false;
 
     FootprintRequests.currentTab = 'folders';
 
@@ -23,28 +22,20 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
       $state.transitionTo('tab.folder-footprints');
     };
 
-    $scope.getUserData = function () {
-        UserRequests.fetchFolders(window.sessionStorage.userFbID, page, skipAmount)
-        .then(function (data) {
-          numFoldersLoaded = data.data.length;
-          if (numFoldersLoaded > 0) {
-            console.dir(data.data);
-            $scope.folders = $scope.folders.concat(data.data);
-            page++;
-
-            // Only increment the page count if the number of folders loaded
-            // equals the skip amount. This handles the case where the number of
-            // folders loaded is less than a full page (skip amount) and then new folders
-            // are added. This ensures that any new folders added aren't skipped due to paging
-            if (numFoldersLoaded === skipAmount) {
-              page++;
-            }
-            console.log('page: ', page);
-          } else {
-            console.log('No more data for folders.');
-            $scope.moreDataCanBeLoaded = false;
-          }
-          $scope.$broadcast('scroll.infiniteScrollComplete');
+    $scope.getUserData = function (reload) {
+      page = reload ? 0 : page;
+      UserRequests.fetchFolders(window.sessionStorage.userFbID, page, skipAmount)
+      .then(function (data) {
+        if (data.data.length > 0) {
+          console.dir(data.data);
+          $scope.folders = reload ? data.data : $scope.folders.concat(data.data);
+          page++;
+          console.log('page: ', page);
+        } else {
+          console.log('No more data for folders.');
+          $scope.moreDataCanBeLoaded = false;
+        }
+        $scope.$broadcast('scroll.infiniteScrollComplete');
         });
     };
 
@@ -78,7 +69,9 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
       .then(function (data) {
         console.log('folder created');
         console.log(data);
-        $scope.getUserData();
+        // page = 0;
+        // $scope.folders = [];
+        $scope.getUserData(true);
         $scope.showCreationSuccessAlert();
       });
     };
