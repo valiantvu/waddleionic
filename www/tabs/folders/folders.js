@@ -59,7 +59,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     $scope.searchFoldersByName = function () {
       // console.log($scope.searchFolders.query);
       if($scope.searchFolders.query.length > 0) {
-        UserRequests.searchFoldersByName(window.sessionStorage.userFbID, $scope.searchFolders.query)
+        UserRequests.searchFoldersByName(window.sessionStorage.userFbID, $scope.searchFolders.query, 0, 10)
         .then(function(folders) {
           $scope.folders = folders.data;
           $scope.moreDataCanBeLoaded = false;

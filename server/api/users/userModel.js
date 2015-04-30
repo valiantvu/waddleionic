@@ -994,8 +994,9 @@ User.searchFoldersByName = function (facebookID, folderName, page, skipAmount) {
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder)',
     'WHERE folder.name =~ {folderName}',
-    'RETURN user, folder',
-    'ORDER BY folder.createdAt',
+    'OPTIONAL MATCH (folder)-[contains:containsCheckin]->(checkin:Checkin)',
+    'RETURN user, folder, count(contains) AS checkinCount',
+    'ORDER BY folder.createdAt DESC',
     'SKIP { skipNum }', 
     'LIMIT { skipAmount }'
   ].join('\n');
@@ -1016,6 +1017,11 @@ User.searchFoldersByName = function (facebookID, folderName, page, skipAmount) {
         var singleResult = {
           "user": item.user.data,
           "folder": item.folder.data
+        }
+        if(item.checkinCount) {
+          singleResult.folder.checkinCount = item.checkinCount; 
+        } else {
+          singleResult.folder.checkinCount = 0;
         }
         return singleResult;
       });
