@@ -1,6 +1,6 @@
 (function(){
 
-var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicModal, $ionicPopup, $timeout, $scope, $state) {
+var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicModal, $ionicPopup, $ionicScrollDelegate, $timeout, $scope, $state) {
   Auth.checkLogin()
   .then(function () {
     $scope.folders = [];
@@ -11,7 +11,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     $scope.selectedFolder = null;
     $scope.newFolderInfo = {};
     var page = 0;
-    var skipAmount = 10;
+    var skipAmount = 5;
 
     FootprintRequests.currentTab = 'folders';
 
@@ -22,31 +22,34 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
       $state.transitionTo('tab.folder-footprints');
     };
 
-    $scope.getUserData = function () {
-        UserRequests.fetchFolders(window.sessionStorage.userFbID, page, skipAmount)
-        .then(function (data) {
-            if (data.data.length > 0) {
-              console.dir(data.data);
-              $scope.folders = data.data;
-              // $scope.footprints = $scope.footprints.concat(data.data.footprints);
-              // FootprintRequests.footprints = $scope.footprints;
-              if (data.data.length >= skipAmount) {
-                page++;
-              }
-              console.log('page: ', page);
-            } else {
-              console.log('No more data for folders.');
-              // $scope.moreDataCanBeLoaded = false;
-            }
-            // $scope.$broadcast('scroll.infiniteScrollComplete');
+    $scope.getUserData = function (reload) {
+
+      if (reload) {
+        page = 0;
+        $scope.moreDataCanBeLoaded = true;
+      }
+
+      UserRequests.fetchFolders(window.sessionStorage.userFbID, page, skipAmount)
+      .then(function (data) {
+        if (data.data.length > 0) {
+          console.dir(data.data);
+          $scope.folders = reload ? data.data : $scope.folders.concat(data.data);
+          if (reload) {
+            $ionicScrollDelegate.scrollTop();
+          }
+          page++;
+          console.log('page: ', page);
+        } else {
+          console.log('No more data for folders.');
+          $scope.moreDataCanBeLoaded = false;
+        }
+        $scope.$broadcast('scroll.infiniteScrollComplete');
         });
     };
 
-    $scope.getUserData();
-
     $scope.toggleFolderSearch = function() {
       $scope.showFolderSearch = $scope.showFolderSearch === true ? false : true;
-    }
+    };
     
     $scope.searchFoldersByName = function () {
       // console.log($scope.searchFolders.query);
@@ -74,7 +77,9 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
       .then(function (data) {
         console.log('folder created');
         console.log(data);
-        $scope.getUserData();
+        // page = 0;
+        // $scope.folders = [];
+        $scope.getUserData(true);
         $scope.showCreationSuccessAlert();
       });
     };
@@ -116,7 +121,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
   });
 };
 
-FoldersController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$ionicModal', '$ionicPopup', '$timeout', '$scope', '$state'];
+FoldersController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$ionicModal', '$ionicPopup', '$ionicScrollDelegate', '$timeout', '$scope', '$state'];
 
 angular.module('waddle.folders', [])
   .controller('FoldersController', FoldersController);
