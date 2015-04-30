@@ -11,7 +11,9 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     $scope.selectedFolder = null;
     $scope.newFolderInfo = {};
     var page = 0;
-    var skipAmount = 5;
+    var normalSkipAmount = 5;
+    var skipAmount = normalSkipAmount;
+    var numFoldersLoaded;
 
     FootprintRequests.currentTab = 'folders';
 
@@ -25,20 +27,26 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     $scope.getUserData = function () {
         UserRequests.fetchFolders(window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {
-            if (data.data.length > 0) {
-              console.dir(data.data);
-              $scope.folders = $scope.folders.concat(data.data);
-              // $scope.footprints = $scope.footprints.concat(data.data.footprints);
-              // FootprintRequests.footprints = $scope.footprints;
-              // if (data.data.length >= skipAmount) {
-                page++;
-              // }
-              console.log('page: ', page);
+          numFoldersLoaded = data.data.length;
+          if (data.data.length > 0) {
+            console.dir(data.data);
+            $scope.folders = $scope.folders.concat(data.data);
+            page++;
+
+            // Set the skipAmount for the next getUserData call to be the number of 
+            // folders loaded if it is fewer than the normal skip amount
+            // This ensures that any new folders added aren't skipped due to paging
+            if (numFoldersLoaded < normalSkipAmount) {
+              skipAmount = numFoldersLoaded;
             } else {
-              console.log('No more data for folders.');
-              $scope.moreDataCanBeLoaded = false;
+              skipAmount = normalSkipAmount;
             }
-            $scope.$broadcast('scroll.infiniteScrollComplete');
+            console.log('page: ', page);
+          } else {
+            console.log('No more data for folders.');
+            $scope.moreDataCanBeLoaded = false;
+          }
+          $scope.$broadcast('scroll.infiniteScrollComplete');
         });
     };
 
