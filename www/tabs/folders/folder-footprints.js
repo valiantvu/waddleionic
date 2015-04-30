@@ -3,7 +3,7 @@
 var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests, $scope, $state, $ionicHistory) {
   Auth.checkLogin()
   .then(function () {
-    $scope.folders = [];
+    $scope.folderContents = [];
     $scope.search = {};
     $scope.moreDataCanBeLoaded = true;
     $scope.selectedFolderInfo = {};
@@ -19,8 +19,6 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
     // FootprintRequests.currentTab = 'folder-footprints';
     
     $scope.openFolder = FootprintRequests.openFolder;
-    // Add 2 to index when using background image for SVG due 
-    // to adding 1 before and after % operation to avoid zero-related errors
     $scope.openFolderIndex = FootprintRequests.openFolderIndex;
     console.log($scope.openFolder);
 
@@ -29,15 +27,19 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
       FootprintRequests.selectedFootprintIndex = index;
     };
 
-    $scope.fetchFolderContents = function (folderName) {
-      UserRequests.fetchFolderContents(window.sessionStorage.userFbID, folderName, 0, 15)
+    $scope.fetchFolderContents = function () {
+      UserRequests.fetchFolderContents(window.sessionStorage.userFbID, $scope.openFolder, page, skipAmount)
       .then(function (folderContents) {
-        $scope.folderContents = folderContents.data;
         console.log(folderContents);
+        if (folderContents.data.length > 0) {
+          $scope.folderContents = $scope.folderContents.concat(folderContents.data);
+          page++;
+        } else {
+          console.log('No more data for folder footprints.');
+          $scope.moreDataCanBeLoaded = false;
+        }
       });
     };
-
-    $scope.fetchFolderContents($scope.openFolder);
   });
 };
 
