@@ -31,7 +31,10 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
 
       UserRequests.fetchFolders(window.sessionStorage.userFbID, page, skipAmount)
       .then(function (data) {
-        if (data.data.length > 0) {
+        if (data.data.length < skipAmount && data.data.length > 0) {
+          $scope.folders = reload ? data.data : $scope.folders.concat(data.data);
+          $scope.moreDataCanBeLoaded = false;
+        } else if (data.data.length > 0) {
           console.dir(data.data);
           $scope.folders = reload ? data.data : $scope.folders.concat(data.data);
           if (reload) {
