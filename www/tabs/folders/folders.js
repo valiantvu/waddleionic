@@ -24,6 +24,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
 
     $scope.getUserData = function (reload) {
       page = reload ? 0 : page;
+      $scope.moreDataCanBeLoaded = reload ? true : $scope.moreDataCanBeLoaded;
       UserRequests.fetchFolders(window.sessionStorage.userFbID, page, skipAmount)
       .then(function (data) {
         if (data.data.length > 0) {
