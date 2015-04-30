@@ -10,7 +10,7 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
     $scope.selectedFolder = null;
     $scope.newFolderInfo = {};
     var page = 0;
-    var skipAmount = 5;
+    var skipAmount = 10;
 
     $scope.goBack = function() {
       $ionicHistory.goBack();
@@ -31,7 +31,10 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
       UserRequests.fetchFolderContents(window.sessionStorage.userFbID, $scope.openFolder, page, skipAmount)
       .then(function (folderContents) {
         console.log(folderContents);
-        if (folderContents.data.length > 0) {
+        if (folderContents.data.length < skipAmount && folderContents.data.length > 0) {
+          $scope.folderContents = $scope.folderContents.concat(folderContents.data);
+          $scope.moreDataCanBeLoaded = false;
+        } else if (folderContents.data.length > 0) {
           $scope.folderContents = $scope.folderContents.concat(folderContents.data);
           page++;
         } else {
