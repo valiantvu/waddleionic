@@ -77,7 +77,7 @@
         <h4 class="ratinghex-short" ng-if="!footprint.checkin.rating">4</h4>
         <div class="folder-footprint-item-description">
           <h2>{{footprint.place.name}}</h2>
-          <h4>{{footprint.place.city}},{{footprint.place.country}}</h4>
+          <h4>{{footprint.place.city}}, {{footprint.place.country}}</h4>
           <h4 ng-if="checkUserID(footprint.user.facebookID)">Last here on {{footprint.checkin.checkinTime | date : shortDate}}</h4>
           <h4 ng-if="!checkUserID(footprint.user.facebookID)">Added from {{footprint.user.name}}</h4>
         </div>

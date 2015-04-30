@@ -22,6 +22,14 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
     $scope.openFolderIndex = FootprintRequests.openFolderIndex;
     console.log($scope.openFolder);
 
+    $scope.checkUserID = function(facebookID) {
+      if(facebookID === window.sessionStorage.userFbID) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
     $scope.openFootprint = function(footprint, index) {
       FootprintRequests.openFootprint = footprint;
       FootprintRequests.selectedFootprintIndex = index;
