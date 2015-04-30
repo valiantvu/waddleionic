@@ -80,6 +80,10 @@ h3{
 	float: right;
 }
 
+.center-align-vertical {
+	vertical-align: center;
+}
+
 span{
 	font-family: 'Open Sans', sans-serif;
 }
@@ -97,6 +101,12 @@ span{
 	font-size: 18px;
 	font-weight: 200;
 	display: inline-block;
+	vertical-align: text-top;
+}
+
+.comment-list-text {
+	font-size: 18px;
+	font-weight: 200;
 	vertical-align: text-top;
 }
 
@@ -149,6 +159,14 @@ span{
 	width: 50px !important;
 	border-radius: 100%;
 	background-color:#000;
+}
+
+.commentslist-propic {
+	/*margin-right: -1%;*/
+	height: 35px !important;
+	width: 35px !important;
+	border-radius: 100%;
+	background-color: #000;
 }
 
 .item-avatar > img:first-child {

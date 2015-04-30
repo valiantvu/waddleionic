@@ -15,10 +15,10 @@
 
       <!-- Comments -->
       <div ng-repeat="comment in footprint.comments | orderBy:'comment.time'" class="item item-avatar item-text-wrap" ng-click="show(comment, footprint)">  
-        <img ng-src='{{comment.commenter.fbProfilePicture}}'>
-        <h2>{{comment.commenter.name}}</h2>
-        <p>{{comment.comment.text}}</p>
-        <p>{{comment.comment.time | date : shortDate}}<P>
+        <img class="commentslist-propic" ng-src='{{comment.commenter.fbProfilePicture}}'>
+        <h2 class="commentername">{{comment.commenter.name}}</h2>
+        <span am-time-ago="footprint.checkin.checkinTime" class="float-right center-align-vertical"></span><i class="ion-clock float-right"></i>
+        <p class="comment-list-text">{{comment.comment.text}}</p>
       </div>
 
       <!-- Add Comment -->
