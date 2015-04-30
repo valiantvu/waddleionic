@@ -17,7 +17,7 @@
       <div class="item item-input-inset">
       <label class="item-input-wrapper">
         <i class="icon waddle-search"></i>
-        <input type="text" placeholder="search your folders" ng-keyup="searchFoldersByName()" ng-model="searchFolders.query">
+        <input id="folder-search" type="text" placeholder="search your folders" ng-keyup="searchFoldersByName()" ng-model="searchFolders.query">
       </label>
         <!-- <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button> -->
         <button class="button button-clear" ng-if="searchFolders.query" ng-click="clearSearch()">x</button>

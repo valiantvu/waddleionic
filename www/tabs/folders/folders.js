@@ -49,6 +49,9 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
 
     $scope.toggleFolderSearch = function() {
       $scope.showFolderSearch = $scope.showFolderSearch === true ? false : true;
+      if ($scope.showFolderSearch) {
+        $ionicScrollDelegate.scrollTop();
+      }
     };
     
     $scope.searchFoldersByName = function () {
