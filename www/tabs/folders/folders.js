@@ -1,6 +1,6 @@
 (function(){
 
-var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicModal, $ionicPopup, $timeout, $scope, $state) {
+var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicModal, $ionicPopup, $ionicScrollDelegate, $timeout, $scope, $state) {
   Auth.checkLogin()
   .then(function () {
     $scope.folders = [];
@@ -23,13 +23,20 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     };
 
     $scope.getUserData = function (reload) {
-      page = reload ? 0 : page;
-      $scope.moreDataCanBeLoaded = reload ? true : $scope.moreDataCanBeLoaded;
+
+      if (reload) {
+        page = 0;
+        $scope.moreDataCanBeLoaded = true;
+      }
+
       UserRequests.fetchFolders(window.sessionStorage.userFbID, page, skipAmount)
       .then(function (data) {
         if (data.data.length > 0) {
           console.dir(data.data);
           $scope.folders = reload ? data.data : $scope.folders.concat(data.data);
+          if (reload) {
+            $ionicScrollDelegate.scrollTop();
+          }
           page++;
           console.log('page: ', page);
         } else {
@@ -114,7 +121,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
   });
 };
 
-FoldersController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$ionicModal', '$ionicPopup', '$timeout', '$scope', '$state'];
+FoldersController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$ionicModal', '$ionicPopup', '$ionicScrollDelegate', '$timeout', '$scope', '$state'];
 
 angular.module('waddle.folders', [])
   .controller('FoldersController', FoldersController);
