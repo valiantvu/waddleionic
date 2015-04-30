@@ -1,10 +1,11 @@
 (function(){
 
-var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicModal, $scope, $state) {
+var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicModal, $ionicPopup, $timeout, $scope, $state) {
   Auth.checkLogin()
   .then(function () {
     $scope.folders = [];
-    $scope.search = {};
+    $scope.searchFolders = {};
+    $scope.showFolderSearch = false;
     $scope.moreDataCanBeLoaded = true;
     $scope.selectedFolderInfo = {};
     $scope.selectedFolder = null;
@@ -29,7 +30,9 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
               $scope.folders = data.data;
               // $scope.footprints = $scope.footprints.concat(data.data.footprints);
               // FootprintRequests.footprints = $scope.footprints;
-              page++;
+              if (data.data.length >= skipAmount) {
+                page++;
+              }
               console.log('page: ', page);
             } else {
               console.log('No more data for folders.');
@@ -40,19 +43,80 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     };
 
     $scope.getUserData();
+
+    $scope.toggleFolderSearch = function() {
+      $scope.showFolderSearch = $scope.showFolderSearch === true ? false : true;
+    }
     
+    $scope.searchFoldersByName = function () {
+      // console.log($scope.searchFolders.query);
+      if($scope.searchFolders.query.length > 0) {
+        UserRequests.searchFoldersByName(window.sessionStorage.userFbID, $scope.searchFolders.query)
+        .then(function(folders) {
+          $scope.folders = folders.data;
+          $scope.moreDataCanBeLoaded = false;
+        })
+      }
+    };
+
     $scope.clearSearch = function () {
-      $scope.search = {};
-      $scope.footprints = [];
+      $scope.searchFolders = {};
       page = 0;
       $scope.moreDataCanBeLoaded = true;
       $scope.getUserData();
     };
 
+    $scope.createFolder = function (folderName, folderDescription) {
+      console.log(window.sessionStorage.userFbID);
+      console.log(folderName);
+      console.log(folderDescription);
+      UserRequests.addFolder(window.sessionStorage.userFbID, folderName, folderDescription)
+      .then(function (data) {
+        console.log('folder created');
+        console.log(data);
+        $scope.getUserData();
+        $scope.showCreationSuccessAlert();
+      });
+    };
+
+    $scope.showFolderCreationPopup = function() {
+      $scope.newFolderInfo = {};
+      // An elaborate, custom popup
+      var folderCreationPopup = $ionicPopup.show({
+        templateUrl: 'add-folder.html',
+        title: 'Add Folder',
+        scope: $scope,
+        buttons: [
+          { text: 'Cancel' },
+          {
+            text: '<b>Save</b>',
+            type: 'button-energized',
+            onTap: function(e) {
+                $scope.createFolder($scope.newFolderInfo.name, $scope.newFolderInfo.description);
+            }
+          }
+        ]
+      });
+      // myPopup.then(function(res) {
+      //   console.log('Tapped!', res);
+      // });
+    };
+
+    $scope.showCreationSuccessAlert = function() {
+      var creationSuccessAlert = $ionicPopup.show({
+        title: 'New Folder Added!',
+        templateUrl: 'folder-create-success.html'
+      });
+      // creationSuccessAlert.then(function(res) {
+      // });
+      $timeout(function() {
+       creationSuccessAlert.close(); //close the popup after 1 second
+      }, 1500);
+    };
   });
 };
 
-FoldersController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$ionicModal', '$scope', '$state'];
+FoldersController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$ionicModal', '$ionicPopup', '$timeout', '$scope', '$state'];
 
 angular.module('waddle.folders', [])
   .controller('FoldersController', FoldersController);
