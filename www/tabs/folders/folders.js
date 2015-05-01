@@ -47,7 +47,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
           $scope.moreDataCanBeLoaded = false;
         }
         $scope.$broadcast('scroll.infiniteScrollComplete');
-        });
+      });
     };
 
     $scope.toggleFolderSearch = function() {
@@ -87,6 +87,20 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
         // $scope.folders = [];
         $scope.getUserData(true);
         $scope.showCreationSuccessAlert();
+      });
+    };
+
+    $scope.deleteFolderAndContents = function (folderName) {
+      console.log(window.sessionStorage.userFbID);
+      console.log(folderName);
+      UserRequests.deleteFolderAndContents(window.sessionStorage.userFbID, folderName)
+      .then(function (data) {
+        console.log('folder deleted');
+        console.log(data);
+        $scope.getUserData(true);
+      })
+      .catch(function (err) {
+        console.log(err);
       });
     };
 

@@ -120,7 +120,7 @@ var UserRequests = function ($http){
     },
 
     addFolder: function(userFbID, folderName, folderDescription) {
-      var url = '/api/users/folders';
+      var url = '/api/users/folders/add';
       if(ionic.Platform.isIOS()) {
         url = productionServerURL.concat(url);
       }
@@ -225,6 +225,23 @@ var UserRequests = function ($http){
       return $http({
         method: 'GET',
         url: url
+      });
+    },
+
+    deleteFolderAndContents: function(userFbID, folderName) {
+      var url = '/api/users/folders/delete';
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
+
+      console.log(url);
+      return $http({
+        method: 'POST',
+        url: url,
+        data: {
+          facebookID: userFbID,
+          folderName: folderName
+        }
       });
     },
     

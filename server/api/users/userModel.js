@@ -1115,14 +1115,17 @@ User.deleteFolderAndContents = function (facebookID, folderName) {
 
   var query = [
     'MATCH (user:User ({facebookID: facebookID})-[hFolder:hasFolder]->(folder:Folder {name:{folderName}})',
-    'OPTIONAL MATCH (folder)-[contains:containsCheckin]->(checkin:Checkin)',
-    'DELETE hFolder, folder, contains'
+    // 'OPTIONAL MATCH (folder)-[contains:containsCheckin]->(checkin:Checkin)',
+    // 'DELETE hFolder, folder, contains'
+    'DELETE hFolder, folder'
   ].join('\n');
 
   var params = {
     'facebookID': facebookID,
     'folderName': folderName
   };
+
+  console.log('deleting: ', facebookID, folderName);
 
   db.query(query, params, function (err, results) {
     if (err) { deferred.reject(err); }
