@@ -9,26 +9,21 @@
 
 <ion-view title="Profile">
   <ion-content class="padding bg-scroll">
-  <div class="item item-avatar profile-banner">
-    <div class="profpicframe">
-      <div class='profpic'>
-        <img ng-src='{{userInfo.fbProfilePicture}}' class="profpic">
-      </div>
-    </div>
-    <h2 class="centered">{{userInfo.name}}</h2>
-    <h3 class="centered">{{userInfo.footprintsCount}} footprints</h3>
+  <div class="item profile-banner">
+    <img ng-src='{{userInfo.fbProfilePicture}}' class="propic-profile">
+    <h2 class="centered white padding-top">{{userInfo.name}}</h2>
+    <h4 class="centered white">{{userInfo.footprintsCount}} footprints</h4>
+  </div>
     <div class="button-bar">
       <a class="button" ng-click="showFootprints()">Footprints</a>
       <a class="button" ng-click="showFriendsList()">Friends</a>
     </div>
-  </div>
 
 
     <div class="list">
       <div class="item item-input-inset">
         <label class="item-input-wrapper">
-          <i class="icon ion-ios7-search-strong placeholder-icon"></i>
-          <input type="text" placeholder="Search Places" ng-keyup="bifurcateSearch()" ng-model="search.query">
+          <input type="text" placeholder="{{searchPlaceHolder}}" ng-keyup="bifurcateSearch()" ng-model="search.query">
         </label>
         <button class="button button-clear" ng-if="search.query" ng-click="clearSearch()">x</button>
       </div>
@@ -39,17 +34,13 @@
       <button ng-if="!footprint.folders" class="button icon-left ion-star button-small button-light savefave" ng-click="showPopup(footprint.checkin.checkinID, $index)">Save to Folder</button>
       <button ng-if="footprint.folders" class="button button-small button-light savefave" ng-click="openModal(footprint.folders[0].name)">{{footprint.folders[0].name}}</button>
       <img src="https://s3-us-west-2.amazonaws.com/waddle/TabCurve-1.png" class="folder-tab-curve">
-      <button ng-click="openOptions(footprint, $index)" class="options button button-icon icon ion-chevron-down light"></button>
+      <button ng-click="openOptions(footprint, $index)" class="options button button-icon icon waddle-more light"></button>
       <div class="list list-inset">
 
       <div class="item item-avatar">
 
         <!-- Profile Picture -->
-        <div class="profpicframe">
-          <div class="profpic">
-            <img ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
-          </div>
-        </div>
+        <img class="footprint-propic" ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
         <!-- Badge -->
         <img ng-if="footprint.category.iconPrefix" ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge">
          <img ng-if="!footprint.category.iconPrefix" ng-src="https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-40x40-1.png" class="waddlebadge">
@@ -143,12 +134,12 @@
       </div>
     </div>
 
-    <div ng-repeat="friend in friends" class="list card">
+    <div ng-repeat="friend in friends" ng-if='friend.fbProfilePicture' class="list card">
 
       <div class="item item-avatar">
 
         <!-- Profile Picture -->
-        <img ng-src='{{friend.fbProfilePicture}}' ng-click="loadFriendPage(friend)">
+        <img class="commentslist-propic" ng-src='{{friend.fbProfilePicture}}' ng-click="loadFriendPage(friend)">
 
         <!-- User Name -->
         <!-- <h2>{{friend.user.name}}</h2> -->
