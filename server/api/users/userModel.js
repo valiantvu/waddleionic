@@ -1114,10 +1114,9 @@ User.deleteFolderAndContents = function (facebookID, folderName) {
   var deferred = Q.defer();
 
   var query = [
-    'MATCH (user:User ({facebookID: facebookID})-[hFolder:hasFolder]->(folder:Folder {name:{folderName}})',
-    // 'OPTIONAL MATCH (folder)-[contains:containsCheckin]->(checkin:Checkin)',
-    // 'DELETE hFolder, folder, contains'
-    'DELETE hFolder, folder'
+    'MATCH (user:User {facebookID: {facebookID}})-[hFolder:hasFolder]->(folder:Folder {name:{folderName}})',
+    'OPTIONAL MATCH (folder)-[contains:containsCheckin]->(checkin:Checkin)',
+    'DELETE hFolder, folder, contains'
   ].join('\n');
 
   var params = {
