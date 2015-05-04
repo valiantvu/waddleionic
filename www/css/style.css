@@ -78,10 +78,20 @@ h3{
 	font-weight: 400;
 }
 
-/*h4{
-
+h5{
+	color:#787878;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
+	font-weight: 200;
 }
-*/
+
+h6 {
+	color:#989898;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
+	font-weight: 400;
+}
+
 .coral {
 	color:#e1876a;
 }
@@ -105,17 +115,21 @@ span{
 .commentername {
 	color:#e1876a;
 	font-family: 'Open Sans', sans-serif;
-	font-size: 18px;
+	font-size: 14px !important;
 	font-weight: 700;
 	display: inline-block;
 	vertical-align: text-top;
 }
 
 .commenttext {
-	font-size: 18px;
+	font-size: 14px;
 	font-weight: 200;
-	display: inline-block;
+	/*display: inline-block;*/
 	vertical-align: text-top;
+}
+
+.comment-footprint {
+	display: inline-block;
 }
 
 .comment-list-text {
@@ -139,9 +153,24 @@ span{
 	width:auto;
 }
 
+.waddlebadge-checkin-list {
+	height: 35px;
+	width: auto !important;
+	margin-top: 2.5%;
+	border-radius: 0px !important;
+}
+
 .notifications-timestamp {
 	float: right;
 	margin-top: -15px;
+	margin-right: 3px;
+}
+
+.timestamp {
+	color: #989898;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
+	font-weight: 400;
 }
 
 .logo{

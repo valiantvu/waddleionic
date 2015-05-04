@@ -14,10 +14,10 @@
   <ion-content class="padding bg-scroll">
 
       <!-- Comments -->
-      <div ng-repeat="comment in footprint.comments | orderBy:'comment.time'" class="item item-avatar item-text-wrap" ng-click="show(comment, footprint)">  
+      <div ng-repeat="comment in footprint.comments | orderBy:'comment.time'" class="item item-avatar item-text-wrap notifications-list" ng-click="show(comment, footprint)">  
         <img class="commentslist-propic" ng-src='{{comment.commenter.fbProfilePicture}}'>
         <h2 class="commentername">{{comment.commenter.name}}</h2>
-        <span am-time-ago="footprint.checkin.checkinTime" class="float-right center-align-vertical"></span><i class="ion-clock float-right"></i>
+        <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><i class="ion-clock float-right timestamp"></i>
         <p class="comment-list-text">{{comment.comment.text}}</p>
       </div>
 

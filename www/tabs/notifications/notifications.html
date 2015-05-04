@@ -15,7 +15,7 @@
       <h2 class="inline-block">{{notification.place.name}}</h2>
       <img ng-src="{{notification.category.iconPrefix}}40x40{{notification.category.iconSuffix}}" class="waddlebadge-notifications">
       <p>{{notification.notificationTrigger.message2}}</p>
-      <span ng-if="notification.notificationTrigger.createdAt" am-time-ago="notification.notificationTrigger.createdAt" class="notifications-timestamp"></span><i ng-if="notification.notificationTrigger.createdAt" class="ion-clock notifications-timestamp"></i>
+      <span ng-if="notification.notificationTrigger.createdAt" am-time-ago="notification.notificationTrigger.createdAt" class="notifications-timestamp timestamp"></span><i ng-if="notification.notificationTrigger.createdAt" class="ion-clock notifications-timestamp timestamp"></i>
     <!--   <p>"{{notification.notificationTrigger.text}}"<p> -->
     </div>
  <!--  </ion-list> -->

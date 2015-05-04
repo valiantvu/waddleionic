@@ -65,8 +65,11 @@
       <!-- Comments -->
       <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)">  
           <img class="propic commenterpic" ng-src="{{comment.commenter.fbProfilePicture}}">
-          <h4 class="commentername">{{comment.commenter.name}}</h4>
-          <h4 class="commenttext"> {{comment.comment.text}} </h4>
+          <p class="comment-footprint">
+            <h4 class="commentername">{{comment.commenter.name}}</h4>
+            <!-- <h4 class="commenttext"> {{comment.comment.text}} </h4> -->
+            <span class="commenttext">{{comment.comment.text}}</span>
+          </p>
           <!-- <span class="subdued float-right">{{comment.comment.time | date : shortDate}}</span> -->
       </div>
 
