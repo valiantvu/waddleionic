@@ -39,10 +39,12 @@
             <a ng-if="footprint.place.province !== 'null'">{{footprint.place.province}}</a>
             <span class="float-right">{{footprint.checkin.checkinTime | date : shortDate}}</span>
           </p>
-          <a ng-if="phone">{{phone}}</a>
-          <button ng-if="menu" ng-click="openMenu()" class="button button-small">View Menu</button>
       </div>
 
+          <div class="button-bar">
+            <a ng-if="phone" href="tel:{{phone}}" class="button button-outline button-bar-enlarged">{{phone}}</a>
+            <a ng-if="menu" ng-click="openMenu()" class="button button-outline button-bar-enlarged">View Menu</a>
+          </div>
           <div class="item item-body">
         <div class="checkinphoto">
           <img ng-if="footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">

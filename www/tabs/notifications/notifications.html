@@ -7,20 +7,18 @@
 
   <ion-content class="padding bg-scroll">
 
-    <div ng-repeat="notification in notifications" ui-sref="tab.enlarged-footprint-notifications" ng-click="openFootprint(notification, $index)" class="list list-inset">
-      <p><b>{{notification.notificationGiver.name}}</b> {{notification.notificationTrigger.message1}}:</p>
-      <h4>{{notification.place.name}}</h4>
-      <img ng-src="{{notification.category.iconPrefix}}40x40{{notification.category.iconSuffix}}" class="waddlebadge">
-      <span am-time-ago="notification.notificationTrigger.createdAt" class="float-right"></span><i class="ion-clock float-right"></i>
+
+<!--   <ion-list> -->
+    <div ng-repeat="notification in notifications" class="item item-avatar item-text-wrap notifications-list" ui-sref="tab.enlarged-footprint-notifications" ng-click="openFootprint(notification, $index)">
+      <img class="notifications-list-propic" ng-src='{{notification.notificationGiver.fbProfilePicture}}'>
+      <p class="notifications-text-overflow notifications-message1"><b>{{notification.notificationGiver.name}}</b> {{notification.notificationTrigger.message1}}:</p>
+      <h4 class="inline-block">{{notification.place.name}}</h4>
+      <img ng-src="{{notification.category.iconPrefix}}40x40{{notification.category.iconSuffix}}" class="waddlebadge-notifications">
+      <p class="notifications-text-overflow notifications-message2">{{notification.notificationTrigger.message2}}</p>
+      <span ng-if="notification.notificationTrigger.createdAt" am-time-ago="notification.notificationTrigger.createdAt" class="notifications-timestamp timestamp"></span><i ng-if="notification.notificationTrigger.createdAt" class="ion-clock notifications-timestamp timestamp"></i>
     <!--   <p>"{{notification.notificationTrigger.text}}"<p> -->
-      <p>{{notification.notificationTrigger.message2}}</p>
-   <!--    <div class="item item-avatar">
-
-
-        
-      </div>
- -->
     </div>
+ <!--  </ion-list> -->
 
   <ion-infinite-scroll
     on-infinite="getUserData()"

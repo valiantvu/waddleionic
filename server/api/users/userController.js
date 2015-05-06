@@ -645,10 +645,11 @@ userController.searchFolderContents = function (req, res) {
 }
 
 userController.deleteFolderAndContents = function (req, res) {
+  console.log('Deleting: ', req.body.folderName);
   var facebookID = req.body.facebookID;
   var folderName = req.body.folderName;
 
-  User.deleteFolderAndContents(facebook, folderName)
+  User.deleteFolderAndContents(facebookID, folderName)
   .then(function (data) {
     res.json({success: "Folder and contents succesfully deleted"});
     res.status(201).end();

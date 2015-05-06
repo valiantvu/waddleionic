@@ -1,7 +1,7 @@
 <!-- Header Bar -->
 <ion-header-bar align-title="center" class="bg-header">
   <div class="buttons">
-    <button class="button button-icon icon waddle-search light" ng-click="doSomething()"></button>
+    <button class="button button-icon icon waddle-search light" ng-click="toggleFolderSearch()"></button>
   </div>
   <h1 class="title">feed</h1>
 </ion-header-bar>
@@ -11,14 +11,14 @@
   <ion-content class="padding bg-scroll">
 <!-- <div class="backgroundgrey"> -->
     <!-- Search bar -->
-    <div class="list">
-      <div class="item item-input-inset">
-      <label class="item-input-wrapper">
-        <i class="icon waddle-search"></i>
-        <input type="text" placeholder="search your feed" ng-keyup="searchFeed()" ng-model="search.query">
+    <div ng-show="showFolderSearch" class="list">
+      <div class="item item-input-inset searchbox">
+      <label class="item-input-wrapper white-bg">
+        <i class="icon waddle-search placeholder-icon"></i>
+        <input type="text" placeholder="search for a place" ng-keyup="searchFeed()" ng-model="search.query">
       </label>
-        <!-- <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button> -->
         <button class="button button-clear" ng-if="search.query" ng-click="clearSearch()">x</button>
+        <!-- <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button> -->
       </div>
     </div>
 
@@ -29,7 +29,7 @@
       <button ng-click="openOptions(footprint, $index)" class="options button button-icon icon waddle-more light"></button>
       <div class="list list-inset">
 
-      <div class="item item-avatar">
+      <div class="item item-avatar footprint-card">
 
         <!-- Profile Picture -->
         <!-- <div class="profpicframe">
@@ -42,7 +42,7 @@
         <img ng-if="footprint.category.iconPrefix" ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge">
         <img ng-if="!footprint.category.iconPrefix" ng-src="https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-40x40-1.png" class="waddlebadge">
         <!-- User Name -->
-        <a ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="subdued"><b>{{footprint.user.name}}</b> rates this <h4 class="ratinghex-footprint">{{footprint.checkin.rating}}</h4></a>
+        <a ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="subdued home-rating-message"><b>{{footprint.user.name}}</b> rates this <h4 class="ratinghex-footprint">{{footprint.checkin.rating}}</h4></a>
         <br>
         <!-- Place Name and Location-->
         <a ng-click="getFootprint(footprint)">
@@ -57,16 +57,22 @@
       <div class="item item-body">
         <img class="full-image" ng-if="footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
         <p ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
-        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)" class="subdued x-centered"><i class="ion-chatbubble coral"></i>{{ footprint.comments.length }}</a>
-          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint, $index)" class="subdued x-centered"><i class="ion-android-folder coral"></i>{{ footprint.hypes.length }}</a>
+        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><i class="ion-chatbubble coral larger"></i> {{footprint.comments.length}}</a>
+          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><i class="ion-android-folder coral larger"></i> {{footprint.hypes.length}}</a>
           </p>
       </div>
 
       <!-- Comments -->
-      <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)">  
-          <img class="propic commenterpic" ng-src="{{comment.commenter.fbProfilePicture}}">
-          <h4 class="commentername">{{comment.commenter.name}}</h4>
-          <h4 class="commenttext"> {{comment.comment.text}} </h4>
+      <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap home-comment" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)">  
+          <img class="footprint-comment-propic" ng-src="{{comment.commenter.fbProfilePicture}}">
+          <h2 class="commentername-footprint">{{comment.commenter.name}}</h2>
+        <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><i class="ion-clock float-right timestamp"></i>
+        <p class="comment-home-text">{{comment.comment.text}}</p>
+          <!-- <p class="comment-footprint"> -->
+            <!-- <h4 class="commentername">{{comment.commenter.name}}</h4> -->
+            <!-- <h4 class="commenttext"> {{comment.comment.text}} </h4> -->
+          <!--   <span class="commenttext">{{comment.comment.text}}</span>
+          </p> -->
           <!-- <span class="subdued float-right">{{comment.comment.time | date : shortDate}}</span> -->
       </div>
 
@@ -75,7 +81,7 @@
             <img ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
           </div>
         </div> -->
-       <div ui-sref='tab.comments' ng-click='openFootprint(footprint, $index)' class="item item-input-inset">
+       <div ui-sref='tab.comments' ng-click='openFootprint(footprint, $index)' class="item item-input-inset comment-input">
               <img class="propic newcomment" ng-src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfp1/v/t1.0-1/s200x200/1476344_10153625108483662_8209874012985593264_n.jpg?oh=91007a07d6d534815f719b6aecb09d9a&oe=5584541F&__gda__=1431308809_91c6fa931fe0f59ed47d42b7b4a4fb77">
       <label name="customSubmit" data-custom-submit info='someinfo' class="item-input-wrapper commentfield" novalidate>
         <input type="text" ng-model='comment' name='comment' placeholder='Leave a comment' data-ng-minlength="1" data-ng-maxlength="120" required>

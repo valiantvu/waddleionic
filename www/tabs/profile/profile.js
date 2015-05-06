@@ -7,7 +7,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
 		var footprints, hypelist, friends;
 		var page = 0;
-		var skip = 5;
+		var skip = 10;
 		$scope.search = {};
 		$scope.selectedFolderInfo = {};
     $scope.selectedFolder = null;
@@ -37,6 +37,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		$scope.showFriendsList = function () {
 			$scope.hypelist = null;
 			$scope.footprints = null;
+      $scope.searchPlaceHolder = 'search friends'
 
 			if(friends) {
 				$scope.friends = friends;
@@ -52,6 +53,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		};
 
 		$scope.showFootprints = function () {
+      $scope.searchPlaceHolder = 'search footprints'
 			$scope.hypelist = null;
 			$scope.friends = null;
 			$scope.footprints = footprints;
@@ -155,6 +157,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		};
 
 		var getFriendProfileData = function () {
+      $scope.searchPlaceHolder = 'search footprints'
 			$scope.userInfo = UserRequests.userProfileData;
 			UserRequests.userProfileData = null;
 			UserRequests.getUserData($scope.userInfo.facebookID, window.sessionStorage.userFbID, page, skip)
@@ -167,6 +170,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
 		var getOwnProfileData = function () {
 			console.log(UserRequests.allData);
+      $scope.searchPlaceHolder = 'search footprints'
 			UserRequests.getUserData(window.sessionStorage.userFbID, window.sessionStorage.userFbID, page, skip)
 			.then(function (data) {
 				console.log(data.data);

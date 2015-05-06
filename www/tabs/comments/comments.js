@@ -1,6 +1,6 @@
 (function(){
 
-var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicActionSheet, $ionicHistory) {
+var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicActionSheet, $ionicHistory, moment) {
     
     $scope.footprint = FootprintRequests.openFootprint;
     $scope.currentTab = FootprintRequests.currentTab;
@@ -49,9 +49,27 @@ var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequ
         }
       });
     };
+
+    moment.locale('en', {
+      relativeTime : {
+        future: 'in %s',
+        past:   '%s',
+        s:  '%ds',
+        m:  '1m',
+        mm: '%dm',
+        h:  '1h',
+        hh: '%dh',
+        d:  '1d',
+        dd: '%dd',
+        M:  '1mo',
+        MM: '%dmo',
+        y:  '1y',
+        yy: '%dy'
+      }
+    });
 };
 
-CommentsController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicActionSheet', '$ionicHistory'];
+CommentsController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicActionSheet', '$ionicHistory', 'moment'];
 
   // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 

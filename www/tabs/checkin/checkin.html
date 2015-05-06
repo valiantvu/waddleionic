@@ -1,30 +1,25 @@
 
 <!-- Header Bar -->
 <ion-header-bar align-title="center" class="bg-header">
-  <div class="buttons">
-    <button class="button button-icon icon ion-arrow-left-b" ng-click="doSomething()"></button>
-  </div>
-  <h1 class="title">Check-Ins</h1>
+  <h1 class="title">check-in</h1>
 </ion-header-bar>
 
 <ion-view title="Checkins">
   <ion-content class="padding bg-scroll">
      <!--  <h2>{{location}}</h2> -->
-    <div ng-repeat="venue in venues">
-      <div class="list list-inset">
-      	<h2 ui-sref="tab.checkin-post" ui-sref-opts="{reload: true}" ng-click='passSelectedVenueInfoToPostTab(venue)'>{{venue.name}}</h2>
-        <img ng-src="{{venue.iconUrlPrefix}}40x40{{venue.iconUrlSuffix}}" class="waddlebadge">
+    <div class="item item-avatar item-text-wrap notifications-list" ng-repeat="venue in venues" ui-sref="tab.checkin-post" ng-click='passSelectedVenueInfoToPostTab(venue)' ui-sref-opts="{reload: true}">
+        <img class="waddlebadge-checkin-list" ng-src="{{venue.iconUrlPrefix}}40x40{{venue.iconUrlSuffix}}">
+        <h2>{{venue.name}}</h2>
         <h5>{{venue.location.formattedAddress[0]}}, {{venue.location.formattedAddress[1]}}<h5>
         <h6>{{venue.location.distance}} mi</h6>
-      </div>
     </div>
 
     <ion-infinite-scroll
     on-infinite="getUserData()"
-    ng-if="!$scope.venues"
+    ng-if="!venues"
     distance="10%">
   </ion-infinite-scroll>
-  <h5 ng-if="$scope.venues">No more results to show!</h5>
+  <h5 ng-if="venues">No more results to show!</h5>
 
   </ion-content>
 </ion-view>
