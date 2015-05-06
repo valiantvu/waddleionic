@@ -1,12 +1,13 @@
 (function(){
 
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment) {
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate) {
   Auth.checkLogin()
   .then(function () {
     $scope.numHypes = 0;
     $scope.footprints = [];
     $scope.search = {};
+    $scope.footprintSearch = false;
     $scope.selectedFolderInfo = {};
     $scope.selectedFolder = null;
     $scope.newFolderInfo = {};
@@ -27,6 +28,13 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         return true;
       } else {
         return false;
+      }
+    };
+
+    $scope.toggleFolderSearch = function() {
+      $scope.showFolderSearch = $scope.showFolderSearch === true ? false : true;
+      if ($scope.showFolderSearch) {
+        $ionicScrollDelegate.scrollTop();
       }
     };
 
@@ -374,7 +382,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         s:  '%ds',
         m:  '1m',
         mm: '%dm',
-        h:  'h',
+        h:  '1h',
         hh: '%dh',
         d:  '1d',
         dd: '%dd',
@@ -389,7 +397,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 

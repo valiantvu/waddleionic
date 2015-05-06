@@ -3,7 +3,7 @@
   <div class="buttons">
     <button class="button button-icon icon ion-arrow-left-b" ng-click="goBack()"></button>
   </div>
-  <h1 class="title">Comments</h1>
+  <h1 class="title">comments</h1>
   <!-- <div class="buttons">
     <button class="button button-icon icon ion-map" ui-sref="footprints-map"></button>
   </div> -->
@@ -14,7 +14,7 @@
   <ion-content class="padding bg-scroll">
 
       <!-- Comments -->
-      <div ng-repeat="comment in footprint.comments | orderBy:'comment.time'" class="item item-avatar item-text-wrap notifications-list" ng-click="show(comment, footprint)">  
+      <div ng-repeat="comment in footprint.comments | orderBy:'comment.time'" class="item item-avatar item-text-wrap comments-list" ng-click="show(comment, footprint)">  
         <img class="commentslist-propic" ng-src='{{comment.commenter.fbProfilePicture}}'>
         <h2 class="commentername">{{comment.commenter.name}}</h2>
         <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><i class="ion-clock float-right timestamp"></i>
@@ -23,8 +23,8 @@
 
       <!-- Add Comment -->
       <div class="item">
-        <form name="customSubmit" data-custom-submit info='someinfo' class='comment_form' novalidate>
-          <input ng-model='comment' name='comment' placeholder='Leave a comment' data-ng-minlength="1" data-ng-maxlength="120" required>
+        <form name="customSubmit" data-custom-submit info='someinfo' class='comment-form item-input-wrapper' novalidate>
+          <input class='comment-form' ng-model='comment' name='comment' placeholder='Leave a comment' data-ng-minlength="1" data-ng-maxlength="120" required>
           <span class="help-inline" ng-show="customSubmit.comment.$error.maxlength">120 Character Max</span>
         </form>
       </div>

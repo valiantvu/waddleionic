@@ -57,7 +57,7 @@ var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequ
         s:  '%ds',
         m:  '1m',
         mm: '%dm',
-        h:  'h',
+        h:  '1h',
         hh: '%dh',
         d:  '1d',
         dd: '%dd',

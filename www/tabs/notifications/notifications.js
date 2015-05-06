@@ -66,7 +66,7 @@ var NotificationsController = function (Auth, UserRequests, MapFactory, Footprin
         s:  '%ds',
         m:  '1m',
         mm: '%dm',
-        h:  'h',
+        h:  '1h',
         hh: '%dh',
         d:  '1d',
         dd: '%dd',

@@ -11,8 +11,8 @@
   <ion-content class="padding bg-scroll">
   <div class="item profile-banner">
     <img ng-src='{{userInfo.fbProfilePicture}}' class="propic-profile">
-    <h2 class="centered white padding-top">{{userInfo.name}}</h2>
-    <h4 class="centered white">{{userInfo.footprintsCount}} footprints</h4>
+    <h2 class="centered white-text padding-top">{{userInfo.name}}</h2>
+    <h4 class="centered white-text">{{userInfo.footprintsCount}} footprints</h4>
   </div>
     <div class="button-bar">
       <a class="button" ng-click="showFootprints()">Footprints</a>
@@ -21,8 +21,8 @@
 
 
     <div class="list">
-      <div class="item item-input-inset">
-        <label class="item-input-wrapper">
+      <div class="item item-input-inset searchbox">
+        <label class="item-input-wrapper white-bg">
           <input type="text" placeholder="{{searchPlaceHolder}}" ng-keyup="bifurcateSearch()" ng-model="search.query">
         </label>
         <button class="button button-clear" ng-if="search.query" ng-click="clearSearch()">x</button>
@@ -45,7 +45,7 @@
         <img ng-if="footprint.category.iconPrefix" ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge">
          <img ng-if="!footprint.category.iconPrefix" ng-src="https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-40x40-1.png" class="waddlebadge">
         <!-- User Name -->
-        <a ui-sref="tab.enlarged-footprint-profile" ng-click="openFootprint(footprint, $index)" class="subdued"><b>{{footprint.user.name}}</b> rates this <b class="rating">{{footprint.checkin.rating}}</b></a>
+         <a ui-sref="tab.enlarged-footprint-profile" ng-click="openFootprint(footprint, $index)" class="subdued home-rating-message"><b>{{footprint.user.name}}</b> rates this <h4 class="ratinghex-footprint">{{footprint.checkin.rating}}</h4></a>
         <br>
         <!-- Place Name and Location-->
         <a ng-click="getFootprint(footprint)">
@@ -65,17 +65,17 @@
 " ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
         </div>
         <p ui-sref="tab.enlarged-footprint-profile" ng-click="openFootprint(footprint, $index)" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
-        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments-profile" ng-click="openFootprint(footprint, $index)" class="subdued x-centered"><i class="ion-chatbubble coral"></i>{{ footprint.comments.length }}</a>
-          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint, $index)" class="subdued x-centered"><i class="ion-android-folder coral"></i>{{ footprint.hypes.length }}</a>
+        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments-profile" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><i class="ion-chatbubble coral larger"></i> {{footprint.comments.length}}</a>
+          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><i class="ion-android-folder coral larger"></i> {{footprint.hypes.length}}</a>
           </p>
       </div>
 
       <!-- Comments -->
-      <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap" ui-sref="tab.comments-profile" ng-click="openFootprint(footprint, $index)">  
-          <img class="propic commenterpic" ng-src="{{comment.commenter.fbProfilePicture}}">
-          <span class="commentername">{{comment.commenter.name}}</span>
-          <span> {{comment.comment.text}} </span>
-          <span class="subdued float-right">{{comment.comment.time | date : shortDate}}</span>
+      <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap home-comment" ui-sref="tab.comments-profile" ng-click="openFootprint(footprint, $index)">  
+          <img class="footprint-comment-propic" ng-src="{{comment.commenter.fbProfilePicture}}">
+          <h2 class="commentername-footprint">{{comment.commenter.name}}</h2>
+          <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><i class="ion-clock float-right timestamp"></i>
+          <p class="comment-home-text">{{comment.comment.text}}</p>
       </div>
 
     <!--     <div class="profpicframe">
@@ -134,7 +134,7 @@
       </div>
     </div>
 
-    <div ng-repeat="friend in friends" ng-if='friend.fbProfilePicture' class="list card">
+    <div ng-repeat="friend in friends" ng-if='friend.fbProfilePicture' class="item item-avatar notifications-list">
 
       <div class="item item-avatar">
 

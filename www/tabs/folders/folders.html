@@ -3,7 +3,7 @@
   <div class="buttons">
     <button class="button button-icon icon waddle-search light" ng-click="toggleFolderSearch()"></button>
   </div>
-  <h1 class="title">Folders</h1>
+  <h1 class="title">folders</h1>
   <div class="buttons">
     <button class="button button-icon icon waddle-plus light" ng-click="showFolderCreationPopup()"></button>
   </div>
@@ -14,9 +14,9 @@
   <ion-content class="padding bg-scroll">
     <!-- Search bar -->
     <div ng-show="showFolderSearch" class="list">
-      <div class="item item-input-inset">
-      <label class="item-input-wrapper">
-        <i class="icon waddle-search"></i>
+      <div class="item item-input-inset searchbox">
+      <label class="item-input-wrapper white-bg">
+        <i class="icon waddle-search placeholder-icon"></i>
         <input id="folder-search" type="text" placeholder="search your folders" ng-keyup="searchFoldersByName()" ng-model="searchFolders.query">
       </label>
         <!-- <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button> -->
