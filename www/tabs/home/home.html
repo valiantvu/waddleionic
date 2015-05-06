@@ -50,7 +50,7 @@
           <p ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)"> 
             <a ng-if="footprint.place.city !== 'null'">{{footprint.place.city}}</a><a ng-if="footprint.place.city !== 'null' && footprint.place.province !== 'null'">,</a>
             <a ng-if="footprint.place.province !== 'null'">{{footprint.place.province}}</a>
-            <span am-time-ago="footprint.checkin.checkinTime" class="float-right"></span><i class="ion-clock float-right"></i>
+            <span am-time-ago="footprint.checkin.checkinTime" class="float-right timestamp"></span><i class="ion-clock float-right timestamp"></i>
           </p>
       </div>
 

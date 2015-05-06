@@ -18,35 +18,35 @@ var CheckinController = function ($scope, $state, NativeCheckin, UserRequests, $
 
 	$scope.searchFoursquareVenues = function () {
 		// $scope.show();
-		// NativeCheckin.getCurrentLocation()
-		// .then(function (location) {
-		// 	console.log(location);
-		// 	var currentLocation = {
-		// 		lat: location.coords.latitude,
-		// 		lng: location.coords.longitude
-		// 	};
-		// 	NativeCheckin.searchFoursquareVenues(window.sessionStorage.userFbID, currentLocation)
-		// 	.then(function (venues) {
-		// 		// $scope.hide();
-		// 		$scope.venues = venues.data;
-		// 	})
-		// });
-    NativeCheckin.getCurrentLocation(
-    	function(location) {
-    		console.log(location);
-    		var currentLocation = {
-    			lat: location.coords.latitude,
-    			lng: location.coords.longitude
-    		};
-    		NativeCheckin.searchFoursquareVenues(window.sessionStorage.userFbID, currentLocation)
-    		.then(function (venues) {
-    			$scope.venues = venues.data;
-    		})
-      },
-      function(err) {
-      	console.log(err);
-      }
-    )
+		NativeCheckin.getCurrentLocation()
+		.then(function (location) {
+			console.log(location);
+			var currentLocation = {
+				lat: location.coords.latitude,
+				lng: location.coords.longitude
+			};
+			NativeCheckin.searchFoursquareVenues(window.sessionStorage.userFbID, currentLocation)
+			.then(function (venues) {
+				// $scope.hide();
+				$scope.venues = venues.data;
+			})
+		});
+    // NativeCheckin.getCurrentLocation(
+    // 	function(location) {
+    // 		console.log(location);
+    // 		var currentLocation = {
+    // 			lat: location.coords.latitude,
+    // 			lng: location.coords.longitude
+    // 		};
+    // 		NativeCheckin.searchFoursquareVenues(window.sessionStorage.userFbID, currentLocation)
+    // 		.then(function (venues) {
+    // 			$scope.venues = venues.data;
+    // 		})
+    //   },
+    //   function(err) {
+    //   	console.log(err);
+    //   }
+    // )
 	};
 
 	$scope.passSelectedVenueInfoToPostTab = function (venueInfo) {
