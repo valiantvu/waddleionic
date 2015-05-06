@@ -15,54 +15,52 @@
     <button ng-if="!footprint.folders" class="button icon-left ion-star button-small button-light savefave" ng-click="showPopup(footprint.checkin.checkinID, $index)">Save to Folder</button>
     <button ng-if="footprint.folders" class="button button-small button-light savefave" ng-click="openModal(footprint.folders[0].name)">{{footprint.folders[0].name}}</button>
     <img src="https://s3-us-west-2.amazonaws.com/waddle/TabCurve-1.png" class="folder-tab-curve">
-    <button ng-click="openOptions(footprint, 0)" class="options button button-icon icon ion-chevron-down light"></button>
+    <button ng-click="openOptions(footprint, 0)" class="options button button-icon icon waddle-more light"></button>
     <div class="list list-inset">
          <div class="item item-avatar">
 
         <!-- Profile Picture -->
-        <div class="profpicframe">
-          <div class="profpic">
-            <img ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
-          </div>
-        </div>
+         <img class="footprint-propic" ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
         <!-- Badge -->
-        <img ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge">
+        <img ng-if="footprint.category.iconPrefix" ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge">
+        <img ng-if="!footprint.category.iconPrefix" ng-src="https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-40x40-1.png" class="waddlebadge">
         <!-- User Name -->
-        <a ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint)" class="subdued"><b>{{footprint.user.name}}</b> rates this <b class="rating">{{footprint.checkin.rating}}</b></a>
+        <a ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint)" class="subdued home-rating-message"><b>{{footprint.user.name}}</b> rates this <b class="ratinghex-footprint">{{footprint.checkin.rating}}</b></a>
         <br>
         <!-- Place Name and Location-->
         <a ng-click="getFootprint(footprint)">
           <h2>{{footprint.place.name}}</h2>
-          <a ng-if="address">{{address[0]}}</a>
-          <p> 
+          <p class="enlarged-address inline-block" ng-if="address">{{address[0]}}</p>
+          <span am-time-ago="footprint.checkin.checkinTime" class="float-right timestamp"></span><i class="ion-clock float-right timestamp"></i>
+          <p class="enlarged-location"> 
             <a ng-if="footprint.place.city !== 'null'">{{footprint.place.city}}</a><a ng-if="footprint.place.city !== 'null' && footprint.place.province !== 'null'">,</a>
             <a ng-if="footprint.place.province !== 'null'">{{footprint.place.province}}</a>
-            <span class="float-right">{{footprint.checkin.checkinTime | date : shortDate}}</span>
           </p>
       </div>
-
+          <!-- <HR WIDTH="60%"> -->
+          <!-- <br> -->
           <div class="button-bar">
-            <a ng-if="phone" href="tel:{{phone}}" class="button button-outline button-bar-enlarged">{{phone}}</a>
-            <a ng-if="menu" ng-click="openMenu()" class="button button-outline button-bar-enlarged">View Menu</a>
+            <a ng-if="phone" href="tel:{{phone}}" class="button button-small button-outline button-bar-enlarged">{{phone}}</a>
+            <a ng-if="menu" ng-click="openMenu()" class="button button-small button-outline button-bar-enlarged">View Menu</a>
           </div>
           <div class="item item-body">
         <div class="checkinphoto">
           <img ng-if="footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
         </div>
         <p ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint)" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
-        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" class="subdued x-centered"><i class="ion-chatbubble coral"></i>{{ footprint.comments.length }}</a>
-          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" class="subdued x-centered"><i class="ion-android-folder coral"></i>{{ footprint.hypes.length }}</a>
+        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" class="subdued x-centered coral small-semi-bold"><i class="ion-chatbubble coral larger"></i> {{footprint.comments.length}}</a>
+          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" class="subdued x-centered coral small-semi-bold"><i class="ion-android-folder coral larger"></i> {{footprint.hypes.length}}</a>
           </p>
       </div>
 
       <!-- Comments -->
-      <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:3" class="item item-text-wrap" ui-sref="tab.comments{{subRouting}}" ng-click="openFootprint(footprint)">  
-          <img class="propic commenterpic" ng-src="{{comment.commenter.fbProfilePicture}}">
-          <span class="commentername">{{comment.commenter.name}}</span>
-          <span> {{comment.comment.text}} </span>
-          <span class="subdued float-right">{{comment.comment.time | date : shortDate}}</span>
+      <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:3" class="item item-text-wrap enlarged-comment" ui-sref="tab.comments{{subRouting}}" ng-click="openFootprint(footprint)">  
+        <img class="footprint-comment-propic" ng-src="{{comment.commenter.fbProfilePicture}}">
+        <h2 class="commentername-footprint">{{comment.commenter.name}}</h2>
+        <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><i class="ion-clock float-right timestamp"></i>
+        <p class="comment-home-text">{{comment.comment.text}}</p>
       </div>
-      <div ui-sref='tab.comments{{subRouting}}' ng-click='openFootprint(footprint)' class="item item-input-inset">
+      <div ui-sref='tab.comments{{subRouting}}' ng-click='openFootprint(footprint)' class="item item-input-inset enlarged-comment-field">
               <img class="propic newcomment" ng-src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfp1/v/t1.0-1/s200x200/1476344_10153625108483662_8209874012985593264_n.jpg?oh=91007a07d6d534815f719b6aecb09d9a&oe=5584541F&__gda__=1431308809_91c6fa931fe0f59ed47d42b7b4a4fb77">
       <label name="customSubmit" data-custom-submit info='someinfo' class="item-input-wrapper commentfield" novalidate>
         <input type="text" ng-model='comment' name='comment' placeholder='Leave a comment' data-ng-minlength="1" data-ng-maxlength="120" required>
@@ -70,13 +68,14 @@
       </label>
       </div>
       <map-location callback="callback"></map-location>
-      <a ng-if="usersAlsoBeenHere.length">Also Been Here:</a>
+      <h6><b>Also Been Here:</b></h6>
+      <h5 ng-if="!usersAlsoBeenHere.length">You're the first! Suggest it to a friend.<h5>
       <div ng-if="usersAlsoBeenHere.length">
         <span ng-repeat="user in usersAlsoBeenHere">
           <img ng-if="user.facebookID !== footprint.user.facebookID" class="propic commenterpic" ng-src="{{user.fbProfilePicture}}">
         <span>
       </div>
-      <button class="button button-small" ng-click="openFoursquarePage()">View in Foursquare</button>
+      <button class="button button-small view-foursquare" ng-click="openFoursquarePage()">View on Foursquare</button>
     </div>
 
 

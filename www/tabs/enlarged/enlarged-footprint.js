@@ -5,6 +5,7 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   $scope.footprint = FootprintRequests.openFootprint;
   $scope.selectedFootprintIndex = FootprintRequests.selectedFootprintIndex;
   $scope.headerTitle = FootprintRequests.currentTab;
+  $scope.usersAlsoBeenHere = [];
 
   $scope.fetchVenueInfo = function() {
     FootprintRequests.getFoursquareVenueInfo($scope.footprint.place.foursquareID, window.sessionStorage.userFbID)
@@ -22,8 +23,12 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   $scope.findUsersAlsoBeenHere = function() {
     FootprintRequests.findUsersAlsoBeenHere($scope.footprint.place.foursquareID, window.sessionStorage.userFbID)
     .then(function (users) {
-      console.log(users);
-      $scope.usersAlsoBeenHere = users.data[0].users;
+      for(i = 0; i < users.data[0].users.length; i++) {
+        if(users.data[0].users[i].facebookID !== window.sessionStorage.userFbID) {
+          $scope.usersAlsoBeenHere.push(user.data[0].users[i]);
+        }
+      }
+      console.log($scope.usersAlsoBeenHere);
     });
   }
 
@@ -148,8 +153,8 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
 	        title: $scope.footprint.place.name,
 	        description: $scope.address,
 	        'marker-size': 'large',
-	        'marker-color': '#BE9A6B',
-	        'marker-symbol': 'cafe'
+	        'marker-color': '#FF5050',
+	        'marker-symbol': 'circle-stroked'
 	    }
 		}).addTo(map);
   };

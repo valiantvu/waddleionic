@@ -54,7 +54,7 @@ userController.userLogin = function (req, res) {
   .then(function (checkinsCount) {
     // console.log('fb checkins: ', checkinsAlreadyStored.length);
     // For existing users
-    if (user.getProperty('footprintsCount') >= 0) {
+    // if (user.getProperty('footprintsCount') >= 0) {
       user.setProperty('footprintsCount', checkinsCount);
       user.findAllFriends(0, 100)
       .then(function (friendsList){
@@ -71,11 +71,11 @@ userController.userLogin = function (req, res) {
         res.json(allData);
         res.status(200).end();
       })
-    } else {
-      // For new users, start chain of facebook requests.
-      console.log('initiate get and parse fbdata');
-      getAndParseFBData();
-    }
+    // } else {
+    //   // For new users, start chain of facebook requests.
+    //   console.log('initiate get and parse fbdata');
+    //   getAndParseFBData();
+    // }
   })
   .catch(function(err) {
     console.log(err);

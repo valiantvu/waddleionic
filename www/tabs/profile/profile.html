@@ -15,12 +15,12 @@
     <h4 class="centered white-text">{{userInfo.footprintsCount}} footprints</h4>
   </div>
     <div class="button-bar">
-      <a class="button" ng-click="showFootprints()">Footprints</a>
-      <a class="button" ng-click="showFriendsList()">Friends</a>
+      <a class="button button-small" ng-click="showFootprints()">footprints</a>
+      <a class="button button-small" ng-click="showFriendsList()">friends</a>
     </div>
 
 
-    <div class="list">
+    <div class="list profile-search">
       <div class="item item-input-inset searchbox">
         <label class="item-input-wrapper white-bg">
           <input type="text" placeholder="{{searchPlaceHolder}}" ng-keyup="bifurcateSearch()" ng-model="search.query">
@@ -55,7 +55,7 @@
 " ng-click="openFootprint(footprint, $index)"> 
             <a ng-if="footprint.place.city !== 'null'">{{footprint.place.city}}</a><a ng-if="footprint.place.city !== 'null' && footprint.place.province !== 'null'">,</a>
             <a ng-if="footprint.place.province !== 'null'">{{footprint.place.province}}</a>
-            <span am-time-ago="footprint.checkin.checkinTime" class="float-right"></span><i class="ion-clock float-right"></i>
+            <span am-time-ago="footprint.checkin.checkinTime" class="float-right timestamp"></span><i class="ion-clock float-right timestamp"></i>
           </p>
       </div>
 

@@ -18,8 +18,9 @@ body { margin:0; padding:0; }
 .profile-banner {
 	border-top-right-radius: 15px;
 	border-top-left-radius: 15px;
+	border-color: none;
 	width: 100vw;
-	height: 30vh;
+	height: 22vh;
 	background: url('http://hdwallpaperia.com/wp-content/uploads/2013/11/Beautiful-Mountain-Scenery-640x360.jpg') no-repeat;
 }
 .centered{
@@ -86,7 +87,7 @@ h1{
 h2{
 	color:#e1876a;
 	font-family: 'Open Sans', sans-serif;
-	font-size: 18px !important;
+	/*font-size: 18px !important;*/
 	font-weight: 600 !important;
 }
 h3{
@@ -118,13 +119,13 @@ h6 {
 }
 
 .small-semi-bold {
-	font-size: 10px;
+	font-size: 12px;
 	font-weight: 600;
 	vertical-align: center;
 }
 
 .larger {
-	font-size: 14px !important;
+	font-size: 12px !important;
 }
 
 .coral {
@@ -156,6 +157,37 @@ span{
 .home-comment {
 	padding: 0;
 	border: 0;
+}
+
+.enlarged-comment {
+	padding: 0;
+	padding-bottom: 0.5em;
+	border: 0;
+}
+
+.enlarged-address {
+	margin-top: -0.3em !important;
+	font-size: 12px !important;
+}
+
+.enlarged-location {
+	margin-top: -0.7em !important;
+	font-size: 12px !important;
+	margin-bottom: -1em !important;
+}
+
+.view-foursquare {
+	color: #e1876a !important;
+	border-color: #e1876a !important;
+	background-color: transparent;
+	font-family: 'Open Sans', sans-serif;
+	border-radius: 5px;
+  margin-left: 12em;
+}
+
+.enlarged-comment-field {
+  margin-top: -0.5em;
+  /*z-index: -2;*/
 }
 
 .commentername {
@@ -236,7 +268,7 @@ span{
 .timestamp {
 	color: #989898;
 	font-family: 'Open Sans', sans-serif;
-	font-size: 14px;
+	font-size: 12px;
 	font-weight: 400;
 }
 
@@ -299,12 +331,17 @@ span{
 
 .propic-profile {
 	border: 3px solid white;
-	margin-left: 33vw;
-	margin-top: 4vh;
-	height: 25vw;
-	width: 25vw;
+	margin-left: 36vw;
+	margin-top: 1vh;
+	height: 20vw;
+	width: 20vw;
 	border-radius: 100%;
 	background-color:#000;
+}
+
+.profile-search {
+	margin-top: -0.5em;
+	margin-bottom: 0.4em;
 }
 
 .commentslist-propic {
@@ -338,11 +375,11 @@ span{
 
 .folder-footprint-folder-propic {
 	position: absolute;
-	margin-left: -5px;
-	margin-top: 5px;
+	/*margin-left: 0.5em;*/
+	margin-top: 1em;
 	/*z-index: 1;*/
-	height: 35px;
-	width: 35px;
+	height: 45px;
+	width: 45px;
 	border-radius: 100%;
 	/*background-color:#000;*/
 }
@@ -422,10 +459,17 @@ span{
 	z-index: 100;
 }
 
+.button-bar {
+	margin-bottom: 0.8em;
+}
+
 .button-bar-enlarged {
 	border: 1px solid #e1876a !important;
 	border-top: 1px solid #e1876a !important;
 	color: #e1876a !important;
+	font-family: 'Open Sans', sans-serif;
+/*	padding-top: -0.2em !important;*/
+	z-index: 2;
 }
 
 .folder-item img {
@@ -495,7 +539,8 @@ span{
 
 .comments-list {
 	border-top: 1px solid #F0F0F0;
-	padding-top: 0;
+	vertical-align: center;
+	/*padding-top: 0;*/
 	padding-bottom: 0;
 	padding-left: 3.7em;
 }
@@ -606,8 +651,8 @@ border-radius: 0px;
   background-repeat: no-repeat;
   /*padding: 2px;*/
   padding-right: 15px;
-  margin-left: 7px !important;
-  margin-top: 33px !important;
+  margin-left: 1em !important;
+  margin-top: 3.5em !important;
   text-align: center;
   color: #fff;
   width: 50px;
