@@ -65,28 +65,28 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
 
     getCurrentLocation: function(callback) {
       console.log('getting currentLocation');
-      var options = {
-        enableHighAccuracy: false,
-        timeout: 30000,
-        maximumAge: 0
-      };
-      // return $cordovaGeolocation.getCurrentPosition({timeout: 5000, enableHighAccuracy: true})
-      // .then(function (position) {
-      //   console.log(position);
-      //   return position;
-      // }, function (err) {
-      //   return err;
-      // });
-      return navigator.geolocation.getCurrentPosition(
-        function(position) {
-          console.log(position);
-          return callback(position);
-        },
-        function(err) {
-          return err;
-        },
-        options
-      );
+      // var options = {
+      //   enableHighAccuracy: false,
+      //   timeout: 30000,
+      //   maximumAge: 0
+      // };
+      return $cordovaGeolocation.getCurrentPosition({timeout: 5000, enableHighAccuracy: true})
+      .then(function (position) {
+        console.log(position);
+        return position;
+      }, function (err) {
+        return err;
+      });
+      // return navigator.geolocation.getCurrentPosition(
+      //   function(position) {
+      //     console.log(position);
+      //     return callback(position);
+      //   },
+      //   function(err) {
+      //     return err;
+      //   },
+      //   options
+      // );
     },
 
     editCheckin: function(editedCheckinData) {
