@@ -22,6 +22,12 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
       $state.transitionTo('tab.folder-footprints');
     };
 
+    $scope.showDeleteButton = false;
+
+    $scope.toggleDeleteButton = function() {
+      $scope.showDeleteButton = $scope.showDeleteButton ? false : true;
+    };
+
     $scope.getUserData = function (reload) {
 
       if (reload) {
