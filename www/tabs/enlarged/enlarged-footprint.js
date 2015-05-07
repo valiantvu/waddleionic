@@ -35,10 +35,11 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   $scope.getFootprintInteractions = function () {
     FootprintRequests.getFootprintInteractions($scope.footprint.checkin.checkinID)
     .then(function (footprintInteractions) {
+      console.dir(footprintInteractions);
       $scope.footprint.comments = footprintInteractions.data.comments;
       $scope.footprint.hypes = footprintInteractions.data.hypes;
     })
-};
+  };
 
   $scope.fetchVenueInfo();
   if($scope.headerTitle === 'folders') {

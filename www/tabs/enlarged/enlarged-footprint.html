@@ -47,9 +47,9 @@
         <div class="checkinphoto">
           <img ng-if="footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
         </div>
-        <p ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint)" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
-        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" class="subdued x-centered coral small-semi-bold"><i class="ion-chatbubble coral larger"></i> {{footprint.comments.length}}</a>
-          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" class="subdued x-centered coral small-semi-bold"><i class="ion-android-folder coral larger"></i> {{footprint.hypes.length}}</a>
+        <p ui-sref="tab.enlarged-footprint" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
+        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments{{ subRouting }}" class="subdued x-centered coral small-semi-bold"><i class="ion-chatbubble coral larger"></i> {{footprint.comments.length}}</a>
+          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers{{ subRouting }}" class="subdued x-centered coral small-semi-bold"><i class="ion-android-folder coral larger"></i> {{footprint.hypes.length}}</a>
           </p>
       </div>
 
