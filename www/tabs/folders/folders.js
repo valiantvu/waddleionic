@@ -11,7 +11,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     $scope.selectedFolder = null;
     $scope.newFolderInfo = {};
     var page = 0;
-    var skipAmount = 10;
+    var skipAmount = 5;
 
     FootprintRequests.currentTab = 'folders';
 
@@ -26,19 +26,17 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
 
       if (reload) {
         page = 0;
-        $scope.moreDataCanBeLoaded = true;
+        $scope.moreDataCanBeLoaded = false;
       }
-
       UserRequests.fetchFolders(window.sessionStorage.userFbID, page, skipAmount)
       .then(function (data) {
-        if (data.data.length < skipAmount && data.data.length > 0) {
-          $scope.folders = reload ? data.data : $scope.folders.concat(data.data);
-          $scope.moreDataCanBeLoaded = false;
-        } else if (data.data.length > 0) {
+        console.log('getUserData called with reload: ', reload);
+        if (data.data.length > 0) {
           console.dir(data.data);
           $scope.folders = reload ? data.data : $scope.folders.concat(data.data);
           if (reload) {
             $ionicScrollDelegate.scrollTop();
+            $scope.moreDataCanBeLoaded = true;
           }
           page++;
           console.log('page: ', page);
