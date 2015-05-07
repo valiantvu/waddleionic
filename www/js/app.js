@@ -184,6 +184,15 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         }
       }
     })
+    .state('tab.hypers-folders', {
+      url: '/hypers',
+      views: {
+        'folders-tab': {
+          templateUrl: 'tabs/hypers/hypers.html',
+          controller: 'HypersController'
+        }
+      }
+    })
     .state('tab.enlarged-footprint', {
       url: '/enlarged-footprint',
       views: {

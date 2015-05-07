@@ -6,6 +6,7 @@ var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequ
     $scope.currentTab = FootprintRequests.currentTab;
     $scope.selectedFootprintInteractions = {};
 
+    console.log($scope.currentTab);
     // Ensure that a user comment is posted in the database before displaying
     $scope.updateFootprint = function (footprint){
       console.log('is my footprint being updated?');
