@@ -1,10 +1,11 @@
 (function(){
 
-var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests, $scope, $state, $ionicHistory) {
+var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests, $scope, $state, $ionicHistory, $ionicScrollDelegate) {
   Auth.checkLogin()
   .then(function () {
     $scope.folderContents = [];
-    $scope.search = {};
+    $scope.searchFolderContents = {};
+    $scope.showFolderContentsSearch = false;
     $scope.moreDataCanBeLoaded = true;
     $scope.selectedFolderInfo = {};
     $scope.selectedFolder = null;
@@ -51,10 +52,36 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
         }
       });
     };
+
+    $scope.toggleFolderContentsSearch = function() {
+      $scope.showFolderContentsSearch = $scope.showFolderContentsSearch === true ? false : true;
+      if ($scope.showFolderContentsSearch) {
+        $ionicScrollDelegate.scrollTop();
+      }
+    };
+
+    $scope.searchFolderContents = function () {
+      // console.log($scope.searchFolders.query);
+      if($scope.searchFolderContents.query.length > 0) {
+        UserRequests.searchFoldersByName(window.sessionStorage.userFbID, $scope.searchFolders.query, 0, skipAmount)
+        .then(function(folders) {
+          $scope.folders = folders.data;
+          $scope.moreDataCanBeLoaded = false;
+        });
+      } else {
+        $scope.clearSearch();
+      }
+    };
+
+    $scope.clearSearch = function () {
+      $scope.searchFolders = {};
+      $scope.getUserData(true);
+    };
+
   });
 };
 
-FolderFootprintsController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$scope', '$state', '$ionicHistory'];
+FolderFootprintsController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$scope', '$state', '$ionicHistory', '$ionicScrollDelegate'];
 
 angular.module('waddle.folder-footprints', [])
   .controller('FolderFootprintsController', FolderFootprintsController);

@@ -4,14 +4,26 @@
     <button class="button button-icon icon ion-arrow-left-b" ng-click="goBack()"></button>
   </div>
   <h1 class="title">folders</h1>
-  <div class="buttons">
-    <button class="button button-icon icon ion-ios7-search-strong light" ng-click="doSomething()"></button>
-  </div>
+<!--   <div class="buttons">
+    <button class="button button-icon icon waddle-search light" ng-click="toggleFolderContentsSearch()"></button>
+  </div> -->
 </ion-header-bar>
 
 <ion-view title="Folder-Footprints">
 
   <ion-content class="padding bg-scroll">
+
+    <div ng-show="showFolderSearch" class="list">
+      <div class="item item-input-inset searchbox">
+      <label class="item-input-wrapper white-bg">
+        <i class="icon waddle-search placeholder-icon"></i>
+        <input id="folder-search" type="text" placeholder="search the contents of this folder" ng-keyup="searchFoldersByName()" ng-model="searchFolders.query">
+      </label>
+        <!-- <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button> -->
+        <button class="button button-clear" ng-if="searchFolders.query" ng-click="clearSearch()">x</button>
+      </div>
+    </div>
+
     <svg viewBox="0 0 1080 200">
       <defs>
           <pattern id="image1" patternContentUnits="objectBoundingBox" height="100%" width="100%">
@@ -92,3 +104,16 @@
 
   </ion-content>
 </ion-view>
+
+<script id="add-folder.html" type="text/ng-template">
+    <form class="navbar-form navbar-left" role="search">
+      <textarea ng-model="newFolderInfo.name" type="text" class="form-control" placeholder="Name your folder">
+      </textarea>
+      <textarea ng-model="newFolderInfo.description" type="text" class="form-control" placeholder="Write a description">
+      </textarea>
+    </form>
+</script>
+
+<script id="folder-create-success.html" type="text/ng-template">
+    <img class="success-confirm" src="http://cliparts.co/cliparts/BTg/ELe/BTgELekoc.jpg">
+</script>

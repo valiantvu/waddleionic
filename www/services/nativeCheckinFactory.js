@@ -63,14 +63,14 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
         return deferred.promise;
     },
 
-    getCurrentLocation: function(callback) {
+    getCurrentLocation: function() {
       console.log('getting currentLocation');
       // var options = {
       //   enableHighAccuracy: false,
       //   timeout: 30000,
       //   maximumAge: 0
       // };
-      return $cordovaGeolocation.getCurrentPosition({timeout: 5000, enableHighAccuracy: true})
+      return $cordovaGeolocation.getCurrentPosition({timeout: 5000, enableHighAccuracy: false})
       .then(function (position) {
         console.log(position);
         return position;
