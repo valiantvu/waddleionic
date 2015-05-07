@@ -22,23 +22,27 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
       $state.transitionTo('tab.folder-footprints');
     };
 
+    $scope.showDeleteButton = false;
+
+    $scope.toggleDeleteButton = function() {
+      $scope.showDeleteButton = $scope.showDeleteButton ? false : true;
+    };
+
     $scope.getUserData = function (reload) {
 
       if (reload) {
         page = 0;
-        $scope.moreDataCanBeLoaded = true;
+        $scope.moreDataCanBeLoaded = false;
       }
-
       UserRequests.fetchFolders(window.sessionStorage.userFbID, page, skipAmount)
       .then(function (data) {
-        if (data.data.length < skipAmount && data.data.length > 0) {
-          $scope.folders = reload ? data.data : $scope.folders.concat(data.data);
-          $scope.moreDataCanBeLoaded = false;
-        } else if (data.data.length > 0) {
+        console.log('getUserData called with reload: ', reload);
+        if (data.data.length > 0) {
           console.dir(data.data);
           $scope.folders = reload ? data.data : $scope.folders.concat(data.data);
           if (reload) {
             $ionicScrollDelegate.scrollTop();
+            $scope.moreDataCanBeLoaded = true;
           }
           page++;
           console.log('page: ', page);
