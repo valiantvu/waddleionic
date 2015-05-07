@@ -11,7 +11,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     $scope.selectedFolder = null;
     $scope.newFolderInfo = {};
     var page = 0;
-    var skipAmount = 5;
+    var skipAmount = 10;
 
     FootprintRequests.currentTab = 'folders';
 
