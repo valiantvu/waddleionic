@@ -466,8 +466,7 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
         if(item['hypers'].length) {
           var hypesArray = [];
           for(var i = 0; i < item['hypers'].length; i++) {
-
-            hypesArray.push(item['hypers'][i].data);
+            hypesArray.push({hypeGiver: item['hypers'][i].data});
           }
           singleResult.hypes = hypesArray;
         }

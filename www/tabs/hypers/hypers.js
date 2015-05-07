@@ -6,6 +6,7 @@ var HypersController = function (Auth, UserRequests, MapFactory, FootprintReques
     $scope.headerTitle = FootprintRequests.currentTab;
 
     console.log($scope.headerTitle);
+    console.log($scope.footprint);
 
     // $scope.getFootprintInteractions = function () {
     //   FootprintRequests.getFootprintInteractions($scope.footprint.checkin.checkinID)
