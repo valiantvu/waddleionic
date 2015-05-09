@@ -29,7 +29,8 @@ var FrontpageController = function (UserRequests, $scope, $state, $window) {
       UserRequests.allData = storedUserData.data
       console.log('alldata:  ', UserRequests.allData)
       if(UserRequests.allData.user.footprintsCount >= 0) {
-        $state.go('tab.home', {}, {reload: true});
+        // $state.go('tab.home', {}, {reload: true});
+        $state.go('walkthrough');
       }
     });
   };

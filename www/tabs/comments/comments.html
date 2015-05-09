@@ -17,7 +17,7 @@
       <div ng-repeat="comment in footprint.comments | orderBy:'comment.time'" class="item item-avatar item-text-wrap comments-list" ng-click="show(comment, footprint)">  
         <img class="commentslist-propic" ng-src='{{comment.commenter.fbProfilePicture}}'>
         <h2 class="commentername">{{comment.commenter.name}}</h2>
-        <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><i class="ion-clock float-right timestamp"></i>
+        <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><img src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/timestamp-1.svg"class="waddle-clock clock-comment-footprint float-right">
         <p class="comment-list-text">{{comment.comment.text}}</p>
       </div>
 

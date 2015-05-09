@@ -56,11 +56,13 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     //posts new footprint from checkin screen
     $scope.$on('newFootprint', function(event, footprint) {
+      $ionicScrollDelegate.scrollTop();
       $scope.footprints.unshift(footprint.data);
     })
 
     $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
       if($previousRoute.name === 'tab.home' && FootprintRequests.deletedFootprint) {
+        console.log('deleted?');
         $scope.footprints.splice(FootprintRequests.selectedFootprintIndex, 1);
         FootprintRequests.deletedFootprint = false;
       }
@@ -112,7 +114,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       .then(function (data) {
         $scope.footprints[index].folders = [];
         $scope.footprints[index].folders.push(data.data[0].folder);
-        $scope.showCreationSuccessAlert();
+        $scope.showFootprintAdditionSuccessAlert();
         // console.log(data);
       })
     };
@@ -195,7 +197,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         .then(function(data) {
           splicedElem = $scope.footprints.splice(index, 1);
           console.log(splicedElem);
-          $scope.showCreationSuccessAlert();
+          $scope.showDeletionSuccessAlert();
           console.log(data);
         });
       }
@@ -242,7 +244,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       // An elaborate, custom popup
       $scope.myPopup = $ionicPopup.show({
         templateUrl: 'folder-list.html',
-        title: 'Create or Select a Folder',
+        title: 'Choose a Folder',
         // subTitle: 'Please use normal things',
         scope: $scope,
         buttons: [
@@ -271,7 +273,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
           { text: 'Cancel' },
           {
             text: '<b>Save</b>',
-            type: 'button-energized',
+            type: 'button-positive',
             onTap: function(e) {
                 $scope.createFolderAndAddFootprintToFolder($scope.newFolderInfo.name, $scope.newFolderInfo.description, $scope.selectedFootprintCheckinID, $scope.selectedFootprintIndex);
             }
@@ -285,14 +287,22 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     $scope.showCreationSuccessAlert = function() {
       var creationSuccessAlert = $ionicPopup.show({
-        title: 'New Folder Added!',
         templateUrl: 'folder-create-success.html'
       });
-      // creationSuccessAlert.then(function(res) {
-      // });
+    
       $timeout(function() {
-       creationSuccessAlert.close(); //close the popup after 1 second
-      }, 1500);
+       creationSuccessAlert.close(); //close the popup after 1.5 seconds
+      }, 1700);
+    };
+
+     $scope.showFootprintAdditionSuccessAlert = function() {
+      var creationSuccessAlert = $ionicPopup.show({
+        templateUrl: 'footprint-addition-success.html'
+      });
+    
+      $timeout(function() {
+       creationSuccessAlert.close(); //close the popup after 1.5 seconds
+      }, 1700);
     };
 
     $scope.openOptions = function (footprint, index) {
@@ -315,7 +325,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
           { text: 'Cancel' },
           {
             text: '<b>Yes</b>',
-            type: 'button-energized',
+            type: 'button-positive',
             onTap: function(e) {
                 $scope.deleteFootprint($scope.selectedFootprintCheckinID, $scope.selectedFootprintUserID, $scope.selectedFootprintIndex);
             }
@@ -323,6 +333,16 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         ]
       });
     };
+
+    $scope.showDeletionSuccessAlert = function () {
+      var deletionSuccessAlert = $ionicPopup.show({
+        templateUrl: 'footprint-delete-success.html'
+      });
+     
+      $timeout(function() {
+       deletionSuccessAlert.close(); //close the popup after 1 second
+      }, 1500);
+    }
 
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);

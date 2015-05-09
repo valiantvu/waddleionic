@@ -149,7 +149,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
     .state('tab.comments-folders', {
-      url: '/comments',
+      url: '/comments-folders',
       views: {
         'folders-tab': {
           templateUrl: 'tabs/comments/comments.html',
@@ -158,7 +158,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
     .state('tab.comments-profile', {
-      url: '/comments',
+      url: '/comments-profile',
       views: {
         'profile-tab': {
           templateUrl: 'tabs/comments/comments.html',
@@ -167,7 +167,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
      .state('tab.comments-notifications', {
-      url: '/comments',
+      url: '/comments-notifications',
       views: {
         'profile-tab': {
           templateUrl: 'tabs/comments/comments.html',
@@ -185,7 +185,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
     .state('tab.hypers-folders', {
-      url: '/hypers',
+      url: '/hypers-folders',
       views: {
         'folders-tab': {
           templateUrl: 'tabs/hypers/hypers.html',
@@ -203,7 +203,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
     .state('tab.enlarged-footprint-folders', {
-      url: '/enlarged-footprint',
+      url: '/enlarged-footprint-folders',
       views: {
         'folders-tab': {
             templateUrl: 'tabs/enlarged/enlarged-footprint.html',
@@ -212,7 +212,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
     .state('tab.enlarged-footprint-profile', {
-      url: '/enlarged-footprint',
+      url: '/enlarged-footprint-profile',
       views: {
         'profile-tab': {
             templateUrl: 'tabs/enlarged/enlarged-footprint.html',
@@ -221,7 +221,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
     .state('tab.enlarged-footprint-notifications', {
-      url: '/enlarged-footprint',
+      url: '/enlarged-footprint-notifications',
       views: {
         'notifications-tab': {
             templateUrl: 'tabs/enlarged/enlarged-footprint.html',

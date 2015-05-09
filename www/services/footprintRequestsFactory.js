@@ -19,7 +19,7 @@ var FootprintRequests = function ($http){
 
     selectedFootprintIndex: selectedFootprintIndex,
 
-    deletedFootprint: true,
+    deletedFootprint: false,
 
     openFolder: openFolder,
 

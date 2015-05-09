@@ -14,9 +14,11 @@
     <h2 class="centered white-text padding-top">{{userInfo.name}}</h2>
     <h4 class="centered white-text">{{userInfo.footprintsCount}} footprints</h4>
   </div>
-    <div class="button-bar">
-      <a class="button button-small" ng-click="showFootprints()">footprints</a>
-      <a class="button button-small" ng-click="showFriendsList()">friends</a>
+    <img ng-click="showFootprints()" class="me-bubble me-footprints" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/footprintbutton-1.svg">
+    <img ng-click="showFriendsList()" class="me-bubble me-friends" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/friendsbutton-2.svg">
+    <div class="button-bar me-buttons">
+      <a class="button me-button border-bottom-left-radius button-small" ng-click="showFootprints()">footprints</a>
+      <a class="button me-button border-bottom-right-radius button-small" ng-click="showFriendsList()">friends</a>
     </div>
 
 
@@ -55,7 +57,7 @@
 " ng-click="openFootprint(footprint, $index)"> 
             <a ng-if="footprint.place.city !== 'null'">{{footprint.place.city}}</a><a ng-if="footprint.place.city !== 'null' && footprint.place.province !== 'null'">,</a>
             <a ng-if="footprint.place.province !== 'null'">{{footprint.place.province}}</a>
-            <span am-time-ago="footprint.checkin.checkinTime" class="float-right timestamp"></span><i class="ion-clock float-right timestamp"></i>
+            <span am-time-ago="footprint.checkin.checkinTime" class="float-right main-timestamp timestamp"></span><img src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/timestamp-1.svg"class="waddle-clock float-right">
           </p>
       </div>
 
@@ -65,7 +67,7 @@
 " ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
         </div>
         <p ui-sref="tab.enlarged-footprint-profile" ng-click="openFootprint(footprint, $index)" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
-        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments-profile" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><i class="ion-chatbubble coral larger"></i> {{footprint.comments.length}}</a>
+        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments-profile" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><img src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/commentbutton-1.svg" class="waddle-comment"> {{footprint.comments.length}}</a>
           <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><i class="ion-android-folder coral larger"></i> {{footprint.hypes.length}}</a>
           </p>
       </div>
@@ -74,7 +76,7 @@
       <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap home-comment" ui-sref="tab.comments-profile" ng-click="openFootprint(footprint, $index)">  
           <img class="footprint-comment-propic" ng-src="{{comment.commenter.fbProfilePicture}}">
           <h2 class="commentername-footprint">{{comment.commenter.name}}</h2>
-          <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><i class="ion-clock float-right timestamp"></i>
+          <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><img src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/timestamp-1.svg"class="waddle-clock clock-comment-footprint float-right">
           <p class="comment-home-text">{{comment.comment.text}}</p>
       </div>
 

@@ -106,6 +106,10 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   	$window.open($scope.menu.mobileUrl);
   }
 
+  $scope.openMap = function () {
+    window.open("http://maps.google.com/?saddr=Current%20Location&daddr= 894%20Granville%20Street%20Vancouver%20BC%20V6Z%201K3");
+  }
+
   $scope.openDeleteFootprintPopup = function () {
     $scope.optionsPopup.close();
     var deleteFootprintPopup = $ionicPopup.show({
