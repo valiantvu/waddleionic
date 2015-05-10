@@ -10,8 +10,8 @@
     <div class="item item-avatar item-text-wrap notifications-list" ng-repeat="venue in venues" ui-sref="tab.checkin-post" ng-click='passSelectedVenueInfoToPostTab(venue)' ui-sref-opts="{reload: true}">
         <img class="waddlebadge-checkin-list" ng-src="{{venue.iconUrlPrefix}}40x40{{venue.iconUrlSuffix}}">
         <h2>{{venue.name}}</h2>
-        <h5>{{venue.location.formattedAddress[0]}}, {{venue.location.formattedAddress[1]}}<h5>
-        <h6>{{venue.location.distance}} mi</h6>
+        <h5 class="venue-info">{{venue.location.formattedAddress[0]}}, {{venue.location.formattedAddress[1]}}<h5>
+        <h5 class="venue-info">{{venue.location.distance}} mi</h5>
     </div>
 
     <ion-infinite-scroll

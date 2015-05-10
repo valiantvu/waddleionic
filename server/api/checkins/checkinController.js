@@ -145,7 +145,7 @@ checkinController.searchFoursquareVenuesMobile = function (req, res) {
       }
       else {
         venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
-        venue.iconUrlSuffix = '-1.png';
+        venue.iconUrlSuffix = '-2.svg';
       }
     })
     res.json(venues);
