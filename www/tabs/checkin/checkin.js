@@ -1,13 +1,38 @@
 (function(){
 
-var CheckinController = function ($scope, $state, NativeCheckin, location) {	
+var CheckinController = function ($scope, $state, NativeCheckin, $ionicScrollDelegate, location) {	
+
+ $scope.search = {};
+ $scope.showSearch = false;
 
 	var currentLocation = {
 		lat: location.coords.latitude,
 		lng: location.coords.longitude
 	};
 
-	$scope.searchFoursquareVenues = function () {
+	$scope.toggleSearch = function() {
+      $scope.showSearch = $scope.showSearch === true ? false : true;
+      if ($scope.showSearch) {
+        $ionicScrollDelegate.scrollTop();
+        $scope.searchFoursquareVenuesByKeyword();
+      }
+      else {
+      	$scope.searchFoursquareVenuesByGeolocation();
+      }
+    };
+
+	$scope.searchFoursquareVenuesByKeyword = function () {
+		if($scope.search.query && $scope.search.near) {
+			$scope.search.query = $scope.search.query.replace(" ", "%20");
+			NativeCheckin.searchFoursquareVenuesByKeyword(window.sessionStorage.userFbID, $scope.search.query, $scope.search.near)
+			.then(function (venues) {
+				console.log(venues);
+				$scope.venues = venues.data;
+			});
+		}
+	};
+
+	$scope.searchFoursquareVenuesByGeolocation = function () {
 
 		// NativeCheckin.getCurrentLocation()
 		// .then(function (location) {
@@ -16,7 +41,7 @@ var CheckinController = function ($scope, $state, NativeCheckin, location) {
 		// 		lat: location.coords.latitude,
 		// 		lng: location.coords.longitude
 		// 	};
-			NativeCheckin.searchFoursquareVenues(window.sessionStorage.userFbID, currentLocation)
+			NativeCheckin.searchFoursquareVenuesByGeolocation(window.sessionStorage.userFbID, currentLocation)
 			.then(function (venues) {
 				$scope.venues = venues.data;
 			})
@@ -44,10 +69,10 @@ var CheckinController = function ($scope, $state, NativeCheckin, location) {
 		console.log(NativeCheckin.selectedVenue);
 	};
 
-	$scope.searchFoursquareVenues();
+	$scope.searchFoursquareVenuesByGeolocation();
 };
 
-CheckinController.$inject = ['$scope', '$state', 'NativeCheckin', 'location'];
+CheckinController.$inject = ['$scope', '$state', 'NativeCheckin', '$ionicScrollDelegate', 'location'];
 
 angular.module('waddle.checkin', [])
   .controller('CheckinController', CheckinController);

@@ -6,7 +6,18 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
   return {
     selectedVenue: null,
 
-	  searchFoursquareVenues: function (facebookID, currentLocation) {
+    searchFoursquareVenuesByKeyword: function(facebookID, query, location) {
+      var url = '/api/checkins/venuesearchweb/' + facebookID + '/' + query + '/' + location;
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
+      return $http({
+        method: 'GET',
+        url: url
+      });
+    },
+
+	  searchFoursquareVenuesByGeolocation: function (facebookID, currentLocation) {
       var url = '/api/checkins/venuesearchmobile/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng;
       if(ionic.Platform.isIOS()) {
         url = productionServerURL.concat(url);
@@ -87,6 +98,18 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
       //   },
       //   options
       // );
+    },
+
+    watchPosition: function() {
+      var options = {
+        timeout: 30000,
+        maximumAge: 30000,
+        enableHighAccuracy: false
+      };
+      $cordovaGeolocation.watchPosition(options)
+      .then(function (position) {
+        console.log(position);
+      })
     },
 
     editCheckin: function(editedCheckinData) {

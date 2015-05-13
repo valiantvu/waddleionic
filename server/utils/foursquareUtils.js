@@ -299,7 +299,7 @@ utils.searchFoursquareVenuesWeb = function (user, near, query) {
   var deferred = Q.defer();
 
   var query = {
-    v: '20141111',
+    v: '20150512',
     near: near,
     query: query,
     intent: 'checkin'
@@ -333,7 +333,7 @@ utils.searchFoursquareVenuesMobile = function (user, latlng) {
   var deferred = Q.defer();
 
   var query = {
-    v: '20141111',
+    v: '20140512',
     ll: latlng,
     intent: 'checkin'
   };

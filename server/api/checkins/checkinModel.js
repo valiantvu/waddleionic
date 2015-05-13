@@ -363,9 +363,11 @@ Checkin.deleteFootprint = function (facebookID, checkinID) {
    'MATCH (user:User {facebookID:{facebookID}})-[hCheckin:hasCheckin]->(checkin:Checkin{checkinID:{checkinID}})-[hPlace:hasPlace]->(place:Place)', 
    'OPTIONAL MATCH (checkin)<-[hBucket:hasBucket]-(bucketer:User)',
    'OPTIONAL MATCH (checkin)<-[gComment:gotComment]-(comment:Comment)<-[mComment:madeComment]-(commenter:User)', 
-   'OPTIONAL MATCH (comment)<-[hUnread:hasUnreadNotification]-(usa:User)',
-   'OPTIONAL MATCH (comment)<-[hRead:hasReadNotification]-(usa2:User)',
+   'OPTIONAL MATCH (checkin)-[hUnread:hasUnreadNotification]->(comment)',
+   'OPTIONAL MATCH (checkin)-[hRead:hasReadNotification]->(comment)',
    'OPTIONAL MATCH (checkin)<-[cCheckin:containsCheckin]-(folder:Folder)',
+   'OPTIONAL MATCH (checkin)-[hCUnread:hasReadNotification]->(folder)',
+   'OPTIONAL MATCH (checkin)-[hCRead:hasReadNotification]->(folder)',
    'DELETE checkin, hCheckin, hPlace, hBucket, gComment, comment, mComment, hUnread, hRead, cCheckin'
   ].join('\n');
   
