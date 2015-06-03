@@ -13,8 +13,8 @@ module.exports = function(app){
   app.get('/folder/search/:user/:folder/:query/:page?/:skip?', userController.searchFolderContents);
   app.get('/aggregatefeed/:user/:page?/:skip?', userController.getAggregatedListOfCheckins);
 	app.post('/notifications/update', userController.updateNotificationReadStatus);
-  app.get('/notifications/unread/:user', userController.getUnreadNotifications);
-  app.get('/notifications/read/:user/:limit', userController.getReadNotifications);
+  app.get('/notifications/unread/:user/:page?/:skip?', userController.getUnreadNotifications);
+  app.get('/notifications/read/:user/:page?/:skip?', userController.getReadNotifications);
 	app.get('/userinfo/:user', userController.getUserInfo);
   app.get('/searchfootprints/:user/:query/:page?/:skip?', userController.searchUserFootprints);
   app.get('/searchfeed/:user/:query/:page?/:skip?', userController.searchUserFeed);

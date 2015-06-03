@@ -7,7 +7,8 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
 		var footprints, hypelist, friends;
 		var page = 0;
-		var skip = 10;
+		var skip = 5;
+    var moreDataCanBeLoaded = true;
 		$scope.search = {};
 		$scope.selectedFolderInfo = {};
     $scope.selectedFolder = null;
@@ -16,6 +17,12 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		$scope.instagramConnected = false;
 
 		FootprintRequests.currentTab = 'me';
+
+    $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
+      if($previousRoute.url === "/profile") {
+        FootprintRequests.currentTab = 'me';
+      }
+    });
 
 		$scope.getUserProfileData = function () {
 			if(UserRequests.userProfileData) {
@@ -35,6 +42,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     };
 
 		$scope.showFriendsList = function () {
+      page = 0;
 			$scope.hypelist = null;
 			$scope.footprints = null;
       $scope.searchPlaceHolder = 'search friends'
@@ -138,7 +146,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
 
 		$scope.openFootprint = function(footprint, index) {
-      FootprintRequests.openFootprint = footprint;
+      FootprintRequests.openFootprintProfile = footprint;
       FootprintRequests.selectedFootprintIndex = index;
     };
 
@@ -177,6 +185,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 				$scope.userInfo = data.data.user;
 				footprints = data.data.footprints;
 				$scope.footprints = footprints;
+        page++;
 				if($scope.userInfo.foursquareID) {
 					$scope.foursquareConnected = true;
 				}
@@ -187,6 +196,15 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		};
 
 		$scope.getUserProfileData();
+
+     $scope.doRefresh = function() {
+      page = 0;
+      $scope.moreDataCanBeLoaded = true;
+      $scope.footprints = [];
+      $scope.getUserProfileData();
+      $scope.$broadcast('scroll.refreshComplete');
+    }
+
     $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
       if($previousRoute.name === 'tab.profile' && FootprintRequests.deletedFootprint) {
         $scope.footprints.splice(FootprintRequests.selectedFootprintIndex, 1);

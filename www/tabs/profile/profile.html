@@ -11,12 +11,14 @@
   <ion-content class="padding bg-scroll">
   <div class="item profile-banner">
     <img ng-src='{{userInfo.fbProfilePicture}}' class="propic-profile">
-    <h2 class="centered white-text padding-top">{{userInfo.name}}</h2>
+    <h2 class="centered white-text">{{userInfo.name}}</h2>
     <h4 class="centered white-text">{{userInfo.footprintsCount}} footprints</h4>
   </div>
-    <div class="button-bar">
-      <a class="button button-small" ng-click="showFootprints()">footprints</a>
-      <a class="button button-small" ng-click="showFriendsList()">friends</a>
+    <img ng-click="showFootprints()" class="me-bubble me-footprints" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/footprintbutton-2.svg">
+    <img ng-click="showFriendsList()" class="me-bubble me-friends" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/friendsbutton-2.svg">
+    <div class="button-bar me-buttons">
+      <a class="button me-button border-bottom-left-radius button-small" ng-click="showFootprints()">footprints</a>
+      <a class="button me-button border-bottom-right-radius button-small" ng-click="showFriendsList()">friends</a>
     </div>
 
 
@@ -28,6 +30,8 @@
         <button class="button button-clear" ng-if="search.query" ng-click="clearSearch()">x</button>
       </div>
     </div>
+
+    <ion-refresher ng-if="footprints.length" on-refresh="doRefresh()"></ion-refresher>
 
     <div ng-repeat="footprint in footprints">
 
@@ -55,7 +59,7 @@
 " ng-click="openFootprint(footprint, $index)"> 
             <a ng-if="footprint.place.city !== 'null'">{{footprint.place.city}}</a><a ng-if="footprint.place.city !== 'null' && footprint.place.province !== 'null'">,</a>
             <a ng-if="footprint.place.province !== 'null'">{{footprint.place.province}}</a>
-            <span am-time-ago="footprint.checkin.checkinTime" class="float-right timestamp"></span><i class="ion-clock float-right timestamp"></i>
+            <span am-time-ago="footprint.checkin.checkinTime" class="float-right main-timestamp timestamp"></span><img src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/timestamp-1.svg"class="waddle-clock float-right">
           </p>
       </div>
 
@@ -65,8 +69,8 @@
 " ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
         </div>
         <p ui-sref="tab.enlarged-footprint-profile" ng-click="openFootprint(footprint, $index)" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
-        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments-profile" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><i class="ion-chatbubble coral larger"></i> {{footprint.comments.length}}</a>
-          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><i class="ion-android-folder coral larger"></i> {{footprint.hypes.length}}</a>
+        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments-profile" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><img src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/commentbutton-1.svg" class="waddle-comment"> {{footprint.comments.length}}</a>
+          <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers-profile" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><i class="ion-android-folder coral larger"></i> {{footprint.hypes.length}}</a>
           </p>
       </div>
 
@@ -74,7 +78,7 @@
       <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap home-comment" ui-sref="tab.comments-profile" ng-click="openFootprint(footprint, $index)">  
           <img class="footprint-comment-propic" ng-src="{{comment.commenter.fbProfilePicture}}">
           <h2 class="commentername-footprint">{{comment.commenter.name}}</h2>
-          <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><i class="ion-clock float-right timestamp"></i>
+          <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><img src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/timestamp-1.svg"class="waddle-clock clock-comment-footprint float-right">
           <p class="comment-home-text">{{comment.comment.text}}</p>
       </div>
 
@@ -95,68 +99,29 @@
   </div>
 </div>
 
-    <div ng-repeat="hypeditem in hypelist" class="list card">
+<div ng-repeat="friend in friends" ng-if='friend.fbProfilePicture' class="item item-avatar notifications-list">
 
-      <div class="item item-avatar">
+  <div class="item item-avatar">
 
-        <!-- Profile Picture -->
-        <img ng-src='{{hypeditem.user.fbProfilePicture}}'>
+    <!-- Profile Picture -->
+    <img class="commentslist-propic" ng-src='{{friend.fbProfilePicture}}' ng-click="loadFriendPage(friend)">
 
-        <!-- User Name -->
-        <!-- <h2>{{hypeditem.user.name}}</h2> -->
+    <!-- User Name -->
+    <!-- <h2>{{friend.user.name}}</h2> -->
 
-        <div class="row">
-          <!-- Location -->
-          <div class="col col-73">
-            <h2 class='feeditemname' ng-click="getFootprint(hypeditem)">
-              {{hypeditem.place.name}}
-            </h2>
-          </div>
-
-          <!-- Check-in Time -->
-          <div class="col">
-            <h6 class="checkindate">{{hypeditem.checkin.checkinTime | date : shortDate}}</h6>
-          </div>
-        </div>
-
-        
-        <!-- Photo & Caption -->
-        <div ng-if="hypeditem.checkin.photoLarge !== 'null'" ng-click="getFootprint(footprint)">
-          <img class="full-image" ng-src="{{hypeditem.checkin.photoLarge}}">
-          <h4 ng-if="hypeditem.checkin.caption !== 'null'">{{hypeditem.checkin.caption}}</h4>
-        </div>
-
-        <!-- Default Photo (if no photo) -->
-        <div ng-if="hypeditem.checkin.photoLarge === 'null'" ng-if="hypeditem.checkin.caption === 'null'" class='captioncontainer'>
-          <img class="full-image defaultpeng" ng-click="getFootprint(hypeditem)" ng-src="https://s3-us-west-2.amazonaws.com/waddle/WaddlePenguinLogo.png"/>
-          <h4 ng-if="hypeditem.checkin.caption !== 'null' && hypeditem.checkin.photoLarge === 'null'">"{{hypeditem.checkin.caption}}"</h4>
-        </div>
+    <div class="row">
+      <!-- Location -->
+      <div class="col col-73">
+        <h2 class='feeditemname' ng-click="loadFriendPage(friend)">
+          {{friend.name}}
+        </h2>
+        <h3 class='feeditemname' ng-click="loadFriendPage(friend)">
+          {{friend.footprintsCount}} footprints
+        </h3>
       </div>
-    </div>
 
-    <div ng-repeat="friend in friends" ng-if='friend.fbProfilePicture' class="item item-avatar notifications-list">
-
-      <div class="item item-avatar">
-
-        <!-- Profile Picture -->
-        <img class="commentslist-propic" ng-src='{{friend.fbProfilePicture}}' ng-click="loadFriendPage(friend)">
-
-        <!-- User Name -->
-        <!-- <h2>{{friend.user.name}}</h2> -->
-
-        <div class="row">
-          <!-- Location -->
-          <div class="col col-73">
-            <h2 class='feeditemname' ng-click="loadFriendPage(friend)">
-              {{friend.name}}
-            </h2>
-            <h3 class='feeditemname' ng-click="loadFriendPage(friend)">
-              {{friend.footprintsCount}} footprints
-            </h3>
-          </div>
-
-      </div>
-    </div>
+  </div>
+</div>
 
 
   </ion-content>
@@ -206,8 +171,6 @@
     <form class="navbar-form navbar-left" role="search">
       <textarea ng-model="newFolderInfo.name" type="text" class="form-control" placeholder="Name your folder">
       </textarea>
-      <textarea ng-model="newFolderInfo.description" type="text" class="form-control" placeholder="Write a description">
-      </textarea>
     </form>
 </script>
 
@@ -218,7 +181,6 @@
 <script id="options-menu.html" type="text/ng-template">
     <button class="button button-icon icon ion-close-round light" ng-click="optionsPopup.close()"></button>
     <button class="button button-full">Suggest to Friend</button>
-    <button class="button button-full">Share</button>
     <button ng-if="checkUserID(selectedFootprintUserID)" class="button button-full">Edit</button>
     <button ng-if="checkUserID(selectedFootprintUserID)" ng-click="openDeleteFootprintPopup()" class="button button-full">Delete</button>
 </script>

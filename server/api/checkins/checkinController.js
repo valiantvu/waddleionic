@@ -113,6 +113,22 @@ checkinController.searchFoursquareVenuesWeb = function (req, res) {
     return foursquareUtils.searchFoursquareVenuesWeb(user, near, query);
   })
   .then(function (venues) {
+    console.log(JSON.stringify(venues[0]));
+    _.each(venues, function(venue) {
+      if(venue.location.distance) {
+        //convert meters to miles, rounded to the nearest .1 mi;
+        miles = Math.round((venue.location.distance * 0.00062137119) * 10) / 10;
+        venue.location.distance = miles;
+      }
+      if(venue.categories[0] && venue.categories[0].name && categoryList.dictionary[venue.categories[0].name]) {
+        venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
+        venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
+      }
+      else {
+        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.iconUrlSuffix = '-2.svg';
+      }
+    })
     res.json(venues);
   })
   .catch(function (err){
@@ -132,7 +148,6 @@ checkinController.searchFoursquareVenuesMobile = function (req, res) {
     return foursquareUtils.searchFoursquareVenuesMobile(user, latlng);
   })
   .then(function (venues) {
-    console.log(JSON.stringify(venues[0]));
     _.each(venues, function(venue) {
       if(venue.location.distance) {
         //convert meters to miles, rounded to the nearest .1 mi;
@@ -145,7 +160,7 @@ checkinController.searchFoursquareVenuesMobile = function (req, res) {
       }
       else {
         venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
-        venue.iconUrlSuffix = '-1.png';
+        venue.iconUrlSuffix = '-2.svg';
       }
     })
     res.json(venues);

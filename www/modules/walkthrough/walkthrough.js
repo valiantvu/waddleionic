@@ -3,9 +3,9 @@
 	var WalkthroughController = function ($scope, $state, $ionicSlideBoxDelegate) {
 		  // Called to navigate to the main app
 
-		  if(UserRequests.allData.footprintsCount) {
-		    $state.go('tab.home');
-		  }
+		  // if(UserRequests.allData.footprintsCount) {
+		  //   $state.go('tab.home');
+		  // }
 
 		  $scope.startApp = function() {
 		    $state.go('tab.home');

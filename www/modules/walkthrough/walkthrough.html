@@ -1,13 +1,42 @@
 <ion-slide-box class="slidebox" on-slide-changed="slideHasChanged($index)">
   <ion-slide>
-    <div class="image1"></div>
+    <ion-content class="padding bg-scroll">
+      <h5 class='walkthrough-text margin-top-walkthrough'>create</h5>
+      <h5 class='walkthrough-text-bold negative-margin-top'>FOOTPRINTS</h5>
+      <img class="walkthrough-image" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/walk-map-1.png">
+      <h5 class="walkthrough-text">at the places you go with a rating, review, & photo...</h5>
+    </ion-content>
   </ion-slide>
   <ion-slide>
-    <div class="image2"></div>
+  <ion-content class="padding bg-scroll">
+      <h5 class="walkthrough-text margin-top-walkthrough">...and turn old Facebook, Instagram, and Swarm check-ins</h5>
+      <img class="walkthrough-image" src="https://s3-us-west-2.amazonaws.com/waddle/Computer_01.gif">
+      <h5 class="walkthrough-text">into Waddle footprints</h5>
+    </ion-content>
   </ion-slide>
   <ion-slide>
-      <button ng-click="startApp()">Let's go!</button>
-    <div class="image3">
-    </div>
+    <ion-content class="padding bg-scroll">
+      <h5 class="walkthrough-text-bold margin-top-walkthrough">DISCOVER</h5>
+      <h5 class="walkthrough-text negative-margin-top">new places</h5>
+      <img class="walkthrough-image" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/walk-compass-1.png">
+      <h5 class="walkthrough-text">from your friends' footprints that inspire you</h5>
+    </ion-content>
+  </ion-slide>
+  <ion-slide>
+    <ion-content class="padding bg-scroll">
+      <h5 class="walkthrough-text-bold margin-top-walkthrough">SAVE</h5>
+      <h5 class="walkthrough-text negative-margin-top">places</h5>
+      <img class="walkthrough-image" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/walk-savetofolder-1.png">
+      <h5 class="walkthrough-text">in personalized folders to remember the places you've been to and want to go</h5>
+    </ion-content>
+  </ion-slide>
+  <ion-slide>
+    <ion-content class="padding bg-scroll">
+      <h5 class="walkthrough-text-bold margin-top-walkthrough">SUGGEST</h5>
+      <h5 class="walkthrough-text negative-margin-top">a place</h5>
+      <img class="walkthrough-image" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/walk-sharewithfriends-1.png">
+      <h5 class="walkthrough-text">to friends via the Waddle app, Facebook, email, and SMS</h5>
+      <button class="button walkthrough-finish button-large button-light" ng-click="startApp()">finish</button>
+    </ion-content>
   </ion-slide>
 </ion-slide-box>

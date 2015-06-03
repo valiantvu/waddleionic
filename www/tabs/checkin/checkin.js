@@ -1,36 +1,51 @@
 (function(){
 
-var CheckinController = function ($scope, $state, NativeCheckin, UserRequests, $ionicModal, $ionicPlatform, $ionicPopup, $timeout) {	
+var CheckinController = function ($scope, $state, NativeCheckin, $ionicScrollDelegate, location) {	
 
-	// $scope.show = function() {
- //    $ionicLoading.show({
- //      content: '<i class="icon ion-load-c light"></i>',
- //      animation: 'fade-in'
- //    });
- //  };
+ $scope.search = {};
+ $scope.showSearch = false;
 
- //  $scope.hide = function(){
- //    $ionicLoading.hide();
- //  };
+	var currentLocation = {
+		lat: location.coords.latitude,
+		lng: location.coords.longitude
+	};
 
-	 
+	$scope.toggleSearch = function() {
+      $scope.showSearch = $scope.showSearch === true ? false : true;
+      if ($scope.showSearch) {
+        $ionicScrollDelegate.scrollTop();
+        $scope.searchFoursquareVenuesByKeyword();
+      }
+      else {
+      	$scope.searchFoursquareVenuesByGeolocation();
+      }
+    };
 
-
-	$scope.searchFoursquareVenues = function () {
-		// $scope.show();
-		NativeCheckin.getCurrentLocation()
-		.then(function (location) {
-			console.log(location);
-			var currentLocation = {
-				lat: location.coords.latitude,
-				lng: location.coords.longitude
-			};
-			NativeCheckin.searchFoursquareVenues(window.sessionStorage.userFbID, currentLocation)
+	$scope.searchFoursquareVenuesByKeyword = function () {
+		if($scope.search.query && $scope.search.near) {
+			$scope.search.query = $scope.search.query.replace(" ", "%20");
+			NativeCheckin.searchFoursquareVenuesByKeyword(window.sessionStorage.userFbID, $scope.search.query, $scope.search.near)
 			.then(function (venues) {
-				// $scope.hide();
+				console.log(venues);
+				$scope.venues = venues.data;
+			});
+		}
+	};
+
+	$scope.searchFoursquareVenuesByGeolocation = function () {
+
+		// NativeCheckin.getCurrentLocation()
+		// .then(function (location) {
+		// 	console.log(location);
+		// 	var currentLocation = {
+		// 		lat: location.coords.latitude,
+		// 		lng: location.coords.longitude
+		// 	};
+			NativeCheckin.searchFoursquareVenuesByGeolocation(window.sessionStorage.userFbID, currentLocation)
+			.then(function (venues) {
 				$scope.venues = venues.data;
 			})
-		});
+		// });
     // NativeCheckin.getCurrentLocation(
     // 	function(location) {
     // 		console.log(location);
@@ -54,13 +69,10 @@ var CheckinController = function ($scope, $state, NativeCheckin, UserRequests, $
 		console.log(NativeCheckin.selectedVenue);
 	};
 
-
-  $ionicPlatform.ready(function() {
-	  $scope.searchFoursquareVenues();
-	});
+	$scope.searchFoursquareVenuesByGeolocation();
 };
 
-CheckinController.$inject = ['$scope', '$state', 'NativeCheckin', 'UserRequests', '$ionicModal', '$ionicPlatform', '$ionicPopup', '$timeout'];
+CheckinController.$inject = ['$scope', '$state', 'NativeCheckin', '$ionicScrollDelegate', 'location'];
 
 angular.module('waddle.checkin', [])
   .controller('CheckinController', CheckinController);

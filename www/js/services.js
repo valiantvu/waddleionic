@@ -4,6 +4,7 @@ angular.module('waddle.services', [
     'waddle.services.mapFactory',
     'waddle.services.auth',
     'waddle.services.userRequests',
-    'waddle.services.nativeCheckin'
+    'waddle.services.nativeCheckin',
+    'waddle.services.utils'
     ]);
 })();

@@ -90,15 +90,22 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
     .state('tab.checkin', {
+      cache: false,
       url: '/checkin',
       views: {
         'checkin-tab': {
           templateUrl: 'tabs/checkin/checkin.html',
           controller: 'CheckinController'
         }
+      },
+      resolve: {
+        location: function(NativeCheckin) {
+          return NativeCheckin.getCurrentLocation();
+        }
       }
     })
     .state('tab.checkin-post', {
+      cache: false,
       url: '/checkin-post',
       views: {
         'checkin-tab': {
@@ -144,7 +151,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
     .state('tab.comments-folders', {
-      url: '/comments',
+      url: '/comments-folders',
       views: {
         'folders-tab': {
           templateUrl: 'tabs/comments/comments.html',
@@ -153,7 +160,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
     .state('tab.comments-profile', {
-      url: '/comments',
+      url: '/comments-profile',
       views: {
         'profile-tab': {
           templateUrl: 'tabs/comments/comments.html',
@@ -162,9 +169,9 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
      .state('tab.comments-notifications', {
-      url: '/comments',
+      url: '/comments-notifications',
       views: {
-        'profile-tab': {
+        'notifications-tab': {
           templateUrl: 'tabs/comments/comments.html',
           controller: 'CommentsController'
         }
@@ -180,9 +187,27 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
     .state('tab.hypers-folders', {
-      url: '/hypers',
+      url: '/hypers-folders',
       views: {
         'folders-tab': {
+          templateUrl: 'tabs/hypers/hypers.html',
+          controller: 'HypersController'
+        }
+      }
+    })
+    .state('tab.hypers-profile', {
+      url: '/hypers-profile',
+      views: {
+        'profile-tab': {
+          templateUrl: 'tabs/hypers/hypers.html',
+          controller: 'HypersController'
+        }
+      }
+    })
+    .state('tab.hypers-notifications', {
+      url: '/hypers-notifications',
+      views: {
+        'notifications-tab': {
           templateUrl: 'tabs/hypers/hypers.html',
           controller: 'HypersController'
         }
@@ -198,7 +223,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
     .state('tab.enlarged-footprint-folders', {
-      url: '/enlarged-footprint',
+      url: '/enlarged-footprint-folders',
       views: {
         'folders-tab': {
             templateUrl: 'tabs/enlarged/enlarged-footprint.html',
@@ -207,7 +232,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
     .state('tab.enlarged-footprint-profile', {
-      url: '/enlarged-footprint',
+      url: '/enlarged-footprint-profile',
       views: {
         'profile-tab': {
             templateUrl: 'tabs/enlarged/enlarged-footprint.html',
@@ -216,7 +241,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
     .state('tab.enlarged-footprint-notifications', {
-      url: '/enlarged-footprint',
+      url: '/enlarged-footprint-notifications',
       views: {
         'notifications-tab': {
             templateUrl: 'tabs/enlarged/enlarged-footprint.html',

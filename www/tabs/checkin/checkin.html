@@ -1,17 +1,38 @@
 
 <!-- Header Bar -->
 <ion-header-bar align-title="center" class="bg-header">
-  <h1 class="title">check-in</h1>
+<div class="buttons">
+    <button class="button button-icon icon waddle-search light" ng-click="toggleSearch()"></button>
+  </div>
+  <h1 class="title">select a venue</h1>
 </ion-header-bar>
 
 <ion-view title="Checkins">
   <ion-content class="padding bg-scroll">
+
+    <div ng-show="showSearch" class="list">
+      <div class="item item-input-inset searchbox">
+        <label class="item-input-wrapper white-bg">
+          <i class="icon waddle-search placeholder-icon"></i>
+          <input id="folder-search" type="text" placeholder="type in the name of the place" ng-keyup="searchFoursquareVenuesByKeyword()" ng-model="search.query">
+        </label>
+          <button class="button button-clear" ng-if="searchFolders.query" ng-click="clearSearch()">x</button>
+          <!-- <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button> -->
+      </div>
+      <br>
+      <div class="item item-input-inset searchbox">
+        <label class="item-input-wrapper white-bg">
+          <input type="text" placeholder="type in a location" ng-keyup="searchFoursquareVenuesByKeyword()" ng-model="search.near">
+        </label>
+        <button class="button button-clear" ng-if="searchFolders.query" ng-click="clearSearch()">x</button>
+      </div>
+    </div>
      <!--  <h2>{{location}}</h2> -->
     <div class="item item-avatar item-text-wrap notifications-list" ng-repeat="venue in venues" ui-sref="tab.checkin-post" ng-click='passSelectedVenueInfoToPostTab(venue)' ui-sref-opts="{reload: true}">
         <img class="waddlebadge-checkin-list" ng-src="{{venue.iconUrlPrefix}}40x40{{venue.iconUrlSuffix}}">
         <h2>{{venue.name}}</h2>
-        <h5>{{venue.location.formattedAddress[0]}}, {{venue.location.formattedAddress[1]}}<h5>
-        <h6>{{venue.location.distance}} mi</h6>
+        <h5 class="venue-info">{{venue.location.formattedAddress[0]}}, {{venue.location.formattedAddress[1]}}<h5>
+        <h5 ng-if="venue.location.distance" class="venue-info">{{venue.location.distance}} mi</h5>
     </div>
 
     <ion-infinite-scroll

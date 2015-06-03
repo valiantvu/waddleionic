@@ -143,7 +143,6 @@ var UserRequests = function ($http){
       if (arguments[1] !== undefined) {
           var page = arguments[1]
           url +=  "/" + page;
-          console.log(url);
       }
 
       if (arguments[2] !== undefined) {
@@ -343,8 +342,8 @@ var UserRequests = function ($http){
       }
     },
 
-    fetchUnreadNotifications: function (userFbID) {
-      var url = '/api/users/notifications/unread/' + userFbID;
+    fetchUnreadNotifications: function (userFbID, page, limit) {
+      var url = '/api/users/notifications/unread/' + userFbID + '/' + page + '/' + limit;
       if(ionic.Platform.isIOS()) {
         url = productionServerURL.concat(url);
       }
@@ -368,8 +367,8 @@ var UserRequests = function ($http){
       });
     },
 
-    fetchReadNotifications: function (userFbID, limit) {
-      var url = '/api/users/notifications/read/' + userFbID + '/' + limit;
+    fetchReadNotifications: function (userFbID, page, limit) {
+      var url = '/api/users/notifications/read/' + userFbID + '/' + page + '/' + limit;
       if(ionic.Platform.isIOS()) {
         url = productionServerURL.concat(url);
       }

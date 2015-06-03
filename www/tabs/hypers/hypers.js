@@ -2,10 +2,21 @@
 
 var HypersController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicHistory) {
     
-    $scope.footprint = FootprintRequests.openFootprint;
-    $scope.headerTitle = FootprintRequests.currentTab;
+    // $scope.footprint = FootprintRequests.openFootprint;
+  $scope.currentTab = FootprintRequests.currentTab;
 
-    console.log($scope.headerTitle);
+  if($scope.currentTab === 'folders') {
+    $scope.footprint = FootprintRequests.openFootprintFolders;
+  } else if($scope.currentTab === 'notifications') {
+    $scope.footprint = FootprintRequests.openFootprintNotifications;
+  } else if($scope.currentTab === 'me') {
+    console.log(FootprintRequests.openFootprintProfile);
+    $scope.footprint = FootprintRequests.openFootprintProfile;
+  } else {
+    $scope.footprint = FootprintRequests.openFootprint;
+  }
+
+    console.log($scope.footprint);
 
     // $scope.getFootprintInteractions = function () {
     //   FootprintRequests.getFootprintInteractions($scope.footprint.checkin.checkinID)

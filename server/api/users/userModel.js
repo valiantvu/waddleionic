@@ -307,11 +307,12 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
     'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
     'OPTIONAL MATCH (place)-[:hasCategory]-(category:Category)',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
-    'OPTIONAL MATCH (checkin)<-[:containsCheckin]-(folderHype:Folder)<-[:hasFolder]-(hyper:User)',
+    'OPTIONAL MATCH (checkin)<-[connection:containsCheckin]-(folderHype:Folder)<-[:hasFolder]-(hyper:User)',
     'OPTIONAL MATCH (checkin)<-[:containsCheckin]-(folder:Folder)<-[:hasFolder]-(viewer:User {facebookID: {viewerID}})',
     'RETURN user, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers, collect(DISTINCT folder) AS folders, category',
     'ORDER BY checkin.checkinTime DESC',
-    'SKIP { skipNum }'
+    'SKIP { skipNum }',
+    'LIMIT { skipAmount }'
   ].join('\n');
 
   if(skipAmount > 0) {
@@ -362,7 +363,7 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
           var hypesArray = [];
           for(var i = 0; i < item['hypers'].length; i++) {
 
-            hypesArray.push(item['hypers'][i].data);
+            hypesArray.push({hypeGiver: item['hypers'][i].data});
           }
           singleResult.hypes = hypesArray;
         }
@@ -466,8 +467,7 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
         if(item['hypers'].length) {
           var hypesArray = [];
           for(var i = 0; i < item['hypers'].length; i++) {
-
-            hypesArray.push(item['hypers'][i].data);
+            hypesArray.push({hypeGiver: item['hypers'][i].data});
           }
           singleResult.hypes = hypesArray;
         }
@@ -733,7 +733,7 @@ User.prototype.updateNotificationReadStatus = function () {
   return deferred.promise;
 }
 
-User.prototype.getUnreadNotifications = function () {
+User.prototype.getUnreadNotifications = function (page, skipAmount) {
   var deferred = Q.defer();
 
   var query = [
@@ -742,18 +742,22 @@ User.prototype.getUnreadNotifications = function () {
     'MATCH (checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
     'MATCH (notificationGiver:User)-[m:madeComment|hasFolder]-(n)',
     'RETURN user, n, checkin, place, category, notificationGiver, unread.createdAt',
-    'ORDER BY unread.createdAt DESC'
+    'ORDER BY unread.createdAt DESC',
+    'SKIP { skipNum }',
+    'LIMIT { skipAmount }'
   ].join('\n');
 
   var params = {
-    facebookID: this.getProperty('facebookID')
+    facebookID: this.getProperty('facebookID'),
+    skipNum: page ? page * skipAmount : 0,
+    skipAmount: skipAmount
   };
 
     db.query(query, params, function (err, results) {
     if (err) { deferred.reject(err); }
     else {
       var parsedResults = _.map(results, function (item) {
-        var singleResult = {};
+        var singleResult = {user: item.user.data};
 
         if(item.notificationGiver) {
           singleResult.notificationGiver = item.notificationGiver.data;
@@ -789,7 +793,7 @@ User.prototype.getUnreadNotifications = function () {
   return deferred.promise;
 }
 
-User.prototype.getReadNotifications = function (limit) {
+User.prototype.getReadNotifications = function (page, skipAmount) {
   var deferred = Q.defer();
 
   var query = [
@@ -799,19 +803,21 @@ User.prototype.getReadNotifications = function (limit) {
     'MATCH (notificationGiver:User)-[m:madeComment|hasFolder]-(n)',
     'RETURN user, n, checkin, place, category, notificationGiver, read.createdAt',
     'ORDER BY read.createdAt DESC',
-    'LIMIT ' + limit
+    'SKIP { skipNum }',
+    'LIMIT { skipAmount }'
   ].join('\n');
 
   var params = {
     facebookID: this.getProperty('facebookID'),
-    limit: limit
+    skipNum: page ? page * skipAmount : 0,
+    skipAmount: skipAmount
   };
 
     db.query(query, params, function (err, results) {
     if (err) { deferred.reject(err); }
     else {
       var parsedResults = _.map(results, function (item) {
-        var singleResult = {};
+        var singleResult = {user: item.user.data};
 
         if(item.notificationGiver) {
           singleResult.notificationGiver = item.notificationGiver.data;
@@ -913,20 +919,19 @@ User.getBucketList = function (facebookID, page, skipAmount){
   return deferred.promise;
 };
 
-User.addFolder = function (facebookID, folderName, folderDescription) {
+User.addFolder = function (facebookID, folderName) {
   var deferred = Q.defer();
 
   var query = [
     'MATCH (user:User {facebookID:{facebookID}})',
     'MERGE (user)-[:hasFolder]->(folder:Folder {name: {folderName}})',
-    'ON CREATE SET folder.name = {folderName}, folder.description = {folderDescription}, folder.createdAt = timestamp()',
+    'ON CREATE SET folder.name = {folderName}, folder.createdAt = timestamp()',
     'RETURN user, folder'
   ].join('\n');
 
   var params = {
     facebookID: facebookID,
-    folderName: folderName,
-    folderDescription: folderDescription
+    folderName: folderName
   };
 
   db.query(query, params, function (err, results) {

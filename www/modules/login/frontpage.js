@@ -1,7 +1,7 @@
 
 (function(){
 
-var FrontpageController = function (UserRequests, $scope, $state, $window) {
+var FrontpageController = function (UserRequests, $scope, $state, $window, $localstorage) {
   var enterSiteWhenConnected = function (fbToken) {
     openFB.api({
       path: '/me',
@@ -26,10 +26,15 @@ var FrontpageController = function (UserRequests, $scope, $state, $window) {
 
     UserRequests.sendUserData(userData)
     .then(function(storedUserData){
+      $state.go('walkthrough');
       UserRequests.allData = storedUserData.data
       console.log('alldata:  ', UserRequests.allData)
+      $localstorage.setObject('user', UserRequests.allData.user);
       if(UserRequests.allData.user.footprintsCount >= 0) {
-        $state.go('tab.home', {}, {reload: true});
+        $state.go('tab.home');
+      }
+      else {
+        $state.go('walkthrough');
       }
     });
   };
@@ -58,10 +63,16 @@ var FrontpageController = function (UserRequests, $scope, $state, $window) {
       scope: 'user_friends, user_tagged_places, user_photos, read_stream'
     });
   };
+
+  if($window.localStorage.user) {
+    $scope.login();
+  }
+
 };
 
+
 //Injects the services needed by the controller
-FrontpageController.$inject = ['UserRequests', '$scope', '$state', '$window']
+FrontpageController.$inject = ['UserRequests', '$scope', '$state', '$window', '$localstorage']
 
 //Start creating Angular module
 angular.module('waddle.frontpage', [])

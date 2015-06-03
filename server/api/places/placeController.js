@@ -125,10 +125,6 @@ var categoryList = [
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
 	 suffix: '-1.png'
 	},
-		{name: "Karaoke Bar",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	 suffix: '-1.png'
-	},
 	{name: "Café",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-1/coffee-',
 	 suffix: '-1.png'
@@ -161,10 +157,142 @@ var categoryList = [
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-1/painting-',
 	 suffix: '-1.png'
 	},
-	{name: "Public Art",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-1/painting-',
-	 suffix: '-1.png'
-	}
+	{name: "Water Park",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/surfspot-',
+	 suffix: '-1.svg'
+	},
+	{name: "Beach",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/surfspot-',
+	 suffix: '-1.svg'
+	},
+	{name: "Nudist Beach",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/surfspot-',
+	 suffix: '-1.svg'
+	},
+	{name: "Surf Spot",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/surfspot-',
+	 suffix: '-1.svg'
+	},
+	{name: "Dive Spot",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/surfspot-',
+	 suffix: '-1.svg'
+	},
+	{name: "Fishing Spot",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/surfspot-',
+	 suffix: '-1.svg'
+	},
+	{name: "Lake",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/surfspot-',
+	 suffix: '-1.svg'
+	},
+	{name: "Pool",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/surfspot-',
+	 suffix: '-1.svg'
+	},
+	{name: "Train Station",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/trainstation-',
+	 suffix: '-1.svg'
+	},
+	{name: "Platform",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/trainstation-',
+	 suffix: '-1.svg'
+	},
+	{name: "Train",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/trainstation-',
+	 suffix: '-1.svg'
+	},
+	{name: "Subway",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/trainstation-',
+	 suffix: '-1.svg'
+	},
+	{name: "Tram",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/trainstation-',
+	 suffix: '-1.svg'
+	},
+	{name: "Korean Restaurant",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/koreanrestaurant-',
+	 suffix: '-1.svg'
+	},
+	{name: "City",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/city-',
+	 suffix: '-1.svg'
+	},
+	{name: "County",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/city-',
+	 suffix: '-1.svg'
+	},
+	{name: "Municipality",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/city-',
+	 suffix: '-1.svg'
+	},
+	{name: "Country",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/city-',
+	 suffix: '-1.svg'
+	},
+	{name: "Neighborhood",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/city-',
+	 suffix: '-1.svg'
+	},
+	{name: "State",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/city-',
+	 suffix: '-1.svg'
+	},
+	{name: "Town",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/city-',
+	 suffix: '-1.svg'
+	},
+	{name: "Village",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/city-',
+	 suffix: '-1.svg'
+	},
+	{name: "Airport",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/airport-',
+	 suffix: '-1.svg'
+	},
+	{name: "Airport Gate",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/airport-',
+	 suffix: '-1.svg'
+	},
+	{name: "Airport Lounge",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/airport-',
+	 suffix: '-1.svg'
+	},
+	{name: "Airport Terminal",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/airport-',
+	 suffix: '-1.svg'
+	},
+	{name: "Plane",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/airport-',
+	 suffix: '-1.svg'
+	},
+	{name: "Goverment Building",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/officialbuilding-',
+	 suffix: '-1.svg'
+	},
+	{name: "Goverment Building",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/officialbuilding-',
+	 suffix: '-1.svg'
+	},
+	{name: "Capitol Building",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/officialbuilding-',
+	 suffix: '-1.svg'
+	},
+	{name: "City Hall",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/officialbuilding-',
+	 suffix: '-1.svg'
+	},
+	{name: "Monument / Landmark",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/officialbuilding-',
+	 suffix: '-1.svg'
+	},
+	{name: "Museum",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/officialbuilding-',
+	 suffix: '-1.svg'
+	},
+	{name: "History Museum",
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/officialbuilding-',
+	 suffix: '-1.svg'
+	},
 ];
 
 placeController.updatePlace = function (req, res){
