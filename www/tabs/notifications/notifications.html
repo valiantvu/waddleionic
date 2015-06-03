@@ -7,8 +7,7 @@
 
   <ion-content class="padding bg-scroll">
 
-
-<!--   <ion-list> -->
+    <ion-refresher on-refresh="doRefresh()"></ion-refresher>
     <div ng-repeat="notification in notifications" class="item item-avatar item-text-wrap notifications-list" ui-sref="tab.enlarged-footprint-notifications" ng-click="openFootprint(notification, $index)">
       <img class="notifications-list-propic" ng-src='{{notification.notificationGiver.fbProfilePicture}}'>
       <p class="notifications-text-overflow notifications-message1"><b>{{notification.notificationGiver.name}}</b> {{notification.notificationTrigger.message1}}:</p>
@@ -17,15 +16,14 @@
       <p class="notifications-text-overflow notifications-message2">{{notification.notificationTrigger.message2}}</p>
       <span ng-if="notification.notificationTrigger.createdAt" am-time-ago="notification.notificationTrigger.createdAt" class="notifications-timestamp timestamp"></span>
       <img ng-if="notification.notificationTrigger.createdAt" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/timestamp-1.svg"class="waddle-clock clock-notifications float-right">
-    <!--   <p>"{{notification.notificationTrigger.text}}"<p> -->
     </div>
- <!--  </ion-list> -->
 
   <ion-infinite-scroll
     on-infinite="getUserData()"
     ng-if="moreDataCanBeLoaded"
     distance="10%">
   </ion-infinite-scroll>
+
   <h5 ng-if="!moreDataCanBeLoaded">No more results to show</h5>
 
   </ion-content>

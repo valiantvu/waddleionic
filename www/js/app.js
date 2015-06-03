@@ -90,6 +90,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
     .state('tab.checkin', {
+      cache: false,
       url: '/checkin',
       views: {
         'checkin-tab': {
@@ -104,6 +105,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       }
     })
     .state('tab.checkin-post', {
+      cache: false,
       url: '/checkin-post',
       views: {
         'checkin-tab': {
@@ -169,7 +171,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
      .state('tab.comments-notifications', {
       url: '/comments-notifications',
       views: {
-        'profile-tab': {
+        'notifications-tab': {
           templateUrl: 'tabs/comments/comments.html',
           controller: 'CommentsController'
         }
@@ -188,6 +190,24 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       url: '/hypers-folders',
       views: {
         'folders-tab': {
+          templateUrl: 'tabs/hypers/hypers.html',
+          controller: 'HypersController'
+        }
+      }
+    })
+    .state('tab.hypers-profile', {
+      url: '/hypers-profile',
+      views: {
+        'profile-tab': {
+          templateUrl: 'tabs/hypers/hypers.html',
+          controller: 'HypersController'
+        }
+      }
+    })
+    .state('tab.hypers-notifications', {
+      url: '/hypers-notifications',
+      views: {
+        'notifications-tab': {
           templateUrl: 'tabs/hypers/hypers.html',
           controller: 'HypersController'
         }

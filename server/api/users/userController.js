@@ -410,10 +410,24 @@ userController.getUnreadNotifications = function (req, res) {
   var params = {}
   params.facebookID = req.params.user;
 
+  if(req.params.page) {
+    params.page = parseInt(req.params.page);
+  }
+  else {
+    params.page = 0;
+  }
+
+  if(req.params.skip) {
+    params.skipAmount = parseInt(req.params.skip);
+  }
+  else {
+    params.skipAmount = 0;
+  }
+
   User.find(params)
   .then(function (userNode) {
     user = userNode;
-    return user.getUnreadNotifications();
+    return user.getUnreadNotifications(params.page, params.skipAmount);
   })
   .then(function (notifications) {
     res.json(_.flatten(notifications));
@@ -428,13 +442,26 @@ userController.getUnreadNotifications = function (req, res) {
 userController.getReadNotifications = function (req, res) {
   var user;
   var params = {};
-  var limit = req.params.limit;
   params.facebookID = req.params.user;
+
+  if(req.params.page) {
+    params.page = parseInt(req.params.page);
+  }
+  else {
+    params.page = 0;
+  }
+
+  if(req.params.skip) {
+    params.skipAmount = parseInt(req.params.skip);
+  }
+  else {
+    params.skipAmount = 0;
+  }
   
   User.find(params)
   .then(function (userNode) {
     user = userNode;
-    return user.getReadNotifications(limit);
+    return user.getReadNotifications(params.page, params.skipAmount);
   })
   .then(function (notifications) {
     res.json(notifications);
@@ -498,13 +525,12 @@ userController.getBucketList = function (req, res){
 };
 
 userController.addFolder = function (req, res) {
-  var user, folderName, folderDescription;
+  var user, folderName
   user = req.body.facebookID;
   folderName = req.body.folderName,
-  folderDescription = req.body.folderDescription;
   console.log(req.body)
 
-  User.addFolder(user, folderName, folderDescription)
+  User.addFolder(user, folderName)
   .then(function (folder) {
     console.log(folder);
     res.json(folder);

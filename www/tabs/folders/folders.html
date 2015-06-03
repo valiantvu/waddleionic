@@ -24,6 +24,8 @@
       </div>
     </div>
 
+    <ion-refresher on-refresh="doRefresh()"></ion-refresher>
+
     <div style="height:50px"></div>
     <svg ng-repeat="folder in folders" style="margin-top: -50" viewBox="0 0 1080 430">
       <defs>
@@ -95,8 +97,6 @@
 <script id="add-folder.html" type="text/ng-template">
     <form class="navbar-form navbar-left" role="search">
       <textarea ng-model="newFolderInfo.name" type="text" class="form-control" placeholder="Name your folder">
-      </textarea>
-      <textarea ng-model="newFolderInfo.description" type="text" class="form-control" placeholder="Write a description">
       </textarea>
     </form>
 </script>

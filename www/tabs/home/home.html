@@ -22,6 +22,8 @@
       </div>
     </div>
 
+    <ion-refresher on-refresh="doRefresh()"></ion-refresher>
+
     <div ng-repeat="footprint in footprints" >
       <button ng-if="!footprint.folders" class="button icon waddle-folder-plus button-small button-light savefave text-align-right" ng-click="showPopup(footprint.checkin.checkinID, $index)">Save to Folder</button>
       <button ng-if="footprint.folders" class="button button-small button-light savefave" ng-click="openModal(footprint.folders[0].name)">{{footprint.folders[0].name}}</button>
@@ -40,7 +42,7 @@
         <!-- Badge -->
         <!-- <img ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge"> -->
         <img ng-if="footprint.category.iconPrefix" ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge">
-        <img ng-if="!footprint.category.iconPrefix" ng-src="https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-40x40-1.png" class="waddlebadge">
+        <img ng-if="!footprint.category.iconPrefix" ng-src="https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-40x40-2.svg" class="waddlebadge">
         <!-- User Name -->
         <a ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="subdued home-rating-message"><b>{{footprint.user.name}}</b> rates this <h4 class="ratinghex-footprint">{{footprint.checkin.rating}}</h4></a>
         <br>
@@ -222,8 +224,6 @@
     <form class="navbar-form navbar-left" role="search">
       <textarea ng-model="newFolderInfo.name" type="text" class="form-control" placeholder="Name your folder">
       </textarea>
-      <textarea ng-model="newFolderInfo.description" type="text" class="form-control" placeholder="Write a description">
-      </textarea>
     </form>
 </script>
 
@@ -299,7 +299,6 @@
    </style>
     <button class="button button-icon inline-block icon waddle-close" ng-click="optionsPopup.close()"></button>
     <button class="button button-full border-bottom">Suggest to Friend</button>
-    <button ng-click="showCreationSuccessAlert()"class="button button-full border-bottom">Share</button>
     <button ng-if="checkUserID(selectedFootprintUserID)" class="button button-full">Edit</button>
     <button ng-if="checkUserID(selectedFootprintUserID)" ng-click="openDeleteFootprintPopup()" class="button button-full">Delete</button>
 </script>

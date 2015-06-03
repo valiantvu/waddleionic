@@ -6,6 +6,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 	$scope.selectedFolderInfo = {};
 	$scope.newFolderInfo = {};
 	$scope.selectedFolder = null;
+  $scope.disabled = false;
 
 	$scope.venue = NativeCheckin.selectedVenue;
 	console.log($scope.venue)
@@ -36,6 +37,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
   };
 
 	$scope.sendCheckinDataToServer = function(venueInfo) {
+    $scope.disabled = true;
     console.log($scope.checkinInfo.photo);
 		var checkinData = {
 			id: venueInfo.id,
@@ -66,7 +68,6 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
   			console.log(footprint);
         UserRequests.newFootprint = footprint.data;
         $rootScope.$broadcast('newFootprint', footprint);
-        $state.go('tab.home', {}, {reload: true});
   		});
     } 
 	}

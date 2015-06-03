@@ -2,10 +2,26 @@
 
 var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicHistory, $ionicPopup, $timeout, $window) {
     
-  $scope.footprint = FootprintRequests.openFootprint;
+  // $scope.footprint = FootprintRequests.openFootprint;
   $scope.selectedFootprintIndex = FootprintRequests.selectedFootprintIndex;
   $scope.headerTitle = FootprintRequests.currentTab;
   $scope.usersAlsoBeenHere = [];
+
+  $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
+      if($previousRoute.url === "/home" || $previousRoute.url === "/enlarged-footprint") {
+        FootprintRequests.currentTab = "feed";
+        $scope.headerTitle = "feed";
+      } else if($previousRoute.url === "/folders" || $previousRoute.url === "/enlarged-footprint-folders") {
+        FootprintRequests.currentTab = "folders";
+        $scope.headerTitle = "folders";
+      } else if($previousRoute.url === "/notifications" || $previousRoute.url === "/enlarged-footprint-notifications") {
+        FootprintRequests.currentTab = "notifications";
+        $scope.headerTitle = "notifications";
+      } else if($previousRoute.url === "/profile" || $previousRoute.url === "/enlarged-footprint-profile") {
+        FootprintRequests.currentTab = "me";
+        $scope.headerTitle = "me";
+      } 
+  });
 
   $scope.fetchVenueInfo = function() {
     FootprintRequests.getFoursquareVenueInfo($scope.footprint.place.foursquareID, window.sessionStorage.userFbID)
@@ -28,35 +44,34 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
           $scope.usersAlsoBeenHere.push(user.data[0].users[i]);
         }
       }
-      console.log($scope.usersAlsoBeenHere);
     });
   }
 
   $scope.getFootprintInteractions = function () {
     FootprintRequests.getFootprintInteractions($scope.footprint.checkin.checkinID)
     .then(function (footprintInteractions) {
-      console.dir(footprintInteractions);
       $scope.footprint.comments = footprintInteractions.data.comments;
       $scope.footprint.hypes = footprintInteractions.data.hypes;
     })
   };
 
-  $scope.fetchVenueInfo();
   if($scope.headerTitle === 'folders') {
     $scope.subRouting = '-folders';
-    $scope.footprint.user = UserRequests.loggedInUserInfo;
+    $scope.footprint = FootprintRequests.openFootprintFolders;
     $scope.getFootprintInteractions();
-  }
-  if($scope.headerTitle === 'notifications') {
+  } else if($scope.headerTitle === 'notifications') {
     $scope.subRouting = '-notifications';
-    $scope.footprint.user = UserRequests.loggedInUserInfo;
+    $scope.footprint = FootprintRequests.openFootprintNotifications;
     $scope.getFootprintInteractions();
-  }
-  if($scope.headerTitle === 'me') {
+  } else if($scope.headerTitle === 'me') {
     $scope.subRouting = '-profile';
+    $scope.footprint = FootprintRequests.openFootprintProfile;
+    $scope.getFootprintInteractions();
   } else {
-    $scope.subRouting = ''; 
+    $scope.subRouting = '';
+    $scope.footprint = FootprintRequests.openFootprint;
   }
+  $scope.fetchVenueInfo();
   $scope.findUsersAlsoBeenHere();
 
   $scope.goBack = function() {
@@ -141,7 +156,8 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     }, 1500);
   };
 
-  $scope.callback = function(map) {
+  $scope.setMarker = function(map) {
+    // $scope.map = map;
   	map.setView([$scope.footprint.place.lat, $scope.footprint.place.lng], 12);
   	L.mapbox.featureLayer({
 	    type: 'Feature',
@@ -168,24 +184,24 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
 
 EnlargedFootprintController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicHistory', '$ionicPopup', '$timeout', '$window'];
 
-var MapLocationDirective = function () {
+var MapLocationDirective = function ($location) {
 	return {
 		restrict: 'EA',
 		replace: true,
 		scope: {
-			callback: "="
+			setMarker: "="
 		},
-		template: '<div id="map-location"></div>',
+    template: '<div class="map"></div>',
 		link: function(scope, element, attributes) {
 			L.mapbox.accessToken = 'pk.eyJ1Ijoid2FkZGxldXNlciIsImEiOiItQWlwaU5JIn0.mTIpotbZXv5KVgP4pkcYrA';
-      var map = L.mapbox.map('map-location', 'injeyeo.8fac2415');
-      scope.callback(map);
+      var map = L.mapbox.map(element[0], 'injeyeo.8fac2415');
+      scope.setMarker(map);
 		}
 	}
 
 }
 
-MapLocationDirective.$inject = [];
+MapLocationDirective.$inject = ['$location'];
 
 angular.module('waddle.enlarged-footprint', [])
   .controller('EnlargedFootprintController', EnlargedFootprintController)

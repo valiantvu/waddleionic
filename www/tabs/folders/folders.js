@@ -15,6 +15,12 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
 
     FootprintRequests.currentTab = 'folders';
 
+    $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
+      if($previousRoute.url === "/folders") {
+        FootprintRequests.currentTab = 'folders';
+      }
+    });
+
     $scope.openFolder = function(folder, index) {
       console.log('changing states');
       FootprintRequests.openFolder = folder;
@@ -27,6 +33,14 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     $scope.toggleDeleteButton = function() {
       $scope.showDeleteButton = $scope.showDeleteButton ? false : true;
     };
+
+    $scope.doRefresh = function() {
+      page = 0;
+      $scope.folders = [];
+      $scope.moreDataCanBeLoaded = true;
+      $scope.getUserData();
+      $scope.$broadcast('scroll.refreshComplete');
+    }
 
     $scope.getUserData = function (reload) {
 

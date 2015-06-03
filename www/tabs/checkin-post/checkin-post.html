@@ -2,7 +2,7 @@
       <div class="buttons">
         <button ng-click="goBack()" class="button button-icon icon ion-arrow-left-b light"></button>
       </div>
-      <h1 class="title">check-in</h1>
+      <h1 class="title">review</h1>
     </ion-header-bar>
     <ion-view>
     <ion-content class="padding bg-scroll">
@@ -30,19 +30,22 @@
           </p>
       </div>
 
-      <br/>
       <h4 class="ratinghex">{{checkinInfo.rating}}</h4>
       <div ng-init="rating = star.rating - 1"></div>
       <div class="star-rating" star-rating rating-value="rating"data-max="5" on-rating-selected="checkinInfo.rating = rating"></div>
       <br/>
      <picture-select photo-file="photo" on-photo-selected="checkinInfo.photo = photo"></picture-select>
-    <form class="navbar-form navbar-left" role="search">
-      <textarea ng-model="checkinInfo.footprintCaption" type="text" class="form-control" placeholder="What did you think of this place?">
+   <!--  <form class="navbar-form navbar-left" role="search">
+      <textarea ng-model="checkinInfo.footprintCaption" type="text" class="form-control" placeholder="What did you think of this place?"> -->
       </textarea>
+      <form class='comment-form item-input-wrapper' novalidate>
+          <textarea class='review-form' ng-model='checkinInfo.footprintCaption' name='comment' placeholder='What did you think of this place?' data-ng-minlength="1" data-ng-maxlength="1000" required>
+          </textarea>
+      </form>
       <!-- <input type="file" id="files"/><p id="status">Please select a file</p> -->
-      <button class="button button-large checkin-post" type="submit" ng-disabled="checkinInfo.rating === '--'" ng-click="sendCheckinDataToServer(venue)">post</button>
+      <button class="button button-large checkin-post" type="submit" ng-disabled="checkinInfo.rating === '--'  || disabled" ng-click="sendCheckinDataToServer(venue)">post</button>
    <!--  <button ng-click="showCheckinInfo()">Info</button> -->
-    </form>
+    <!-- </form> -->
     </div>
     </ion-content>
   </ion-view>

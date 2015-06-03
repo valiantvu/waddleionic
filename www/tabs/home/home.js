@@ -1,7 +1,7 @@
 (function(){
 
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate) {
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory) {
   Auth.checkLogin()
   .then(function () {
     $scope.numHypes = 0;
@@ -16,7 +16,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $scope.moreDataCanBeLoaded = true;
     $scope.newFootprint = UserRequests.newFootprint;
 
-    FootprintRequests.currentTab = 'home';
+    FootprintRequests.currentTab = 'feed';
 
     $scope.openFootprint = function(footprint, index) {
       FootprintRequests.openFootprint = footprint;
@@ -41,6 +41,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $scope.getAggregatedFeedData = function () {
         UserRequests.getAggregatedFeedData(window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {
+          console.log('page:', page);
           if (data.data.length > 0) {
               console.log(data);
               $scope.footprints = $scope.footprints.concat(data.data);
@@ -56,11 +57,16 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     //posts new footprint from checkin screen
     $scope.$on('newFootprint', function(event, footprint) {
-      $ionicScrollDelegate.scrollTop();
+      // $ionicHistory.clearCache();
+      $state.go('tab.home', {}, {reload: true});
       $scope.footprints.unshift(footprint.data);
+      $ionicScrollDelegate.scrollTop();
     })
 
     $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
+      if($previousRoute.url === "/home") {
+        FootprintRequests.currentTab = "feed";
+      }
       if($previousRoute.name === 'tab.home' && FootprintRequests.deletedFootprint) {
         console.log('deleted?');
         $scope.footprints.splice(FootprintRequests.selectedFootprintIndex, 1);
@@ -75,8 +81,13 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       }
     };
 
-    $scope.getAggregatedFeedData();
-    $scope.updateFeedWithNewFootprint();
+    $scope.doRefresh = function() {
+      page = 0;
+      $scope.footprints = [];
+      $scope.moreDataCanBeLoaded = true;
+      $scope.getAggregatedFeedData();
+      $scope.$broadcast('scroll.refreshComplete');
+    }
 
     $scope.viewFoldersList = function() {
       UserRequests.fetchFolders(window.sessionStorage.userFbID, 0, 10)
@@ -88,6 +99,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     };
 
     $scope.viewFoldersList();
+    $scope.updateFeedWithNewFootprint();
 
     $scope.addCheckinToBucketList = function (footprint, index){
       
@@ -417,7 +429,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 

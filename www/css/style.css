@@ -1,7 +1,6 @@
 body { margin:0; padding:0; }
-#map { position:absolute; top:0; bottom:0; width:100%; }
 
-#map-location { display: block; width:100vw; height: 200px; margin-bottom: 10px; }
+.map{ display: block; width:100vw; height: 200px; margin-bottom: 10px; }
 
 /*.bar-positive{
 	background: rgb(0, 192, 161);
@@ -224,7 +223,8 @@ i.icon.ion-record {
 	background-color: #e1876a;
 	font-family: 'Open Sans', sans-serif;
 	font-weight: 300;
-	margin-left: 35vw;
+	margin-top: 5vw;
+	margin-left: 35vw !important;
 	margin-bottom: 5vw;
 	height: 1.5em !important;
 	width: 30vw !important;
@@ -660,6 +660,17 @@ span{
 	padding-right: 0.5em !important;
 }
 
+.review-form {
+	border-radius: 10px;
+	height: 12vh;
+	/*width: 90vw;*/
+	background-color: #eee;
+	border: none;
+	padding-right: 0.5em !important;
+}
+
+
+
 .notifications-text-overflow {
 	padding-right: 4em;
 	overflow: hidden !important;
@@ -1020,6 +1031,15 @@ z-index: 11;
   z-index: 10;
 }
 
+.icon.waddle-close {
+	background-repeat: no-repeat;
+  background-position: 50%;
+  margin-left: 0.5em;
+  /*height: 100%;*/
+  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/xbutton-1.svg');
+  background-size: 1em;
+}
+
 .waddle-clock {
   height: 12px;
   width: auto;
@@ -1059,6 +1079,10 @@ z-index: 11;
 	height: 3em;
 	width: auto;
 	z-index: 2;
+}
+
+.also-been {
+	margin-left: 0.5em;
 }
 
 .me-footprints {

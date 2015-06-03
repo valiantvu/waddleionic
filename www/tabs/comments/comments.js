@@ -2,9 +2,20 @@
 
 var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicActionSheet, $ionicHistory, moment) {
     
-    $scope.footprint = FootprintRequests.openFootprint;
+    // $scope.footprint = FootprintRequests.openFootprint;
     $scope.currentTab = FootprintRequests.currentTab;
     $scope.selectedFootprintInteractions = {};
+
+  if($scope.currentTab === 'folders') {
+    $scope.footprint = FootprintRequests.openFootprintFolders;
+  } else if($scope.currentTab === 'notifications') {
+    $scope.footprint = FootprintRequests.openFootprintNotifications;
+  } else if($scope.currentTab === 'me') {
+    console.log('hi')
+    $scope.footprint = FootprintRequests.openFootprintProfile;
+  } else {
+    $scope.footprint = FootprintRequests.openFootprint;
+  }
 
     console.log($scope.currentTab);
     // Ensure that a user comment is posted in the database before displaying
