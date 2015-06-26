@@ -417,7 +417,7 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:containsCheckin]-(folderHype:Folder)<-[:hasFolder]-(hyper:User)',
     'OPTIONAL MATCH (checkin)<-[:containsCheckin]-(folder:Folder)<-[:hasFolder]-(user)',
-    'RETURN user, friend, checkin, place, collect(DISTINCT comment) AS comments, collect(DISTINCT commenter) AS commenters, collect(DISTINCT hyper) AS hypers, collect(DISTINCT folder) AS folders, category',
+    'RETURN user, friend, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers, collect(DISTINCT folder) AS folders, category',
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
