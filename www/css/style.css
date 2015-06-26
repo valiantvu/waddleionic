@@ -915,11 +915,20 @@ z-index: 11;
 }
 
 .tabs .tab-item .icon.waddle-checkin {
-	margin-top: 8px;
+	margin-top: 4px;
   background-repeat: no-repeat;
   background-position: 50%;
-  height: 65%;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/tabicon-checkin-1.svg');
+  height: 75%;
+  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/nav+bar+icons/checkin-star-1.svg');
+  background-size: contain;
+}
+
+.tabs .tab-item .icon.waddle-checkin-off {
+	margin-top: 4px;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  height: 75%;
+  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/nav+bar+icons/checkin-star-1.svg');
   background-size: contain;
 }
 

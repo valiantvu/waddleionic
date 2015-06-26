@@ -265,11 +265,7 @@ var categoryList = [
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/airport-',
 	 suffix: '-1.svg'
 	},
-	{name: "Goverment Building",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/officialbuilding-',
-	 suffix: '-1.svg'
-	},
-	{name: "Goverment Building",
+	{name: "Government Building",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/officialbuilding-',
 	 suffix: '-1.svg'
 	},

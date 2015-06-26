@@ -1,6 +1,6 @@
 (function(){
 
-var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin, UserRequests, $ionicModal, $ionicLoading, $ionicPopup, $timeout, $ionicHistory) {	
+var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin, UserRequests, $ionicModal, $ionicLoading, $ionicPopup, $timeout, $ionicHistory, uuid4) {	
 
 	$scope.checkinInfo = {footprintCaption: null, rating: '--', folder: null};
 	$scope.selectedFolderInfo = {};
@@ -9,6 +9,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
   $scope.disabled = false;
 
 	$scope.venue = NativeCheckin.selectedVenue;
+  var photoUUID;
 	console.log($scope.venue)
 
 	$scope.getUserInfo = function () {
@@ -38,6 +39,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 
 	$scope.sendCheckinDataToServer = function(venueInfo) {
     $scope.disabled = true;
+    //pull up loading modal
     console.log($scope.checkinInfo.photo);
 		var checkinData = {
 			id: venueInfo.id,
@@ -57,20 +59,42 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 			checkinData.folderName = $scope.checkinInfo.folder
 		}
     if($scope.checkinInfo.photo) {
-      var formattedPhoto = {files: {0:$scope.checkinInfo.photo, length: 1}}
-  		NativeCheckin.s3_upload(formattedPhoto)
+      var photoUUID = uuid4.generate();
+      var iphone6Photo = $scope.checkinInfo.photo.splice(1,1);
+      var formattedPhoto = {files: {0:iphone6Photo[0], length: 1}};
+      console.log(formattedPhoto);
+  		NativeCheckin.s3_upload(formattedPhoto, window.sessionStorage.userFbID, photoUUID, 'iphone6')
   		.then(function (public_url) {
   		  checkinData.photo = public_url;
   		  console.log('venueInfo: ' + JSON.stringify(checkinData));
   		  return NativeCheckin.sendCheckinDataToServer(checkinData);
   		})
   		.then(function (footprint) {
+        //close loading modal
   			console.log(footprint);
         UserRequests.newFootprint = footprint.data;
+          //this broadcast doesn't always get triggered on mobile, esp when connected to LTE; when it does get triggered, there is sometimes an issue
+        //of displaying the new footprint twice, in the case that the new footprint gets appended to the list after the footprints list has already
+        //refreshed with the new data
         $rootScope.$broadcast('newFootprint', footprint);
+        //Other two sizes are uploaded to AWS
+        uploadImagesToAWS(photoUUID);
   		});
-    } 
+    } else {
+        NativeCheckin.sendCheckinDataToServer(checkinData)
+        .then(function (footprint) {
+        //close loading modal
+          console.log(footprint);
+          UserRequests.newFootprint = footprint.data;
+        //this broadcast doesn't always get triggered on mobile, esp when connected to LTE; when it does get triggered, there is sometimes an issue
+        //of displaying the new footprint twice, in the case that the new footprint gets appended to the list after the footprints list has already
+        //refreshed with the new data
+          $rootScope.$broadcast('newFootprint', footprint);
+        })
+    }
 	}
+
+
 
 	$scope.showCheckinInfo = function() {
 		console.log($scope.checkinInfo.footprintCaption);
@@ -94,12 +118,40 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 
   };
 
+  var uploadImagesToAWS = function(photoUUID) {
+    //the photo uploaded to AWS in the previous step has been spliced out of the array, leaving the remaining sizes to be uploaded
+    var formattedPhoto, size;
+    (function() {
+      var i = 0;
+      function uploadImageToAWS() {
+        if(i < $scope.checkinInfo.photo.length) {
+          if(i === 0) {
+            size = 'full';
+          } else {
+            size = 'thumb';
+          }
+          formattedPhoto = {files: {0:$scope.checkinInfo.photo[i], length: 1}};
+          console.log(formattedPhoto);
+          console.log(size);
+          NativeCheckin.s3_upload(formattedPhoto, window.sessionStorage.userFbID, photoUUID, size)
+          .then(function (public_url) {
+            console.log(public_url);
+            i++;
+            uploadImageToAWS();
+          })
+        } else {
+          console.log('finished uploading photos');
+        }
+      }
+      uploadImageToAWS();
+    })();
+  };
+
 	$scope.getUserInfo();
 	$scope.viewFoldersList();
 
 	 $scope.showPopup = function() {
 
-      // An elaborate, custom popup
       $scope.myPopup = $ionicPopup.show({
         templateUrl: 'folder-list.html',
         title: 'Create or Select a Folder',
@@ -157,7 +209,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 
 };
 
-CheckinPostController.$inject = ['$scope', '$rootScope', '$state', 'NativeCheckin', 'UserRequests', '$ionicModal', '$ionicLoading', '$ionicPopup', '$timeout', '$ionicHistory'];
+CheckinPostController.$inject = ['$scope', '$rootScope', '$state', 'NativeCheckin', 'UserRequests', '$ionicModal', '$ionicLoading', '$ionicPopup', '$timeout', '$ionicHistory', 'uuid4'];
 
 var StarRatingDirective = function () {
 	return {
@@ -201,7 +253,7 @@ var StarRatingDirective = function () {
 
 StarRatingDirective.$inject = [];
 
-var PictureSelectDirective = function () {
+var PictureSelectDirective = function ($q) {
 	return {
         restrict:'AE',
         template:'<div class="content padding">'
@@ -215,38 +267,98 @@ var PictureSelectDirective = function () {
         replace:true,
         link:function(scope,elem,attrs){
 
-            scope.browseFile=function(){
+            scope.browseFile = function(){
                 document.getElementById('files').click();
             }
 
+              var dataURItoBlob = function(dataURI, imageFileType) {
+                console.log(imageFileType);
+                var binary = atob(dataURI.split(',')[1]);
+                var array = [];
+                for(var i = 0; i < binary.length; i++) {
+                    array.push(binary.charCodeAt(i));
+                }
+                return new File([new Uint8Array(array)], "filename", {type: imageFileType});
+              }
+
+              var resizeImageAndGenerateAsBlob = function (dimensions, imageFile, fileType) {
+                var deferred = $q.defer();
+                var image = new Image();
+                image.src = imageFile;
+                image.onload = function (){
+                  var maxWidth = dimensions.width,
+                      maxHeight = dimensions.height,
+                      imageWidth = image.width,
+                      imageHeight = image.height;
+
+                  if (imageWidth > imageHeight) {
+                    if (imageWidth > maxWidth) {
+                      imageHeight *= maxWidth / imageWidth;
+                      imageWidth = maxWidth;
+                    }
+                  }
+                  else {
+                    if (imageHeight > maxHeight) {
+                      imageWidth *= maxHeight / imageHeight;
+                      imageHeight = maxHeight;
+                    }
+                  }
+
+                  var canvas = document.createElement('canvas');
+                  canvas.width = imageWidth;
+                  canvas.height = imageHeight;
+
+                  var ctx = canvas.getContext("2d");
+                  ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
+
+                  var resizedFileAsDataURL = canvas.toDataURL(fileType);
+                  //data url converted to blob for aws upload
+                  var blob = dataURItoBlob(resizedFileAsDataURL, fileType);
+                  console.log(blob); 
+                  deferred.resolve(blob);
+                }
+                return deferred.promise;
+              }
             angular.element(document.getElementById('files')).on('change',function(e){
 
-               var file=e.target.files[0];
-               scope.photoFile = file
-               scope.onPhotoSelected({
-                 photo: file
-               });
-               console.log(scope.photoFile);
-               console.log(angular.element(document.getElementById('files')).val());
 
+               var file = e.target.files[0];
+               var fileType = file.type;
+               var photoBucket = [];
+               var desiredDimensions = [{width: 640, height: 1200}, {width: 100, height: 200}];
+               // pushing in the original photo file
+               photoBucket.push(file);
+            
                angular.element(document.getElementById('files')).val('');
+               var fileReader = new FileReader();
 
-               var fileReader=new FileReader();
 
+               //photoBucket contains the uploaded photo at orginal and reduced image sizes
                fileReader.onload=function(event){
-                   console.log(event);
-                   document.getElementById('preview').src = event.target.result;
-                   // $rootScope.$broadcast('event:file:selected',{image:event.target.result,sender:USER.name})
-               }
+                console.log(event.target);
+                document.getElementById('preview').src = event.target.result;
+                for(var i = 0; i < desiredDimensions.length; i++) {
+                  resizeImageAndGenerateAsBlob(desiredDimensions[i], fileReader.result, fileType)
+                  .then(function (resizedImageAsBlob) {
+                    console.log(resizedImageAsBlob);
+                    photoBucket.push(resizedImageAsBlob);
+                  });
+                }                  
+                  scope.photoFile = photoBucket; 
+                  scope.onPhotoSelected({
+                    photo: photoBucket
+                  });          
+                 console.log(photoBucket);
 
-               fileReader.readAsDataURL(file);
+               }
+               fileReader.readAsDataURL(photoBucket[0]);
             });
 
         }
     }
 };
 
-PictureSelectDirective.$inject = [];
+PictureSelectDirective.$inject = ['$q'];
 
 angular.module('waddle.checkin-post', [])
   .controller('CheckinPostController', CheckinPostController)

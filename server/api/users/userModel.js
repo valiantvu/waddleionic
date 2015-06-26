@@ -454,6 +454,7 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
               comment: item['comments'][i].data,
               commenter: item['commenters'][i].data
             }
+            console.log(commentData);
             commentsArray.push(commentData);
           }
           var sortedComments = _.sortBy(commentsArray, function(commentObj) {
@@ -863,7 +864,7 @@ User.getBucketList = function (facebookID, page, skipAmount){
     'MATCH (user:User {facebookID: {facebookID}})-[:hasBucket]->(checkin:Checkin)-[:hasPlace]->(p:Place)',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
-    'RETURN user, checkin, p, collect(DISTINCT comment) AS comments, collect(commenter), collect(hyper) AS hypers',
+    'RETURN user, checkin, p, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }', 
     'LIMIT { skipAmount }'
@@ -889,12 +890,12 @@ User.getBucketList = function (facebookID, page, skipAmount){
           "place": item.p.data,
         }
 
-        if(item['comments'].length && item['collect(commenter)'].length) {
+        if(item['comments'].length && item['commenters'].length) {
           var commentsArray = [];
           for(var i = 0; i < item['comments'].length; i++) {
             var commentData = {
               comment: item['comments'][i].data,
-              commenter: item['collect(commenter)'][i].data
+              commenter: item['commenters'][i].data
             }
             commentsArray.push(commentData);
           }

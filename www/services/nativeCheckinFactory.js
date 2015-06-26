@@ -42,9 +42,9 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
       }
     },
 
-    s3_upload: function(file_element) {
+    s3_upload: function(file_element, facebookID, photoUUID, photoSize) {
         var deferred = $q.defer();
-        var url = '/api/checkins/sign_s3';
+        var url = '/api/checkins/sign_s3/' + facebookID + '/' + photoUUID + '/' + photoSize;
 
         if(ionic.Platform.isIOS()) {
           url = productionServerURL.concat(url);

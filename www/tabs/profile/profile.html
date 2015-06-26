@@ -97,14 +97,13 @@
 
     </div>
   </div>
-</div>
 
 <div ng-repeat="friend in friends" ng-if='friend.fbProfilePicture' class="item item-avatar notifications-list">
 
-  <div class="item item-avatar">
+  <div class="item item-avatar" ng-click="switchProfilePage(friend)">
 
     <!-- Profile Picture -->
-    <img class="commentslist-propic" ng-src='{{friend.fbProfilePicture}}' ng-click="loadFriendPage(friend)">
+    <img class="commentslist-propic" ng-src='{{friend.fbProfilePicture}}' ng-click="switchProfilePage(friend)">
 
     <!-- User Name -->
     <!-- <h2>{{friend.user.name}}</h2> -->
@@ -112,17 +111,23 @@
     <div class="row">
       <!-- Location -->
       <div class="col col-73">
-        <h2 class='feeditemname' ng-click="loadFriendPage(friend)">
+        <h2 class='feeditemname' ng-click="switchProfilePage(friend)">
           {{friend.name}}
         </h2>
-        <h3 class='feeditemname' ng-click="loadFriendPage(friend)">
+        <h3 class='feeditemname' ng-click="switchProfilePage(friend)">
           {{friend.footprintsCount}} footprints
         </h3>
       </div>
 
   </div>
 </div>
+</div>
 
+  <ion-infinite-scroll
+    on-infinite="getUserProfileData()"
+    ng-if="moreDataCanBeLoaded"
+    distance="10%">
+  </ion-infinite-scroll>
 
   </ion-content>
 </ion-view>

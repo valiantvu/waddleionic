@@ -8,7 +8,9 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		var footprints, hypelist, friends;
 		var page = 0;
 		var skip = 5;
-    var moreDataCanBeLoaded = true;
+    $scope.footprints = [];
+    var user = window.sessionStorage.userFbID;
+    $scope.moreDataCanBeLoaded = true;
 		$scope.search = {};
 		$scope.selectedFolderInfo = {};
     $scope.selectedFolder = null;
@@ -25,12 +27,38 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     });
 
 		$scope.getUserProfileData = function () {
-			if(UserRequests.userProfileData) {
-				getFriendProfileData();
-			}
-			else {
-				getOwnProfileData();
-			}
+   //    console.log('hello');
+			// if(UserRequests.userProfileData) {
+			// 	getFriendProfileData();
+			// }
+			// else {
+			// 	getOwnProfileData();
+			// }
+          console.log('hello again')
+      $scope.searchPlaceHolder = 'search footprints'
+      console.log(user);
+      UserRequests.getUserData(user, window.sessionStorage.userFbID, page, skip)
+      .then(function (data) {
+        console.log(data.data);
+        if(data.data.footprints.length > 0) {
+          console.log(data.data);
+          $scope.userInfo = data.data.user;
+          footprints = data.data.footprints;
+          $scope.footprints = $scope.footprints.concat(footprints);
+          page++;
+          console.log('page: ', page);
+          // $scope.getUserProfileData();
+        } else {
+          $scope.moreDataCanBeLoaded = false;
+        }
+          // if($scope.userInfo.foursquareID) {
+          //  $scope.foursquareConnected = true;
+          // }
+          // if($scope.userInfo.instagramID) {
+          //  $scope.instagramConnected = true;
+          // }
+        $scope.$broadcast('scroll.infiniteScrollComplete');
+      })
 		};
 
 		$scope.checkUserID = function(facebookID) {
@@ -83,13 +111,19 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 			}
 		};
 
-		$scope.loadFriendPage = function (userInfo) {
-			UserRequests.userProfileData = userInfo;
-			$scope.getUserProfileData();
+		$scope.switchProfilePage = function (newUser) {
+      page = 0;
+      console.log(newUser);
+      user = newUser.facebookID;
+      $scope.userInfo = newUser;
+      $scope.footprints = [];
+			// UserRequests.userProfileData = userInfo;
 			hypelist = null;
 			$scope.hypelist = null;
 			$scope.friends = null;
 			friends = null;
+      $scope.getUserProfileData();
+      // getOwnProfileData();
 		};
 
 		
@@ -165,6 +199,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		};
 
 		var getFriendProfileData = function () {
+      console.log('getting freind data')
       $scope.searchPlaceHolder = 'search footprints'
 			$scope.userInfo = UserRequests.userProfileData;
 			UserRequests.userProfileData = null;
@@ -177,25 +212,31 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		};
 
 		var getOwnProfileData = function () {
-			console.log(UserRequests.allData);
+      console.log('hello again')
       $scope.searchPlaceHolder = 'search footprints'
-			UserRequests.getUserData(window.sessionStorage.userFbID, window.sessionStorage.userFbID, page, skip)
+			UserRequests.getUserData(user, window.sessionStorage.userFbID, page, skip)
 			.then(function (data) {
-				console.log(data.data);
-				$scope.userInfo = data.data.user;
-				footprints = data.data.footprints;
-				$scope.footprints = footprints;
-        page++;
-				if($scope.userInfo.foursquareID) {
-					$scope.foursquareConnected = true;
-				}
-				if($scope.userInfo.instagramID) {
-					$scope.instagramConnected = true;
-				}
+        console.log(data.data);
+        if(data.data.footprints.length > 0) {
+  				console.log(data.data);
+  				$scope.userInfo = data.data.user;
+  				footprints = data.data.footprints;
+  				$scope.footprints = $scope.footprints.concat(footprints);
+          page++;
+          console.log('page: ', page);
+          // $scope.getUserProfileData();
+        } else {
+          $scope.moreDataCanBeLoaded = false;
+        }
+  				// if($scope.userInfo.foursquareID) {
+  				// 	$scope.foursquareConnected = true;
+  				// }
+  				// if($scope.userInfo.instagramID) {
+  				// 	$scope.instagramConnected = true;
+  				// }
+        $scope.$broadcast('scroll.infiniteScrollComplete');
 			})
 		};
-
-		$scope.getUserProfileData();
 
      $scope.doRefresh = function() {
       page = 0;
