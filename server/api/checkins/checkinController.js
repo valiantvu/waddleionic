@@ -308,13 +308,15 @@ checkinController.removeFromBucketList = function (req, res){
 checkinController.addComment = function (req, res){
   var clickerID = req.body.clickerID;
   var checkinID = req.body.checkinID;
+  var checkinDate = new Date();
+  var checkinTime = checkinDate.getTime();
   if (req.body.text) {
     var text = req.body.text;
   } else {
     res.status(404).end()
   }
 
-  Checkin.addComment(clickerID, checkinID, text)
+  Checkin.addComment(clickerID, checkinID, text, checkinTime)
     .then(function (data){
       return Checkin.getComments(checkinID);
     })

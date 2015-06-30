@@ -175,13 +175,13 @@ Checkin.removeFromFavorites = function (facebookID, checkinID) {
 }
 
 
-Checkin.addComment = function (clickerID, checkinID, text){
+Checkin.addComment = function (clickerID, checkinID, text, checkinTime){
   var deferred = Q.defer();
   var commentID = uuid.v4();
   var query = [
   'MATCH (clicker:User {facebookID: {facebookID}})',
   'MATCH (commentReceiver:User)-[:hasCheckin]->(checkin:Checkin {checkinID: {checkinID}})',
-  'MERGE (clicker)-[:madeComment]->(newComment:Comment {text: {text}, commentID : {commentID}, time: timestamp() })' + 
+  'MERGE (clicker)-[:madeComment]->(newComment:Comment {text: {text}, commentID : {commentID}, time: {checkinTime} })' + 
   '-[:gotComment]->(checkin)',
   'MERGE (checkin)-[unread:hasUnreadNotification]->(newComment)',
   'ON CREATE SET unread.createdAt = newComment.time',
@@ -191,7 +191,8 @@ Checkin.addComment = function (clickerID, checkinID, text){
     'facebookID': clickerID,
     'checkinID': checkinID,
     'text': text,
-    'commentID' : commentID
+    'commentID' : commentID,
+    'checkinTime': checkinTime
   };
 
   console.log(params);
@@ -211,7 +212,7 @@ Checkin.removeComment = function(facebookID, checkinID, commentID){
 
   var query = [
   'MATCH (clicker:User{facebookID:{facebookID}})-[rel1:madeComment]->(comment:Comment{commentID: {commentID}})-[rel2:gotComment]->(checkin:Checkin {checkinID: {checkinID}})',
-  'OPTIONAL MATCH (comment)<-[rel3]-(user:User)',
+  'OPTIONAL MATCH (checkin)-[rel3]->(comment)',
   'WHERE type(rel3) = "hasUnreadNotification" OR type(rel3) = "hasReadNotification"',
   'DELETE rel1,rel2,rel3,comment'
   ].join('\n');

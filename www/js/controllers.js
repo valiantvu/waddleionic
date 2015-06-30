@@ -1,5 +1,6 @@
 (function() {
 angular.module('waddle.controllers', [
+    'waddle.tabs',
     'waddle.home',
     'waddle.notifications',
     'waddle.folders',

@@ -35,7 +35,7 @@ var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequ
 
 
      // Triggered on a button click, or some other target
-    $scope.show = function(comment, footprint) {
+    $scope.show = function(comment, footprint, $index) {
       // Show the action sheet
       var hideSheet = $ionicActionSheet.show({
         destructiveText: 'Delete',
@@ -55,6 +55,7 @@ var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequ
 
           FootprintRequests.removeComment(commentData)
           .then(function (data){
+            $scope.footprint.comments.splice($index, 1);
             console.log("comment removed");
           });
           return true;

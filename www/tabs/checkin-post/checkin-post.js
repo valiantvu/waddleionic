@@ -77,6 +77,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
           //this broadcast doesn't always get triggered on mobile, esp when connected to LTE; when it does get triggered, there is sometimes an issue
         //of displaying the new footprint twice, in the case that the new footprint gets appended to the list after the footprints list has already
         //refreshed with the new data
+        $state.transitionTo('tab.checkin');
         $state.go('tab.home');
         $rootScope.$broadcast('newFootprint', footprint);
         //Other two sizes are uploaded to AWS
@@ -88,6 +89,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
         //close loading modal
           console.log(footprint);
           UserRequests.newFootprint = footprint.data;
+        $state.transitionTo('tab.checkin');
           $state.go('tab.home');
         //this broadcast doesn't always get triggered on mobile, esp when connected to LTE; when it does get triggered, there is sometimes an issue
         //of displaying the new footprint twice, in the case that the new footprint gets appended to the list after the footprints list has already

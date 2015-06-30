@@ -17,7 +17,7 @@
   </ion-tab>
 
   <!-- Checkin Tab -->
-  <ion-tab class="background-coral" icon-on="waddle-checkin" icon-off="waddle-checkin-off" href="#/tab/checkin">
+  <ion-tab class="background-coral" on-select="loadVenueList()" on-deselect="" icon-on="waddle-checkin" icon-off="waddle-checkin-off" ui-sref="tab.checkin" ui-sref-opts="{reload: true}">
     <ion-nav-view name="checkin-tab"></ion-nav-view>
   </ion-tab>
 

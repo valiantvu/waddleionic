@@ -48,6 +48,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
     .state('tab', {
       url: "/tab",
       abstract: true,
+      controller: 'TabsController',
       templateUrl: "tabs/tabs.html"
     })
 
