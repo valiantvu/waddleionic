@@ -366,9 +366,9 @@ Checkin.deleteFootprint = function (facebookID, checkinID) {
    'OPTIONAL MATCH (checkin)-[hUnread:hasUnreadNotification]->(comment)',
    'OPTIONAL MATCH (checkin)-[hRead:hasReadNotification]->(comment)',
    'OPTIONAL MATCH (checkin)<-[cCheckin:containsCheckin]-(folder:Folder)',
-   'OPTIONAL MATCH (checkin)-[hCUnread:hasReadNotification]->(folder)',
+   'OPTIONAL MATCH (checkin)-[hCUnread:hasUnreadNotification]->(folder)',
    'OPTIONAL MATCH (checkin)-[hCRead:hasReadNotification]->(folder)',
-   'DELETE checkin, hCheckin, hPlace, hBucket, gComment, comment, mComment, hUnread, hRead, cCheckin'
+   'DELETE checkin, hCheckin, hPlace, hBucket, gComment, comment, mComment, hUnread, hRead, cCheckin, hCUnread, hCRead'
   ].join('\n');
   
   var params = {

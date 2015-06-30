@@ -60,7 +60,8 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 		}
     if($scope.checkinInfo.photo) {
       var photoUUID = uuid4.generate();
-      var iphone6Photo = $scope.checkinInfo.photo.splice(1,1);
+      console.log(photoUUID);
+      var iphone6Photo = $scope.checkinInfo.photo.splice(0,1);
       var formattedPhoto = {files: {0:iphone6Photo[0], length: 1}};
       console.log(formattedPhoto);
   		NativeCheckin.s3_upload(formattedPhoto, window.sessionStorage.userFbID, photoUUID, 'iphone6')
@@ -76,9 +77,10 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
           //this broadcast doesn't always get triggered on mobile, esp when connected to LTE; when it does get triggered, there is sometimes an issue
         //of displaying the new footprint twice, in the case that the new footprint gets appended to the list after the footprints list has already
         //refreshed with the new data
+        $state.go('tab.home');
         $rootScope.$broadcast('newFootprint', footprint);
         //Other two sizes are uploaded to AWS
-        uploadImagesToAWS(photoUUID);
+        // uploadImagesToAWS(photoUUID);
   		});
     } else {
         NativeCheckin.sendCheckinDataToServer(checkinData)
@@ -86,6 +88,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
         //close loading modal
           console.log(footprint);
           UserRequests.newFootprint = footprint.data;
+          $state.go('tab.home');
         //this broadcast doesn't always get triggered on mobile, esp when connected to LTE; when it does get triggered, there is sometimes an issue
         //of displaying the new footprint twice, in the case that the new footprint gets appended to the list after the footprints list has already
         //refreshed with the new data
@@ -278,7 +281,7 @@ var PictureSelectDirective = function ($q) {
                 for(var i = 0; i < binary.length; i++) {
                     array.push(binary.charCodeAt(i));
                 }
-                return new File([new Uint8Array(array)], "filename", {type: imageFileType});
+                return new Blob([new Uint8Array(array)], {type: imageFileType});
               }
 
               var resizeImageAndGenerateAsBlob = function (dimensions, imageFile, fileType) {

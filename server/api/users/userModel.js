@@ -417,7 +417,7 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:containsCheckin]-(folderHype:Folder)<-[:hasFolder]-(hyper:User)',
     'OPTIONAL MATCH (checkin)<-[:containsCheckin]-(folder:Folder)<-[:hasFolder]-(user)',
-    'RETURN user, friend, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers, collect(DISTINCT folder) AS folders, category',
+    'RETURN user, friend, checkin, place, category, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers, collect(DISTINCT folder) AS folders',
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
@@ -437,6 +437,8 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
     if (err) { deferred.reject(err); }
     else {
       var parsedResults = _.map(results, function (item) {
+        console.log('comments', item['comments']);
+        console.log('commenters', item['commenters']);
         var singleResult = {
           "user": item.user.data,
           "checkin": item.checkin.data,
@@ -454,13 +456,12 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
               comment: item['comments'][i].data,
               commenter: item['commenters'][i].data
             }
-            console.log(commentData);
+            // console.log(commentData);
             commentsArray.push(commentData);
           }
           var sortedComments = _.sortBy(commentsArray, function(commentObj) {
             return commentObj.comment.time;
           });
-          console.log(sortedComments);
           singleResult.comments = sortedComments;
         }
 
@@ -504,7 +505,7 @@ User.findFootprintsByPlaceName = function (facebookID, placeName, page, skipAmou
     'OPTIONAL MATCH (place)-[:hasCategory]->(category:Category)',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
-    'RETURN user, checkin, place, category, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
+    'RETURN user, checkin, place, category, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers',
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
