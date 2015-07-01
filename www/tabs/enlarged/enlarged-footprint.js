@@ -114,15 +114,15 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   };
 
   $scope.openFoursquarePage = function() {
-  	$window.open($scope.linkToFoursquare);
+  	$window.open($scope.linkToFoursquare, '_system', 'location=yes');
   }
 
   $scope.openMenu = function() {
-  	$window.open($scope.menu.mobileUrl);
+  	$window.open($scope.menu.mobileUrl, '_system', 'location=yes');
   }
 
   $scope.openMap = function () {
-    window.open("http://maps.google.com/?saddr=Current%20Location&daddr= 894%20Granville%20Street%20Vancouver%20BC%20V6Z%201K3");
+    $window.open('http://maps.google.com/?saddr=Current%20Location&daddr= 894%20Granville%20Street%20Vancouver%20BC%20V6Z%201K3', '_system', 'location=yes');
   }
 
   $scope.openDeleteFootprintPopup = function () {
@@ -191,7 +191,7 @@ var MapLocationDirective = function ($location) {
 		scope: {
 			setMarker: "="
 		},
-    template: '<div class="map"></div>',
+    template: '<div class="map" ng-click="openMap()"></div>',
 		link: function(scope, element, attributes) {
 			L.mapbox.accessToken = 'pk.eyJ1Ijoid2FkZGxldXNlciIsImEiOiItQWlwaU5JIn0.mTIpotbZXv5KVgP4pkcYrA';
       var map = L.mapbox.map(element[0], 'injeyeo.8fac2415');
