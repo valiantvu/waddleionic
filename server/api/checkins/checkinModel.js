@@ -357,6 +357,76 @@ Checkin.getComments = function (checkinID){
   return deferred.promise;
 };
 
+Checkin.suggestFootprint = function (senderFacebookID, checkinID, receiverFacebookIDList, suggestionTime) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (sender:User{facebookID:{senderFacebookID}})',
+    'MATCH (checkin:Checkin{checkinID:{checkinID}})<-[:hasCheckin]-(source:User)',
+    'MATCH (receiver:User{facebookID:{receiverFacebookID}})',
+    'CREATE (sender)-[:gaveSuggestion]->(suggestion:Suggestion)-[:beenSuggested]->(checkin)',
+    'SET suggestion.suggestionTime = {suggestionTime}, suggestion.suggestionID = {suggestionID}',
+    'CREATE (suggestion)-[receivedSuggestion:receivedSuggestion]->(receiver)',
+    'SET receivedSuggestion.suggestionID = {suggestionID}',
+    'CREATE (checkin)-[hasUnreadNotification:hasUnreadNotification]->(suggestion)',
+    'SET hasUnreadNotification.createdAt = suggestion.suggestionTime',
+    'RETURN sender, suggestion, receiver, checkin'
+  ].join('\n');
+
+  // var params = {
+  //   'suggestionID': uuid.v4(),
+  //   'senderFacebookID': senderFacebookID,
+  //   'checkinID': checkinID,
+  //   'receiverFacebookID': receiverFacebookID,
+  //   'suggestionTime': suggestionTime
+  // };
+
+  // db.query(query, params, function (err, results){
+  //   if (err) { deferred.reject(err) }
+  //   else {
+  //     deferred.resolve(results);
+  //     console.log('query executed!')
+  //   }
+  // });
+
+  var batchRequest = _.map(receiverFacebookIDList, function (receiverFacebookID, index) {
+
+    var singleRequest = {
+      'method': "POST",
+      'to': "/cypher",
+      'body': {
+        'query': query,
+        'params': {
+            'suggestionID': uuid.v4(),
+            'senderFacebookID': senderFacebookID,
+            'checkinID': checkinID,
+            'receiverFacebookID': receiverFacebookID,
+            'suggestionTime': suggestionTime
+        }
+      },
+      'id': index
+    };
+    return singleRequest;
+  });
+
+  var options = {
+    'url': neo4jUrl + '/db/data/batch',
+    'method': 'POST',
+    'json': true,
+    'body': JSON.stringify(batchRequest)
+  };
+
+  request.post(options, function(err, response, body) {
+    if (err) { deferred.reject(err) }
+    else {
+      deferred.resolve({
+        on_success: true
+      });
+    }
+  });
+  return deferred.promise;
+}
+
 Checkin.deleteFootprint = function (facebookID, checkinID) {
   var deferred = Q.defer();
 

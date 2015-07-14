@@ -1,6 +1,6 @@
 (function(){
 
-var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicHistory, $ionicPopup, $timeout, $window) {
+var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicHistory, $ionicPopup, $timeout, $window, $cordovaContacts, $cordovaSms, $cordovaSocialSharing, $localstorage) {
     
   // $scope.footprint = FootprintRequests.openFootprint;
   $scope.selectedFootprintIndex = FootprintRequests.selectedFootprintIndex;
@@ -24,11 +24,23 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   });
 
   $scope.fetchVenueInfo = function() {
+    var location;
     FootprintRequests.getFoursquareVenueInfo($scope.footprint.place.foursquareID, window.sessionStorage.userFbID)
     .then(function (venueInfo) {
-      console.log(venueInfo);
+      // console.log(venueInfo);
+      location = venueInfo.data.venue.location;
       $scope.linkToFoursquare = venueInfo.data.venue.canonicalUrl;
-      $scope.address = venueInfo.data.venue.location.formattedAddress;
+      $scope.address = location.address;
+      console.log($scope.address);
+      $scope.textAddress = location.address + ", " + location.city;
+      if(location.country === "United States" && location.state) {
+        $scope.address += ", " + location.state;
+      }
+      if(location.country !== "United States") {
+        $scope.address += ", " + location.country;
+      }
+        
+      console.log(venueInfo.data.venue.location)
       if(venueInfo.data.venue.hasMenu) {
         $scope.menu = venueInfo.data.venue.menu;
       }
@@ -113,17 +125,63 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     }
   };
 
+  $scope.viewFriendsList = function() {
+    var route = 'tab.friends' + $scope.subRouting;
+    $state.go(route);
+  };
+
   $scope.openFoursquarePage = function() {
   	$window.open($scope.linkToFoursquare, '_system', 'location=yes');
-  }
+  };
 
   $scope.openMenu = function() {
   	$window.open($scope.menu.mobileUrl, '_system', 'location=yes');
-  }
+  };
 
   $scope.openMap = function () {
     $window.open('http://maps.google.com/?saddr=Current%20Location&daddr= 894%20Granville%20Street%20Vancouver%20BC%20V6Z%201K3', '_system', 'location=yes');
-  }
+  };
+
+  $scope.setShareMessage = function () {
+    console.log('setting message');
+    console.log($localstorage.getObject('user'));
+    console.log($localstorage.getObject('user').name);
+
+    if(window.sessionStorage.userFbID === $scope.footprint.user.facebookID) {
+      var message = "Sent from Waddle for iOS:%0D%0A" 
+      + $localstorage.getObject('user').name + 
+      " thought you'd like "+ $scope.footprint.place.name + "!%0D%0A%0D%0AThey rated " + $scope.footprint.place.name + " " + $scope.footprint.checkin.rating + 
+      " stars out of 5.%0D%0A";
+      if($scope.textAddress) {
+        message += $scope.textAddress + "%0D%0A" 
+      } 
+      if($scope.footprint.checkin.caption !== 'null') {
+        message += "%0D%0A Here's what " + $scope.footprint.user.name + " said: " + '"' + $scope.footprint.checkin.caption + '"';
+      }   
+    } else {
+      var message = "Sent from Waddle for iOS:%0D%0A" 
+      + ' Vishal Reddy' + 
+      " thought you'd like " + $scope.footprint.place.name + "!%0D%0A%0D%0ATheir friend, " + $scope.footprint.user.name + ", rated " 
+      + $scope.footprint.place.name + " " + $scope.footprint.checkin.rating + 
+      " stars out of 5.%0D%0A";
+      if($scope.textAddress) {
+        message += $scope.textAddress + "%0D%0A";
+      } 
+      if($scope.footprint.checkin.caption !== 'null') {
+        message += "%0D%0AHere's what they said: " + '"' + $scope.footprint.checkin.caption + '"';
+      }
+    }
+    message += "%0D%0Ahttp://www.gowaddle.com";
+  
+    console.log(message);
+    //replae & with encoded string
+    message = message.replace(/&/g, '%26');
+    var SMSElement = document.getElementsByClassName('suggest-via-sms')[0];
+    SMSElement.setAttribute('href', "sms:&body=" + message);
+
+    var mailElement = document.getElementsByClassName('suggest-via-email')[0];
+    mailElement.setAttribute('href', 'mailto:?subject=Suggestin via Waddle for iOS&body=' + message);
+  };
 
   $scope.openDeleteFootprintPopup = function () {
     $scope.optionsPopup.close();
@@ -156,6 +214,16 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     }, 1500);
   };
 
+  $scope.showShareOptions = function () {
+    $scope.shareOptions = $ionicPopup.show({
+      title: 'suggest this footprint:',
+      templateUrl: 'share-options.html',
+      scope: $scope
+    })
+    //function placed inside timeout to ensure anchor tag href exists in DOM before value of message is set
+    $timeout($scope.setShareMessage, 0);
+  };
+
   $scope.setMarker = function(map) {
     // $scope.map = map;
   	map.setView([$scope.footprint.place.lat, $scope.footprint.place.lng], 12);
@@ -182,7 +250,7 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
 
 };
 
-EnlargedFootprintController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicHistory', '$ionicPopup', '$timeout', '$window'];
+EnlargedFootprintController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicHistory', '$ionicPopup', '$timeout', '$window', '$cordovaContacts', '$cordovaSms', '$cordovaSocialSharing', '$localstorage'];
 
 var MapLocationDirective = function ($location) {
 	return {

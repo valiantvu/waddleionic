@@ -718,7 +718,7 @@ User.prototype.updateNotificationReadStatus = function () {
 
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin]->(checkin:Checkin)-[unread:hasUnreadNotification]->(n)',
-    'WHERE n:Comment OR n:Folder',
+    'WHERE n:Comment OR n:Folder OR n:Suggestion',
     'MERGE (checkin)-[read:hasReadNotification]->(n)',
     'ON CREATE SET read.createdAt = unread.createdAt',
     'DELETE unread',
@@ -744,11 +744,13 @@ User.prototype.getUnreadNotifications = function (page, skipAmount) {
   var deferred = Q.defer();
 
   var query = [
-    'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin]->(checkin:Checkin)-[unread:hasUnreadNotification]->(n)',
-    'WHERE n:Comment OR n:Folder',
-    'MATCH (checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
-    'MATCH (notificationGiver:User)-[m:madeComment|hasFolder]-(n)',
-    'RETURN user, n, checkin, place, category, notificationGiver, unread.createdAt',
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin*0..1]->(checkin:Checkin)-[unread:hasUnreadNotification]->(n)',
+    'WHERE n:Comment OR n:Folder OR n:Suggestion',
+    'MATCH (notificationGiver:User)-[m:madeComment|hasFolder|gaveSuggestion]-(n)',
+    'OPTIONAL MATCH (n)-[:beenSuggested*0..1]->(checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
+    'OPTIONAL MATCH (n)-[receivedSuggestion:receivedSuggestion]->(suggestionReceiver:User)',
+    'WHERE receivedSuggestion.suggestionID = n.suggestionID',
+    'RETURN user, n, checkin, place, category, notificationGiver, unread.createdAt, suggestionReceiver',
     'ORDER BY unread.createdAt DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
@@ -781,6 +783,11 @@ User.prototype.getUnreadNotifications = function (page, skipAmount) {
             singleResult.notificationTrigger.message1 = "commented on"
             singleResult.notificationTrigger.message2 = '"' + singleResult.notificationTrigger.text + '"';
           }
+          if(singleResult.notificationTrigger.suggestionTime && item.suggestionReceiver.data) {
+            singleResult.notificationTrigger.message1 = "suggested your footprint at"
+            console.log('ma suggestion bitchhh', item.suggestionReceiver);
+            singleResult.notificationTrigger.message2 = "to their friend, " + item.suggestionReceiver.data.name + ".";
+          }
         }
         if(item.checkin) {
           singleResult.checkin = item.checkin.data;
@@ -804,11 +811,14 @@ User.prototype.getReadNotifications = function (page, skipAmount) {
   var deferred = Q.defer();
 
   var query = [
-    'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin]->(checkin:Checkin)-[read:hasReadNotification]->(n)',
-    'WHERE n:Comment OR n:Folder',
-    'MATCH (checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
-    'MATCH (notificationGiver:User)-[m:madeComment|hasFolder]-(n)',
-    'RETURN user, n, checkin, place, category, notificationGiver, read.createdAt',
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin*0..1]->(checkin:Checkin)-[read:hasReadNotification]->(n)',
+    'WHERE n:Comment OR n:Folder OR n:Suggestion',
+    'MATCH (notificationGiver:User)-[m:madeComment|hasFolder|gaveSuggestion]-(n)',
+    'OPTIONAL MATCH (checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
+    'OPTIONAL MATCH (n)-[:beenSuggested]->(checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
+    'OPTIONAL MATCH (n)-[receivedSuggestion:receivedSuggestion]->(suggestionReceiver:User)',
+    'WHERE receivedSuggestion.suggestionID = n.suggestionID',
+    'RETURN user, n, checkin, place, category, notificationGiver, read.createdAt, suggestionReceiver',
     'ORDER BY read.createdAt DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
@@ -840,6 +850,11 @@ User.prototype.getReadNotifications = function (page, skipAmount) {
           if(singleResult.notificationTrigger.text) {
             singleResult.notificationTrigger.message1 = "commented on"
             singleResult.notificationTrigger.message2 = '"' + singleResult.notificationTrigger.text + '"';
+          }
+          if(singleResult.notificationTrigger.suggestionTime && item.suggestionReceiver.data) {
+            singleResult.notificationTrigger.message1 = "suggested your footprint at"
+            console.log('ma suggestion bitchhh', item.suggestionReceiver);
+            singleResult.notificationTrigger.message2 = "to their friend, " + item.suggestionReceiver.data.name + ".";
           }
         }
         if(item.checkin) {
@@ -961,11 +976,13 @@ User.addFolder = function (facebookID, folderName) {
 
 User.fetchFolders = function(facebookID, page, skipAmount) {
   var deferred = Q.defer();
+  var receivedSuggestionsCount;
 
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder)',
     'OPTIONAL MATCH (folder)-[contains:containsCheckin]->(checkin:Checkin)',
-    'RETURN user, folder, count(contains) AS checkinCount',
+    'OPTIONAL MATCH (user)<-[receivedSuggestion:receivedSuggestion]-(suggestion:Suggestion)',
+    'RETURN user, folder, count(DISTINCT contains) AS checkinCount, count(DISTINCT receivedSuggestion) AS receivedSuggestionsCount',
     'ORDER BY folder.createdAt DESC',
     'SKIP { skipNum }', 
     'LIMIT { skipAmount }'
@@ -991,8 +1008,18 @@ User.fetchFolders = function(facebookID, page, skipAmount) {
         } else {
           singleResult.folder.checkinCount = 0;
         }
+        if(page === 0) {
+          if(item.receivedSuggestionsCount) {
+            receivedSuggestionsCount = item.receivedSuggestionsCount;
+          } else {
+            receivedSuggestionsCount = 0;
+          }
+        }
         return singleResult;
       });
+      if(page === 0) {
+        parsedResults.unshift({folder: {name:"Suggested By Friends", checkinCount: receivedSuggestionsCount}});
+      }
       deferred.resolve(parsedResults);
     }
   });
@@ -1043,6 +1070,45 @@ User.searchFoldersByName = function (facebookID, folderName, page, skipAmount) {
 
   return deferred.promise;
 };
+
+User.fetchSuggestedByFriendsContents = function (facebookID, page, skipAmount) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User{facebookID:{facebookID}})<-[:receivedSuggestion]-(suggestion:Suggestion)<-[:gaveSuggestion]-(suggester:User)',
+    'MATCH (suggestion)-[:beenSuggested]-(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'MATCH (suggestionSource:User)-[:hasCheckin]->(checkin)',
+    'RETURN user, suggester, suggestionSource, checkin, place',
+    'ORDER BY suggestion.time DESC',
+    'SKIP { skipNum }', 
+    'LIMIT { skipAmount }'
+  ].join('\n');
+
+  var params = {
+    'facebookID': facebookID,
+    'skipAmount': skipAmount,
+    'skipNum': page ? page * skipAmount : 0
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      console.log(results);
+      var parsedResults = _.map(results, function (item) {
+        var singleResult = {
+          "user": item.suggestionSource.data,
+          "suggester": item.suggester.data,
+          "checkin": item.checkin.data,
+          "place": item.place.data
+        }
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
+    }
+  });
+
+  return deferred.promise;
+}
 
 User.fetchFolderContents = function (facebookID, folderName, page, skipAmount) {
   var deferred = Q.defer();
@@ -1148,6 +1214,50 @@ User.deleteFolderAndContents = function (facebookID, folderName) {
 
   return deferred.promise;
 };
+
+User.fetchSuggestions = function () {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User{facebookID: {facebookID}})<-[receivedSuggestion:receivedSuggestion]-(suggestion:Suggestion)<-[:beenSuggested]-(checkin:Checkin)',
+    'MATCH (creator:User)-[:hasCheckin]->(checkin)-[]->(place:Place)-[:hasCategory]->(category:Category)',
+    'MATCH (suggestion)<-[:gaveSuggestion]-(suggester:User)',
+    'RETURN suggestion, creator, suggester, checkin, place, category, count(receivedSuggestion) AS receivedSuggestionsCount',
+    'ORDER BY suggestion.time',
+    'SKIP {skipNum}',
+    'LIMIT {skipAmount}'
+  ].join('\n');
+
+  var params = {
+    'facebookID': facebookID,
+    'skipAmount': skipAmount,
+    'skipNum': page ? page * skipAmount : 0
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      console.log(results);
+      var parsedResults = _.map(results, function (item) {
+        var singleResult = {
+          "user": item.user.data,
+          "folder": item.folder.data
+        }
+        if(item.checkinCount) {
+          singleResult.folder.checkinCount = item.checkinCount; 
+        } else {
+          singleResult.folder.checkinCount = 0;
+        }
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
+    }
+  });
+
+  return deferred.promise;
+
+
+}
 
 // Find a single user in the database, requires facebookID as input
 // If user is not in database, promise will resolve to error 'user does not exist'

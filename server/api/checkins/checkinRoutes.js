@@ -23,5 +23,6 @@ module.exports = function (app) {
   app.post('/removecomment', checkinController.removeComment);
   app.post('/props', checkinController.giveProps);
   app.post('/delete', checkinController.deleteFootprint);
+  app.post('/suggest', checkinController.suggestFootprint);
   app.get('/interactions/:checkinid', checkinController.getHypesAndComments);
 };

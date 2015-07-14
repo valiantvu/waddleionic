@@ -7,6 +7,14 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 	$scope.newFolderInfo = {};
 	$scope.selectedFolder = null;
   $scope.disabled = false;
+  $scope.loading = false;
+
+   //janky way to load venue list instead of checkin post when swapping back to checkin tab
+   $scope.$on( "$ionicView.enter", function( scopes, states ) {
+            if( states.direction === "swap" && states.stateName == "tab.checkin-post") {
+              $ionicHistory.goBack();
+            }
+  });
 
 	$scope.venue = NativeCheckin.selectedVenue;
   var photoUUID;
@@ -39,6 +47,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 
 	$scope.sendCheckinDataToServer = function(venueInfo) {
     $scope.disabled = true;
+    $scope.loading = true;
     //pull up loading modal
     console.log($scope.checkinInfo.photo);
 		var checkinData = {
@@ -72,12 +81,14 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
   		})
   		.then(function (footprint) {
         //close loading modal
+        $scope.showPostSuccessAlert();
+        $scope.loading = false;
   			console.log(footprint);
         UserRequests.newFootprint = footprint.data;
           //this broadcast doesn't always get triggered on mobile, esp when connected to LTE; when it does get triggered, there is sometimes an issue
         //of displaying the new footprint twice, in the case that the new footprint gets appended to the list after the footprints list has already
         //refreshed with the new data
-        $state.transitionTo('tab.checkin');
+        // $state.transitionTo('tab.checkin');
         $state.go('tab.home');
         $rootScope.$broadcast('newFootprint', footprint);
         //Other two sizes are uploaded to AWS
@@ -86,10 +97,14 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
     } else {
         NativeCheckin.sendCheckinDataToServer(checkinData)
         .then(function (footprint) {
+        $scope.showPostSuccessAlert();
+
         //close loading modal
+        $scope.loading = false;
+
           console.log(footprint);
           UserRequests.newFootprint = footprint.data;
-        $state.transitionTo('tab.checkin');
+        // $state.transitionTo('tab.checkin');
           $state.go('tab.home');
         //this broadcast doesn't always get triggered on mobile, esp when connected to LTE; when it does get triggered, there is sometimes an issue
         //of displaying the new footprint twice, in the case that the new footprint gets appended to the list after the footprints list has already
@@ -212,6 +227,17 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
       }, 1500);
     };
 
+    $scope.showPostSuccessAlert = function() {
+      var postSuccessAlert = $ionicPopup.show({
+        title: "You made a new footprint!",
+        templateUrl: "post-success.html"
+      });
+
+      $timeout(function() {
+        postSuccessAlert.close();
+      }, 2000);
+    };
+
 };
 
 CheckinPostController.$inject = ['$scope', '$rootScope', '$state', 'NativeCheckin', 'UserRequests', '$ionicModal', '$ionicLoading', '$ionicPopup', '$timeout', '$ionicHistory', 'uuid4'];
@@ -263,7 +289,7 @@ var PictureSelectDirective = function ($q) {
         restrict:'AE',
         template:'<div class="content padding">'
 							    + '<input type="file" id="files" accept="image/*"/>'
-							    + '<img class="full-image" id="preview" ng-click="browseFile()" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/Screen+Shot+2015-03-31+at+2.58.15+PM.png">'
+							    + '<img class="full-image" id="preview" ng-click="browseFile()" src="img/Screen+Shot+2015-03-31+at+2.58.15+PM.png">'
 							+ '</div>',
         scope: {
           photoFile: '=',
@@ -288,6 +314,7 @@ var PictureSelectDirective = function ($q) {
 
               var resizeImageAndGenerateAsBlob = function (dimensions, imageFile, fileType) {
                 var deferred = $q.defer();
+                var blob;
                 var image = new Image();
                 image.src = imageFile;
                 image.onload = function (){
@@ -316,10 +343,15 @@ var PictureSelectDirective = function ($q) {
                   var ctx = canvas.getContext("2d");
                   ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
 
-                  var resizedFileAsDataURL = canvas.toDataURL(fileType);
-                  //data url converted to blob for aws upload
-                  var blob = dataURItoBlob(resizedFileAsDataURL, fileType);
-                  console.log(blob); 
+                  canvas.toBlob(function (newBlob) {
+                    console.log(newBlob);
+                    blob = newBlob;
+                  }, fileType)
+
+                  // var resizedFileAsDataURL = canvas.toDataURL(fileType);
+                  // //data url converted to blob for aws upload
+                  // var blob = dataURItoBlob(resizedFileAsDataURL, fileType);
+                  // console.log(blob); 
                   deferred.resolve(blob);
                 }
                 return deferred.promise;

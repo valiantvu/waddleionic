@@ -27,7 +27,7 @@
     <div ng-repeat="footprint in footprints" >
       <button ng-if="!footprint.folders" class="button icon waddle-folder-plus button-small button-light savefave text-align-right" ng-click="showPopup(footprint.checkin.checkinID, $index)">Save to Folder</button>
       <button ng-if="footprint.folders" class="button button-small button-light savefave" ng-click="openModal(footprint.folders[0].name)">{{footprint.folders[0].name}}</button>
-      <img src="https://s3-us-west-2.amazonaws.com/waddle/TabCurve-1.png" class="folder-tab-curve">
+      <img src="img/TabCurve-1.png" class="folder-tab-curve">
       <button ng-click="openOptions(footprint, $index)" class="options button button-icon icon waddle-more light"></button>
       <div class="list list-inset">
 
@@ -42,7 +42,7 @@
         <!-- Badge -->
         <!-- <img ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge"> -->
         <img ng-if="footprint.category.iconPrefix" ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge">
-        <img ng-if="!footprint.category.iconPrefix" ng-src="https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-40x40-2.svg" class="waddlebadge">
+        <img ng-if="!footprint.category.iconPrefix" ng-src="img/uncategorized-40x40-2.svg" class="waddlebadge">
         <!-- User Name -->
         <a ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="subdued home-rating-message"><b>{{footprint.user.name}}</b> rates this <h4 class="ratinghex-footprint">{{footprint.checkin.rating}}</h4></a>
         <br>
@@ -53,14 +53,14 @@
             <a ng-if="footprint.place.city !== 'null'">{{footprint.place.city}}</a><a ng-if="footprint.place.city !== 'null' && footprint.place.province !== 'null'">,</a>
             <a ng-if="footprint.place.province !== 'null'">{{footprint.place.province}}</a>
             <span am-time-ago="footprint.checkin.checkinTime" class="float-right timestamp main-timestamp"></span>
-            <img src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/timestamp-1.svg"class="waddle-clock float-right">
+            <img src="img/timestamp-1.svg"class="waddle-clock float-right">
           </p>
       </div>
 
       <div class="item item-body">
         <img class="full-image" ng-if="footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
         <p ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
-        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><img src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/commentbutton-1.svg" class="waddle-comment"> {{footprint.comments.length}}</a>
+        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><img src="img/commentbutton-1.svg" class="waddle-comment"> {{footprint.comments.length}}</a>
           <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><i class="ion-android-folder coral larger"></i> {{footprint.hypes.length}}</a>
           </p>
       </div>
@@ -69,7 +69,7 @@
       <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap home-comment" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)">  
           <img class="footprint-comment-propic" ng-src="{{comment.commenter.fbProfilePicture}}">
           <h2 class="commentername-footprint">{{comment.commenter.name}}</h2>
-        <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><img src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/timestamp-1.svg"class="waddle-clock clock-comment-footprint float-right">
+        <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><img src="img/timestamp-1.svg"class="waddle-clock clock-comment-footprint float-right">
         <p class="comment-home-text">{{comment.comment.text}}</p>
           <!-- <p class="comment-footprint"> -->
             <!-- <h4 class="commentername">{{comment.commenter.name}}</h4> -->
@@ -84,13 +84,17 @@
             <img ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
           </div>
         </div> -->
-       <div ui-sref='tab.comments' ng-click='openFootprint(footprint, $index)' class="item item-input-inset comment-input">
+       <div class="bottom-buttons-home">
+       <button class="button button-small comment-button-home" ui-sref='tab.comments' ng-click='openFootprint(footprint, $index)'>Comment</button>
+      <button class="button button-small suggest-button-home" ng-click='showShareOptions(footprint)'>Suggest To Friend</button>
+    </div>
+       <!-- <div ui-sref='tab.comments' ng-click='openFootprint(footprint, $index)' class="item item-input-inset comment-input">
               <img class="propic newcomment" ng-src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfp1/v/t1.0-1/s200x200/1476344_10153625108483662_8209874012985593264_n.jpg?oh=91007a07d6d534815f719b6aecb09d9a&oe=5584541F&__gda__=1431308809_91c6fa931fe0f59ed47d42b7b4a4fb77">
       <label name="customSubmit" data-custom-submit info='someinfo' class="item-input-wrapper commentfield" novalidate>
         <input type="text" ng-model='comment' name='comment' placeholder='Leave a comment' data-ng-minlength="1" data-ng-maxlength="120" required>
         <span class="help-inline" ng-show="customSubmit.comment.$error.maxlength">120 Character Max</span>
       </label>
-      </div>
+      </div> -->
 
       <!-- Hype and Comment Buttons -->
 <!--       <div class="item item-divider tabs tabs-secondary tabs-icon-left">
@@ -192,7 +196,7 @@
       background-color: #e1876a !important;
      }
   </style>
-    <h5 class="coral" ng-click="showFolderCreationPopup()"><img class="create-new" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/savetofolder-1.svg"> Create a new folder</h5>
+    <h5 class="coral" ng-click="showFolderCreationPopup()"><img class="create-new" src="img/savetofolder-1.svg"> Create a new folder</h5>
     <div class="folderList" ng-repeat="folder in folders">
       <h5 ng-class="{'selected': selectedFolder === $index}" ng-click="passSelectedFolderInfo(folder, $index)">{{folder.folder.name}}</h5>
     </div>
@@ -239,9 +243,9 @@
       padding: 0 !important;
      }
    </style>
-    <img class="folder-modal-top" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/foldermodaltab-2.svg">
+    <img class="folder-modal-top" src="img/foldermodaltab-2.svg">
     <div class="folder-modal-body">
-      <img class="success-confirm" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/greencheckmark-1.svg">
+      <img class="success-confirm" src="img/greencheckmark-1.svg">
       <h5 class="centered">You created a new folder.</h5>
       <h5 class="centered">Brilliant!</h5>
     </div>
@@ -259,9 +263,9 @@
       padding: 0 !important;
      }
    </style>
-    <img class="folder-modal-top" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/foldermodaltab-2.svg">
+    <img class="folder-modal-top" src="img/foldermodaltab-2.svg">
     <div class="folder-modal-body">
-      <img class="success-confirm" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/greencheckmark-1.svg">
+      <img class="success-confirm" src="img/greencheckmark-1.svg">
       <h5 class="centered">Added to folder.</h5>
       <h5 class="centered">Right on!</h5>
     </div>
@@ -298,7 +302,6 @@
      // }
    </style>
     <button class="button button-icon inline-block icon waddle-close" ng-click="optionsPopup.close()"></button>
-    <button class="button button-full border-bottom">Suggest to Friend</button>
     <button ng-if="checkUserID(selectedFootprintUserID)" class="button button-full">Edit</button>
     <button ng-if="checkUserID(selectedFootprintUserID)" ng-click="openDeleteFootprintPopup()" class="button button-full">Delete</button>
 </script>
@@ -357,6 +360,32 @@
   </ion-modal-view>
 </script>
 
+<script id="share-options.html" type="text/ng-template">
+  <style>
+  div.popup-head {
+      display: none;
+    }
+    div.popup {
+      background: white;
+      opacity: 1 !important;
+      width: 80vw !important;
+    }
+    div.popup-body {
+      opacity: 1 !important;
+    }
+  </style>
+  <button class="button button-icon icon waddle-close popup-close light" ng-click="shareOptions.close()"></button>
+  <h3 class="suggest-title">Suggest this footprint:</h3>
+  <h5 class="suggest-title">You have options! Send via:</h5>
+  <img class="waddle-share" ng-click="viewFriendsList(); shareOptions.close()" src="img/share_icons/waddle-1-1-100x100.png">
+  <div class="share-option-icons">
+    <div ng-click="shareOptions.close()" class="share-option-icon"><a class="suggest-via-sms" href="#"><img src="img/share_icons/messages-1-1-100x100.png"></a></div>
+    <div ng-click="shareOptions.close()" class="share-option-icon"><a class="suggest-via-email" href="#"><img src="img/share_icons/email-1-1-100x100.png"></a></div>
+    <div class="share-option-icon disabled"><img src="img/share_icons/facebook-1-1-100x100.png"></div>
+    <div class="share-option-icon disabled"><img src="img/share_icons/twitter-1-1-100x100.png"></div>
+  </div>
+</script>
+
 <script id="footprint-delete-success.html" type="text/ng-template">
    <style>
      div.popup-head {
@@ -391,7 +420,7 @@
      }
 
    </style>
-   <img class="poof" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/poof-1.svg">
+   <img class="poof" src="img/poof-1.svg">
    <h5 class="poof-text-1">Poof!</h5>
    <h5 class="poof-text-2">It's gone.</h5>
 

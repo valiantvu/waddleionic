@@ -14,8 +14,8 @@
     <h2 class="centered white-text">{{userInfo.name}}</h2>
     <h4 class="centered white-text">{{userInfo.footprintsCount}} footprints</h4>
   </div>
-    <img ng-click="showFootprints()" class="me-bubble me-footprints" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/footprintbutton-2.svg">
-    <img ng-click="showFriendsList()" class="me-bubble me-friends" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/friendsbutton-2.svg">
+    <img ng-click="showFootprints()" class="me-bubble me-footprints" src="img/footprintbutton-2.svg">
+    <img ng-click="showFriendsList()" class="me-bubble me-friends" src="img/friendsbutton-2.svg">
     <div class="button-bar me-buttons">
       <a class="button me-button border-bottom-left-radius button-small" ng-click="showFootprints()">footprints</a>
       <a class="button me-button border-bottom-right-radius button-small" ng-click="showFriendsList()">friends</a>
@@ -31,7 +31,8 @@
       </div>
     </div>
 
-    <ion-refresher ng-if="footprints.length" on-refresh="doRefresh()"></ion-refresher>
+    <ion-refresher ng-if="footprints.length" on-refresh="refreshFootprints()"></ion-refresher>
+    <ion-refresher ng-if="friends.length" on-refresh="refreshFriends()"></ion-refresher>
 
     <div ng-repeat="footprint in footprints">
 
@@ -47,7 +48,7 @@
         <img class="footprint-propic" ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
         <!-- Badge -->
         <img ng-if="footprint.category.iconPrefix" ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge">
-         <img ng-if="!footprint.category.iconPrefix" ng-src="https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-40x40-1.png" class="waddlebadge">
+         <img ng-if="!footprint.category.iconPrefix" ng-src="img/uncategorized-40x40-2.svg" class="waddlebadge">
         <!-- User Name -->
          <a ui-sref="tab.enlarged-footprint-profile" ng-click="openFootprint(footprint, $index)" class="subdued home-rating-message"><b>{{footprint.user.name}}</b> rates this <h4 class="ratinghex-footprint">{{footprint.checkin.rating}}</h4></a>
         <br>
@@ -59,7 +60,7 @@
 " ng-click="openFootprint(footprint, $index)"> 
             <a ng-if="footprint.place.city !== 'null'">{{footprint.place.city}}</a><a ng-if="footprint.place.city !== 'null' && footprint.place.province !== 'null'">,</a>
             <a ng-if="footprint.place.province !== 'null'">{{footprint.place.province}}</a>
-            <span am-time-ago="footprint.checkin.checkinTime" class="float-right main-timestamp timestamp"></span><img src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/timestamp-1.svg"class="waddle-clock float-right">
+            <span am-time-ago="footprint.checkin.checkinTime" class="float-right main-timestamp timestamp"></span><img src="img/timestamp-1.svg"class="waddle-clock float-right">
           </p>
       </div>
 
@@ -69,7 +70,7 @@
 " ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
         </div>
         <p ui-sref="tab.enlarged-footprint-profile" ng-click="openFootprint(footprint, $index)" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
-        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments-profile" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><img src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/commentbutton-1.svg" class="waddle-comment"> {{footprint.comments.length}}</a>
+        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments-profile" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><img src="img/commentbutton-1.svg" class="waddle-comment"> {{footprint.comments.length}}</a>
           <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers-profile" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><i class="ion-android-folder coral larger"></i> {{footprint.hypes.length}}</a>
           </p>
       </div>
@@ -78,22 +79,15 @@
       <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap home-comment" ui-sref="tab.comments-profile" ng-click="openFootprint(footprint, $index)">  
           <img class="footprint-comment-propic" ng-src="{{comment.commenter.fbProfilePicture}}">
           <h2 class="commentername-footprint">{{comment.commenter.name}}</h2>
-          <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><img src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/timestamp-1.svg"class="waddle-clock clock-comment-footprint float-right">
+          <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><img src="img/timestamp-1.svg"class="waddle-clock clock-comment-footprint float-right">
           <p class="comment-home-text">{{comment.comment.text}}</p>
       </div>
 
-    <!--     <div class="profpicframe">
-          <div class="profpic">
-            <img ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
-          </div>
-        </div> -->
-       <div ui-sref='tab.comments-profile' ng-click='openFootprint(footprint, $index)' class="item item-input-inset">
-              <img class="propic newcomment" ng-src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfp1/v/t1.0-1/s200x200/1476344_10153625108483662_8209874012985593264_n.jpg?oh=91007a07d6d534815f719b6aecb09d9a&oe=5584541F&__gda__=1431308809_91c6fa931fe0f59ed47d42b7b4a4fb77">
-      <label name="customSubmit" data-custom-submit info='someinfo' class="item-input-wrapper commentfield" novalidate>
-        <input type="text" ng-model='comment' name='comment' placeholder='Leave a comment' data-ng-minlength="1" data-ng-maxlength="120" required>
-        <span class="help-inline" ng-show="customSubmit.comment.$error.maxlength">120 Character Max</span>
-      </label>
+      <div class="bottom-buttons-home">
+        <button ui-sref='tab.comments-profile' ng-click='openFootprint(footprint, $index)' class="button button-small comment-button-home">Comment</button>
+        <button class="button button-small suggest-button-home" ng-click="showShareOptions(footprint)">Suggest To Friend</button>
       </div>
+      
 
     </div>
   </div>
@@ -124,8 +118,8 @@
 </div>
 
   <ion-infinite-scroll
-    on-infinite="getUserProfileData()"
-    ng-if="moreDataCanBeLoaded"
+    on-infinite="getCorrectData()"
+    ng-if="moreCorrectDataCanBeLoaded()"
     distance="10%">
   </ion-infinite-scroll>
 
@@ -214,6 +208,32 @@
       </div>
     </ion-content>
   </ion-modal-view>
+</script>
+
+<script id="share-options.html" type="text/ng-template">
+  <style>
+  div.popup-head {
+      display: none;
+    }
+    div.popup {
+      background: white;
+      opacity: 1 !important;
+      width: 80vw !important;
+    }
+    div.popup-body {
+      opacity: 1 !important;
+    }
+  </style>
+  <button class="button button-icon icon waddle-close popup-close light" ng-click="shareOptions.close()"></button>
+  <h3 class="suggest-title">Suggest this footprint:</h3>
+  <h5 class="suggest-title">You have options! Send via:</h5>
+  <img class="waddle-share" ng-click="viewFriendsList(); shareOptions.close()" src="img/share_icons/waddle-1-1-100x100.png">
+  <div class="share-option-icons">
+    <div ng-click="shareOptions.close()" class="share-option-icon"><a class="suggest-via-sms" href="#"><img src="img/share_icons/messages-1-1-100x100.png"></a></div>
+    <div ng-click="shareOptions.close()" class="share-option-icon"><a class="suggest-via-email" href="#"><img src="img/share_icons/email-1-1-100x100.png"></a></div>
+    <div class="share-option-icon disabled"><img src="img/share_icons/facebook-1-1-100x100.png"></div>
+    <div class="share-option-icon disabled"><img src="img/share_icons/twitter-1-1-100x100.png"></div>
+  </div>
 </script>
 
 

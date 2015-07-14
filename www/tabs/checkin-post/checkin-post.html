@@ -43,9 +43,29 @@
           </textarea>
       </form>
       <!-- <input type="file" id="files"/><p id="status">Please select a file</p> -->
-      <button class="button button-large checkin-post" type="submit" ng-disabled="checkinInfo.rating === '--'  || disabled" ng-click="sendCheckinDataToServer(venue)">post</button>
+      <button class="button button-large checkin-post" type="submit" ng-disabled="checkinInfo.rating === '--'  || disabled" ng-click="sendCheckinDataToServer(venue)"><ion-spinner ng-if="loading" class="loading-dots" icon="dots"></ion-spinner><a ng-if="!loading">post<a></button>
+
    <!--  <button ng-click="showCheckinInfo()">Info</button> -->
     <!-- </form> -->
     </div>
     </ion-content>
   </ion-view>
+
+  <script id="post-success.html" type="text/ng-template">
+  <style>
+  div.popup-head {
+      display: none;
+    }
+    div.popup {
+      background: white;
+      opacity: 1 !important;
+      width: 80vw !important;
+    }
+    div.popup-body {
+      opacity: 1 !important;
+    }
+  </style>
+  <img class="success-confirm" src="img/greencheckmark-1.svg">
+  <h5 class="suggest-title">You made a new footprint.</h5>
+  <h5 class="suggest-title">Awesome!</h5>
+</script>

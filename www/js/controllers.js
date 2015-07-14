@@ -5,6 +5,7 @@ angular.module('waddle.controllers', [
     'waddle.notifications',
     'waddle.folders',
     'waddle.folder-footprints',
+    'waddle.friends',
     'waddle.checkin',
     'waddle.checkin-post',
     'waddle.checkin-edit',

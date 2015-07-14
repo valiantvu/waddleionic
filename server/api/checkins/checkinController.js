@@ -458,6 +458,21 @@ checkinController.deleteFootprint = function (req, res) {
     });
 };
 
+checkinController.suggestFootprint = function (req, res) {
+  var params = req.body;
+
+  Checkin.suggestFootprint(params.senderFacebookID, params.checkinID, params.receiverFacebookID, params.suggestionTime)
+  .then(function (data) {
+    console.log(data);
+    res.json({on_success: "suggestion sent!"})
+    res.status(200).end();
+  })
+  .catch(function (err) {
+    console.log(err);
+    res.status(500).end();
+  });
+};
+
 checkinController.sign_s3 = function (req, res) {
   var facebookID = req.params.facebookID;
   var photoSize = req.params.photoSize;

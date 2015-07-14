@@ -26,6 +26,7 @@ var Auth = function ($q, $state, $window){
     
 
     $state.go('frontpage', {}, {reload: true});
+    $window.location.reload();
   };
 
   return {

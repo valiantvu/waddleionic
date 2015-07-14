@@ -54,7 +54,7 @@ body { margin:0; padding:0; }
 	border-color: none;
 	width: 100vw;
 	height: 22vh;
-	background: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/mebackground-1.png') no-repeat center center;
+	background: url('../img/mebackground-1.png') no-repeat center center;
 }
 .centered{
 	 position: relative;
@@ -86,6 +86,12 @@ body { margin:0; padding:0; }
 	display: inline-block !important;
 }
 
+.item-divider {
+	padding-top: 0;
+	padding-bottom: 0;
+	min-height: 20px;
+}
+
 p{
 	font-family: 'Open Sans', sans-serif;
 	font-size: 14px;
@@ -109,7 +115,16 @@ p{
 }
 
 .searchinput {
-	opacity:: 1 !important;
+	opacity: 1 !important;
+}
+
+.suggest {
+	color: white !important;
+	border-color: white !important;
+	border-radius: 10px;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 16px !important;
+	font-weight: 300 !important;
 }
 
 h1{
@@ -236,6 +251,26 @@ span{
 	font-family: 'Open Sans', sans-serif;
 }
 
+.loading-dots svg{
+	margin-top: 0.25em;
+	height: 50px;
+	width: 50px;
+	stroke: white;
+	fill: white;
+}
+
+.loading-spinner-ios {
+  right: 3em;
+  top: 3em;
+  position: absolute;
+  font-size: 5px !important;
+}
+
+.loading-spinner-ios svg {
+	height: 30px;
+	width: 30px;
+}
+
 .home-rating-message {
 	font-family: 'Open Sans', sans-serif;
 	font-size: 14px;
@@ -265,12 +300,69 @@ span{
 }
 
 .view-foursquare {
+	text-decoration: underline;
+	font-family: 'Open Sans', sans-serif;
+	border-radius: 5px;
+  margin-left: 11em;
+  margin-top: 0.5em;
+  font-size: 12px;
+}
+
+.underline {
+	text-decoration: underline;
+}
+
+.suggest-bottom-button {
 	color: #e1876a !important;
 	border-color: #e1876a !important;
 	background-color: transparent;
 	font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
 	border-radius: 5px;
-  margin-left: 12em;
+  margin-left: 9em;
+}
+
+.comment-button-enlarged {
+	color: #e1876a !important;
+	border-color: #e1876a !important;
+	background-color: transparent;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
+	border-radius: 5px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.bottom-buttons-home {
+	margin-top: 10px;
+	margin-bottom: 15px;
+	text-align: center;
+	width: 100%;
+}
+
+.comment-button-home {
+	display: inline-block;
+	color: #e1876a !important;
+	border-color: #e1876a !important;
+	background-color: transparent;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
+	border-radius: 12px;
+	width: 40vw;
+	margin-right: 5vw;
+/*  margin-left: 9em;*/
+}
+
+.suggest-button-home {
+	display: inline-block;
+	color: #e1876a !important;
+	border-color: #e1876a !important;
+	background-color: transparent;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
+	border-radius: 12px;
+	width: 40vw;
+  /*margin-left: 9em;*/
 }
 
 .enlarged-comment-field {
@@ -341,16 +433,20 @@ span{
 }
 
 .waddlebadge-checkin-list {
-	height: 35px;
+	height: 35px !important;
 	width: auto !important;
-	margin-top: 1%;
-	border-radius: 0px !important;
 }
 
 .notifications-timestamp {
 	float: right;
 	margin-top: -15px;
 	margin-right: 3px;
+}
+
+.contact-info {
+	display: inline-block;
+	position: absolute;
+	top: 0.2em;
 }
 
 .timestamp {
@@ -416,6 +512,10 @@ span{
 	margin-left: 0.6em !important;
 	/*padding-left: 20px !important;*/
 }
+/*
+.friend-divider {
+	height: 0.8em;
+}*/
 
 .propic-profile {
 	border: 3px solid white;
@@ -446,6 +546,21 @@ span{
 	width: 35px !important;
 	border-radius: 100%;
 	background-color: #000;
+}
+
+.contact-list-propic {
+	margin-top: -3.5%; 
+	height: 35px !important;
+	width: 35px !important;
+	border-radius: 100%;
+	background-color: #000;
+}
+
+.checkmark-contact-list {
+	height: 20px;
+	width: auto;
+	float: right;
+	margin-top: 1.2%
 }
 
 .item-avatar > img:first-child {
@@ -541,21 +656,24 @@ span{
 	border:0px;
 }
 .bg-scroll{
-	background: url("https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png") no-repeat center center fixed;
+	background: url("../img/WaddleBG-1.png") no-repeat center center fixed;
 	background-size: cover;
 	margin:-10px;
 	margin-top:-10px;
 }
 
 .bg-header {
-	background: url("https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png") no-repeat center center fixed;
+	background: url("../img/WaddleBG-1.png") no-repeat center center fixed;
 	background-size: cover; 
 }
 
 .commentfield {
 	border-radius: 15px;
-	-webkit-border-radius: 15px;
-  -moz-border-radius: 15px;
+	display: inline-block;
+	position: absolute;
+	top: 1.4em;
+	width: 83vw;
+
 }
 
 .newcomment {
@@ -591,7 +709,7 @@ span{
 }
 
 .folder-body {
-	background: url("https://s3-us-west-2.amazonaws.com/waddle/WaddleBG-1.png") no-repeat center;
+	background: url("../img/WaddleBG-1.png") no-repeat center;
 	padding-top: 30px;
 	padding-bottom: 50px;
 }
@@ -605,7 +723,10 @@ span{
 	-webkit-box-shadow: 0px 0px 0px 0px #ccc
 	-moz-box-shadow: 0px 0px 0px #888;
 	box-shadow: 0px 0px 0px #888;
+}
 
+.thin {
+	min-height: 45px;
 }
 
 .footprint-card {
@@ -618,6 +739,7 @@ span{
 	border:0px;
 	margin-top:-12px;
 	margin-bottom:-10px;
+	z-index: 0 !important;
 }
 .list-inset{
 	bottom:30px;
@@ -686,13 +808,6 @@ span{
 	margin-top: -0.3em;
 }
 
-#welcome{
-	height:100%;
-	width:100%;
-	background-image: url("https://s3-us-west-2.amazonaws.com/waddle/mobilewelcomescreenimgs/waddlewelcomescreen2.png");
-	background-size:100%;
-}
-
 .savefave {
 	margin-bottom: -10px;
 	border-style: none;
@@ -745,7 +860,7 @@ border-radius: 0px;
 }
 
 .ratinghex {
-	background-image: url('https://s3-us-west-2.amazonaws.com/waddle/ratinghex-1.svg');
+	background-image: url('../img/ratinghex-1.svg');
 	background-position: center center;
 	background-repeat: no-repeat;
 	padding: 2px;
@@ -754,7 +869,7 @@ border-radius: 0px;
 }
 
 .ratinghex-footprint {
-	background-image: url('https://s3-us-west-2.amazonaws.com/waddle/ratinghex-1.svg');
+	background-image: url('../img/ratinghex-1.svg');
   background-position: left;
   background-repeat: no-repeat;
   /*padding: 2px;*/
@@ -769,7 +884,7 @@ border-radius: 0px;
 
 .ratinghex-short {
 	position: absolute;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/ratinghex-1.svg');
+  background-image: url('../img/ratinghex-1.svg');
   background-position: left;
   background-repeat: no-repeat;
   /*padding: 2px;*/
@@ -825,20 +940,6 @@ li .ion-star {
 z-index: 11;
 }
 
-.image1 {
-	height: 100%;
-	background-image: url('http://www.socialtalent.co/wp-content/uploads/blog-content/Bending_over_backwards_to_find_candidate_No_just_a_young_business_woman_standing_in_flexible_pose_and_looking_in_binocular_researching_field.jpg');
-}
-
-.image2 {
-	height: 100%;
-	background-image: url('http://img.brainjet.com/slides/4/1/8/5/9/9/4185994067/7d5f8dba1d9f4310014ed9da7db0e1665987c3b4.jpeg');
-}
-
-.image3 {
-	height: 100%;
-	background-image: url('http://img.brainjet.com/slides/2/2/8/1/5/6/2281569702/57062690afa3729ff871e10033fc5957ba7f3cba.jpeg');
-}
 
 .welcomeimage{
 	position:relative;
@@ -872,6 +973,42 @@ z-index: 11;
 	margin-top: 10px
 }
 
+.waddle-share {
+	display: block;
+	margin-right: auto;
+	margin-left: auto;
+	width: 80px;
+}
+
+div.share-option-icons {
+	padding-top: 5px;
+	text-align: center;
+	width: 100%;
+}
+
+div.share-option-icon {
+	display: inline-block;
+	padding: 5px;
+}
+
+.share-option-icons img{
+	width: 55px;
+}
+
+.suggest-title {
+	margin-top: 0;
+	text-align: center;
+}
+
+.disabled img {
+	opacity: 0.3;
+}
+
+.popup-close {
+	margin-top: -12px;
+	margin-left: 5px !important;
+}
+
 .folder-footprint-item-description h4{
 	color: #808080;
 }
@@ -898,7 +1035,7 @@ z-index: 11;
   background-repeat: no-repeat;
   background-position: 50%;
   height: 50%;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/tabicon-feed-1.svg');
+  background-image: url('../img/tabicon-feed-1.svg');
   background-size: contain;
 }
 
@@ -910,7 +1047,7 @@ z-index: 11;
   background-repeat: no-repeat;
   background-position: 50%;
   height: 50%;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/tabicon-feed-active-1.svg');
+  background-image: url('../img/tabicon-feed-active-1.svg');
   background-size: contain;
 }
 
@@ -919,7 +1056,7 @@ z-index: 11;
   background-repeat: no-repeat;
   background-position: 50%;
   height: 75%;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/nav+bar+icons/checkin-star-2.svg');
+  background-image: url('../img/checkin-star-2.svg');
   background-size: contain;
 }
 
@@ -928,7 +1065,7 @@ z-index: 11;
   background-repeat: no-repeat;
   background-position: 50%;
   height: 75%;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/nav+bar+icons/checkin-star-2.svg');
+  background-image: url('../img/checkin-star-2.svg');
   background-size: contain;
 }
 
@@ -942,7 +1079,7 @@ z-index: 11;
   background-repeat: no-repeat;
   background-position: 50%;
   height: 50%;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/tabicon-notifications-1.svg');
+  background-image: url('../img/tabicon-notifications-1.svg');
   background-size: contain;
 }
 .tabs .tab-item .icon.waddle-notifications-active {
@@ -950,7 +1087,7 @@ z-index: 11;
   background-repeat: no-repeat;
   background-position: 50%;
   height: 50%;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/tabicon-notifications-active-1.svg');
+  background-image: url('../img/tabicon-notifications-active-1.svg');
   background-size: contain;
 }
 .tabs .tab-item .icon.waddle-profile {
@@ -958,7 +1095,7 @@ z-index: 11;
   background-repeat: no-repeat;
   background-position: 50%;
   height: 50%;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/tabicon-me-3.svg');
+  background-image: url('../img/tabicon-me-3.svg');
   background-size: contain;
 }
 .tabs .tab-item .icon.waddle-profile-active {
@@ -966,7 +1103,7 @@ z-index: 11;
   background-repeat: no-repeat;
   background-position: 50%;
   height: 50%;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/tabicon-me-active-1.svg');
+  background-image: url('../img/tabicon-me-active-1.svg');
   background-size: contain;
 }
 
@@ -975,7 +1112,7 @@ z-index: 11;
   background-repeat: no-repeat;
   background-position: 50%;
   height: 50%;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/tabicon-folder-1.svg');
+  background-image: url('../img/tabicon-folder-1.svg');
   background-size: contain;
 }
 
@@ -984,7 +1121,7 @@ z-index: 11;
   background-repeat: no-repeat;
   background-position: 50%;
   height: 50%;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/tabicon-folder-active-1.svg');
+  background-image: url('../img/tabicon-folder-active-1.svg');
   background-size: contain;
 }
 
@@ -992,7 +1129,7 @@ z-index: 11;
   background-repeat: no-repeat;
   background-position: 50%;
   height: 100%;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/search-1.svg');
+  background-image: url('../img/search-1.svg');
   background-size: contain;
 }
 
@@ -1000,12 +1137,12 @@ z-index: 11;
   background-repeat: no-repeat;
   background-position: 50%;
   height: 100%;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/search-grey-1.svg');
+  background-image: url('../img/search-grey-1.svg');
   background-size: contain;
 }*/
 
 .waddle-search-grey {
-  background: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/search-grey-1.svg') no-repeat scroll 7px 7px;
+  background: url('../img/search-grey-1.svg') no-repeat scroll 7px 7px;
   padding-left: 30px;
 }
 
@@ -1013,7 +1150,7 @@ z-index: 11;
   background-repeat: no-repeat;
   background-position: 50%;
   height: 100%;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/plussign-1-50x50.svg');
+  background-image: url('../img/plussign-1-50x50.svg');
   background-size: contain;
 }
 
@@ -1021,7 +1158,7 @@ z-index: 11;
   background-repeat: no-repeat;
   background-position: 9% 50%;
  /* height: 100%;*/
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/savetofolder-1.svg');
+  background-image: url('../img/savetofolder-1.svg');
   background-size: 1em;
   /*padding-left: 15px;*/
 }
@@ -1035,7 +1172,7 @@ z-index: 11;
   background-repeat: no-repeat;
   background-position: 100%;
   height: 100%;
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/threedot-1.svg');
+  background-image: url('../img/threedot-1.svg');
   background-size: 7vw;
   z-index: 10;
 }
@@ -1045,7 +1182,7 @@ z-index: 11;
   background-position: 50%;
   margin-left: 0.5em;
   /*height: 100%;*/
-  background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/xbutton-1.svg');
+  background-image: url('../img/xbutton-1.svg');
   background-size: 1em;
 }
 
@@ -1117,7 +1254,7 @@ z-index: 11;
 /*.icon-waddle-clock {
 	display: inline-block;
 	background-size: contain;
-  background: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/timestamp-1.svg') center center no-repeat;
+  background: url('../img/timestamp-1.svg') center center no-repeat;
   padding-left: 10px;
   text-indent: -9999px;
   /*white-space:nowrap;*/

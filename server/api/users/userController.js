@@ -54,7 +54,7 @@ userController.userLogin = function (req, res) {
   .then(function (checkinsCount) {
     // console.log('fb checkins: ', checkinsAlreadyStored.length);
     // For existing users
-    // if (user.getProperty('footprintsCount') >= 0) {
+    if (user.getProperty('footprintsCount') >= 0) {
       user.setProperty('footprintsCount', checkinsCount);
       user.findAllFriends(0, 100)
       .then(function (friendsList){
@@ -71,11 +71,11 @@ userController.userLogin = function (req, res) {
         res.json(allData);
         res.status(200).end();
       })
-    // } else {
+    } else {
     //   // For new users, start chain of facebook requests.
     //   console.log('initiate get and parse fbdata');
-    //   getAndParseFBData();
-    // }
+      getAndParseFBData();
+    }
   })
   .catch(function(err) {
     console.log(err);
@@ -92,69 +92,69 @@ userController.userLogin = function (req, res) {
     })
     .then(function (friends) {
       // Parse Friends data
-      var allFriends = _.map(friends, function(friend){
-        return friend.body.data[0][0].data;
-      })
-      userFBFriendsData = allFriends;
+      // var allFriends = _.map(friends, function(friend){
+      //   return friend.body.data[0][0].data;
+      // })
+      // userFBFriendsData = allFriends;
 
       // return facebookUtils.getFBFeedItemsWithLocation(user);
 
       //get tagged places
-      return facebookUtils.getFBTaggedPosts(user);
-    })
-    // .then(function (fbRawFeedItemsWithLocation) {
-    //   console.log("RAW data RAWRRRRR: " + JSON.stringify(fbRawFeedItemsWithLocation));
-    //   return facebookUtils.parseFBData(user, fbRawFeedItemsWithLocation);
+    //   return facebookUtils.getFBTaggedPosts(user);
     // })
-    // .then(function (fbParsedFeedItems) {
-    //   console.log("PARSED DATA: " + JSON.stringify(fbParsedFeedItems));
-    //   return user.addCheckins(fbParsedFeedItems);
+    // // .then(function (fbRawFeedItemsWithLocation) {
+    // //   console.log("RAW data RAWRRRRR: " + JSON.stringify(fbRawFeedItemsWithLocation));
+    // //   return facebookUtils.parseFBData(user, fbRawFeedItemsWithLocation);
+    // // })
+    // // .then(function (fbParsedFeedItems) {
+    // //   console.log("PARSED DATA: " + JSON.stringify(fbParsedFeedItems));
+    // //   return user.addCheckins(fbParsedFeedItems);
+    // // })
+    // .then(function (fbRawTaggedPostsData) {
+    //   // parse Checkin data
+    //   return facebookUtils.parseFBData(user, fbRawTaggedPostsData);
     // })
-    .then(function (fbRawTaggedPostsData) {
-      // parse Checkin data
-      return facebookUtils.parseFBData(user, fbRawTaggedPostsData);
-    })
-    .then(function (fbParsedTaggedPostsData) {
-      userFBTaggedPostsData = fbParsedTaggedPostsData;
-      // get Picture data
-      return facebookUtils.getFBPhotos(user);
-    })
-    .then(function (fbRawPhotoList) {
-      // parse Photo data
-      console.log("# of photos: ", fbRawPhotoList.length)
-      return facebookUtils.parseFBData(user, fbRawPhotoList); 
-    })
-    .then(function (fbParsedPhotoData) {
-      // merge tagged places and photos
-      userFBPhotoData = fbParsedPhotoData;
-      combinedFBCheckins = userFBTaggedPostsData.concat(userFBPhotoData);
-      //get statuses posted by user
-      return facebookUtils.getFBStatuses(user);
-      // return user.addCheckins(combinedFBCheckins);
-    })
-    .then(function (fbRawStatusList) {
-      return facebookUtils.parseFBData(user, fbRawStatusList);
-    })
-    .then(function (fbParsedStatusesData) {
-      userFBStatusesData = fbParsedStatusesData;
-      combinedFBCheckins = combinedFBCheckins.concat(userFBStatusesData);
-      console.log("combinedCheckins: " + combinedFBCheckins);
-      return helpers.addCityProvinceAndCountryInfoToParsedCheckins(combinedFBCheckins);
-    })
-    .then(function (combinedFBCheckinsWithLocation) {
-      return user.addCheckins(combinedFBCheckinsWithLocation);
-    })
-    .then(function (data) {
-      return user.countAllCheckins(userData.facebookID);
-    })
-    .then(function (checkinsCount) {
-      user.setProperty('footprintsCount', checkinsCount);
+    // .then(function (fbParsedTaggedPostsData) {
+    //   userFBTaggedPostsData = fbParsedTaggedPostsData;
+    //   // get Picture data
+    //   return facebookUtils.getFBPhotos(user);
+    // })
+    // .then(function (fbRawPhotoList) {
+    //   // parse Photo data
+    //   console.log("# of photos: ", fbRawPhotoList.length)
+    //   return facebookUtils.parseFBData(user, fbRawPhotoList); 
+    // })
+    // .then(function (fbParsedPhotoData) {
+    //   // merge tagged places and photos
+    //   userFBPhotoData = fbParsedPhotoData;
+    //   combinedFBCheckins = userFBTaggedPostsData.concat(userFBPhotoData);
+    //   //get statuses posted by user
+    //   return facebookUtils.getFBStatuses(user);
+    //   // return user.addCheckins(combinedFBCheckins);
+    // })
+    // .then(function (fbRawStatusList) {
+    //   return facebookUtils.parseFBData(user, fbRawStatusList);
+    // })
+    // .then(function (fbParsedStatusesData) {
+    //   userFBStatusesData = fbParsedStatusesData;
+    //   combinedFBCheckins = combinedFBCheckins.concat(userFBStatusesData);
+    //   console.log("combinedCheckins: " + combinedFBCheckins);
+    //   return helpers.addCityProvinceAndCountryInfoToParsedCheckins(combinedFBCheckins);
+    // })
+    // .then(function (combinedFBCheckinsWithLocation) {
+    //   return user.addCheckins(combinedFBCheckinsWithLocation);
+    // })
+    // .then(function (data) {
+    //   return user.countAllCheckins(userData.facebookID);
+    // })
+    // .then(function (checkinsCount) {
+      user.setProperty('footprintsCount', 0);
       return user.getAggregatedFootprintList(user.node._data.data.facebookID, 0, 5);
     })
     .then(function (aggregatedFootprints) {
       var allData = {
         user: user.node._data.data,
-        friends: userFBFriendsData,
+        // friends: userFBFriendsData,
         aggregatedFootprints: aggregatedFootprints
       };
       console.log('allData', allData)
@@ -624,17 +624,29 @@ userController.fetchFolderContents = function (req, res) {
   else {
     params.skipAmount = 0;
   }
-
-  User.fetchFolderContents(params.facebookID, params.folderName, params.page, params.skipAmount)
-  .then(function (folderContents) {
-    console.log(folderContents)
-    res.json(folderContents);
-    res.status(200).end();
-  })
-  .catch(function(err) {
-    console.log(err)
-    res.status(500).end();
-  });
+  if(params.folderName === "Suggested By Friends") {
+    console.log("DESE BITCHES HV BEEN SUGGESTED BY MA FRENDZ!!");
+    User.fetchSuggestedByFriendsContents(params.facebookID, params.page, params.skipAmount)
+    .then(function (SBFcontents) {
+      console.log(SBFcontents)
+      res.json(SBFcontents);
+      res.status(200).end();
+    })
+    .catch(function (err) {
+      console.log(err);
+      res.status(500).end();
+    });
+  } else {
+    User.fetchFolderContents(params.facebookID, params.folderName, params.page, params.skipAmount)
+    .then(function (folderContents) {
+      res.json(folderContents);
+      res.status(200).end();
+    })
+    .catch(function (err) {
+      console.log(err)
+      res.status(500).end();
+    });
+  }
 }
 
 userController.searchFolderContents = function (req, res) {

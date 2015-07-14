@@ -2,6 +2,8 @@
 (function(){
 
 var FrontpageController = function (UserRequests, $scope, $state, $window, $localstorage) {
+  $scope.loading = false;
+
   var enterSiteWhenConnected = function (fbToken) {
     openFB.api({
       path: '/me',
@@ -26,6 +28,7 @@ var FrontpageController = function (UserRequests, $scope, $state, $window, $loca
 
     UserRequests.sendUserData(userData)
     .then(function(storedUserData){
+      $scope.loading = false;
       $state.go('walkthrough');
       UserRequests.allData = storedUserData.data
       console.log('alldata:  ', UserRequests.allData)
@@ -51,6 +54,7 @@ var FrontpageController = function (UserRequests, $scope, $state, $window, $loca
 
 //when user clicks lets waddle this function is invoked which calls facebook login function in return
   $scope.login = function(){
+    $scope.loading = true;
     openFB.login(function (response) {
       if(response.status === 'connected') {
         console.log('connected');
@@ -63,10 +67,6 @@ var FrontpageController = function (UserRequests, $scope, $state, $window, $loca
       scope: 'user_friends, user_tagged_places, user_photos, read_stream'
     });
   };
-
-  if($window.localStorage.user) {
-    $scope.login();
-  }
 
 };
 

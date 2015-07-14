@@ -1,7 +1,7 @@
 (function(){
 
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory) {
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage) {
   Auth.checkLogin()
   .then(function () {
     $scope.numHypes = 0;
@@ -215,6 +215,54 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       }
     };
 
+    $scope.viewFriendsList = function() {
+      var route = 'tab.friends';
+      $state.go(route);
+    };
+
+    $scope.setShareMessage = function (footprint) {
+    // console.log('setting message');
+    // console.log($localstorage.getObject('user'));
+    // console.log($localstorage.getObject('user').name);
+
+    FootprintRequests.openFootprint = footprint;
+
+    if(window.sessionStorage.userFbID === footprint.user.facebookID) {
+      var message = "Sent from Waddle for iOS:%0D%0A" 
+      + $localstorage.getObject('user').name + 
+      " thought you'd like "+ footprint.place.name + "!%0D%0A%0D%0AThey rated " + footprint.place.name + " " + footprint.checkin.rating + 
+      " stars out of 5.%0D%0A";
+      if($scope.textAddress) {
+        message += $scope.textAddress + "%0D%0A" 
+      } 
+      if(footprint.checkin.caption !== 'null') {
+        message += "%0D%0A Here's what " + footprint.user.name + " said: " + '"' + footprint.checkin.caption + '"';
+      }   
+    } else {
+      var message = "Sent from Waddle for iOS:%0D%0A" 
+      + ' Vishal Reddy' + 
+      " thought you'd like " + footprint.place.name + "!%0D%0A%0D%0ATheir friend, " + footprint.user.name + ", rated " 
+      + footprint.place.name + " " + footprint.checkin.rating + 
+      " stars out of 5.%0D%0A";
+      if($scope.textAddress) {
+        message += $scope.textAddress + "%0D%0A";
+      } 
+      if(footprint.checkin.caption !== 'null') {
+        message += "%0D%0AHere's what they said: " + '"' + footprint.checkin.caption + '"';
+      }
+    }
+    message += "%0D%0Ahttp://www.gowaddle.com";
+  
+    console.log(message);
+    //replae & with encoded string
+    message = message.replace(/&/g, '%26');
+    var SMSElement = document.getElementsByClassName('suggest-via-sms')[0];
+    SMSElement.setAttribute('href', "sms:&body=" + message);
+
+    var mailElement = document.getElementsByClassName('suggest-via-email')[0];
+    mailElement.setAttribute('href', 'mailto:?subject=Suggestion via Waddle for iOS&body=' + message);
+  };
+
     $ionicModal.fromTemplateUrl('folder-contents.html', {
       scope: $scope,
       animation: 'slide-in-up'
@@ -354,7 +402,19 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       $timeout(function() {
        deletionSuccessAlert.close(); //close the popup after 1 second
       }, 1500);
-    }
+    };
+
+    $scope.showShareOptions = function (footprint) {
+    $scope.shareOptions = $ionicPopup.show({
+      title: 'suggest this footprint:',
+      templateUrl: 'share-options.html',
+      scope: $scope
+    })
+    //function placed inside timeout to ensure anchor tag href exists in DOM before value of message is set
+    $timeout(function() {
+      $scope.setShareMessage(footprint);
+    }, 0);
+  };
 
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);
@@ -429,7 +489,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory', '$localstorage'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 
