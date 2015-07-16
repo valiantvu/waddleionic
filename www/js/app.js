@@ -93,6 +93,15 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         }
       }
     })
+    .state('tab.folder-footprints-home', {
+      url: '/folder-footprints-home',
+      views: {
+        'home-tab': {
+          templateUrl: 'tabs/folders/folder-footprints.html',
+          controller: 'FolderFootprintsController'
+        }
+      }
+    })
     .state('tab.checkin', {
       cache: false,
       url: '/checkin',

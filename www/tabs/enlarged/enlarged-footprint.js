@@ -51,6 +51,7 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   $scope.findUsersAlsoBeenHere = function() {
     FootprintRequests.findUsersAlsoBeenHere($scope.footprint.place.foursquareID, window.sessionStorage.userFbID)
     .then(function (users) {
+      console.log(users);
       for(i = 0; i < users.data[0].users.length; i++) {
         if(users.data[0].users[i].facebookID !== window.sessionStorage.userFbID) {
           $scope.usersAlsoBeenHere.push(user.data[0].users[i]);
@@ -148,7 +149,7 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     console.log($localstorage.getObject('user').name);
 
     if(window.sessionStorage.userFbID === $scope.footprint.user.facebookID) {
-      var message = "Sent from Waddle for iOS:%0D%0A" 
+      var message = "Sent from Waddle fodr iOS:%0D%0A" 
       + $localstorage.getObject('user').name + 
       " thought you'd like "+ $scope.footprint.place.name + "!%0D%0A%0D%0AThey rated " + $scope.footprint.place.name + " " + $scope.footprint.checkin.rating + 
       " stars out of 5.%0D%0A";
@@ -160,7 +161,7 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
       }   
     } else {
       var message = "Sent from Waddle for iOS:%0D%0A" 
-      + ' Vishal Reddy' + 
+      + $localstorage.getObject('user').name + 
       " thought you'd like " + $scope.footprint.place.name + "!%0D%0A%0D%0ATheir friend, " + $scope.footprint.user.name + ", rated " 
       + $scope.footprint.place.name + " " + $scope.footprint.checkin.rating + 
       " stars out of 5.%0D%0A";
@@ -180,7 +181,7 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     SMSElement.setAttribute('href', "sms:&body=" + message);
 
     var mailElement = document.getElementsByClassName('suggest-via-email')[0];
-    mailElement.setAttribute('href', 'mailto:?subject=Suggestin via Waddle for iOS&body=' + message);
+    mailElement.setAttribute('href', 'mailto:?subject=Suggestion via Waddle for iOS&body=' + message);
   };
 
   $scope.openDeleteFootprintPopup = function () {

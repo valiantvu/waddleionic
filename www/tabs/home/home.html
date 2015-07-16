@@ -47,7 +47,6 @@
         <a ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="subdued home-rating-message"><b>{{footprint.user.name}}</b> rates this <h4 class="ratinghex-footprint">{{footprint.checkin.rating}}</h4></a>
         <br>
         <!-- Place Name and Location-->
-        <a ng-click="getFootprint(footprint)">
           <h2 ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)">{{footprint.place.name}}</h2>
           <p ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)"> 
             <a ng-if="footprint.place.city !== 'null'">{{footprint.place.city}}</a><a ng-if="footprint.place.city !== 'null' && footprint.place.province !== 'null'">,</a>
@@ -302,7 +301,8 @@
      // }
    </style>
     <button class="button button-icon inline-block icon waddle-close" ng-click="optionsPopup.close()"></button>
-    <button ng-if="checkUserID(selectedFootprintUserID)" class="button button-full">Edit</button>
+    <button disabled="true" ng-if="!checkUserID(selectedFootprintUserID)" class="button button-full">(coming soon!)</button>
+    <button disabled="true" ng-if="checkUserID(selectedFootprintUserID)" class="button button-full">Edit (coming soon!)</button>
     <button ng-if="checkUserID(selectedFootprintUserID)" ng-click="openDeleteFootprintPopup()" class="button button-full">Delete</button>
 </script>
 

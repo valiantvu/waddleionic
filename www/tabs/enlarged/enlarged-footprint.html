@@ -12,8 +12,8 @@
 <ion-view title="Home">
 
   <ion-content class="padding bg-scroll tabs-item-hide">
-    <button ng-if="!footprint.folders" class="button icon-left ion-star button-small button-light savefave" ng-click="showPopup(footprint.checkin.checkinID, $index)">Save to Folder</button>
-    <button ng-if="footprint.folders" class="button button-small button-light savefave" ng-click="openModal(footprint.folders[0].name)">{{footprint.folders[0].name}}</button>
+    <button ng-if="!footprint.folders" class="button icon-left ion-star button-small button-light savefave" ng-click="openModal()">Save to Folder</button>
+    <button ng-if="footprint.folders" class="button button-small button-light savefave" ng-click="openModal()">{{footprint.folders[0].name}}</button>
     <img src="img/TabCurve-1.png" class="folder-tab-curve">
     <button ng-click="openOptions(footprint, 0)" class="options button button-icon icon waddle-more light"></button>
     <div class="list list-inset">

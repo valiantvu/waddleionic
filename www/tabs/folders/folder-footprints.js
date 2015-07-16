@@ -13,6 +13,16 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
     var page = 0;
     var skipAmount = 10;
 
+    $scope.headerTitle = FootprintRequests.currentTab;
+
+    if($scope.headerTitle === 'folders') {
+    $scope.subRouting = '-folders';
+  } else if($scope.headerTitle === 'me') {
+    $scope.subRouting = '-profile';
+  } else if ($scope.headerTitle === 'feed') {
+    $scope.subRouting = '';
+  }
+
     $scope.goBack = function() {
       $ionicHistory.goBack();
     };
@@ -23,12 +33,22 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
     $scope.openFolderIndex = FootprintRequests.openFolderIndex;
     console.log($scope.openFolder);
 
-    $scope.checkUserID = function(facebookID) {
-      if(facebookID === window.sessionStorage.userFbID) {
-        return true;
+    $scope.checkUserID = function(footprint) {
+
+      if($scope.openFolder === "Suggested By Friends") {
+        if(footprint.user.facebookID === footprint.suggester.facebookID) {
+          return true;
+        } else {
+          return false;
+        }
       } else {
-        return false;
+        if(footprint.user.facebookID === window.sessionStorage.userFbID) {
+          return true;
+        } else {
+          return false;
+        }
       }
+      
     };
 
     $scope.openFootprint = function(footprint, index) {

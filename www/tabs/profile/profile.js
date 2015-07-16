@@ -61,9 +61,9 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       UserRequests.getUserData(user, window.sessionStorage.userFbID, page, skip)
       .then(function (data) {
         console.log(data.data);
+        $scope.userInfo = data.data.user;
         if(data.data.footprints.length > 0) {
           console.log(data.data);
-          $scope.userInfo = data.data.user;
           footprints = data.data.footprints;
           $scope.footprints = $scope.footprints.concat(footprints);
           page++;
@@ -127,7 +127,8 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       friends = [];
       friendsPage = 0;
       $scope.moreFriendsCanBeLoaded = true;
-			$scope.footprints = footprints;
+			$scope.getUserProfileData();
+
 		};
 
 		$scope.showHypeList = function () {
@@ -277,7 +278,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 			})
 		};
 
-     $scope.refreshFootprints = function() {
+    $scope.refreshFootprints = function() {
       console.log('refreshFootprints');
       page = 0;
       $scope.moreDataCanBeLoaded = true;
@@ -307,6 +308,8 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       UserRequests.fetchFolders(window.sessionStorage.userFbID, 0, 10)
       .then(function (folders) {
         $scope.folders = folders.data;
+         //remove suggested by friends folder from array;
+        $scope.folders.shift();
         UserRequests.userFolderData = folders.data
         console.log($scope.folders)
       })
@@ -385,7 +388,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     // console.log($localstorage.getObject('user'));
     // console.log($localstorage.getObject('user').name);
 
-    FootprintRequests.openFootprint = footprint;
+    FootprintRequests.openFootprintProfile = footprint;
 
     if(window.sessionStorage.userFbID === footprint.user.facebookID) {
       var message = "Sent from Waddle for iOS:%0D%0A" 
@@ -400,7 +403,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       }   
     } else {
       var message = "Sent from Waddle for iOS:%0D%0A" 
-      + ' Vishal Reddy' + 
+      + $localstorage.getObject('user').name + 
       " thought you'd like " + footprint.place.name + "!%0D%0A%0D%0ATheir friend, " + footprint.user.name + ", rated " 
       + footprint.place.name + " " + footprint.checkin.rating + 
       " stars out of 5.%0D%0A";
@@ -452,6 +455,11 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     $scope.showFolderCreationPopup = function() {
       $scope.newFolderInfo = {};
       $scope.myPopup.close();
+
+      //janky way to remove myPopup from DOM (fix for .close() method not completely working in ionic 1.0.1)
+      var popup = document.getElementsByClassName('popup-container')[0];
+      document.body.removeChild(popup);
+      
       // An elaborate, custom popup
       var folderCreationPopup = $ionicPopup.show({
         templateUrl: 'add-folder.html',
@@ -497,6 +505,11 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
     $scope.openDeleteFootprintPopup = function () {
       $scope.optionsPopup.close();
+
+      //janky way to remove myPopup from DOM (fix for .close() method not completely working in ionic 1.0.1)
+      var popup = document.getElementsByClassName('popup-container')[0];
+      document.body.removeChild(popup);
+      
       var deleteFootprintPopup = $ionicPopup.show({
         templateUrl: 'delete-footprint.html',
         // title: 'Add Folder',

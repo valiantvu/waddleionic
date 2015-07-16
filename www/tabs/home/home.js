@@ -93,6 +93,8 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       UserRequests.fetchFolders(window.sessionStorage.userFbID, 0, 10)
       .then(function (folders) {
         $scope.folders = folders.data;
+        //remove suggested by friends folder from array;
+        $scope.folders.shift();
         UserRequests.userFolderData = folders.data
         console.log($scope.folders)
       })
@@ -240,7 +242,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       }   
     } else {
       var message = "Sent from Waddle for iOS:%0D%0A" 
-      + ' Vishal Reddy' + 
+      + $localstorage.getObject('user').name + 
       " thought you'd like " + footprint.place.name + "!%0D%0A%0D%0ATheir friend, " + footprint.user.name + ", rated " 
       + footprint.place.name + " " + footprint.checkin.rating + 
       " stars out of 5.%0D%0A";
@@ -271,9 +273,10 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     });
 
     $scope.openModal = function(folderName) {
-      $scope.fetchFolderContents(folderName);
-      $scope.selectedFolderInfo.name = folderName
-      $scope.modal.show();
+
+      FootprintRequests.openFolder = folderName;
+      FootprintRequests.selectedFolderIndex = 1;
+      $state.transitionTo('tab.folder-footprints-home');
     };
 
     $scope.closeModal = function() {
@@ -308,7 +311,8 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         // subTitle: 'Please use normal things',
         scope: $scope,
         buttons: [
-          { text: 'Cancel' },
+          { text: 'Cancel'
+           },
           {
             text: '<b>Save</b>',
             type: 'button-positive',
@@ -324,13 +328,18 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $scope.showFolderCreationPopup = function() {
       $scope.newFolderInfo = {};
       $scope.myPopup.close();
+
+      //janky way to remove myPopup from DOM (fix for .close() method not completely working in ionic 1.0.1)
+      var popup = document.getElementsByClassName('popup-container')[0];
+      document.body.removeChild(popup);
+  
       // An elaborate, custom popup
       var folderCreationPopup = $ionicPopup.show({
         templateUrl: 'add-folder.html',
         title: 'Add Folder',
         scope: $scope,
         buttons: [
-          { text: 'Cancel' },
+          { text: 'Cancel'},
           {
             text: '<b>Save</b>',
             type: 'button-positive',
@@ -377,6 +386,11 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     $scope.openDeleteFootprintPopup = function () {
       $scope.optionsPopup.close();
+
+      //janky way to remove myPopup from DOM (fix for .close() method not completely working in ionic 1.0.1)
+      var popup = document.getElementsByClassName('popup-container')[0];
+      document.body.removeChild(popup);
+
       var deleteFootprintPopup = $ionicPopup.show({
         templateUrl: 'delete-footprint.html',
         // title: 'Add Folder',

@@ -309,7 +309,7 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[connection:containsCheckin]-(folderHype:Folder)<-[:hasFolder]-(hyper:User)',
     'OPTIONAL MATCH (checkin)<-[:containsCheckin]-(folder:Folder)<-[:hasFolder]-(viewer:User {facebookID: {viewerID}})',
-    'RETURN user, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers, collect(DISTINCT folder) AS folders, category',
+    'RETURN user, checkin, place, collect(comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers, collect(DISTINCT folder) AS folders, category',
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
@@ -350,12 +350,18 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
               comment: item['comments'][i].data,
               commenter: item['commenters'][i].data
             }
-            commentsArray.push(commentData);
+            // console.log(commentData);
+            //removed DISTINCT modifier on collect(comment)--this is an temporary solution to remove duplicate comments
+            if(!commentsArray.length) {
+              commentsArray.push(commentData);
+            } else if(commentsArray[commentsArray.length - 1].comment.commentID !== commentData.comment.commentID) {
+              commentsArray.push(commentData);
+            }
           }
-
-          singleResult.comments = commentsArray;
-          console.log('singleResult: ', singleResult.comments);
-
+          var sortedComments = _.sortBy(commentsArray, function(commentObj) {
+            return commentObj.comment.time;
+          });
+          singleResult.comments = sortedComments;
         }
 
 

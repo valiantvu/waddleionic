@@ -1,13 +1,14 @@
 (function(){
 
-var NotificationsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, moment) {
+var NotificationsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, moment, $localstorage) {
   Auth.checkLogin()
   .then(function () {
     $scope.notifications = [];
     $scope.moreDataCanBeLoaded = true;
+    $scope.userFbId= $localstorage.getObject('user').facebookID;
     var moreUnreadNotificationsCanBeLoaded = true;
     var page = 0;
-    var skipAmount = 10;
+    var skipAmount = 20;
 
     FootprintRequests.currentTab = 'notifications';
 
@@ -117,7 +118,7 @@ var NotificationsController = function (Auth, UserRequests, MapFactory, Footprin
   })
 };
 
-NotificationsController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', 'moment'];
+NotificationsController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', 'moment', '$localstorage'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 

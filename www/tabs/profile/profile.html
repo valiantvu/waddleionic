@@ -53,7 +53,6 @@
          <a ui-sref="tab.enlarged-footprint-profile" ng-click="openFootprint(footprint, $index)" class="subdued home-rating-message"><b>{{footprint.user.name}}</b> rates this <h4 class="ratinghex-footprint">{{footprint.checkin.rating}}</h4></a>
         <br>
         <!-- Place Name and Location-->
-        <a ng-click="getFootprint(footprint)">
           <h2 ui-sref="tab.enlarged-footprint-profile
 " ng-click="openFootprint(footprint, $index)">{{footprint.place.name}}</h2>
           <p ui-sref="tab.enlarged-footprint-profile
@@ -92,7 +91,7 @@
     </div>
   </div>
 
-<div ng-repeat="friend in friends" ng-if='friend.fbProfilePicture' class="item item-avatar notifications-list">
+<div ng-repeat="friend in friends" ng-if='friend.footprintsCount >= 0' class="item item-avatar notifications-list">
 
   <div class="item item-avatar" ng-click="switchProfilePage(friend)">
 
@@ -129,6 +128,7 @@
 <script id="settings.html" type="text/ng-template">
   <ion-modal-view>
     <ion-header-bar>
+      <button class="button button-icon inline-block icon waddle-close" ng-click="closeModal()"></button>
       <h1 class="title">Connect Accounts</h1>
     </ion-header-bar>
     <ion-content>

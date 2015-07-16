@@ -3,7 +3,7 @@
  <div class="buttons">
     <button class="button button-icon icon ion-arrow-left-b" ng-click="goBack()"></button>
   </div>
-  <h1 class="title">folders</h1>
+  <h1 class="title">{{headerTitle}}</h1>
 <!--   <div class="buttons">
     <button class="button button-icon icon waddle-search light" ng-click="toggleFolderContentsSearch()"></button>
   </div> -->
@@ -82,7 +82,7 @@
       </g>
     </svg>
     <div class="list" style="margin-top:-10px">
-      <a ui-sref="tab.enlarged-footprint-folders" ng-click="openFootprint(footprint, $index)" ng-repeat="footprint in folderContents" class="item item-thumbnail-right">
+      <a ui-sref="tab.enlarged-footprint{{subRouting}}" ng-click="openFootprint(footprint, $index)" ng-repeat="footprint in folderContents" class="item item-thumbnail-right">
         <img/>
         <img class="folder-footprint-image" ng-if="footprint.checkin.photoLarge !== 'null'" ng-src="{{footprint.checkin.photoLarge}}">
         <img class="folder-footprint-folder-propic" ng-src="{{footprint.user.fbProfilePicture}}">
@@ -91,9 +91,10 @@
         <div class="folder-footprint-item-description">
           <h2>{{footprint.place.name}}</h2>
           <p>{{footprint.place.city}}, {{footprint.place.country}}</p>
-          <p ng-if="checkUserID(footprint.user.facebookID)">Last here on {{footprint.checkin.checkinTime | date : shortDate}}</p>
-          <p ng-if="!checkUserID(footprint.user.facebookID)">Added from {{footprint.user.name}}</p>
-          <p ng-if="!checkUserID(footprint.user.facebookID)">Suggested by {{footprint.suggester.name}} via {{footprint.user.name}}</p>
+          <p ng-if="checkUserID(footprint) && openFolder !== 'Suggested By Friends'">Last here on {{footprint.checkin.checkinTime | date : shortDate}}</p>
+          <p ng-if="!checkUserID(footprint) && openFolder !== 'Suggested By Friends'">Added from {{footprint.user.name}}</p>
+          <p ng-if="!checkUserID(footprint) && openFolder === 'Suggested By Friends'">Suggested by {{footprint.suggester.name}} via {{footprint.user.name}}</p>
+          <p ng-if="checkUserID(footprint) && openFolder === 'Suggested By Friends'">Suggested by {{footprint.suggester.name}}</p>
 
         </div>
       </a>

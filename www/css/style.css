@@ -432,7 +432,8 @@ span{
 	width:auto;
 }
 
-.waddlebadge-checkin-list {
+.item-avatar .waddlebadge-checkin-list {
+	border-radius: 0px !important;
 	height: 35px !important;
 	width: auto !important;
 }
@@ -785,13 +786,15 @@ span{
 .review-form {
 	border-radius: 10px;
 	height: 12vh;
-	/*width: 90vw;*/
+	width: 100%;
 	background-color: #eee;
 	border: none;
 	padding-right: 0.5em !important;
 }
 
-
+.item-input-inset .item-input-wrapper input {
+  width: 100%;
+}
 
 .notifications-text-overflow {
 	padding-right: 4em;
