@@ -236,7 +236,6 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     };
 
     $scope.toggleCategoryNameDisplay = function($index) {
-      console.log('toggling')
       if($scope.categoryNameIndex === $index) {
         $scope.categoryNameIndex = -1;
       } else {

@@ -1121,9 +1121,9 @@ User.fetchFolderContents = function (facebookID, folderName, page, skipAmount) {
   var deferred = Q.defer();
 
   var query = [
-    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder {name:{folderName}})-[contains:containsCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder {name:{folderName}})-[contains:containsCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
     'MATCH (checkin)<-[:hasCheckin]-(friend:User)',
-    'RETURN friend, folder, checkin, place, contains',
+    'RETURN friend, folder, checkin, place, category, contains',
     'ORDER BY contains.createdAt',
     'SKIP { skipNum }', 
     'LIMIT { skipAmount }'
@@ -1145,7 +1145,8 @@ User.fetchFolderContents = function (facebookID, folderName, page, skipAmount) {
           "user": item.friend.data,
           "folder": item.folder.data,
           "checkin": item.checkin.data,
-          "place": item.place.data
+          "place": item.place.data,
+          "category": item.category.data
         }
         return singleResult;
       });
@@ -1159,9 +1160,9 @@ User.searchFolderContents = function (facebookID, folderName, searchQuery, page,
   var deferred = Q.defer();
 
   var query = [
-    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder {name:{folderName}})-[contains:containsCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder {name:{folderName}})-[contains:containsCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
     'WHERE place.name =~ {searchQuery} OR place.city =~ {searchQuery} OR place.country =~ {searchQuery}',
-    'RETURN user, folder, checkin, contains, place',
+    'RETURN user, folder, checkin, contains, place, category',
     'ORDER BY contains.createdAt',
     'SKIP { skipNum }', 
     'LIMIT { skipAmount }'
@@ -1185,7 +1186,8 @@ User.searchFolderContents = function (facebookID, folderName, searchQuery, page,
           "user": item.user.data,
           "folder": item.folder.data,
           "checkin": item.checkin.data,
-          "place": item.place.data
+          "place": item.place.data,
+          "category": item.category.data
         }
         return singleResult;
       });

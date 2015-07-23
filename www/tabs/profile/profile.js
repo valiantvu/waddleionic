@@ -24,10 +24,11 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		FootprintRequests.currentTab = 'me';
 
     $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
+      console.log($previousRoute)
       if($previousRoute.url === "/profile") {
         FootprintRequests.currentTab = 'me';
       }
-      if($previousRoute.url === "/profile" && FootprintRequests.editedCheckin) {
+      if(FootprintRequests.editedCheckin) {
         $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.rating = FootprintRequests.editedCheckin.rating;
         $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.caption = FootprintRequests.editedCheckin.caption;
         $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.photoLarge = FootprintRequests.editedCheckin.photoLarge;
@@ -225,6 +226,15 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       FootprintRequests.selectedFootprintIndex = index;
     };
 
+    $scope.toggleCategoryNameDisplay = function($index) {
+      if($scope.categoryNameIndex === $index) {
+        $scope.categoryNameIndex = -1;
+      } else {
+        $scope.categoryNameIndex = $index;
+      }
+    };
+
+
 		$scope.logout = function() {
       $scope.closeModal();
       Auth.logout();
@@ -329,8 +339,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       .then(function (data) {
         $scope.footprints[index].folders = [];
         $scope.footprints[index].folders.push(data.data[0].folder);
-        $scope.showCreationSuccessAlert();
-        // console.log(data);
+        $scope.showFootprintAdditionSuccessAlert();
       })
     };
 
@@ -490,13 +499,23 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     $scope.showCreationSuccessAlert = function() {
       var creationSuccessAlert = $ionicPopup.show({
         title: 'New Folder Added!',
-        templateUrl: '/modals/folder-create-success.html'
+        templateUrl: 'modals/folder-create-success.html'
       });
       // creationSuccessAlert.then(function(res) {
       // });
       $timeout(function() {
        creationSuccessAlert.close(); //close the popup after 1 second
-      }, 1500);
+      }, 2000);
+    };
+
+    $scope.showFootprintAdditionSuccessAlert = function() {
+      var creationSuccessAlert = $ionicPopup.show({
+        templateUrl: 'modals/footprint-addition-success.html'
+      });
+    
+      $timeout(function() {
+       creationSuccessAlert.close(); //close the popup after 1.5 seconds
+      }, 1700);
     };
 
     $scope.showDeletionSuccessAlert = function () {
@@ -506,7 +525,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
      
       $timeout(function() {
        deletionSuccessAlert.close(); //close the popup after 1 second
-      }, 1500);
+      }, 1700);
     };
 
     $scope.openOptions = function (footprint, index) {

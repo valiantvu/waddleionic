@@ -38,7 +38,7 @@
           {{checkinInfo.footprintCaption}}
         </textarea>
     </form>
-    <h6 class="caption-limit">{{1000 - review.caption.$viewValue.length}} chars remaining</h6>
+    <h6 class="caption-limit">{{1000 - review.caption.$viewValue.length}}</h6>
 
     <button class="button button-large checkin-post" type="submit" ng-disabled="checkinInfo.rating === '--'  || disabled" ng-click="sendCheckinDataToServer(venue)"><ion-spinner ng-if="loading" class="loading-dots" icon="dots"></ion-spinner><a ng-if="!loading">post<a></button>
 

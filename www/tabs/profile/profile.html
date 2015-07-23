@@ -40,6 +40,10 @@
       <button ng-if="footprint.folders" class="button button-small button-light savefave" ng-click="openModal(footprint.folders[0].name)">{{footprint.folders[0].name}}</button>
       <img src="https://s3-us-west-2.amazonaws.com/waddle/TabCurve-1.png" class="folder-tab-curve">
       <button ng-click="openOptions(footprint, $index)" class="options button button-icon icon waddle-more light"></button>
+      <div ng-if="categoryNameIndex === $index" class="relative-absolute-hack">
+        <h4 ng-if="categoryNameIndex === $index" ng-click="toggleCategoryNameDisplay($index)" class="category-name-modal">{{footprint.category.name}}<h4>
+        <!-- <img class="carat" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/categorycarat-1.svg"> -->
+      </div>
       <div class="list list-inset">
 
       <div class="item item-avatar">
@@ -47,8 +51,8 @@
         <!-- Profile Picture -->
         <img class="footprint-propic" ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
         <!-- Badge -->
-        <img ng-if="footprint.category.iconPrefix" ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge">
-         <img ng-if="!footprint.category.iconPrefix" ng-src="img/uncategorized-40x40-2.svg" class="waddlebadge">
+        <img ng-if="footprint.category.iconPrefix" ng-click="toggleCategoryNameDisplay($index)" ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge">
+         <img ng-if="!footprint.category.iconPrefix" ng-click="toggleCategoryNameDisplay($index)" ng-src="img/uncategorized-40x40-2.svg" class="waddlebadge">
         <!-- User Name -->
          <a ui-sref="tab.enlarged-footprint-profile" ng-click="openFootprint(footprint, $index)" class="subdued home-rating-message"><b>{{footprint.user.name}}</b> rates this <h4 class="ratinghex-footprint">{{footprint.checkin.rating}}</h4></a>
         <br>
