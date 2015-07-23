@@ -84,17 +84,12 @@ helpers.parseEditedNativeCheckin = function (editedCheckin) {
     'photoSmall': 'null',
     'photoLarge': 'null',
     'caption': 'null',
-    'pointValue': 5,
-    'rating': 0,
+    'pointValue': 8,
+    'rating': editedCheckin.rating,
   };
 
   if (editedCheckin.footprintCaption) {
     formattedCheckin.caption = editedCheckin.footprintCaption;
-    formattedCheckin.pointValue += 3;
-  }
-
-  if (editedCheckin.rating > 0) {
-    formattedCheckin.rating = editedCheckin.rating;
     formattedCheckin.pointValue += 3;
   }
 

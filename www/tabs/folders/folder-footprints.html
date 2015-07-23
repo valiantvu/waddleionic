@@ -3,7 +3,7 @@
  <div class="buttons">
     <button class="button button-icon icon ion-arrow-left-b" ng-click="goBack()"></button>
   </div>
-  <h1 class="title">folders</h1>
+  <h1 class="title">{{headerTitle}}</h1>
 <!--   <div class="buttons">
     <button class="button button-icon icon waddle-search light" ng-click="toggleFolderContentsSearch()"></button>
   </div> -->
@@ -27,62 +27,47 @@
     <svg viewBox="0 0 1080 200">
       <defs>
           <pattern id="image1" patternContentUnits="objectBoundingBox" height="100%" width="100%">
-              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-1.png"/>
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="img/folder-bgs/folderbgs-1.png"/>
           </pattern>
       </defs>
       <defs>
           <pattern id="image2" patternContentUnits="objectBoundingBox" height="100%" width="100%">
-              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-2.png"/>
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="img/folder-bgs/folderbgs-2.png"/>
           </pattern>
       </defs>
       <defs>
           <pattern id="image3" patternContentUnits="objectBoundingBox" height="100%" width="100%">
-              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-3.png"/>
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="img/folder-bgs/folderbgs-3.png"/>
           </pattern>
       </defs>
       <defs>
           <pattern id="image4" patternContentUnits="objectBoundingBox" height="100%" width="100%">
-              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-4.png"/>
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="img/folder-bgs/folderbgs-4.png"/>
           </pattern>
       </defs>
       <defs>
           <pattern id="image5" patternContentUnits="objectBoundingBox" height="100%" width="100%">
-              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-5.png"/>
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="img/folder-bgs/folderbgs-5.png"/>
           </pattern>
       </defs>
       <defs>
           <pattern id="image6" patternContentUnits="objectBoundingBox" height="100%" width="100%">
-              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-6.png"/>
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="img/folder-bgs/folderbgs-6.png"/>
           </pattern>
       </defs>
       <defs>
           <pattern id="image7" patternContentUnits="objectBoundingBox" height="100%" width="100%">
-              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-7.png"/>
-          </pattern>
-      </defs>
-      <defs>
-          <pattern id="image8" patternContentUnits="objectBoundingBox" height="100%" width="100%">
-              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-8.png"/>
-          </pattern>
-      </defs>
-      <defs>
-          <pattern id="image9" patternContentUnits="objectBoundingBox" height="100%" width="100%">
-              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-9.png"/>
-          </pattern>
-      </defs>
-      <defs>
-          <pattern id="image10" patternContentUnits="objectBoundingBox" height="100%" width="100%">
-              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="https://s3-us-west-2.amazonaws.com/waddle/app+assets/folder-bgs/folderbgs-10.png"/>
+              <image x="0" y="0" height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="img/folder-bgs/folderbgs-7.png"/>
           </pattern>
       </defs>
       <g>
         <path id="tab-shape-outline" transform="scale(1.005)" fill="white" d="M1080,496c0,18.226-14.774,33-33,33H33c-18.226,0-33-14.774-33-33V33C0,14.774,14.774,0,33,0  h477h7l46,63h7h477c18.226,0,33,14.774,33,33V496z"/>
-        <path id="tab-shape" transform="translate(0, 5)" fill="url(#image{{ (openFolderIndex + 1) % 10 + 1 }})" d="M1080,496c0,18.226-14.774,33-33,33H33c-18.226,0-33-14.774-33-33V33C0,14.774,14.774,0,33,0  h477h7l46,63h7h477c18.226,0,33,14.774,33,33V496z"/>
+        <path id="tab-shape" transform="translate(0, 5)" fill="url(#image{{ (openFolderIndex + 1) % 7 + 1 }})" d="M1080,496c0,18.226-14.774,33-33,33H33c-18.226,0-33-14.774-33-33V33C0,14.774,14.774,0,33,0  h477h7l46,63h7h477c18.226,0,33,14.774,33,33V496z"/>
         <text x="50%" y="150" text-anchor="middle" alignment-baseline="middle" font-family="Verdana" font-size="45" fill="white">{{ openFolder }}</text>
       </g>
     </svg>
     <div class="list" style="margin-top:-10px">
-      <a ui-sref="tab.enlarged-footprint-folders" ng-click="openFootprint(footprint, $index)" ng-repeat="footprint in folderContents" class="item item-thumbnail-right">
+      <a ui-sref="tab.enlarged-footprint{{subRouting}}" ng-click="openFootprint(footprint, $index)" ng-repeat="footprint in folderContents" class="item item-thumbnail-right">
         <img/>
         <img class="folder-footprint-image" ng-if="footprint.checkin.photoLarge !== 'null'" ng-src="{{footprint.checkin.photoLarge}}">
         <img class="folder-footprint-folder-propic" ng-src="{{footprint.user.fbProfilePicture}}">
@@ -91,8 +76,11 @@
         <div class="folder-footprint-item-description">
           <h2>{{footprint.place.name}}</h2>
           <p>{{footprint.place.city}}, {{footprint.place.country}}</p>
-          <p ng-if="checkUserID(footprint.user.facebookID)">Last here on {{footprint.checkin.checkinTime | date : shortDate}}</p>
-          <p ng-if="!checkUserID(footprint.user.facebookID)">Added from {{footprint.user.name}}</p>
+          <p ng-if="checkUserID(footprint) && openFolder !== 'Suggested By Friends'">Last here on {{footprint.checkin.checkinTime | date : shortDate}}</p>
+          <p ng-if="!checkUserID(footprint) && openFolder !== 'Suggested By Friends'">Added from {{footprint.user.name}}</p>
+          <p ng-if="!checkUserID(footprint) && openFolder === 'Suggested By Friends'">Suggested by {{footprint.suggester.name}} via {{footprint.user.name}}</p>
+          <p ng-if="checkUserID(footprint) && openFolder === 'Suggested By Friends'">Suggested by {{footprint.suggester.name}}</p>
+
         </div>
       </a>
     </div>

@@ -1,6 +1,6 @@
 (function(){
 
-var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicHistory, $ionicPopup, $timeout, $window) {
+var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicHistory, $ionicPopup, $timeout, $window, $cordovaContacts, $cordovaSms, $cordovaSocialSharing, $localstorage) {
     
   // $scope.footprint = FootprintRequests.openFootprint;
   $scope.selectedFootprintIndex = FootprintRequests.selectedFootprintIndex;
@@ -8,27 +8,47 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   $scope.usersAlsoBeenHere = [];
 
   $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
-      if($previousRoute.url === "/home" || $previousRoute.url === "/enlarged-footprint") {
-        FootprintRequests.currentTab = "feed";
-        $scope.headerTitle = "feed";
-      } else if($previousRoute.url === "/folders" || $previousRoute.url === "/enlarged-footprint-folders") {
-        FootprintRequests.currentTab = "folders";
-        $scope.headerTitle = "folders";
-      } else if($previousRoute.url === "/notifications" || $previousRoute.url === "/enlarged-footprint-notifications") {
-        FootprintRequests.currentTab = "notifications";
-        $scope.headerTitle = "notifications";
-      } else if($previousRoute.url === "/profile" || $previousRoute.url === "/enlarged-footprint-profile") {
-        FootprintRequests.currentTab = "me";
-        $scope.headerTitle = "me";
-      } 
+    console.log($previousRoute);
+    if($previousRoute.url === "/home" || $previousRoute.url === "/enlarged-footprint") {
+      FootprintRequests.currentTab = "feed";
+      $scope.headerTitle = "feed";
+    } else if($previousRoute.url === "/folders" || $previousRoute.url === "/enlarged-footprint-folders") {
+      FootprintRequests.currentTab = "folders";
+      $scope.headerTitle = "folders";
+    } else if($previousRoute.url === "/notifications" || $previousRoute.url === "/enlarged-footprint-notifications") {
+      FootprintRequests.currentTab = "notifications";
+      $scope.headerTitle = "notifications";
+    } else if($previousRoute.url === "/profile" || $previousRoute.url === "/enlarged-footprint-profile") {
+      FootprintRequests.currentTab = "me";
+      $scope.headerTitle = "me";
+    }
+
+    if(FootprintRequests.editedCheckin) {
+      $scope.footprint.checkin.rating = FootprintRequests.editedCheckin.rating;
+      $scope.footprint.checkin.caption = FootprintRequests.editedCheckin.caption;
+      $scope.footprint.checkin.photoLarge = FootprintRequests.editedCheckin.photoLarge;
+      FootprintRequests.editedCheckin = false;
+    } 
   });
 
   $scope.fetchVenueInfo = function() {
+    var location;
     FootprintRequests.getFoursquareVenueInfo($scope.footprint.place.foursquareID, window.sessionStorage.userFbID)
     .then(function (venueInfo) {
-      console.log(venueInfo);
+      // console.log(venueInfo);
+      location = venueInfo.data.venue.location;
       $scope.linkToFoursquare = venueInfo.data.venue.canonicalUrl;
-      $scope.address = venueInfo.data.venue.location.formattedAddress;
+      $scope.address = location.address;
+      console.log($scope.address);
+      $scope.textAddress = location.address + ", " + location.city;
+      if(location.country === "United States" && location.state) {
+        $scope.address += ", " + location.state;
+      }
+      if(location.country !== "United States") {
+        $scope.address += ", " + location.country;
+      }
+        
+      console.log(venueInfo.data.venue.location)
       if(venueInfo.data.venue.hasMenu) {
         $scope.menu = venueInfo.data.venue.menu;
       }
@@ -36,12 +56,20 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     })
   };
 
+   $scope.openFoursquarePage = function() {
+    // var foursquareLink = document.getElementsByName('view-in-foursquare')[0];
+    // console.log(foursquareLink);
+    // foursquareLink.setAttribute('href', $scope.linkToFoursquare);
+    window.open($scope.linkToFoursquare, '_system', 'location=yes');
+  };
+
   $scope.findUsersAlsoBeenHere = function() {
     FootprintRequests.findUsersAlsoBeenHere($scope.footprint.place.foursquareID, window.sessionStorage.userFbID)
     .then(function (users) {
+      console.log(users);
       for(i = 0; i < users.data[0].users.length; i++) {
         if(users.data[0].users[i].facebookID !== window.sessionStorage.userFbID) {
-          $scope.usersAlsoBeenHere.push(user.data[0].users[i]);
+          $scope.usersAlsoBeenHere.push(users.data[0].users[i]);
         }
       }
     });
@@ -91,7 +119,7 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     $scope.selectedFootprintCheckinID = footprint.checkin.checkinID;
     // $scope.selectedFootprintIndex = index;
     $scope.optionsPopup = $ionicPopup.show({
-      templateUrl: 'options-menu.html',
+      templateUrl: 'modals/options-menu.html',
       scope: $scope
     });
   };
@@ -113,29 +141,92 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     }
   };
 
-  $scope.openFoursquarePage = function() {
-  	$window.open($scope.linkToFoursquare);
-  }
+  $scope.viewFriendsList = function() {
+    var route = 'tab.friends' + $scope.subRouting;
+    $state.go(route);
+  };
+
+ 
 
   $scope.openMenu = function() {
-  	$window.open($scope.menu.mobileUrl);
-  }
+  	$window.open($scope.menu.mobileUrl, '_system', 'location=yes');
+  };
+
+  $scope.toggleMapDisplay = function() {
+    console.log('toggling')
+    $scope.mapDisplay = $scope.mapDisplay === true ? false : true;
+  };
+
+   $scope.toggleCategoryNameDisplay = function() {
+    console.log('toggling')
+    $scope.categoryName = $scope.categoryName === true ? false : true;
+  };
 
   $scope.openMap = function () {
-    window.open("http://maps.google.com/?saddr=Current%20Location&daddr= 894%20Granville%20Street%20Vancouver%20BC%20V6Z%201K3");
-  }
+  var address = encodeURIComponent($scope.address)
+  var lat = $scope.footprint.place.lat;
+  var lng = $scope.footprint.place.lng;
+  var mapLink = "maps://maps.apple.com/?q=" + address + "&ll=" + lat + "," + lng + "&near=" + lat + "," + lng;
+  console.log(mapLink);
+
+  // if(ionic.Platform.isIOS()) {
+    $window.open(mapLink, '_system', 'location=yes')  
+  // } else {
+  //   $window.open("geo:#{lat},#{long}?q=#{text}", '_system', 'location=yes')
+  // }
+  };
+
+  $scope.setShareMessage = function () {
+    console.log('setting message');
+    console.log($localstorage.getObject('user'));
+    console.log($localstorage.getObject('user').name);
+
+    if(window.sessionStorage.userFbID === $scope.footprint.user.facebookID) {
+      var message = "Sent from Waddle for iOS:%0D%0A" 
+      + $localstorage.getObject('user').name + 
+      " thought you'd like "+ $scope.footprint.place.name + "!%0D%0A%0D%0AThey rated " + $scope.footprint.place.name + " " + $scope.footprint.checkin.rating + 
+      " stars out of 5.%0D%0A";
+      if($scope.textAddress) {
+        message += $scope.textAddress + "%0D%0A" 
+      } 
+      if($scope.footprint.checkin.caption !== 'null') {
+        message += "%0D%0A Here's what " + $scope.footprint.user.name + " said: " + '"' + $scope.footprint.checkin.caption + '"';
+      }   
+    } else {
+      var message = "Sent from Waddle for iOS:%0D%0A" 
+      + $localstorage.getObject('user').name + 
+      " thought you'd like " + $scope.footprint.place.name + "!%0D%0A%0D%0ATheir friend, " + $scope.footprint.user.name + ", rated " 
+      + $scope.footprint.place.name + " " + $scope.footprint.checkin.rating + 
+      " stars out of 5.%0D%0A";
+      if($scope.textAddress) {
+        message += $scope.textAddress + "%0D%0A";
+      } 
+      if($scope.footprint.checkin.caption !== 'null') {
+        message += "%0D%0AHere's what they said: " + '"' + $scope.footprint.checkin.caption + '"';
+      }
+    }
+    message += "%0D%0Ahttp://www.gowaddle.com";
+  
+    console.log(message);
+    //replae & with encoded string
+    message = message.replace(/&/g, '%26');
+    var SMSElement = document.getElementsByClassName('suggest-via-sms')[0];
+    SMSElement.setAttribute('href', "sms:&body=" + message);
+
+    var mailElement = document.getElementsByClassName('suggest-via-email')[0];
+    mailElement.setAttribute('href', 'mailto:?subject=Suggestion via Waddle for iOS&body=' + message);
+  };
 
   $scope.openDeleteFootprintPopup = function () {
     $scope.optionsPopup.close();
     var deleteFootprintPopup = $ionicPopup.show({
-      templateUrl: 'delete-footprint.html',
-      // title: 'Add Folder',
+      templateUrl: 'modals/delete-footprint.html',
       scope: $scope,
       buttons: [
         { text: 'Cancel' },
         {
           text: '<b>Yes</b>',
-          type: 'button-energized',
+          type: 'button-positive',
           onTap: function(e) {
               $scope.deleteFootprint($scope.selectedFootprintCheckinID, $scope.selectedFootprintUserID, $scope.selectedFootprintIndex);
           }
@@ -147,42 +238,56 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   $scope.showCreationSuccessAlert = function() {
     var creationSuccessAlert = $ionicPopup.show({
       title: 'New Folder Added!',
-      templateUrl: 'folder-create-success.html'
+      templateUrl: 'modals/folder-create-success.html'
     });
-    // creationSuccessAlert.then(function(res) {
-    // });
+   
     $timeout(function() {
      creationSuccessAlert.close(); //close the popup after 1 second
     }, 1500);
   };
 
+  $scope.showShareOptions = function () {
+    $scope.shareOptions = $ionicPopup.show({
+      title: 'suggest this footprint:',
+      templateUrl: 'modals/share-options.html',
+      scope: $scope
+    })
+    //function placed inside timeout to ensure anchor tag href exists in DOM before value of message is set
+    $timeout($scope.setShareMessage, 0);
+  };
+
   $scope.setMarker = function(map) {
     // $scope.map = map;
   	map.setView([$scope.footprint.place.lat, $scope.footprint.place.lng], 12);
-  	L.mapbox.featureLayer({
-	    type: 'Feature',
-	    geometry: {
-	        type: 'Point',
-	        // coordinates here are in longitude, latitude order because
-	        // x, y is the standard for GeoJSON and many formats
-	        coordinates: [
-	          $scope.footprint.place.lng, 
-	          $scope.footprint.place.lat
-	        ]
-	    },
-	    properties: {
-	        title: $scope.footprint.place.name,
-	        description: $scope.address,
-	        'marker-size': 'large',
-	        'marker-color': '#FF5050',
-	        'marker-symbol': 'circle-stroked'
-	    }
-		}).addTo(map);
-  };
+    var myLayer = L.mapbox.featureLayer().addTo(map);
 
+    var geojson = {
+      type: 'Feature Collection',
+      features: [{
+  	    type: 'Feature',
+  	    geometry: {
+  	        type: 'Point',
+  	        // coordinates here are in longitude, latitude order because
+  	        // x, y is the standard for GeoJSON and many formats
+  	        coordinates: [
+  	          $scope.footprint.place.lng, 
+  	          $scope.footprint.place.lat
+  	        ]
+  	    },
+  	    properties: {
+  	        title: $scope.footprint.place.name,
+  	        description: $scope.address,
+  	        'marker-size': 'large',
+  	        'marker-color': '#FF5050',
+  	        'marker-symbol': 'circle-stroked'
+  	    }
+  		}]
+    };
+    myLayer.setGeoJSON(geojson);
+  };
 };
 
-EnlargedFootprintController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicHistory', '$ionicPopup', '$timeout', '$window'];
+EnlargedFootprintController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicHistory', '$ionicPopup', '$timeout', '$window', '$cordovaContacts', '$cordovaSms', '$cordovaSocialSharing', '$localstorage'];
 
 var MapLocationDirective = function ($location) {
 	return {
@@ -194,7 +299,14 @@ var MapLocationDirective = function ($location) {
     template: '<div class="map"></div>',
 		link: function(scope, element, attributes) {
 			L.mapbox.accessToken = 'pk.eyJ1Ijoid2FkZGxldXNlciIsImEiOiItQWlwaU5JIn0.mTIpotbZXv5KVgP4pkcYrA';
-      var map = L.mapbox.map(element[0], 'injeyeo.8fac2415');
+      var map = L.mapbox.map(element[0], 'injeyeo.8fac2415', {
+        attributionControl: false,
+        zoomControl: false
+      });
+      map.dragging.disable();
+      map.touchZoom.disable();
+      map.doubleClickZoom.disable();
+      map.scrollWheelZoom.disable();
       scope.setMarker(map);
 		}
 	}

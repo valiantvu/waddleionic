@@ -33,7 +33,7 @@
       var f, files, output, _i, _len, _results;
       this.onProgress(0, 'Upload started.');
       files = file_element.files;
-      console.log(files)
+      console.log(files);
       output = [];
       _results = [];
       for (_i = 0, _len = files.length; _i < _len; _i++) {

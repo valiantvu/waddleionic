@@ -378,6 +378,18 @@ var UserRequests = function ($http){
         method: 'GET',
         url: url
       });
+    },
+
+    suggestToFriend: function (params) {
+      var url = '/api/checkins/suggest';
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      };
+      return $http({
+        method: 'POST',
+        url: url,
+        data: params
+      });
     }
   };
 

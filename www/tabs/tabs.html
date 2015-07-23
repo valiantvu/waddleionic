@@ -17,7 +17,7 @@
   </ion-tab>
 
   <!-- Checkin Tab -->
-  <ion-tab class="background-coral" icon-on="waddle-checkin" icon-off="waddle-checkin" href="#/tab/checkin">
+  <ion-tab class="background-coral" ng-click="loadVenueList()" icon-on="waddle-checkin" icon-off="waddle-checkin-off" href="#/tab/checkin">
     <ion-nav-view name="checkin-tab"></ion-nav-view>
   </ion-tab>
 
@@ -27,7 +27,7 @@
   </ion-tab>
 
   <!-- Profile Tab -->
-  <ion-tab title="me" icon-on="waddle-profile-active" icon-off="waddle-profile" ui-sref="tab.profile" ui-sref-opts="{reload: true}">
+  <ion-tab title="me" icon-on="waddle-profile-active" icon-off="waddle-profile" ui-sref="tab.profile" on-select="triggerEvent()" ui-sref-opts="{reload: true}">
     <ion-nav-view name="profile-tab"></ion-nav-view>
   </ion-tab>
 

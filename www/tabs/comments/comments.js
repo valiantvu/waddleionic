@@ -1,10 +1,11 @@
 (function(){
 
-var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicActionSheet, $ionicHistory, moment) {
+var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicActionSheet, $ionicHistory, moment, $localstorage) {
     
     // $scope.footprint = FootprintRequests.openFootprint;
     $scope.currentTab = FootprintRequests.currentTab;
     $scope.selectedFootprintInteractions = {};
+    $scope.userFbProfilePicture = $localstorage.getObject('user').fbProfilePicture;
 
   if($scope.currentTab === 'folders') {
     $scope.footprint = FootprintRequests.openFootprintFolders;
@@ -35,31 +36,34 @@ var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequ
 
 
      // Triggered on a button click, or some other target
-    $scope.show = function(comment, footprint) {
-      // Show the action sheet
-      var hideSheet = $ionicActionSheet.show({
-        destructiveText: 'Delete',
-        cancelText: 'Cancel',
-        cancel: function() {
-          hideSheet();
-        },
-        destructiveButtonClicked: function(index) {
+    $scope.show = function(comment, footprint, $index) {
+      // Show the action sheet if the footprint was posted by the logged in user, OR if the comment was posted by the logged in user
+      if($scope.footprint.user.facebookID === window.sessionStorage.userFbID || comment.commenter.facebookID === window.sessionStorage.userFbID) {
+        var hideSheet = $ionicActionSheet.show({
+          destructiveText: 'Delete',
+          cancelText: 'Cancel',
+          cancel: function() {
+            hideSheet();
+          },
+          destructiveButtonClicked: function(index) {
 
-          var commentData = {
-            facebookID: comment.commenter.facebookID,
-            checkinID: footprint.checkin.checkinID,
-            commentID : comment.comment.commentID
-          };
+            var commentData = {
+              facebookID: comment.commenter.facebookID,
+              checkinID: footprint.checkin.checkinID,
+              commentID : comment.comment.commentID
+            };
 
-          console.log(commentData);
+            console.log(commentData);
 
-          FootprintRequests.removeComment(commentData)
-          .then(function (data){
-            console.log("comment removed");
-          });
-          return true;
-        }
-      });
+            FootprintRequests.removeComment(commentData)
+            .then(function (data){
+              $scope.footprint.comments.splice($index, 1);
+              console.log("comment removed");
+            });
+            return true;
+          }
+        });
+      }
     };
 
     moment.locale('en', {
@@ -81,15 +85,27 @@ var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequ
     });
 };
 
-CommentsController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicActionSheet', '$ionicHistory', 'moment'];
+CommentsController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicActionSheet', '$ionicHistory', 'moment', '$localstorage'];
 
   // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 
 var CustomSubmitDirective = function(FootprintRequests) {
   return {
     restrict: 'A',
-    link: function( scope , element , attributes ){
-      console.log('psoting a comment');
+    // require: 'ngModel',
+    link: function( scope , element , attributes, ngModelCtrl ){
+      // var maxlength = Number(attrs.myMaxlength);
+      // function fromUser(text) {
+      //     if (text.length > maxlength) {
+      //       var transformedInput = text.substring(0, maxlength);
+      //       ngModelCtrl.$setViewValue(transformedInput);
+      //       ngModelCtrl.$render();
+      //       return transformedInput;
+      //     } 
+      //     return text;
+      // }
+      // ngModelCtrl.$parsers.push(fromUser);
+ 
       var $element = angular.element(element);
       
       // Add novalidate to the form element.
@@ -125,6 +141,7 @@ var CustomSubmitDirective = function(FootprintRequests) {
         
         // From this point and below, we can assume that the form is valid.
         scope.$eval( attributes.customSubmit );
+        console.log(scope.comment.length);
 
         //Text can be found with $element[0][0].value or scope.data.currentComment
         //ID can be found with $element.context.dataset['customSubmit']

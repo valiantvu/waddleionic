@@ -175,13 +175,13 @@ Checkin.removeFromFavorites = function (facebookID, checkinID) {
 }
 
 
-Checkin.addComment = function (clickerID, checkinID, text){
+Checkin.addComment = function (clickerID, checkinID, text, checkinTime){
   var deferred = Q.defer();
   var commentID = uuid.v4();
   var query = [
   'MATCH (clicker:User {facebookID: {facebookID}})',
   'MATCH (commentReceiver:User)-[:hasCheckin]->(checkin:Checkin {checkinID: {checkinID}})',
-  'MERGE (clicker)-[:madeComment]->(newComment:Comment {text: {text}, commentID : {commentID}, time: timestamp() })' + 
+  'MERGE (clicker)-[:madeComment]->(newComment:Comment {text: {text}, commentID : {commentID}, time: {checkinTime} })' + 
   '-[:gotComment]->(checkin)',
   'MERGE (checkin)-[unread:hasUnreadNotification]->(newComment)',
   'ON CREATE SET unread.createdAt = newComment.time',
@@ -191,7 +191,8 @@ Checkin.addComment = function (clickerID, checkinID, text){
     'facebookID': clickerID,
     'checkinID': checkinID,
     'text': text,
-    'commentID' : commentID
+    'commentID' : commentID,
+    'checkinTime': checkinTime
   };
 
   console.log(params);
@@ -211,7 +212,7 @@ Checkin.removeComment = function(facebookID, checkinID, commentID){
 
   var query = [
   'MATCH (clicker:User{facebookID:{facebookID}})-[rel1:madeComment]->(comment:Comment{commentID: {commentID}})-[rel2:gotComment]->(checkin:Checkin {checkinID: {checkinID}})',
-  'OPTIONAL MATCH (comment)<-[rel3]-(user:User)',
+  'OPTIONAL MATCH (checkin)-[rel3]->(comment)',
   'WHERE type(rel3) = "hasUnreadNotification" OR type(rel3) = "hasReadNotification"',
   'DELETE rel1,rel2,rel3,comment'
   ].join('\n');
@@ -356,6 +357,76 @@ Checkin.getComments = function (checkinID){
   return deferred.promise;
 };
 
+Checkin.suggestFootprint = function (senderFacebookID, checkinID, receiverFacebookIDList, suggestionTime) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (sender:User{facebookID:{senderFacebookID}})',
+    'MATCH (checkin:Checkin{checkinID:{checkinID}})<-[:hasCheckin]-(source:User)',
+    'MATCH (receiver:User{facebookID:{receiverFacebookID}})',
+    'CREATE (sender)-[:gaveSuggestion]->(suggestion:Suggestion)-[:beenSuggested]->(checkin)',
+    'SET suggestion.suggestionTime = {suggestionTime}, suggestion.suggestionID = {suggestionID}',
+    'CREATE (suggestion)-[receivedSuggestion:receivedSuggestion]->(receiver)',
+    'SET receivedSuggestion.suggestionID = {suggestionID}',
+    'CREATE (checkin)-[hasUnreadNotification:hasUnreadNotification]->(suggestion)',
+    'SET hasUnreadNotification.createdAt = suggestion.suggestionTime',
+    'RETURN sender, suggestion, receiver, checkin'
+  ].join('\n');
+
+  // var params = {
+  //   'suggestionID': uuid.v4(),
+  //   'senderFacebookID': senderFacebookID,
+  //   'checkinID': checkinID,
+  //   'receiverFacebookID': receiverFacebookID,
+  //   'suggestionTime': suggestionTime
+  // };
+
+  // db.query(query, params, function (err, results){
+  //   if (err) { deferred.reject(err) }
+  //   else {
+  //     deferred.resolve(results);
+  //     console.log('query executed!')
+  //   }
+  // });
+
+  var batchRequest = _.map(receiverFacebookIDList, function (receiverFacebookID, index) {
+
+    var singleRequest = {
+      'method': "POST",
+      'to': "/cypher",
+      'body': {
+        'query': query,
+        'params': {
+            'suggestionID': uuid.v4(),
+            'senderFacebookID': senderFacebookID,
+            'checkinID': checkinID,
+            'receiverFacebookID': receiverFacebookID,
+            'suggestionTime': suggestionTime
+        }
+      },
+      'id': index
+    };
+    return singleRequest;
+  });
+
+  var options = {
+    'url': neo4jUrl + '/db/data/batch',
+    'method': 'POST',
+    'json': true,
+    'body': JSON.stringify(batchRequest)
+  };
+
+  request.post(options, function(err, response, body) {
+    if (err) { deferred.reject(err) }
+    else {
+      deferred.resolve({
+        on_success: true
+      });
+    }
+  });
+  return deferred.promise;
+}
+
 Checkin.deleteFootprint = function (facebookID, checkinID) {
   var deferred = Q.defer();
 
@@ -366,9 +437,9 @@ Checkin.deleteFootprint = function (facebookID, checkinID) {
    'OPTIONAL MATCH (checkin)-[hUnread:hasUnreadNotification]->(comment)',
    'OPTIONAL MATCH (checkin)-[hRead:hasReadNotification]->(comment)',
    'OPTIONAL MATCH (checkin)<-[cCheckin:containsCheckin]-(folder:Folder)',
-   'OPTIONAL MATCH (checkin)-[hCUnread:hasReadNotification]->(folder)',
+   'OPTIONAL MATCH (checkin)-[hCUnread:hasUnreadNotification]->(folder)',
    'OPTIONAL MATCH (checkin)-[hCRead:hasReadNotification]->(folder)',
-   'DELETE checkin, hCheckin, hPlace, hBucket, gComment, comment, mComment, hUnread, hRead, cCheckin'
+   'DELETE checkin, hCheckin, hPlace, hBucket, gComment, comment, mComment, hUnread, hRead, cCheckin, hCUnread, hCRead'
   ].join('\n');
   
   var params = {
@@ -392,7 +463,7 @@ Checkin.editNativeCheckin = function (checkin) {
 
   var query = [
    'MATCH (user:User {facebookID:{facebookID}})-[hCheckin:hasCheckin]->(checkin:Checkin{checkinID:{checkinID}})',
-   'SET checkin.caption = {caption}, checkin.rating = {rating}, checkin.photo = {photo}, checkin.pointValue = {pointValue}',
+   'SET checkin.caption = {caption}, checkin.rating = {rating}, checkin.photoLarge = {photoLarge}, checkin.pointValue = {pointValue}',
    'RETURN checkin'
   ].join('\n');
   
@@ -401,8 +472,16 @@ Checkin.editNativeCheckin = function (checkin) {
   db.query(query, params, function (err, results){
     if (err) { deferred.reject(err) }
     else {
-      deferred.resolve(results);
       console.log('query executed!')
+      var parsedResults = _.map(results, function (item) {
+        
+        var singleResult = {
+          "checkin": item.checkin.data
+        };
+
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
     }
   });
   return deferred.promise;

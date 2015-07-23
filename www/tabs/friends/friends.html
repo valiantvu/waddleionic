@@ -1,0 +1,33 @@
+<!-- Header Bar -->
+<ion-header-bar align-title="center" class="bg-header">
+  <div class="buttons">
+    <button class="button button-icon icon ion-arrow-left-b" ng-click="goBack()"></button>
+  </div>
+  <h1 class="title">select friends</h1>
+  <button class="button button-small button-outline suggest" ng-click="suggestToFriends()" ng-disabled="!selectedFriends.length" >send</button>
+</ion-header-bar>
+
+<ion-view title="Friends">
+
+  <ion-content class="padding bg-scroll">
+
+    <div  auto-list-divider auto-list-divider-value="{{friend.name}}" ng-if="friend.footprintsCount >= 0" ng-repeat="friend in friends" class="item item-avatar thin item-text-wrap notifications-list" ng-click="toggleSelectedFriends(friend, $index)">
+      <img class="contact-list-propic" ng-src='{{friend.fbProfilePicture}}'>
+      <div class="contact-info">
+        <p class="notifications-text-overflow notifications-message1"><b>{{friend.name}}</b></p>
+        <h4 class="inline-block">{{friend.footprintsCount}} footprints</h4>
+      </div>
+
+       <img ng-if="selectedFriendsIndices.indexOf($index) > -1 " src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/greencheckmark-1.svg" class="checkmark-contact-list">
+    </div>
+
+  <ion-infinite-scroll
+    on-infinite="viewFriends()"
+    ng-if="moreDataCanBeLoaded"
+    distance="10%">
+  </ion-infinite-scroll>
+
+  <h5 ng-if="!moreDataCanBeLoaded">No more results to show</h5>
+
+  </ion-content>
+</ion-view>

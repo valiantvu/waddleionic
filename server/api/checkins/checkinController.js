@@ -9,6 +9,7 @@ var User = require('../users/userModel.js');
 var foursquareUtils = require('../../utils/foursquareUtils.js');
 var instagramUtils = require('../../utils/instagramUtils.js');
 var facebookUtils = require('../../utils/facebookUtils.js');
+var helpers = require('../../utils/helpers.js');
 var categoryList = require('../../utils/categoryList.js');
 
 var checkinController = {};
@@ -85,7 +86,7 @@ checkinController.getVenueInfo = function (req, res) {
 };
 
 checkinController.editNativeCheckin = function (req, res) {
-  var editedCheckin = req.body
+  var editedCheckin = req.body;
   var facebookID = req.body.facebookID;
   var checkinID = req.body.checkinID;
 
@@ -93,6 +94,7 @@ checkinController.editNativeCheckin = function (req, res) {
 
   Checkin.editNativeCheckin(parsedEditedCheckin)
   .then(function (data) {
+    res.json(data);
     res.status(201).end();
   })
   .catch(function(err) {
@@ -308,13 +310,15 @@ checkinController.removeFromBucketList = function (req, res){
 checkinController.addComment = function (req, res){
   var clickerID = req.body.clickerID;
   var checkinID = req.body.checkinID;
+  var checkinDate = new Date();
+  var checkinTime = checkinDate.getTime();
   if (req.body.text) {
     var text = req.body.text;
   } else {
     res.status(404).end()
   }
 
-  Checkin.addComment(clickerID, checkinID, text)
+  Checkin.addComment(clickerID, checkinID, text, checkinTime)
     .then(function (data){
       return Checkin.getComments(checkinID);
     })
@@ -456,31 +460,48 @@ checkinController.deleteFootprint = function (req, res) {
     });
 };
 
+checkinController.suggestFootprint = function (req, res) {
+  var params = req.body;
+
+  Checkin.suggestFootprint(params.senderFacebookID, params.checkinID, params.receiverFacebookID, params.suggestionTime)
+  .then(function (data) {
+    console.log(data);
+    res.json({on_success: "suggestion sent!"})
+    res.status(200).end();
+  })
+  .catch(function (err) {
+    console.log(err);
+    res.status(500).end();
+  });
+};
+
 checkinController.sign_s3 = function (req, res) {
-  console.log('inside sign_s3!!');
+  var facebookID = req.params.facebookID;
+  var photoSize = req.params.photoSize;
   aws.config.update({accessKeyId: process.env.AWS_ACCESS_KEY, secretAccessKey: process.env.AWS_SECRET_KEY});
-    var s3 = new aws.S3();
-    var aws_uuid = uuid.v4();
-    var s3_params = {
-        Bucket: process.env.S3_BUCKET,
-        Key: aws_uuid,
-        Expires: 60,
-        ContentType: req.query.s3_object_type,
-        ACL: 'public-read'
-    };
-    s3.getSignedUrl('putObject', s3_params, function(err, data){
-        if(err){
-            console.log(err);
-        }
-        else{
-            var return_data = {
-                signed_request: data,
-                url: 'https://' + process.env.S3_BUCKET + '.s3.amazonaws.com/' + aws_uuid
-            };
-            res.write(JSON.stringify(return_data));
-            res.end();
-        }
-    });
+  var s3 = new aws.S3();
+  // var aws_uuid = uuid.v4();
+  var aws_uuid = req.params.photoUUID;
+  var s3_params = {
+      Bucket: process.env.S3_BUCKET,
+      Key: 'user_photos/' + facebookID + '/' + aws_uuid + '/' + photoSize,
+      Expires: 60,
+      ContentType: req.query.s3_object_type,
+      ACL: 'public-read'
+  };
+  s3.getSignedUrl('putObject', s3_params, function(err, data){
+      if(err){
+          console.log(err);
+      }
+      else{
+          var return_data = {
+              signed_request: data,
+              url: 'https://' + s3_params.Bucket + '.s3.amazonaws.com/' + s3_params.Key
+          };
+          res.write(JSON.stringify(return_data));
+          res.end();
+      }
+  });
 }
 
   //executed once to convert waddle checkins;kept here for future reference

@@ -1,13 +1,14 @@
 (function(){
 
-var NotificationsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, moment) {
+var NotificationsController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, moment, $localstorage) {
   Auth.checkLogin()
   .then(function () {
     $scope.notifications = [];
     $scope.moreDataCanBeLoaded = true;
+    $scope.userFbId= $localstorage.getObject('user').facebookID;
     var moreUnreadNotificationsCanBeLoaded = true;
     var page = 0;
-    var skipAmount = 10;
+    var skipAmount = 20;
 
     FootprintRequests.currentTab = 'notifications';
 
@@ -30,10 +31,9 @@ var NotificationsController = function (Auth, UserRequests, MapFactory, Footprin
       .then(function (notifications) {
         if(notifications.data.length > 0) {
           $scope.notifications = $scope.notifications.concat(notifications.data);
-          console.log($scope.notifications);
+          console.log('unread: ', $scope.notifications);
           page++;
           console.log('page: ', page);
-          $scope.getUserData();
           UserRequests.updateNotificationReadStatus(window.sessionStorage.userFbID)
           .then(function (data) {
             console.log(data);
@@ -41,11 +41,10 @@ var NotificationsController = function (Auth, UserRequests, MapFactory, Footprin
         } else {
           moreUnreadNotificationsCanBeLoaded = false;
           page = 0;
-          $scope.getUserData();
           console.log('No more unread notifications.')
         }
+        $scope.$broadcast('scroll.infiniteScrollComplete');
       })
-
     };
 
     $scope.fetchReadNotifications = function () {
@@ -119,7 +118,7 @@ var NotificationsController = function (Auth, UserRequests, MapFactory, Footprin
   })
 };
 
-NotificationsController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', 'moment'];
+NotificationsController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', 'moment', '$localstorage'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 

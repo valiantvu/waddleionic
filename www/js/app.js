@@ -5,7 +5,10 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.services', 'angularMoment'])
+// window.ionic.Platform.ready(function() {
+//     angular.bootstrap(document, ['waddle']);
+// });
+angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.services', 'angularMoment', 'uuid4'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -48,6 +51,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
     .state('tab', {
       url: "/tab",
       abstract: true,
+      controller: 'TabsController',
       templateUrl: "tabs/tabs.html"
     })
 
@@ -89,6 +93,15 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         }
       }
     })
+    .state('tab.folder-footprints-home', {
+      url: '/folder-footprints-home',
+      views: {
+        'home-tab': {
+          templateUrl: 'tabs/folders/folder-footprints.html',
+          controller: 'FolderFootprintsController'
+        }
+      }
+    })
     .state('tab.checkin', {
       cache: false,
       url: '/checkin',
@@ -111,6 +124,16 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         'checkin-tab': {
           templateUrl: 'tabs/checkin-post/checkin-post.html',
           controller: 'CheckinPostController'
+        }
+      }
+    })
+    .state('tab.checkin-edit', {
+      cache: false,
+      url: '/checkin-edit',
+      views: {
+        'checkin-tab': {
+          templateUrl: 'tabs/checkin-edit/checkin-edit.html',
+          controller: 'CheckinEditController'
         }
       }
     })
@@ -174,6 +197,42 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         'notifications-tab': {
           templateUrl: 'tabs/comments/comments.html',
           controller: 'CommentsController'
+        }
+      }
+    })
+    .state('tab.friends', {
+      url: '/friends',
+      views: {
+        'home-tab': {
+          templateUrl: 'tabs/friends/friends.html',
+          controller: 'FriendsController'
+        }
+      }
+    })
+    .state('tab.friends-folders', {
+      url: '/friends-folders',
+      views: {
+        'folders-tab': {
+          templateUrl: 'tabs/friends/friends.html',
+          controller: 'FriendsController'
+        }
+      }
+    })
+    .state('tab.friends-profile', {
+      url: '/friends-profile',
+      views: {
+        'profile-tab': {
+          templateUrl: 'tabs/friends/friends.html',
+          controller: 'FriendsController'
+        }
+      }
+    })
+     .state('tab.friends-notifications', {
+      url: '/friends-notifications',
+      views: {
+        'notifications-tab': {
+          templateUrl: 'tabs/friends/friends.html',
+          controller: 'FriendsController'
         }
       }
     })

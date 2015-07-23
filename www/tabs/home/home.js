@@ -1,7 +1,7 @@
 (function(){
 
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory) {
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage) {
   Auth.checkLogin()
   .then(function () {
     $scope.numHypes = 0;
@@ -19,6 +19,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     FootprintRequests.currentTab = 'feed';
 
     $scope.openFootprint = function(footprint, index) {
+      console.log(footprint);
       FootprintRequests.openFootprint = footprint;
       FootprintRequests.selectedFootprintIndex = index;
     };
@@ -64,6 +65,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     })
 
     $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
+      console.log($previousRoute);
       if($previousRoute.url === "/home") {
         FootprintRequests.currentTab = "feed";
       }
@@ -72,7 +74,18 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         $scope.footprints.splice(FootprintRequests.selectedFootprintIndex, 1);
         FootprintRequests.deletedFootprint = false;
       }
+      if($previousRoute.name === 'tab.home' && FootprintRequests.editedCheckin) {
+        $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.rating = FootprintRequests.editedCheckin.rating;
+        $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.caption = FootprintRequests.editedCheckin.caption;
+        $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.photoLarge = FootprintRequests.editedCheckin.photoLarge;
+        FootprintRequests.editedCheckin = false;
+      }
     });
+
+    $scope.$on('$ionicView.enter', function (scopes, states) {
+      console.log($ionicHistory.backView());
+
+    })
 
     $scope.updateFeedWithNewFootprint = function() {
       if(UserRequests.newFootprint) {
@@ -93,6 +106,8 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       UserRequests.fetchFolders(window.sessionStorage.userFbID, 0, 10)
       .then(function (folders) {
         $scope.folders = folders.data;
+        //remove suggested by friends folder from array;
+        $scope.folders.shift();
         UserRequests.userFolderData = folders.data
         console.log($scope.folders)
       })
@@ -215,6 +230,59 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       }
     };
 
+    $scope.viewFriendsList = function() {
+      var route = 'tab.friends';
+      $state.go(route);
+    };
+
+    $scope.toggleCategoryNameDisplay = function($index) {
+      if($scope.categoryNameIndex === $index) {
+        $scope.categoryNameIndex = -1;
+      } else {
+        $scope.categoryNameIndex = $index;
+      }
+    };
+
+    $scope.setShareMessage = function (footprint) {
+
+      FootprintRequests.openFootprint = footprint;
+
+      if(window.sessionStorage.userFbID === footprint.user.facebookID) {
+        var message = "Sent from Waddle for iOS:%0D%0A" 
+        + $localstorage.getObject('user').name + 
+        " thought you'd like "+ footprint.place.name + "!%0D%0A%0D%0AThey rated " + footprint.place.name + " " + footprint.checkin.rating + 
+        " stars out of 5.%0D%0A";
+        if($scope.textAddress) {
+          message += $scope.textAddress + "%0D%0A" 
+        } 
+        if(footprint.checkin.caption !== 'null') {
+          message += "%0D%0A Here's what " + footprint.user.name + " said: " + '"' + footprint.checkin.caption + '"';
+        }   
+      } else {
+        var message = "Sent from Waddle for iOS:%0D%0A" 
+        + $localstorage.getObject('user').name + 
+        " thought you'd like " + footprint.place.name + "!%0D%0A%0D%0ATheir friend, " + footprint.user.name + ", rated " 
+        + footprint.place.name + " " + footprint.checkin.rating + 
+        " stars out of 5.%0D%0A";
+        if($scope.textAddress) {
+          message += $scope.textAddress + "%0D%0A";
+        } 
+        if(footprint.checkin.caption !== 'null') {
+          message += "%0D%0AHere's what they said: " + '"' + footprint.checkin.caption + '"';
+        }
+      }
+      message += "%0D%0Ahttp://www.gowaddle.com";
+    
+      console.log(message);
+      //replae & with encoded string
+      message = message.replace(/&/g, '%26');
+      var SMSElement = document.getElementsByClassName('suggest-via-sms')[0];
+      SMSElement.setAttribute('href', "sms:&body=" + message);
+
+      var mailElement = document.getElementsByClassName('suggest-via-email')[0];
+      mailElement.setAttribute('href', 'mailto:?subject=Suggestion via Waddle for iOS&body=' + message);
+      };
+
     $ionicModal.fromTemplateUrl('folder-contents.html', {
       scope: $scope,
       animation: 'slide-in-up'
@@ -223,9 +291,10 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     });
 
     $scope.openModal = function(folderName) {
-      $scope.fetchFolderContents(folderName);
-      $scope.selectedFolderInfo.name = folderName
-      $scope.modal.show();
+
+      FootprintRequests.openFolder = folderName;
+      FootprintRequests.selectedFolderIndex = 1;
+      $state.transitionTo('tab.folder-footprints-home');
     };
 
     $scope.closeModal = function() {
@@ -255,12 +324,13 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
       // An elaborate, custom popup
       $scope.myPopup = $ionicPopup.show({
-        templateUrl: 'folder-list.html',
+        templateUrl: 'modals/folder-list.html',
         title: 'Choose a Folder',
         // subTitle: 'Please use normal things',
         scope: $scope,
         buttons: [
-          { text: 'Cancel' },
+          { text: 'Cancel'
+           },
           {
             text: '<b>Save</b>',
             type: 'button-positive',
@@ -276,13 +346,18 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $scope.showFolderCreationPopup = function() {
       $scope.newFolderInfo = {};
       $scope.myPopup.close();
+
+      //janky way to remove myPopup from DOM (fix for .close() method not completely working in ionic 1.0.1)
+      var popup = document.getElementsByClassName('popup-container')[0];
+      document.body.removeChild(popup);
+  
       // An elaborate, custom popup
       var folderCreationPopup = $ionicPopup.show({
-        templateUrl: 'add-folder.html',
+        templateUrl: 'modals/add-folder.html',
         title: 'Add Folder',
         scope: $scope,
         buttons: [
-          { text: 'Cancel' },
+          { text: 'Cancel'},
           {
             text: '<b>Save</b>',
             type: 'button-positive',
@@ -299,7 +374,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     $scope.showCreationSuccessAlert = function() {
       var creationSuccessAlert = $ionicPopup.show({
-        templateUrl: 'folder-create-success.html'
+        templateUrl: 'modals/folder-create-success.html'
       });
     
       $timeout(function() {
@@ -309,7 +384,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
      $scope.showFootprintAdditionSuccessAlert = function() {
       var creationSuccessAlert = $ionicPopup.show({
-        templateUrl: 'footprint-addition-success.html'
+        templateUrl: 'modals/footprint-addition-success.html'
       });
     
       $timeout(function() {
@@ -322,15 +397,21 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         $scope.selectedFootprintCheckinID = footprint.checkin.checkinID;
         $scope.selectedFootprintIndex = index;
         $scope.optionsPopup = $ionicPopup.show({
-        templateUrl: 'options-menu.html',
+        templateUrl: 'modals/options-menu.html',
         scope: $scope
       });
+        $scope.openFootprint(footprint, index);
     };
 
     $scope.openDeleteFootprintPopup = function () {
       $scope.optionsPopup.close();
+
+      //janky way to remove myPopup from DOM (fix for .close() method not completely working in ionic 1.0.1)
+      var popup = document.getElementsByClassName('popup-container')[0];
+      document.body.removeChild(popup);
+
       var deleteFootprintPopup = $ionicPopup.show({
-        templateUrl: 'delete-footprint.html',
+        templateUrl: 'modals/delete-footprint.html',
         // title: 'Add Folder',
         scope: $scope,
         buttons: [
@@ -348,13 +429,25 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     $scope.showDeletionSuccessAlert = function () {
       var deletionSuccessAlert = $ionicPopup.show({
-        templateUrl: 'footprint-delete-success.html'
+        templateUrl: 'modals/footprint-delete-success.html'
       });
      
       $timeout(function() {
        deletionSuccessAlert.close(); //close the popup after 1 second
-      }, 1500);
-    }
+      }, 1700);
+    };
+
+    $scope.showShareOptions = function (footprint) {
+    $scope.shareOptions = $ionicPopup.show({
+      title: 'suggest this footprint:',
+      templateUrl: 'modals/share-options.html',
+      scope: $scope
+    })
+    //function placed inside timeout to ensure anchor tag href exists in DOM before value of message is set
+    $timeout(function() {
+      $scope.setShareMessage(footprint);
+    }, 0);
+  };
 
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);
@@ -429,7 +522,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory', '$localstorage'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 

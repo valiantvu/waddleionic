@@ -1,14 +1,19 @@
 (function(){
 
-var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintRequests, $ionicModal, $ionicPopup, $timeout, moment) {
+var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintRequests, $ionicModal, $ionicPopup, $timeout, moment, $localstorage) {
 
 	Auth.checkLogin()
   .then(function () {
 
-		var footprints, hypelist, friends;
+		var footprints, hypelist;
+    var friends = [];
 		var page = 0;
+    var friendsPage = 0;
 		var skip = 5;
-    var moreDataCanBeLoaded = true;
+    $scope.footprints = [];
+    var user = window.sessionStorage.userFbID;
+    $scope.moreDataCanBeLoaded = true;
+    $scope.moreFriendsCanBeLoaded = true;
 		$scope.search = {};
 		$scope.selectedFolderInfo = {};
     $scope.selectedFolder = null;
@@ -19,18 +24,69 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		FootprintRequests.currentTab = 'me';
 
     $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
+      console.log($previousRoute)
       if($previousRoute.url === "/profile") {
         FootprintRequests.currentTab = 'me';
       }
+      if(FootprintRequests.editedCheckin) {
+        $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.rating = FootprintRequests.editedCheckin.rating;
+        $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.caption = FootprintRequests.editedCheckin.caption;
+        $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.photoLarge = FootprintRequests.editedCheckin.photoLarge;
+        FootprintRequests.editedCheckin = false;
+      }
     });
 
+    $scope.getCorrectData = function () {
+      if(friends.length) {
+        $scope.showFriendsList();
+      } else {
+        $scope.getUserProfileData();
+      }
+    };
+
+    $scope.moreCorrectDataCanBeLoaded = function () {
+      // console.log('correctData');
+        if(friends.length) {
+          console.log($scope.moreFriendsCanBeLoaded);
+        return $scope.moreFriendsCanBeLoaded;
+      } else {
+        return $scope.moreDataCanBeLoaded;
+      }
+    };
+
 		$scope.getUserProfileData = function () {
-			if(UserRequests.userProfileData) {
-				getFriendProfileData();
-			}
-			else {
-				getOwnProfileData();
-			}
+   //    console.log('hello');
+			// if(UserRequests.userProfileData) {
+			// 	getFriendProfileData();
+			// }
+			// else {
+			// 	getOwnProfileData();
+			// }
+          console.log('hello again')
+      $scope.searchPlaceHolder = 'search footprints'
+      console.log(user);
+      UserRequests.getUserData(user, window.sessionStorage.userFbID, page, skip)
+      .then(function (data) {
+        console.log(data.data);
+        $scope.userInfo = data.data.user;
+        if(data.data.footprints.length > 0) {
+          console.log(data.data);
+          footprints = data.data.footprints;
+          $scope.footprints = $scope.footprints.concat(footprints);
+          page++;
+          console.log('page: ', page);
+          // $scope.getUserProfileData();
+        } else {
+          $scope.moreDataCanBeLoaded = false;
+        }
+          // if($scope.userInfo.foursquareID) {
+          //  $scope.foursquareConnected = true;
+          // }
+          // if($scope.userInfo.instagramID) {
+          //  $scope.instagramConnected = true;
+          // }
+        $scope.$broadcast('scroll.infiniteScrollComplete');
+      })
 		};
 
 		$scope.checkUserID = function(facebookID) {
@@ -42,29 +98,44 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     };
 
 		$scope.showFriendsList = function () {
-      page = 0;
 			$scope.hypelist = null;
-			$scope.footprints = null;
+			$scope.footprints = [];
+      footprints = [];
+      $scope.moreDataCanBeLoaded = true;
+      page = 0;
       $scope.searchPlaceHolder = 'search friends'
 
-			if(friends) {
-				$scope.friends = friends;
-			}
-			else {
-				UserRequests.getFriendsList($scope.userInfo.facebookID, page, skip)
-				.then(function (data) {
-					console.log(data);
-					friends = data.data;
+			// if(friends.length) {
+   //      console.log($scope.friends);
+			// 	$scope.friends = friends;
+			// }
+			// else {
+				UserRequests.getFriendsList($scope.userInfo.facebookID, friendsPage, skip)
+				.then(function (friendsList) {
+          if(friendsList.data.length > 0) {
+					console.log(friendsList.data);
+  				friends = friends.concat(friendsList.data);
 					$scope.friends = friends;
+          friendsPage++;
+          // $scope.showFriendsList();
+          } else {
+            $scope.moreFriendsCanBeLoaded = false;
+          }
+          $scope.$broadcast('scroll.infiniteScrollComplete');
+
 				})
-			}
+			// }
 		};
 
 		$scope.showFootprints = function () {
       $scope.searchPlaceHolder = 'search footprints'
 			$scope.hypelist = null;
-			$scope.friends = null;
-			$scope.footprints = footprints;
+			$scope.friends = [];
+      friends = [];
+      friendsPage = 0;
+      $scope.moreFriendsCanBeLoaded = true;
+			$scope.getUserProfileData();
+
 		};
 
 		$scope.showHypeList = function () {
@@ -83,13 +154,18 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 			}
 		};
 
-		$scope.loadFriendPage = function (userInfo) {
-			UserRequests.userProfileData = userInfo;
-			$scope.getUserProfileData();
-			hypelist = null;
-			$scope.hypelist = null;
-			$scope.friends = null;
-			friends = null;
+		$scope.switchProfilePage = function (newUser) {
+      page = 0;
+      console.log(newUser);
+      user = newUser.facebookID;
+      $scope.userInfo = newUser;
+      $scope.footprints = [];
+			// UserRequests.userProfileData = userInfo;
+	
+			$scope.friends = [];
+			friends = [];
+      $scope.getUserProfileData();
+      // getOwnProfileData();
 		};
 
 		
@@ -150,7 +226,21 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       FootprintRequests.selectedFootprintIndex = index;
     };
 
-		$scope.logout = Auth.logout;
+    $scope.toggleCategoryNameDisplay = function($index) {
+      if($scope.categoryNameIndex === $index) {
+        $scope.categoryNameIndex = -1;
+      } else {
+        $scope.categoryNameIndex = $index;
+      }
+    };
+
+
+		$scope.logout = function() {
+      $scope.closeModal();
+      Auth.logout();
+    };
+
+    // $scope.logout = Auth.logout;
 
 		$scope.addFoursquare = function () {
 			if(!$scope.foursquareConnected) {
@@ -165,6 +255,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		};
 
 		var getFriendProfileData = function () {
+      console.log('getting freind data')
       $scope.searchPlaceHolder = 'search footprints'
 			$scope.userInfo = UserRequests.userProfileData;
 			UserRequests.userProfileData = null;
@@ -177,31 +268,48 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		};
 
 		var getOwnProfileData = function () {
-			console.log(UserRequests.allData);
+      console.log('hello again')
       $scope.searchPlaceHolder = 'search footprints'
-			UserRequests.getUserData(window.sessionStorage.userFbID, window.sessionStorage.userFbID, page, skip)
+			UserRequests.getUserData(user, window.sessionStorage.userFbID, page, skip)
 			.then(function (data) {
-				console.log(data.data);
-				$scope.userInfo = data.data.user;
-				footprints = data.data.footprints;
-				$scope.footprints = footprints;
-        page++;
-				if($scope.userInfo.foursquareID) {
-					$scope.foursquareConnected = true;
-				}
-				if($scope.userInfo.instagramID) {
-					$scope.instagramConnected = true;
-				}
+        console.log(data.data);
+        if(data.data.footprints.length > 0) {
+  				console.log(data.data);
+  				$scope.userInfo = data.data.user;
+  				footprints = data.data.footprints;
+  				$scope.footprints = $scope.footprints.concat(footprints);
+          page++;
+          console.log('page: ', page);
+          // $scope.getUserProfileData();
+        } else {
+          $scope.moreDataCanBeLoaded = false;
+        }
+  				// if($scope.userInfo.foursquareID) {
+  				// 	$scope.foursquareConnected = true;
+  				// }
+  				// if($scope.userInfo.instagramID) {
+  				// 	$scope.instagramConnected = true;
+  				// }
+        $scope.$broadcast('scroll.infiniteScrollComplete');
 			})
 		};
 
-		$scope.getUserProfileData();
-
-     $scope.doRefresh = function() {
+    $scope.refreshFootprints = function() {
+      console.log('refreshFootprints');
       page = 0;
       $scope.moreDataCanBeLoaded = true;
       $scope.footprints = [];
       $scope.getUserProfileData();
+      $scope.$broadcast('scroll.refreshComplete');
+    }
+
+    $scope.refreshFriends = function() {
+      console.log('refreshFriends');
+      friendsPage = 0;
+      $scope.moreFriendsCanBeLoaded = true;
+      friends = [];
+      $scope.friends = [];
+      $scope.showFriendsList();
       $scope.$broadcast('scroll.refreshComplete');
     }
 
@@ -216,6 +324,8 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       UserRequests.fetchFolders(window.sessionStorage.userFbID, 0, 10)
       .then(function (folders) {
         $scope.folders = folders.data;
+         //remove suggested by friends folder from array;
+        $scope.folders.shift();
         UserRequests.userFolderData = folders.data
         console.log($scope.folders)
       })
@@ -229,8 +339,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       .then(function (data) {
         $scope.footprints[index].folders = [];
         $scope.footprints[index].folders.push(data.data[0].folder);
-        $scope.showCreationSuccessAlert();
-        // console.log(data);
+        $scope.showFootprintAdditionSuccessAlert();
       })
     };
 
@@ -278,11 +387,59 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
           splicedElem = footprints.splice(index, 1);
           $scope.footprints = footprints;
           console.log(splicedElem);
-          $scope.showCreationSuccessAlert();
+          $scope.showDeletionSuccessAlert();
           console.log(data);
         });
       }
     };
+
+    $scope.viewFriendsList = function() {
+      var route = 'tab.friends-profile';
+      $state.go(route);
+    };
+
+    $scope.setShareMessage = function (footprint) {
+    // console.log('setting message');
+    // console.log($localstorage.getObject('user'));
+    // console.log($localstorage.getObject('user').name);
+
+    FootprintRequests.openFootprintProfile = footprint;
+
+    if(window.sessionStorage.userFbID === footprint.user.facebookID) {
+      var message = "Sent from Waddle for iOS:%0D%0A" 
+      + $localstorage.getObject('user').name + 
+      " thought you'd like "+ footprint.place.name + "!%0D%0A%0D%0AThey rated " + footprint.place.name + " " + footprint.checkin.rating + 
+      " stars out of 5.%0D%0A";
+      if($scope.textAddress) {
+        message += $scope.textAddress + "%0D%0A" 
+      } 
+      if(footprint.checkin.caption !== 'null') {
+        message += "%0D%0A Here's what " + footprint.user.name + " said: " + '"' + footprint.checkin.caption + '"';
+      }   
+    } else {
+      var message = "Sent from Waddle for iOS:%0D%0A" 
+      + $localstorage.getObject('user').name + 
+      " thought you'd like " + footprint.place.name + "!%0D%0A%0D%0ATheir friend, " + footprint.user.name + ", rated " 
+      + footprint.place.name + " " + footprint.checkin.rating + 
+      " stars out of 5.%0D%0A";
+      if($scope.textAddress) {
+        message += $scope.textAddress + "%0D%0A";
+      } 
+      if(footprint.checkin.caption !== 'null') {
+        message += "%0D%0AHere's what they said: " + '"' + footprint.checkin.caption + '"';
+      }
+    }
+    message += "%0D%0Ahttp://www.gowaddle.com";
+  
+    console.log(message);
+    //replae & with encoded string
+    message = message.replace(/&/g, '%26');
+    var SMSElement = document.getElementsByClassName('suggest-via-sms')[0];
+    SMSElement.setAttribute('href', "sms:&body=" + message);
+
+    var mailElement = document.getElementsByClassName('suggest-via-email')[0];
+    mailElement.setAttribute('href', 'mailto:?subject=Suggestion via Waddle for iOS&body=' + message);
+  };
 
 		  $scope.showPopup = function(footprintCheckinID, $index) {
       console.log('footprint index', $index);
@@ -291,7 +448,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
       // An elaborate, custom popup
       $scope.myPopup = $ionicPopup.show({
-        templateUrl: 'folder-list.html',
+        templateUrl: 'modals/folder-list.html',
         title: 'Create or Select a Folder',
         // subTitle: 'Please use normal things',
         scope: $scope,
@@ -313,9 +470,14 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     $scope.showFolderCreationPopup = function() {
       $scope.newFolderInfo = {};
       $scope.myPopup.close();
+
+      //janky way to remove myPopup from DOM (fix for .close() method not completely working in ionic 1.0.1)
+      var popup = document.getElementsByClassName('popup-container')[0];
+      document.body.removeChild(popup);
+      
       // An elaborate, custom popup
       var folderCreationPopup = $ionicPopup.show({
-        templateUrl: 'add-folder.html',
+        templateUrl: 'modals/add-folder.html',
         title: 'Add Folder',
         scope: $scope,
         buttons: [
@@ -337,36 +499,62 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     $scope.showCreationSuccessAlert = function() {
       var creationSuccessAlert = $ionicPopup.show({
         title: 'New Folder Added!',
-        templateUrl: 'folder-create-success.html'
+        templateUrl: 'modals/folder-create-success.html'
       });
       // creationSuccessAlert.then(function(res) {
       // });
       $timeout(function() {
        creationSuccessAlert.close(); //close the popup after 1 second
-      }, 1500);
+      }, 2000);
+    };
+
+    $scope.showFootprintAdditionSuccessAlert = function() {
+      var creationSuccessAlert = $ionicPopup.show({
+        templateUrl: 'modals/footprint-addition-success.html'
+      });
+    
+      $timeout(function() {
+       creationSuccessAlert.close(); //close the popup after 1.5 seconds
+      }, 1700);
+    };
+
+    $scope.showDeletionSuccessAlert = function () {
+      var deletionSuccessAlert = $ionicPopup.show({
+        templateUrl: 'modals/footprint-delete-success.html'
+      });
+     
+      $timeout(function() {
+       deletionSuccessAlert.close(); //close the popup after 1 second
+      }, 1700);
     };
 
     $scope.openOptions = function (footprint, index) {
-        $scope.selectedFootprintUserID = footprint.user.facebookID;
-        $scope.selectedFootprintCheckinID = footprint.checkin.checkinID;
-        $scope.selectedFootprintIndex = index;
-        $scope.optionsPopup = $ionicPopup.show({
-        templateUrl: 'options-menu.html',
-        scope: $scope
-      });
+      $scope.selectedFootprintUserID = footprint.user.facebookID;
+      $scope.selectedFootprintCheckinID = footprint.checkin.checkinID;
+      $scope.selectedFootprintIndex = index;
+      $scope.optionsPopup = $ionicPopup.show({
+      templateUrl: 'modals/options-menu.html',
+      scope: $scope
+    });
+      $scope.openFootprint(footprint, index);
     };
 
     $scope.openDeleteFootprintPopup = function () {
       $scope.optionsPopup.close();
+
+      //janky way to remove myPopup from DOM (fix for .close() method not completely working in ionic 1.0.1)
+      var popup = document.getElementsByClassName('popup-container')[0];
+      document.body.removeChild(popup);
+      
       var deleteFootprintPopup = $ionicPopup.show({
-        templateUrl: 'delete-footprint.html',
+        templateUrl: 'modals/delete-footprint.html',
         // title: 'Add Folder',
         scope: $scope,
         buttons: [
           { text: 'Cancel' },
           {
             text: '<b>Yes</b>',
-            type: 'button-energized',
+            type: 'button-positive',
             onTap: function(e) {
                 $scope.deleteFootprint($scope.selectedFootprintCheckinID, $scope.selectedFootprintUserID, $scope.selectedFootprintIndex);
             }
@@ -374,6 +562,18 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
         ]
       });
     };
+
+    $scope.showShareOptions = function (footprint) {
+      $scope.shareOptions = $ionicPopup.show({
+        title: 'suggest this footprint:',
+        templateUrl: 'modals/share-options.html',
+        scope: $scope
+      })
+      //function placed inside timeout to ensure anchor tag href exists in DOM before value of message is set
+      $timeout(function() {
+        $scope.setShareMessage(footprint);
+      }, 0);
+   };
 
 	  $ionicModal.fromTemplateUrl('settings.html', {
 	    scope: $scope,
@@ -411,7 +611,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
         s:  '%ds',
         m:  '1m',
         mm: '%dm',
-        h:  'h',
+        h:  '1h',
         hh: '%dh',
         d:  '1d',
         dd: '%dd',
@@ -428,7 +628,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
 };
 
-ProfileController.$inject = ['$scope', '$state', 'UserRequests', 'Auth', 'FootprintRequests', '$ionicModal', '$ionicPopup', '$timeout', 'moment']
+ProfileController.$inject = ['$scope', '$state', 'UserRequests', 'Auth', 'FootprintRequests', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$localstorage']
 
 angular.module('waddle.profile', [])
   .controller('ProfileController', ProfileController);

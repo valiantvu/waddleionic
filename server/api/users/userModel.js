@@ -309,7 +309,7 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[connection:containsCheckin]-(folderHype:Folder)<-[:hasFolder]-(hyper:User)',
     'OPTIONAL MATCH (checkin)<-[:containsCheckin]-(folder:Folder)<-[:hasFolder]-(viewer:User {facebookID: {viewerID}})',
-    'RETURN user, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers, collect(DISTINCT folder) AS folders, category',
+    'RETURN user, checkin, place, collect(comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers, collect(DISTINCT folder) AS folders, category',
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
@@ -350,12 +350,18 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
               comment: item['comments'][i].data,
               commenter: item['commenters'][i].data
             }
-            commentsArray.push(commentData);
+            // console.log(commentData);
+            //removed DISTINCT modifier on collect(comment)--this is an temporary solution to remove duplicate comments
+            if(!commentsArray.length) {
+              commentsArray.push(commentData);
+            } else if(commentsArray[commentsArray.length - 1].comment.commentID !== commentData.comment.commentID) {
+              commentsArray.push(commentData);
+            }
           }
-
-          singleResult.comments = commentsArray;
-          console.log('singleResult: ', singleResult.comments);
-
+          var sortedComments = _.sortBy(commentsArray, function(commentObj) {
+            return commentObj.comment.time;
+          });
+          singleResult.comments = sortedComments;
         }
 
 
@@ -417,7 +423,7 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:containsCheckin]-(folderHype:Folder)<-[:hasFolder]-(hyper:User)',
     'OPTIONAL MATCH (checkin)<-[:containsCheckin]-(folder:Folder)<-[:hasFolder]-(user)',
-    'RETURN user, friend, checkin, place, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers, collect(DISTINCT folder) AS folders, category',
+    'RETURN user, friend, checkin, place, category, collect(comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers, collect(DISTINCT folder) AS folders',
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
@@ -437,6 +443,8 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
     if (err) { deferred.reject(err); }
     else {
       var parsedResults = _.map(results, function (item) {
+        console.log('comments', item['comments']);
+        console.log('commenters', item['commenters']);
         var singleResult = {
           "user": item.user.data,
           "checkin": item.checkin.data,
@@ -454,12 +462,17 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
               comment: item['comments'][i].data,
               commenter: item['commenters'][i].data
             }
-            commentsArray.push(commentData);
+            // console.log(commentData);
+            //removed DISTINCT modifier on collect(comment)--this is an temporary solution to remove duplicate comments
+            if(!commentsArray.length) {
+              commentsArray.push(commentData);
+            } else if(commentsArray[commentsArray.length - 1].comment.commentID !== commentData.comment.commentID) {
+              commentsArray.push(commentData);
+            }
           }
           var sortedComments = _.sortBy(commentsArray, function(commentObj) {
             return commentObj.comment.time;
           });
-          console.log(sortedComments);
           singleResult.comments = sortedComments;
         }
 
@@ -503,7 +516,7 @@ User.findFootprintsByPlaceName = function (facebookID, placeName, page, skipAmou
     'OPTIONAL MATCH (place)-[:hasCategory]->(category:Category)',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
-    'RETURN user, checkin, place, category, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
+    'RETURN user, checkin, place, category, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers',
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
@@ -711,7 +724,7 @@ User.prototype.updateNotificationReadStatus = function () {
 
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin]->(checkin:Checkin)-[unread:hasUnreadNotification]->(n)',
-    'WHERE n:Comment OR n:Folder',
+    'WHERE n:Comment OR n:Folder OR n:Suggestion',
     'MERGE (checkin)-[read:hasReadNotification]->(n)',
     'ON CREATE SET read.createdAt = unread.createdAt',
     'DELETE unread',
@@ -737,11 +750,14 @@ User.prototype.getUnreadNotifications = function (page, skipAmount) {
   var deferred = Q.defer();
 
   var query = [
-    'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin]->(checkin:Checkin)-[unread:hasUnreadNotification]->(n)',
-    'WHERE n:Comment OR n:Folder',
-    'MATCH (checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
-    'MATCH (notificationGiver:User)-[m:madeComment|hasFolder]-(n)',
-    'RETURN user, n, checkin, place, category, notificationGiver, unread.createdAt',
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin*0..1]->(checkin:Checkin)-[unread:hasUnreadNotification]->(n)',
+    'WHERE n:Comment OR n:Folder OR n:Suggestion',
+    'MATCH (notificationGiver:User)-[m:madeComment|hasFolder|gaveSuggestion]-(n)',
+    'OPTIONAL MATCH (checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
+    'OPTIONAL MATCH (n)-[:beenSuggested]->(checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
+    'OPTIONAL MATCH (n)-[receivedSuggestion:receivedSuggestion]->(suggestionReceiver:User)',
+    'WHERE receivedSuggestion.suggestionID = n.suggestionID',
+    'RETURN user, n, checkin, place, category, notificationGiver, unread.createdAt, suggestionReceiver',
     'ORDER BY unread.createdAt DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
@@ -774,6 +790,11 @@ User.prototype.getUnreadNotifications = function (page, skipAmount) {
             singleResult.notificationTrigger.message1 = "commented on"
             singleResult.notificationTrigger.message2 = '"' + singleResult.notificationTrigger.text + '"';
           }
+          if(singleResult.notificationTrigger.suggestionTime && item.suggestionReceiver.data) {
+            singleResult.notificationTrigger.message1 = "suggested your footprint at"
+            console.log('ma suggestion bitchhh', item.suggestionReceiver);
+            singleResult.notificationTrigger.message2 = "to their friend, " + item.suggestionReceiver.data.name + ".";
+          }
         }
         if(item.checkin) {
           singleResult.checkin = item.checkin.data;
@@ -797,11 +818,14 @@ User.prototype.getReadNotifications = function (page, skipAmount) {
   var deferred = Q.defer();
 
   var query = [
-    'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin]->(checkin:Checkin)-[read:hasReadNotification]->(n)',
-    'WHERE n:Comment OR n:Folder',
-    'MATCH (checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
-    'MATCH (notificationGiver:User)-[m:madeComment|hasFolder]-(n)',
-    'RETURN user, n, checkin, place, category, notificationGiver, read.createdAt',
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasCheckin*0..1]->(checkin:Checkin)-[read:hasReadNotification]->(n)',
+    'WHERE n:Comment OR n:Folder OR n:Suggestion',
+    'MATCH (notificationGiver:User)-[m:madeComment|hasFolder|gaveSuggestion]-(n)',
+    'OPTIONAL MATCH (checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
+    'OPTIONAL MATCH (n)-[:beenSuggested]->(checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
+    'OPTIONAL MATCH (n)-[receivedSuggestion:receivedSuggestion]->(suggestionReceiver:User)',
+    'WHERE receivedSuggestion.suggestionID = n.suggestionID',
+    'RETURN user, n, checkin, place, category, notificationGiver, read.createdAt, suggestionReceiver',
     'ORDER BY read.createdAt DESC',
     'SKIP { skipNum }',
     'LIMIT { skipAmount }'
@@ -834,6 +858,11 @@ User.prototype.getReadNotifications = function (page, skipAmount) {
             singleResult.notificationTrigger.message1 = "commented on"
             singleResult.notificationTrigger.message2 = '"' + singleResult.notificationTrigger.text + '"';
           }
+          if(singleResult.notificationTrigger.suggestionTime && item.suggestionReceiver.data) {
+            singleResult.notificationTrigger.message1 = "suggested your footprint at"
+            console.log('ma suggestion bitchhh', item.suggestionReceiver);
+            singleResult.notificationTrigger.message2 = "to their friend, " + item.suggestionReceiver.data.name + ".";
+          }
         }
         if(item.checkin) {
           singleResult.checkin = item.checkin.data;
@@ -863,7 +892,7 @@ User.getBucketList = function (facebookID, page, skipAmount){
     'MATCH (user:User {facebookID: {facebookID}})-[:hasBucket]->(checkin:Checkin)-[:hasPlace]->(p:Place)',
     'OPTIONAL MATCH (checkin)<-[:gotComment]-(comment:Comment)<-[:madeComment]-(commenter:User)',
     'OPTIONAL MATCH (checkin)<-[:hasBucket]-(hyper:User)',
-    'RETURN user, checkin, p, collect(DISTINCT comment) AS comments, collect(commenter), collect(hyper) AS hypers',
+    'RETURN user, checkin, p, collect(DISTINCT comment) AS comments, collect(commenter) AS commenters, collect(hyper) AS hypers',
     'ORDER BY checkin.checkinTime DESC',
     'SKIP { skipNum }', 
     'LIMIT { skipAmount }'
@@ -889,12 +918,12 @@ User.getBucketList = function (facebookID, page, skipAmount){
           "place": item.p.data,
         }
 
-        if(item['comments'].length && item['collect(commenter)'].length) {
+        if(item['comments'].length && item['commenters'].length) {
           var commentsArray = [];
           for(var i = 0; i < item['comments'].length; i++) {
             var commentData = {
               comment: item['comments'][i].data,
-              commenter: item['collect(commenter)'][i].data
+              commenter: item['commenters'][i].data
             }
             commentsArray.push(commentData);
           }
@@ -954,11 +983,13 @@ User.addFolder = function (facebookID, folderName) {
 
 User.fetchFolders = function(facebookID, page, skipAmount) {
   var deferred = Q.defer();
+  var receivedSuggestionsCount;
 
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder)',
     'OPTIONAL MATCH (folder)-[contains:containsCheckin]->(checkin:Checkin)',
-    'RETURN user, folder, count(contains) AS checkinCount',
+    'OPTIONAL MATCH (user)<-[receivedSuggestion:receivedSuggestion]-(suggestion:Suggestion)',
+    'RETURN user, folder, count(DISTINCT contains) AS checkinCount, count(DISTINCT receivedSuggestion) AS receivedSuggestionsCount',
     'ORDER BY folder.createdAt DESC',
     'SKIP { skipNum }', 
     'LIMIT { skipAmount }'
@@ -984,8 +1015,18 @@ User.fetchFolders = function(facebookID, page, skipAmount) {
         } else {
           singleResult.folder.checkinCount = 0;
         }
+        if(page === 0) {
+          if(item.receivedSuggestionsCount) {
+            receivedSuggestionsCount = item.receivedSuggestionsCount;
+          } else {
+            receivedSuggestionsCount = 0;
+          }
+        }
         return singleResult;
       });
+      if(page === 0) {
+        parsedResults.unshift({folder: {name:"Suggested By Friends", checkinCount: receivedSuggestionsCount}});
+      }
       deferred.resolve(parsedResults);
     }
   });
@@ -1037,13 +1078,52 @@ User.searchFoldersByName = function (facebookID, folderName, page, skipAmount) {
   return deferred.promise;
 };
 
+User.fetchSuggestedByFriendsContents = function (facebookID, page, skipAmount) {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User{facebookID:{facebookID}})<-[:receivedSuggestion]-(suggestion:Suggestion)<-[:gaveSuggestion]-(suggester:User)',
+    'MATCH (suggestion)-[:beenSuggested]-(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'MATCH (suggestionSource:User)-[:hasCheckin]->(checkin)',
+    'RETURN user, suggester, suggestionSource, checkin, place',
+    'ORDER BY suggestion.time DESC',
+    'SKIP { skipNum }', 
+    'LIMIT { skipAmount }'
+  ].join('\n');
+
+  var params = {
+    'facebookID': facebookID,
+    'skipAmount': skipAmount,
+    'skipNum': page ? page * skipAmount : 0
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      console.log(results);
+      var parsedResults = _.map(results, function (item) {
+        var singleResult = {
+          "user": item.suggestionSource.data,
+          "suggester": item.suggester.data,
+          "checkin": item.checkin.data,
+          "place": item.place.data
+        }
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
+    }
+  });
+
+  return deferred.promise;
+}
+
 User.fetchFolderContents = function (facebookID, folderName, page, skipAmount) {
   var deferred = Q.defer();
 
   var query = [
-    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder {name:{folderName}})-[contains:containsCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder {name:{folderName}})-[contains:containsCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
     'MATCH (checkin)<-[:hasCheckin]-(friend:User)',
-    'RETURN friend, folder, checkin, place, contains',
+    'RETURN friend, folder, checkin, place, category, contains',
     'ORDER BY contains.createdAt',
     'SKIP { skipNum }', 
     'LIMIT { skipAmount }'
@@ -1065,7 +1145,8 @@ User.fetchFolderContents = function (facebookID, folderName, page, skipAmount) {
           "user": item.friend.data,
           "folder": item.folder.data,
           "checkin": item.checkin.data,
-          "place": item.place.data
+          "place": item.place.data,
+          "category": item.category.data
         }
         return singleResult;
       });
@@ -1079,9 +1160,9 @@ User.searchFolderContents = function (facebookID, folderName, searchQuery, page,
   var deferred = Q.defer();
 
   var query = [
-    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder {name:{folderName}})-[contains:containsCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)',
+    'MATCH (user:User {facebookID: {facebookID}})-[:hasFolder]->(folder:Folder {name:{folderName}})-[contains:containsCheckin]->(checkin:Checkin)-[:hasPlace]->(place:Place)-[:hasCategory]->(category:Category)',
     'WHERE place.name =~ {searchQuery} OR place.city =~ {searchQuery} OR place.country =~ {searchQuery}',
-    'RETURN user, folder, checkin, contains, place',
+    'RETURN user, folder, checkin, contains, place, category',
     'ORDER BY contains.createdAt',
     'SKIP { skipNum }', 
     'LIMIT { skipAmount }'
@@ -1105,7 +1186,8 @@ User.searchFolderContents = function (facebookID, folderName, searchQuery, page,
           "user": item.user.data,
           "folder": item.folder.data,
           "checkin": item.checkin.data,
-          "place": item.place.data
+          "place": item.place.data,
+          "category": item.category.data
         }
         return singleResult;
       });
@@ -1141,6 +1223,50 @@ User.deleteFolderAndContents = function (facebookID, folderName) {
 
   return deferred.promise;
 };
+
+User.fetchSuggestions = function () {
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (user:User{facebookID: {facebookID}})<-[receivedSuggestion:receivedSuggestion]-(suggestion:Suggestion)<-[:beenSuggested]-(checkin:Checkin)',
+    'MATCH (creator:User)-[:hasCheckin]->(checkin)-[]->(place:Place)-[:hasCategory]->(category:Category)',
+    'MATCH (suggestion)<-[:gaveSuggestion]-(suggester:User)',
+    'RETURN suggestion, creator, suggester, checkin, place, category, count(receivedSuggestion) AS receivedSuggestionsCount',
+    'ORDER BY suggestion.time',
+    'SKIP {skipNum}',
+    'LIMIT {skipAmount}'
+  ].join('\n');
+
+  var params = {
+    'facebookID': facebookID,
+    'skipAmount': skipAmount,
+    'skipNum': page ? page * skipAmount : 0
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      console.log(results);
+      var parsedResults = _.map(results, function (item) {
+        var singleResult = {
+          "user": item.user.data,
+          "folder": item.folder.data
+        }
+        if(item.checkinCount) {
+          singleResult.folder.checkinCount = item.checkinCount; 
+        } else {
+          singleResult.folder.checkinCount = 0;
+        }
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
+    }
+  });
+
+  return deferred.promise;
+
+
+}
 
 // Find a single user in the database, requires facebookID as input
 // If user is not in database, promise will resolve to error 'user does not exist'
