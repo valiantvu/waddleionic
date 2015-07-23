@@ -79,7 +79,7 @@ var FriendsController = function (UserRequests, FootprintRequests, $scope, $stat
   $scope.showSuggestionSentSuccessAlert = function () {
   	var suggestionSentSuccessAlert = $ionicPopup.show({
   		title: 'Suggestion Sent!',
-  		templateUrl: 'suggestion-success.html'
+  		templateUrl: 'modals/suggestion-success.html'
   	});
 
   	$timeout(function() {

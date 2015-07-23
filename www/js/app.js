@@ -127,6 +127,16 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         }
       }
     })
+    .state('tab.checkin-edit', {
+      cache: false,
+      url: '/checkin-edit',
+      views: {
+        'checkin-tab': {
+          templateUrl: 'tabs/checkin-edit/checkin-edit.html',
+          controller: 'CheckinEditController'
+        }
+      }
+    })
     .state('tab.hypelist', {
       url: '/hypelist',
       views: {

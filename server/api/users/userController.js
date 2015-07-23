@@ -44,7 +44,7 @@ userController.userLogin = function (req, res) {
     if(fbPicData.data.is_silhouette === false) {
       properties['fbProfilePicture'] = fbPicData.data.url;
     } else {
-      properties['fbProfilePicture'] = 'https://s3-us-west-2.amazonaws.com/waddle/logo+assets/WaddlePenguinLogo181.png'
+      properties['fbProfilePicture'] = 'https://s3-us-west-2.amazonaws.com/waddle/logo+assets/WaddlePenguinLogo181.png';
     }
     return user.setProperties(properties);
   })

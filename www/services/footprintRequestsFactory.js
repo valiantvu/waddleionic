@@ -8,6 +8,7 @@ var FootprintRequests = function ($http){
   var openFootprintProfile;
   var selectedFootprintIndex;
   var deletedFootprint;
+  var editedCheckin;
   var openFolder;
   var openFolderIndex;
   var footprints;
@@ -23,6 +24,8 @@ var FootprintRequests = function ($http){
     selectedFootprintIndex: selectedFootprintIndex,
 
     deletedFootprint: false,
+
+    editedCheckin: editedCheckin,
 
     openFolder: openFolder,
 

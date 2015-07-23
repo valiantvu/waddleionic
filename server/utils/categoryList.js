@@ -2,120 +2,120 @@ var categories = {};
 
 categories.dictionary = {
   "Burger Joint": {
-		prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/burger-1/Burger-',
-	  suffix: '-1.png'
+		prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/burger-',
+	  suffix: '-1.svg'
 	},
 	"BBQ Joint": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/bbq-',
 	  suffix: '-1.svg'
 	},
 	"National Park": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-',
+	  suffix: '-1.svg'
 	},
 	"Nature Preserve": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-',
+	  suffix: '-1.svg'
 	},
 	"Other Great Outdoors": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-',
+	  suffix: '-1.svg'
 	},
 	"Park": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-',
+	  suffix: '-1.svg'
 	},
 	"Trail": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-',
+	  suffix: '-1.svg'
 	},
 	"Tree": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-',
+	  suffix: '-1.svg'
 	},
 	"Japanese Restaurant": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/japanese-',
 	  suffix: '-1.svg'
 	},
 	"Ramen / Noodle House": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-1/ramen-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-',
+	  suffix: '-1.svg'
 	},
 	"Soup Place": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-1/ramen-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-',
+	  suffix: '-1.svg'
 	},
 	"Vietnamese Restaurant": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-1/ramen-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-',
+	  suffix: '-1.svg'
 	},
 	"Bar": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Beach Bar": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Brewery": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Pub": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Sports Bar": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Beer Garden": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Champagne Bar": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Cocktail Bar": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Gay Bar": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Hotel Bar": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Lounge": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Speakeasy": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Nightclub": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Other Nightlife": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Whisky Bar": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Sake Bar": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Karaoke Bar": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	  suffix: '-1.png'
+	  suffix: '-1.svg'
 	},
 	"Wine Bar": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/winery-',
@@ -130,40 +130,40 @@ categories.dictionary = {
 	 suffix: '-1.svg'
 	},
 	"Café": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-1/coffee-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-',
+	  suffix: '-1.svg'
 	},
 	"Coffee Shop": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-1/coffee-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-',
+	  suffix: '-1.svg'
 	},
 	"Tea Room": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-1/coffee-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-',
+	  suffix: '-1.svg'
 	},
 	"Food Truck": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/foodtruck-1/foodtruck-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/foodtruck-',
+	  suffix: '-1.svg'
 	},
 	"Bagel Shop": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/bagel-1/bagel-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/bagel-',
+	  suffix: '-1.svg'
 	},
 	"Bakery": {
 	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/bakery-',
 	  suffix: '-1.svg'
 	},
 	"Art Gallery": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-1/painting-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-',
+	  suffix: '-1.svg'
 	},
 	"Art Museum": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-1/painting-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-',
+	  suffix: '-1.svg'
 	},
 	"Public Art": {
-	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-1/painting-',
-	  suffix: '-1.png'
+	  prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-',
+	  suffix: '-1.svg'
 	},
 	"Beach": {
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/surfspot-',
@@ -538,119 +538,119 @@ categories.dictionary = {
 categories.list = [
 	{name: "Burger Joint",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/burger-1/Burger-',
-	 suffix: '-1.png'
+	 suffix: '-1.svg'
 	},
 	{name: "BBQ Joint",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/bbq-',
-	 suffix: '-1.png'
+	 suffix: '-1.svg'
 	},
 	{name: "National Park",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
-	 suffix: '-1.png'
+	 suffix: '-1.svg'
 	},
 	{name: "Nature Preserve",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
-	 suffix: '-1.png'
+	 suffix: '-1.svg'
 	},
 	{name: "Other Great Outdoors",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
-	 suffix: '-1.png'
+	 suffix: '-1.svg'
 	},
 	{name: "Park",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
-	 suffix: '-1.png'
+	 suffix: '-1.svg'
 	},
 	{name: "Trail",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
-	 suffix: '-1.png'
+	 suffix: '-1.svg'
 	},
 	{name: "Tree",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/tree-1/Tree-',
-	 suffix: '-1.png'
+	 suffix: '-1.svg'
 	},
 	{name: "Japanese Restaurant",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/japanese-',
-	 suffix: '-1.png'
+	 suffix: '-1.svg'
 	},
 	{name: "Ramen / Noodle House",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-1/ramen-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-',
+	 suffix: '-1.svg'
 	},
 	{name: "Soup Place",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-1/ramen-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-',
+	 suffix: '-1.svg'
 	},
 	{name: "Vietnamese Restaurant",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-1/ramen-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/ramen-',
+	 suffix: '-1.svg'
 	},
 	{name: "Bar",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-',
+	 suffix: '-1.svg'
 	},
 		{name: "Beach Bar",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-',
+	 suffix: '-1.svg'
 	},
 	{name: "Brewery",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-',
+	 suffix: '-1.svg'
 	},
 	{name: "Pub",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-',
+	 suffix: '-1.svg'
 	},
 	{name: "Sports Bar",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-',
+	 suffix: '-1.svg'
 	},
 	{name: "Beer Garden",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-1/beer-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/beer-',
+	 suffix: '-1.svg'
 	},
 	{name: "Champagne Bar",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-',
+	 suffix: '-1.svg'
 	},
 	{name: "Cocktail Bar",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-',
+	 suffix: '-1.svg'
 	},
 	{name: "Gay Bar",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-',
+	 suffix: '-1.svg'
 	},
 	{name: "Hotel Bar",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-',
+	 suffix: '-1.svg'
 	},
 	{name: "Lounge",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-',
+	 suffix: '-1.svg'
 	},
 	{name: "Speakeasy",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-',
+	 suffix: '-1.svg'
 	},
 	{name: "Nightclub",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-',
+	 suffix: '-1.svg'
 	},
 	{name: "Other Nightlife",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-',
+	 suffix: '-1.svg'
 	},
 	{name: "Whisky Bar",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-',
+	 suffix: '-1.svg'
 	},
 	{name: "Sake Bar",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-',
+	 suffix: '-1.svg'
 	},
 	{name: "Karaoke Bar",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-1/cocktail-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/cocktail-',
+	 suffix: '-1.svg'
 	},
 	{name: "Wine Bar",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/winery-',
@@ -665,40 +665,40 @@ categories.list = [
 	 suffix: '-1.svg'
 	},
 	{name: "Café",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-1/coffee-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-',
+	 suffix: '-1.svg'
 	},
 	{name: "Coffee Shop",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-1/coffee-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-',
+	 suffix: '-1.svg'
 	},
 	{name: "Tea Room",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-1/coffee-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/coffee-',
+	 suffix: '-1.svg'
 	},
 	{name: "Food Truck",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/foodtruck-1/foodtruck-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/foodtruck-',
+	 suffix: '-1.svg'
 	},
 	{name: "Bagel Shop",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/bagel-1/bagel-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/bagel-',
+	 suffix: '-1.svg'
 	},
 	{name: "Bakery",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/bakery-',
-	 suffix: '-1.png'
+	 suffix: '-1.svg'
 	},
 	{name: "Art Gallery",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-1/painting-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-',
+	 suffix: '-1.svg'
 	},
 	{name: "Art Museum",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-1/painting-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-',
+	 suffix: '-1.svg'
 	},
 	{name: "Public Art",
-	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-1/painting-',
-	 suffix: '-1.png'
+	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/painting-',
+	 suffix: '-1.svg'
 	},
 	{name: "Beach",
 	 prefix: 'https://s3-us-west-2.amazonaws.com/waddle/Badges/surfspot-',

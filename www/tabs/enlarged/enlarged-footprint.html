@@ -16,14 +16,17 @@
     <button ng-if="footprint.folders" class="button button-small button-light savefave" ng-click="openModal()">{{footprint.folders[0].name}}</button>
     <img src="img/TabCurve-1.png" class="folder-tab-curve">
     <button ng-click="openOptions(footprint, 0)" class="options button button-icon icon waddle-more light"></button>
+    <div ng-if="categoryName" class="relative-absolute-hack">
+      <h4 ng-click="toggleCategoryNameDisplay()" class="category-name-modal">{{footprint.category.name}}<h4>
+    </div>
     <div class="list list-inset">
          <div class="item item-avatar">
 
         <!-- Profile Picture -->
          <img class="footprint-propic" ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
         <!-- Badge -->
-        <img ng-if="footprint.category.iconPrefix" ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge">
-        <img ng-if="!footprint.category.iconPrefix" ng-src="img/uncategorized-40x40-2.svg" class="waddlebadge">
+        <img ng-click="toggleCategoryNameDisplay()"ng-if="footprint.category.iconPrefix" ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge">
+        <img ng-click="toggleCategoryNameDisplay()" ng-if="!footprint.category.iconPrefix" ng-src="img/uncategorized-40x40-2.svg" class="waddlebadge">
         <!-- User Name -->
         <a class="subdued home-rating-message"><b>{{footprint.user.name}}</b> rates this <b class="ratinghex-footprint">{{footprint.checkin.rating}}</b></a>
         <br>
@@ -41,7 +44,7 @@
      
           <div class="button-bar">
             <a ng-if="phone" href="tel:{{phone}}" class="button button-small button-outline button-bar-enlarged">{{phone}}</a>
-            <a ng-if="menu" ng-click="openMenu()" class="button button-small button-outline button-bar-enlarged">View Menu</a>
+            <a ng-if="menu" href="#" ng-click="openMenu()" class="button button-small button-outline button-bar-enlarged">View Menu</a>
           </div>
           <div class="item item-body">
         <div class="checkinphoto">
@@ -54,28 +57,32 @@
       </div>
 
       <!-- Comments -->
-      <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:3" class="item item-text-wrap enlarged-comment" ui-sref="tab.comments{{subRouting}}" ng-click="openFootprint(footprint)">  
+      <div ng-repeat="comment in footprint.comments | orderBy:'comment.time' | limitTo:3" class="item item-text-wrap enlarged-comment" ui-sref="tab.comments{{subRouting}}" ng-click="openFootprint(footprint)">  
         <img class="footprint-comment-propic" ng-src="{{comment.commenter.fbProfilePicture}}">
         <h2 class="commentername-footprint">{{comment.commenter.name}}</h2>
         <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><img src="img/timestamp-1.svg"class="waddle-clock clock-comment-footprint float-right">
         <p class="comment-home-text">{{comment.comment.text}}</p>
       </div>
       <div class="bottom-buttons-home">
-        <button ui-sref='tab.comments{{subRouting}}' ng-click='openFootprint(footprint)' class="button button-small comment-button-home">Comment</button>
-        <button class="button button-small suggest-button-home" ng-click="showShareOptions()">Suggest To Friend</button>
+        <button ui-sref='tab.comments{{subRouting}}' ng-click='openFootprint(footprint)' class="button button-small comment-button-home">comment</button>
+        <button class="button button-small suggest-button-home" ng-click="showShareOptions()">suggest to friend</button>
       </div>
       
-      <!-- <div class="map-location" id="{{mapID}}"></div> -->
-      <map-location ng-click="openMap()" set-marker="setMarker"></map-location>
+      <div class="position-relative">
+        <map-location ng-click="toggleMapDisplay()" set-marker="setMarker"></map-location>
+        <div ng-if="mapDisplay" class="transparent-black">
+          <button href="#" ng-click="openMap()" class="button button-small button-outline suggest">open in maps</button>
+        </div>
+      </div>
       <h6 class="also-been"><b>Also Been Here:</b></h6>
       <h5 class="also-been" ng-if="!usersAlsoBeenHere.length">You're the first! <a ng-click="showShareOptions()" class="underline">Suggest it to a friend.</a><h5>
-      <div ng-if="usersAlsoBeenHere.length">
+      <div class="margin-indent" ng-if="usersAlsoBeenHere.length">
         <span ng-repeat="user in usersAlsoBeenHere">
           <img ng-if="user.facebookID !== footprint.user.facebookID" class="propic commenterpic" ng-src="{{user.fbProfilePicture}}">
         <span>
       </div>
       
-      <div ng-click="openFoursquarePage()" class="view-foursquare"><a>View in Foursquare</a></div>  
+      <div class="view-foursquare"><a ng-click="openFoursquarePage()">View in Foursquare</a></div>  
 
 
 

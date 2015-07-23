@@ -1,0 +1,37 @@
+<style>
+	div.popup-head {
+		display: none;
+	}
+	div.popup {
+		background: white;
+		opacity: 1 !important;
+		width: 80vw !important;
+	}
+	div.popup-body {
+		opacity: 1 !important;
+	}
+</style>
+<body>
+	<button class="button button-icon icon waddle-close popup-close light" ng-click="shareOptions.close()"></button>
+	<h3 class="suggest-title">Suggest this footprint:</h3>
+	<h5 class="suggest-title">You have options! Send via:</h5>
+	<img class="waddle-share" ng-click="viewFriendsList(); shareOptions.close()" src="img/share_icons/waddle-1-1-100x100.png">
+	<div class="share-option-icons">
+		<div ng-click="shareOptions.close()" class="share-option-icon">
+			<a class="suggest-via-sms" href="#">
+				<img src="img/share_icons/messages-1-1-100x100.png">
+			</a>
+		</div>
+		<div ng-click="shareOptions.close()" class="share-option-icon">
+			<a class="suggest-via-email" href="#">
+				<img src="img/share_icons/email-1-1-100x100.png">
+			</a>
+		</div>
+		<div class="share-option-icon disabled">
+			<img src="img/share_icons/facebook-1-1-100x100.png">
+		</div>
+		<div class="share-option-icon disabled">
+			<img src="img/share_icons/twitter-1-1-100x100.png">
+		</div>
+	</div>
+</body>

@@ -1,6 +1,6 @@
 body { margin:0; padding:0; }
 
-.map{ display: block; width:100vw; height: 200px; margin-bottom: 10px; }
+.map{ display: block; width:100vw; height: 200px; margin-bottom: 10px; z-index: 0 !important; }
 
 /*.bar-positive{
 	background: rgb(0, 192, 161);
@@ -67,6 +67,14 @@ body { margin:0; padding:0; }
 
 .white-text {
 	color: white;
+}
+
+.margin-indent {
+	margin-left: 3%;
+}
+
+.position-relative {
+	position: relative;
 }
 
 .white-bg {
@@ -411,6 +419,33 @@ span{
 	margin-left: 3.2em;
 }
 
+.comment-limit {
+	position: absolute;
+	top: 4.5em;
+	right: 2em;
+}
+
+.caption-limit {
+	text-align: right;
+	margin-right: 3px;
+	margin-top: 0px; 
+	font-size: 10px;
+}
+
+.transparent-black {
+	border-top-right-radius: 5px;
+	border-top-left-radius: 5px;
+	display: inline-block;
+	z-index: 100 !important;
+	background-color: black;
+	opacity: 0.7;
+	text-align: center;
+	padding: 5px;
+	width: 100vw;
+  position: absolute;
+  bottom: 0em;
+} 
+
 .overflow {
 	white-space: nowrap;
   overflow: hidden;
@@ -421,6 +456,37 @@ span{
 	float:right;
 	height:35px;
 	width:auto;
+}
+
+.category-name-modal {
+	position: absolute;
+	top: 0.6em;
+	right: -3em;
+	border-radius: 5px;
+	z-index: 100;
+	background-color: #e6e6e6;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 12px !important;
+	padding: 7px;
+	color: #555;
+	font-weight: 300;
+	white-space: nowrap;
+}
+
+.carat {
+	position: absolute;
+	left: 0.5em;
+	top: -2.7em;
+	float: right;
+	height: 1em;
+	z-index: 105;
+}
+
+.relative-absolute-hack {
+	position: relative; 
+	width: 0; 
+	height: 0; 
+	float: right;
 }
 
 .waddlebadge-notifications{
@@ -512,6 +578,11 @@ span{
 	top: 1em;
 	margin-left: 0.6em !important;
 	/*padding-left: 20px !important;*/
+}
+.checkin-post-propic {
+	height: 40px !important;
+	width: 40px !important;
+	border-radius: 100%;
 }
 /*
 .friend-divider {
@@ -777,13 +848,21 @@ span{
 }
 
 .comment-form {
+	/*border-radius: 10px;*/
+	background-color: #eee;
+	border: none;
+	width: 75vw;
+	/*padding-right: 0.5em !important;*/
+}
+
+.review-form {
 	border-radius: 10px;
 	background-color: #eee;
 	border: none;
 	padding-right: 0.5em !important;
 }
 
-.review-form {
+.review-text {
 	border-radius: 10px;
 	height: 12vh;
 	width: 100%;
@@ -1185,7 +1264,7 @@ div.share-option-icon {
   background-position: 50%;
   margin-left: 0.5em;
   /*height: 100%;*/
-  background-image: url('../img/xbutton-1.svg');
+  background-image: url('../img/x-button-2.svg');
   background-size: 1em;
 }
 
@@ -1195,7 +1274,7 @@ div.share-option-icon {
 }
 
 .main-timestamp {
-	margin-top: -0.3em;
+	margin-top: -0.25em;
 }
 
 .clock-comment-footprint {

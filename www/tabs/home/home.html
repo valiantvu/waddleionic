@@ -7,18 +7,15 @@
 </ion-header-bar>
 
 <ion-view title="Home">
-
   <ion-content class="padding bg-scroll">
-<!-- <div class="backgroundgrey"> -->
+
     <!-- Search bar -->
     <div ng-show="showFolderSearch" class="list">
       <div class="item item-input-inset searchbox">
-      <label class="item-input-wrapper white-bg">
-        <!-- <i class="icon waddle-search-grey placeholder-icon"><i> -->
-        <input class="waddle-search-grey" type="text" placeholder="search for a place" ng-keyup="searchFeed()" ng-model="search.query">
-      </label>
+        <label class="item-input-wrapper white-bg">
+          <input class="waddle-search-grey" type="text" placeholder="search for a place" ng-keyup="searchFeed()" ng-model="search.query">
+        </label>
         <button class="button button-clear" ng-if="search.query" ng-click="clearSearch()">x</button>
-        <!-- <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button> -->
       </div>
     </div>
 
@@ -29,24 +26,22 @@
       <button ng-if="footprint.folders" class="button button-small button-light savefave" ng-click="openModal(footprint.folders[0].name)">{{footprint.folders[0].name}}</button>
       <img src="img/TabCurve-1.png" class="folder-tab-curve">
       <button ng-click="openOptions(footprint, $index)" class="options button button-icon icon waddle-more light"></button>
+      <div ng-if="categoryNameIndex === $index" class="relative-absolute-hack">
+        <h4 ng-if="categoryNameIndex === $index" ng-click="toggleCategoryNameDisplay($index)" class="category-name-modal">{{footprint.category.name}}<h4>
+        <!-- <img class="carat" src="https://s3-us-west-2.amazonaws.com/waddle/app+assets/categorycarat-1.svg"> -->
+      </div>
       <div class="list list-inset">
 
-      <div class="item item-avatar footprint-card">
-
+        <div class="item item-avatar footprint-card">
         <!-- Profile Picture -->
-        <!-- <div class="profpicframe">
-          <div class="profpic"> -->
-            <img class="footprint-propic" ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
-       <!--    </div>
-        </div> -->
-        <!-- Badge -->
-        <!-- <img ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge"> -->
-        <img ng-if="footprint.category.iconPrefix" ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge">
-        <img ng-if="!footprint.category.iconPrefix" ng-src="img/uncategorized-40x40-2.svg" class="waddlebadge">
-        <!-- User Name -->
-        <a ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="subdued home-rating-message"><b>{{footprint.user.name}}</b> rates this <h4 class="ratinghex-footprint">{{footprint.checkin.rating}}</h4></a>
-        <br>
-        <!-- Place Name and Location-->
+          <img class="footprint-propic" ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
+          <!-- Badge -->
+          <img ng-click="toggleCategoryNameDisplay($index)" ng-if="footprint.category.iconPrefix" ng-src="{{footprint.category.iconPrefix}}40x40{{footprint.category.iconSuffix}}" class="waddlebadge">
+          <img ng-click="toggleCategoryNameDisplay($index)" ng-if="!footprint.category.iconPrefix" ng-src="img/uncategorized-40x40-2.svg" class="waddlebadge">
+          <!-- User Name -->
+          <a ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="subdued home-rating-message"><b>{{footprint.user.name}}</b> rates this <h4 class="ratinghex-footprint">{{footprint.checkin.rating}}</h4></a>
+          <br>
+          <!-- Place Name and Location-->
           <h2 ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)">{{footprint.place.name}}</h2>
           <p ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)"> 
             <a ng-if="footprint.place.city !== 'null'">{{footprint.place.city}}</a><a ng-if="footprint.place.city !== 'null' && footprint.place.province !== 'null'">,</a>
@@ -54,374 +49,39 @@
             <span am-time-ago="footprint.checkin.checkinTime" class="float-right timestamp main-timestamp"></span>
             <img src="img/timestamp-1.svg"class="waddle-clock float-right">
           </p>
-      </div>
-
-      <div class="item item-body">
-        <img class="full-image" ng-if="footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
-        <p ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
-        <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><img src="img/commentbutton-1.svg" class="waddle-comment"> {{footprint.comments.length}}</a>
+        </div>
+        
+        <!-- Photo, Caption, Number of Comments/Hypes--> 
+        <div class="item item-body">
+          <img class="full-image" ng-if="footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
+          <p ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p>
+          <a ng-if="footprint.comments.length > 0" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><img src="img/commentbutton-1.svg" class="waddle-comment"> {{footprint.comments.length}}</a>
           <a ng-if="footprint.hypes.length > 0"  ui-sref="tab.hypers" ng-click="openFootprint(footprint, $index)" class="subdued x-centered coral small-semi-bold"><i class="ion-android-folder coral larger"></i> {{footprint.hypes.length}}</a>
           </p>
-      </div>
+        </div>
 
-      <!-- Comments -->
-      <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap home-comment" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)">  
+          <!-- Comments -->
+        <div ng-repeat="comment in footprint.comments | orderBy:'-comment.time' | limitTo:1" class="item item-text-wrap home-comment" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)">  
           <img class="footprint-comment-propic" ng-src="{{comment.commenter.fbProfilePicture}}">
           <h2 class="commentername-footprint">{{comment.commenter.name}}</h2>
-        <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><img src="img/timestamp-1.svg"class="waddle-clock clock-comment-footprint float-right">
-        <p class="comment-home-text">{{comment.comment.text}}</p>
-          <!-- <p class="comment-footprint"> -->
-            <!-- <h4 class="commentername">{{comment.commenter.name}}</h4> -->
-            <!-- <h4 class="commenttext"> {{comment.comment.text}} </h4> -->
-          <!--   <span class="commenttext">{{comment.comment.text}}</span>
-          </p> -->
-          <!-- <span class="subdued float-right">{{comment.comment.time | date : shortDate}}</span> -->
-      </div>
-
-    <!--     <div class="profpicframe">
-          <div class="profpic">
-            <img ng-click='loadProfilePage(footprint.user)' ng-src='{{footprint.user.fbProfilePicture}}'>
-          </div>
-        </div> -->
-       <div class="bottom-buttons-home">
-       <button class="button button-small comment-button-home" ui-sref='tab.comments' ng-click='openFootprint(footprint, $index)'>Comment</button>
-      <button class="button button-small suggest-button-home" ng-click='showShareOptions(footprint)'>Suggest To Friend</button>
-    </div>
-       <!-- <div ui-sref='tab.comments' ng-click='openFootprint(footprint, $index)' class="item item-input-inset comment-input">
-              <img class="propic newcomment" ng-src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfp1/v/t1.0-1/s200x200/1476344_10153625108483662_8209874012985593264_n.jpg?oh=91007a07d6d534815f719b6aecb09d9a&oe=5584541F&__gda__=1431308809_91c6fa931fe0f59ed47d42b7b4a4fb77">
-      <label name="customSubmit" data-custom-submit info='someinfo' class="item-input-wrapper commentfield" novalidate>
-        <input type="text" ng-model='comment' name='comment' placeholder='Leave a comment' data-ng-minlength="1" data-ng-maxlength="120" required>
-        <span class="help-inline" ng-show="customSubmit.comment.$error.maxlength">120 Character Max</span>
-      </label>
-      </div> -->
-
-      <!-- Hype and Comment Buttons -->
-<!--       <div class="item item-divider tabs tabs-secondary tabs-icon-left">
-        <a ng-if="!footprint.bucketed" class="tab-item" ng-click="addCheckinToBucketList({{ footprint }}, {{ $index }})">
-          <i class="icon ion-arrow-up-a"></i>
-          <span>Hype</span>
-        </a>
-        <a ng-if="footprint.bucketed" class="tab-item" ng-click="removeCheckinFromBucketList(footprint)">
-          <i class="icon ion-arrow-up-a positive"></i>
-          <span>Hyped!</span>
-        </a>
-        <a class="tab-item" ui-sref="tab.comments" ng-click="openFootprint(footprint, $index)">
-          <i class="icon ion-chatbox"></i>
-          <span>Comment</span>
-        </a>
-      </div> -->
-
-
-    </div>
-    </div>
-
-          <!-- Hype Button -->
-<!--           <button class="button button-small" ng-click="addCheckinToBucketList({{ footprint }})">
-            <i class="icon ion-arrow-up-a"></i>
-          </button> -->
-      <!-- </div> -->
-      <!-- <div class="item item-body"> -->
-        <!-- Photo & Caption -->
-<!--         <img ng-if="footprint.checkin.photoLarge !== 'null'" ng-click="getFootprint(footprint)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
-        <p ng-if="footprint.checkin.caption !== 'null'">{{footprint.checkin.caption}}</p> -->
-
-        <!-- Default Photo (if no photo) -->
-      <!--   <div ng-if="footprint.checkin.photoLarge === 'null'" ng-if="footprint.checkin.caption === 'null'" class='captioncontainer'> -->
-          <!-- <img class="full-image defaultpeng" ng-click="getFootprint(footprint)" ng-src="https://s3-us-west-2.amazonaws.com/waddle/WaddlePenguinLogo.png"/> -->
-<!--         <div ng-if="footprint.checkin.photoLarge === 'null'" ng-if="footprint.checkin.caption === 'null'" class='captioncontainer'>
-          <img class="full-image defaultpeng" ng-click="getFootprint(footprint)" ng-src="https://s3-us-west-2.amazonaws.com/waddle/WaddlePenguinLogo.png"/>
->>>>>>> c73447baf927dce97f157102a5d5e333e27db6fd
-          <h4 ng-if="footprint.checkin.caption !== 'null' && footprint.checkin.photoLarge === 'null'">"{{footprint.checkin.caption}}"</h4>
-        </div> -->
-
-      <!-- List of hypers -->
-<!--       <div ng-if="footprint.hypes.length > 0" class="item item-divider">
-        <div class="row">
-          <i class="icon ion-arrow-up-a"></i>
-          <p ng-repeat="hyper in footprint.hypes">{{ hyper.name }}</p>
+          <span am-time-ago="comment.comment.time" class="float-right center-align-vertical timestamp"></span><img src="img/timestamp-1.svg"class="waddle-clock clock-comment-footprint float-right">
+          <p class="comment-home-text">{{comment.comment.text}}</p>
         </div>
-      </div> -->
+         
+        <!-- Suggest + Comment Buttons -->
+        <div class="bottom-buttons-home">
+          <button class="button button-small comment-button-home" ui-sref='tab.comments' ng-click='openFootprint(footprint, $index)'>comment</button>
+          <button class="button button-small suggest-button-home" ng-click='showShareOptions(footprint)'>suggest to friend</button>
+        </div>
 
-      <!-- Comments -->
-<!--       <div ng-repeat="comment in footprint.comments | orderBy:'comment.time'" class="item item-avatar">  
-        <img ng-src='{{comment.commenter.fbProfilePicture}}'>
-        <h2>{{comment.commenter.name}}</h2>
-        <p>{{comment.comment.text}}</p>
-        <p>{{comment.comment.time | date : shortDate}}<P>
-      </div> -->
+      </div>
+    </div>
 
-      <!-- Add Comment -->
-<!--       <form name="customSubmit" data-custom-submit info='someinfo' class='comment_form' novalidate>
-        <input ng-model='comment' name='comment' placeholder='Leave a comment' data-ng-minlength="1" data-ng-maxlength="120" required>
-        <span class="help-inline" ng-show="customSubmit.comment.$error.maxlength">120 Character Max</span>
-      </form> -->
-
-    <!-- Not bucketed -->
-    <!-- <img ng-if="!footprint.checkin.bucketed" class='addbucket feedactions' title="Add to Bucket List" ng-click="addCheckinToBucketList(footprint)"/> -->
-    <!-- Bucketed -->
-    <!-- <img ng-if="footprint.checkin.bucketed" class='addbucketactive feedactions' title="Add to Bucket List" ng-click="removeCheckinFromBucketList(footprint)"/> -->
-
-  <!-- </div> -->
-<!-- </div> -->
-  <ion-infinite-scroll
+    <ion-infinite-scroll
     on-infinite="getAggregatedFeedData()"
     ng-if="moreDataCanBeLoaded"
     distance="10%">
-  </ion-infinite-scroll>
+    </ion-infinite-scroll>
 
   </ion-content>
 </ion-view>
-
-<script id="folder-list.html" type="text/ng-template">
-  <style>
-     div.popup-head {
-      padding-bottom: 0 !important;
-     }
-     div.popup-body {
-      padding: 0 0.5em 0 0.5em !important;
-      height: 30vh !important;
-      overflow-y: scroll !important;
-     }
-     .button {
-      border-radius: 5px !important;
-      width: auto !important;
-      height 4em !important;
-      font-family: 'Open Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 400;
-     }
-     .button-positive {
-      border: 1px solid #e1876a !important;
-      background-color: #e1876a !important;
-     }
-  </style>
-    <h5 class="coral" ng-click="showFolderCreationPopup()"><img class="create-new" src="img/savetofolder-1.svg"> Create a new folder</h5>
-    <div class="folderList" ng-repeat="folder in folders">
-      <h5 ng-class="{'selected': selectedFolder === $index}" ng-click="passSelectedFolderInfo(folder, $index)">{{folder.folder.name}}</h5>
-    </div>
-</script>
-
-<script id="add-folder.html" type="text/ng-template">
-<style>
-     div.popup-head {
-      padding-bottom: 0 !important;
-     }
-     div.popup-body {
-      padding: 0 0.5em 0 0.5em !important;
-      height: 30vh !important;
-      overflow-y: scroll !important;
-     }
-     .button {
-      border-radius: 5px !important;
-      width: auto !important;
-      height 4em !important;
-      font-family: 'Open Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 400;
-     }
-     .button-positive {
-      border: 1px solid #e1876a !important;
-      background-color: #e1876a !important;
-     }
- </style>
-    <form class="navbar-form navbar-left" role="search">
-      <textarea ng-model="newFolderInfo.name" type="text" class="form-control" placeholder="Name your folder">
-      </textarea>
-    </form>
-</script>
-
-<script id="folder-create-success.html" type="text/ng-template">
- <style>
-     div.popup-head {
-      display: none;
-     }
-     div.popup {
-      background-color: transparent !important;
-     }
-     div.popup-body {
-      padding: 0 !important;
-     }
-   </style>
-    <img class="folder-modal-top" src="img/foldermodaltab-2.svg">
-    <div class="folder-modal-body">
-      <img class="success-confirm" src="img/greencheckmark-1.svg">
-      <h5 class="centered">You created a new folder.</h5>
-      <h5 class="centered">Brilliant!</h5>
-    </div>
-</script>
-
-<script id="footprint-addition-success.html" type="text/ng-template">
- <style>
-     div.popup-head {
-      display: none;
-     }
-     div.popup {
-      background-color: transparent !important;
-     }
-     div.popup-body {
-      padding: 0 !important;
-     }
-   </style>
-    <img class="folder-modal-top" src="img/foldermodaltab-2.svg">
-    <div class="folder-modal-body">
-      <img class="success-confirm" src="img/greencheckmark-1.svg">
-      <h5 class="centered">Added to folder.</h5>
-      <h5 class="centered">Right on!</h5>
-    </div>
-</script>
-
-<script id="options-menu.html" type="text/ng-template">
- <style>
-     div.popup-head {
-      display: none;
-     }
-     div.popup {
-      background: white;
-      opacity: 1 !important;
-     }
-     div.popup-body {
-      padding: 0 !important;
-      opacity: 1 !important;
-     }
-     .button-full {
-      font-family: 'Open Sans', sans-serif;
-      font-weight: 300;
-      background: transparent !important;
-      border-bottom: 1px solid #dbdbdb !important;
-      border-top: 0 !important;
-      margin-top: -0.8em !important;
-      padding: 0 important!;
-     }
-     .waddle-close {
-      height: 10px !important;
-      width: auto !important;
-     }
-     // border-bottom {
-     //  border-bottom: 1px solid grey !important;
-     // }
-   </style>
-    <button class="button button-icon inline-block icon waddle-close" ng-click="optionsPopup.close()"></button>
-    <button disabled="true" ng-if="!checkUserID(selectedFootprintUserID)" class="button button-full">(coming soon!)</button>
-    <button disabled="true" ng-if="checkUserID(selectedFootprintUserID)" class="button button-full">Edit (coming soon!)</button>
-    <button ng-if="checkUserID(selectedFootprintUserID)" ng-click="openDeleteFootprintPopup()" class="button button-full">Delete</button>
-</script>
-
-<script id="delete-footprint.html" type="text/ng-template">
-  <style>
-    div.popup-head {
-      display: none;
-    }
-    div.popup {
-      background: white;
-      opacity: 1 !important;
-    }
-    div.popup-body {
-      opacity: 1 !important;
-    }
-    .button {
-      border-radius: 5px !important;
-      width: auto !important;
-      height 4em !important;
-      font-family: 'Open Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 400;
-     }
-    .button-positive {
-      border: 1px solid #e1876a !important;
-      background-color: #e1876a !important;
-    }
-    .delete-confirmation {
-      font-size: 18px !important;
-      text-align: center;
-    }
-  </style>
-   <h5 class="delete-confirmation">Are you sure you want to delete this footprint?</h5>
-</script>
-
-<script id="folder-contents.html" type="text/ng-template">
-  <ion-modal-view>
-    <ion-header-bar align-title="center" class="bg-header">
-      <h1 class="title">{{selectedFolderInfo.name}}</h1>
-        <div class="buttons">
-          <button class="button button-icon icon ion-close-round light" ng-click="closeModal()"></button>
-        </div>
-    </ion-header-bar>
-    <ion-content class="padding bg-scroll">
-      <div ng-repeat="item in folderContents" class="list list-inset">
-        <img class="propic commenterpic" ng-src="{{item.user.fbProfilePicture}}">
-        <h4>{{item.checkin.rating}}</h4>
-        <h2>{{item.place.name}}</h2>
-        <h4>{{item.place.city}},{{item.place.country}}</h4>
-        <h4 ng-if="checkUserID(item.user.facebookID)">Last here on {{item.checkin.checkinTime | date : shortDate}}</h4>
-        <h4 ng-if="!checkUserID(item.user.facebookID)">Added from {{item.user.name}}</h4>
-        <img ng-if="item.checkin.photoLarge !== 'null'" ng-src="{{item.checkin.photoLarge}}">
-      </div>
-    </ion-content>
-  </ion-modal-view>
-</script>
-
-<script id="share-options.html" type="text/ng-template">
-  <style>
-  div.popup-head {
-      display: none;
-    }
-    div.popup {
-      background: white;
-      opacity: 1 !important;
-      width: 80vw !important;
-    }
-    div.popup-body {
-      opacity: 1 !important;
-    }
-  </style>
-  <button class="button button-icon icon waddle-close popup-close light" ng-click="shareOptions.close()"></button>
-  <h3 class="suggest-title">Suggest this footprint:</h3>
-  <h5 class="suggest-title">You have options! Send via:</h5>
-  <img class="waddle-share" ng-click="viewFriendsList(); shareOptions.close()" src="img/share_icons/waddle-1-1-100x100.png">
-  <div class="share-option-icons">
-    <div ng-click="shareOptions.close()" class="share-option-icon"><a class="suggest-via-sms" href="#"><img src="img/share_icons/messages-1-1-100x100.png"></a></div>
-    <div ng-click="shareOptions.close()" class="share-option-icon"><a class="suggest-via-email" href="#"><img src="img/share_icons/email-1-1-100x100.png"></a></div>
-    <div class="share-option-icon disabled"><img src="img/share_icons/facebook-1-1-100x100.png"></div>
-    <div class="share-option-icon disabled"><img src="img/share_icons/twitter-1-1-100x100.png"></div>
-  </div>
-</script>
-
-<script id="footprint-delete-success.html" type="text/ng-template">
-   <style>
-     div.popup-head {
-      display: none;
-     }
-     div.popup {
-      background-color: transparent !important;
-     }
-     div.popup-body {
-      height: 100vh !important;
-      width: 100vw !important;
-      margin-left: -4em;
-     }
-     .poof {
-      height: 25em;
-      width: auto;
-      margin-top: 10em;
-      z-index: 1;
-     }
-     .poof-text-1 {
-      text-align: center;
-      margin-top: -12em;
-      margin-left: -4em;
-      z-index: 2;
-      font-size: 18px;
-     }
-     .poof-text-2 {
-      text-align: center;
-      z-index: 2;
-      margin-left: -4em;
-      font-size: 18px;
-     }
-
-   </style>
-   <img class="poof" src="img/poof-1.svg">
-   <h5 class="poof-text-1">Poof!</h5>
-   <h5 class="poof-text-2">It's gone.</h5>
-
-</script>

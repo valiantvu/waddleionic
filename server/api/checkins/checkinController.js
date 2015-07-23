@@ -9,6 +9,7 @@ var User = require('../users/userModel.js');
 var foursquareUtils = require('../../utils/foursquareUtils.js');
 var instagramUtils = require('../../utils/instagramUtils.js');
 var facebookUtils = require('../../utils/facebookUtils.js');
+var helpers = require('../../utils/helpers.js');
 var categoryList = require('../../utils/categoryList.js');
 
 var checkinController = {};
@@ -85,7 +86,7 @@ checkinController.getVenueInfo = function (req, res) {
 };
 
 checkinController.editNativeCheckin = function (req, res) {
-  var editedCheckin = req.body
+  var editedCheckin = req.body;
   var facebookID = req.body.facebookID;
   var checkinID = req.body.checkinID;
 
@@ -93,6 +94,7 @@ checkinController.editNativeCheckin = function (req, res) {
 
   Checkin.editNativeCheckin(parsedEditedCheckin)
   .then(function (data) {
+    res.json(data);
     res.status(201).end();
   })
   .catch(function(err) {

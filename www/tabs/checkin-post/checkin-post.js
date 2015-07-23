@@ -1,6 +1,6 @@
 (function(){
 
-var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin, UserRequests, $ionicModal, $ionicLoading, $ionicPopup, $timeout, $ionicHistory, uuid4) {	
+var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin, UserRequests, FootprintRequests, $ionicModal, $ionicLoading, $ionicPopup, $timeout, $ionicHistory, uuid4, $localstorage) {	
 
 	$scope.checkinInfo = {footprintCaption: null, rating: '--', folder: null};
 	$scope.selectedFolderInfo = {};
@@ -8,24 +8,20 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 	$scope.selectedFolder = null;
   $scope.disabled = false;
   $scope.loading = false;
+  $scope.fbProfilePicture = $localstorage.getObject('user').fbProfilePicture;
 
    //janky way to load venue list instead of checkin post when swapping back to checkin tab
-   $scope.$on( "$ionicView.enter", function( scopes, states ) {
-            if( states.direction === "swap" && states.stateName == "tab.checkin-post") {
-              $ionicHistory.goBack();
-            }
+  $scope.$on("$ionicView.enter", function(scopes, states) {
+      console.log(states);
+      if(states.direction === "swap" && states.stateName == "tab.checkin-post") {
+        $ionicHistory.goBack();
+      }
   });
 
 	$scope.venue = NativeCheckin.selectedVenue;
+
   var photoUUID;
 	console.log($scope.venue)
-
-	$scope.getUserInfo = function () {
-		UserRequests.getUserInfo(window.sessionStorage.userFbID)
-		.then(function (data) {
-			$scope.user = data.data;
-		})
-	};
 
 	$scope.viewFoldersList = function() {
     UserRequests.fetchFolders(window.sessionStorage.userFbID, 0, 10)
@@ -48,7 +44,6 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 	$scope.sendCheckinDataToServer = function(venueInfo) {
     $scope.disabled = true;
     $scope.loading = true;
-    //pull up loading modal
     console.log($scope.checkinInfo.photo);
 		var checkinData = {
 			id: venueInfo.id,
@@ -95,6 +90,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
         // uploadImagesToAWS(photoUUID);
   		});
     } else {
+      console.log(checkinData);
         NativeCheckin.sendCheckinDataToServer(checkinData)
         .then(function (footprint) {
         $scope.showPostSuccessAlert();
@@ -167,13 +163,12 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
     })();
   };
 
-	$scope.getUserInfo();
 	$scope.viewFoldersList();
 
 	 $scope.showPopup = function() {
 
       $scope.myPopup = $ionicPopup.show({
-        templateUrl: 'folder-list.html',
+        templateUrl: 'modals/folder-list.html',
         title: 'Create or Select a Folder',
         // subTitle: 'Please use normal things',
         scope: $scope,
@@ -196,7 +191,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
       $scope.myPopup.close();
       // An elaborate, custom popup
       var folderCreationPopup = $ionicPopup.show({
-        templateUrl: 'add-folder.html',
+        templateUrl: 'modals/add-folder.html',
         title: 'Add Folder',
         scope: $scope,
         buttons: [
@@ -218,7 +213,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
     $scope.showCreationSuccessAlert = function() {
       var creationSuccessAlert = $ionicPopup.show({
         title: 'New Folder Added!',
-        templateUrl: 'folder-create-success.html'
+        templateUrl: 'modals/folder-create-success.html'
       });
       // creationSuccessAlert.then(function(res) {
       // });
@@ -230,7 +225,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
     $scope.showPostSuccessAlert = function() {
       var postSuccessAlert = $ionicPopup.show({
         title: "You made a new footprint!",
-        templateUrl: "post-success.html"
+        templateUrl: "modals/post-success.html"
       });
 
       $timeout(function() {
@@ -240,7 +235,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 
 };
 
-CheckinPostController.$inject = ['$scope', '$rootScope', '$state', 'NativeCheckin', 'UserRequests', '$ionicModal', '$ionicLoading', '$ionicPopup', '$timeout', '$ionicHistory', 'uuid4'];
+CheckinPostController.$inject = ['$scope', '$rootScope', '$state', 'NativeCheckin', 'UserRequests', 'FootprintRequests', '$ionicModal', '$ionicLoading', '$ionicPopup', '$timeout', '$ionicHistory', 'uuid4', '$localstorage'];
 
 var StarRatingDirective = function () {
 	return {
@@ -253,9 +248,10 @@ var StarRatingDirective = function () {
 		scope: {
 		 ratingValue: '=',
 		 max : '=',
-		 onRatingSelected: '&'
+		 onRatingSelected: '&',
 		},
 		link: function(scope, elem, attrs) {
+
 		 var updateStars = function() {
 		  scope.stars = [];
 		  for (var i = 0; i < scope.max; i++) {
@@ -264,7 +260,7 @@ var StarRatingDirective = function () {
 		   });
 		  }
 		 };
-		 
+
 		 scope.toggle = function(index) {
 		  scope.ratingValue = index + 1;
 		  scope.onRatingSelected({

@@ -126,14 +126,14 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
       $scope.newFolderInfo = {};
       // An elaborate, custom popup
       var folderCreationPopup = $ionicPopup.show({
-        templateUrl: 'add-folder.html',
+        templateUrl: 'modals/add-folder.html',
         title: 'Add Folder',
         scope: $scope,
         buttons: [
           { text: 'Cancel' },
           {
             text: '<b>Save</b>',
-            type: 'button-energized',
+            type: 'button-positive',
             onTap: function(e) {
                 $scope.createFolder($scope.newFolderInfo.name, $scope.newFolderInfo.description);
             }
@@ -148,7 +148,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
     $scope.showCreationSuccessAlert = function() {
       var creationSuccessAlert = $ionicPopup.show({
         title: 'New Folder Added!',
-        templateUrl: 'folder-create-success.html'
+        templateUrl: 'modals/folder-create-success.html'
       });
       // creationSuccessAlert.then(function(res) {
       // });

@@ -463,7 +463,7 @@ Checkin.editNativeCheckin = function (checkin) {
 
   var query = [
    'MATCH (user:User {facebookID:{facebookID}})-[hCheckin:hasCheckin]->(checkin:Checkin{checkinID:{checkinID}})',
-   'SET checkin.caption = {caption}, checkin.rating = {rating}, checkin.photo = {photo}, checkin.pointValue = {pointValue}',
+   'SET checkin.caption = {caption}, checkin.rating = {rating}, checkin.photoLarge = {photoLarge}, checkin.pointValue = {pointValue}',
    'RETURN checkin'
   ].join('\n');
   
@@ -472,8 +472,16 @@ Checkin.editNativeCheckin = function (checkin) {
   db.query(query, params, function (err, results){
     if (err) { deferred.reject(err) }
     else {
-      deferred.resolve(results);
       console.log('query executed!')
+      var parsedResults = _.map(results, function (item) {
+        
+        var singleResult = {
+          "checkin": item.checkin.data
+        };
+
+        return singleResult;
+      });
+      deferred.resolve(parsedResults);
     }
   });
   return deferred.promise;

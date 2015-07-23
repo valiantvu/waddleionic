@@ -1,48 +1,48 @@
- <ion-header-bar align-title="center" class="bg-header">
-      <div class="buttons">
-        <button ng-click="goBack()" class="button button-icon icon ion-arrow-left-b light"></button>
-      </div>
-      <h1 class="title">check-in</h1>
-    </ion-header-bar>
-    <ion-view>
-    <ion-content class="padding bg-scroll">
-     <button ng-if="!checkinInfo.folder" class="button icon-left ion-star button-small button-light savefave" ng-click="showPopup(footprint.checkin.checkinID)">Save to Folder</button>
-      <button ng-if="checkinInfo.folder" class="button icon-left ion-star button-small button-light savefave" ng-click="showPopup(footprint.checkin.checkinID)">{{checkinInfo.folder}}</button>
-      <img src="https://s3-us-west-2.amazonaws.com/waddle/TabCurve-1.png" class="folder-tab-curve">
-     <div class="list list-inset">
-
-       <div class="item item-avatar">
-
-        <!-- Profile Picture -->
-        <div class="profpicframe">
-          <div class="profpic">
-            <img ng-click='loadProfilePage(footprint.user)' ng-src='{{user.fbProfilePicture}}'>
-          </div>
-        </div>
-        <!-- Badge -->
-         <img ng-src="{{venue.iconUrlPrefix}}40x40{{venue.iconUrlSuffix}}" class="waddlebadge">
-
-        <!-- Place Name and Location-->
-          <h2>{{venue.name}}</h2>
-          <p> 
-            <a ng-if="venue.location.city">{{venue.location.city}}</a><a ng-if="venue.location.city && venue.location.state">,</a>
-            <a ng-if="venue.location.state">{{venue.location.state}}</a>
-          </p>
-      </div>
-
-      <br/>
-      <h4 class="ratinghex">{{checkinInfo.rating}}</h4>
-      <div ng-init="rating = star.rating - 1"></div>
-      <div class="star-rating" star-rating rating-value="rating"data-max="5" on-rating-selected="checkinInfo.rating = rating"></div>
-      <br/>
-     <picture-select></picture-select>
-    <form class="navbar-form navbar-left" role="search">
-      <textarea ng-model="checkinInfo.footprintCaption" type="text" class="form-control" placeholder="What did you think of this place?">
-      </textarea>
-     <!--  <input type="file" id="files"/><p id="status">Please select a file</p> -->
-      <button class="button button-large" type="submit" ng-click="sendCheckinDataToServer(venue)">Post</button>
-    <button ng-click="showCheckinInfo()">Info</button>
-    </form>
+<ion-header-bar align-title="center" class="bg-header">
+    <div class="buttons">
+      <button ng-click="goBack()" class="button button-icon icon ion-arrow-left-b light"></button>
     </div>
-    </ion-content>
-  </ion-view>
+    <h1 class="title">edit footprint</h1>
+  </ion-header-bar>
+  <ion-view cache-view="false">
+  <ion-content class="padding bg-scroll">
+   <button ng-if="!checkinInfo.folder" class="button icon-left ion-star button-small button-light savefave" ng-click="showPopup(footprint.checkin.checkinID)">Save to Folder</button>
+    <button ng-if="checkinInfo.folder" class="button icon-left ion-star button-small button-light savefave" ng-click="showPopup(footprint.checkin.checkinID)">{{checkinInfo.folder}}</button>
+    <img src="https://s3-us-west-2.amazonaws.com/waddle/TabCurve-1.png" class="folder-tab-curve">
+   <div class="list list-inset">
+
+     <div class="item item-avatar">
+
+      <!-- Profile Picture -->
+      <img class="checkin-post-propic" ng-src='{{fbProfilePicture}}'>
+      <!-- Badge -->
+       <img ng-src="{{footprint.category.iconUrlPrefix}}40x40{{footprint.category.iconUrlSuffix}}" class="waddlebadge">
+
+      <!-- Place Name and Location-->
+        <h2>{{footprint.place.name}}</h2>
+        <p> 
+          <a ng-if="footprint.place.city">{{footprint.place.city}}</a><a ng-if="footprint.place.city && footprint.place.province">,</a>
+          <a ng-if="footprint.place.province">{{footprint.place.province}}</a>
+        </p>
+    </div>
+
+    <h4 class="ratinghex">{{checkinInfo.rating}}</h4>
+    <div footprintRating="{{footprintRating}}" ng-init="rating = star.rating - 1"></div>
+    <div class="star-rating" stars-rating rating-value="rating" data-max="5" on-rating-selected="checkinInfo.rating = rating"></div>
+    <br/>
+   <photo-select photo-file="photo" on-photo-selected="checkinInfo.photo = photo"></photo-select>
+
+    </textarea>
+    <form name="review" class='review-form item-input-wrapper' novalidate>
+        <textarea class='review-text' ng-model='checkinInfo.footprintCaption' name='caption' placeholder='What did you think of this place?' data-ng-minlength="1" data-ng-maxlength="1000" maxlength="1000" required>
+          {{checkinInfo.footprintCaption}}
+        </textarea>
+    </form>
+    <h6 class="caption-limit">{{1000 - review.caption.$viewValue.length}} chars remaining</h6>
+
+    <button class="button button-large checkin-post" type="submit" ng-disabled="checkinInfo.rating === '--'  || disabled" ng-click="sendEditedCheckinDataToServer()"><ion-spinner ng-if="loading" class="loading-dots" icon="dots"></ion-spinner><a ng-if="!loading">post<a></button>
+
+
+  </div>
+  </ion-content>
+</ion-view>

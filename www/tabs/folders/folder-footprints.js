@@ -53,7 +53,13 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
 
     $scope.openFootprint = function(footprint, index) {
       console.log(footprint);
-      FootprintRequests.openFootprintFolders = footprint;
+      if($scope.headerTitle === 'folders') {
+        FootprintRequests.openFootprintFolders = footprint;
+      } else if($scope.headerTitle === 'me') {
+        FootprintRequests.openFootprintProfile = footprint;
+      } else if ($scope.headerTitle === 'feed') {
+        FootprintRequests.openFootprint = footprint;
+      }
       FootprintRequests.selectedFootprintIndex = index;
     };
 

@@ -27,6 +27,12 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       if($previousRoute.url === "/profile") {
         FootprintRequests.currentTab = 'me';
       }
+      if($previousRoute.url === "/profile" && FootprintRequests.editedCheckin) {
+        $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.rating = FootprintRequests.editedCheckin.rating;
+        $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.caption = FootprintRequests.editedCheckin.caption;
+        $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.photoLarge = FootprintRequests.editedCheckin.photoLarge;
+        FootprintRequests.editedCheckin = false;
+      }
     });
 
     $scope.getCorrectData = function () {
@@ -372,7 +378,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
           splicedElem = footprints.splice(index, 1);
           $scope.footprints = footprints;
           console.log(splicedElem);
-          $scope.showCreationSuccessAlert();
+          $scope.showDeletionSuccessAlert();
           console.log(data);
         });
       }
@@ -433,7 +439,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
       // An elaborate, custom popup
       $scope.myPopup = $ionicPopup.show({
-        templateUrl: 'folder-list.html',
+        templateUrl: 'modals/folder-list.html',
         title: 'Create or Select a Folder',
         // subTitle: 'Please use normal things',
         scope: $scope,
@@ -462,7 +468,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       
       // An elaborate, custom popup
       var folderCreationPopup = $ionicPopup.show({
-        templateUrl: 'add-folder.html',
+        templateUrl: 'modals/add-folder.html',
         title: 'Add Folder',
         scope: $scope,
         buttons: [
@@ -484,7 +490,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     $scope.showCreationSuccessAlert = function() {
       var creationSuccessAlert = $ionicPopup.show({
         title: 'New Folder Added!',
-        templateUrl: 'folder-create-success.html'
+        templateUrl: '/modals/folder-create-success.html'
       });
       // creationSuccessAlert.then(function(res) {
       // });
@@ -493,14 +499,25 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       }, 1500);
     };
 
-    $scope.openOptions = function (footprint, index) {
-        $scope.selectedFootprintUserID = footprint.user.facebookID;
-        $scope.selectedFootprintCheckinID = footprint.checkin.checkinID;
-        $scope.selectedFootprintIndex = index;
-        $scope.optionsPopup = $ionicPopup.show({
-        templateUrl: 'options-menu.html',
-        scope: $scope
+    $scope.showDeletionSuccessAlert = function () {
+      var deletionSuccessAlert = $ionicPopup.show({
+        templateUrl: 'modals/footprint-delete-success.html'
       });
+     
+      $timeout(function() {
+       deletionSuccessAlert.close(); //close the popup after 1 second
+      }, 1500);
+    };
+
+    $scope.openOptions = function (footprint, index) {
+      $scope.selectedFootprintUserID = footprint.user.facebookID;
+      $scope.selectedFootprintCheckinID = footprint.checkin.checkinID;
+      $scope.selectedFootprintIndex = index;
+      $scope.optionsPopup = $ionicPopup.show({
+      templateUrl: 'modals/options-menu.html',
+      scope: $scope
+    });
+      $scope.openFootprint(footprint, index);
     };
 
     $scope.openDeleteFootprintPopup = function () {
@@ -511,14 +528,14 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       document.body.removeChild(popup);
       
       var deleteFootprintPopup = $ionicPopup.show({
-        templateUrl: 'delete-footprint.html',
+        templateUrl: 'modals/delete-footprint.html',
         // title: 'Add Folder',
         scope: $scope,
         buttons: [
           { text: 'Cancel' },
           {
             text: '<b>Yes</b>',
-            type: 'button-energized',
+            type: 'button-positive',
             onTap: function(e) {
                 $scope.deleteFootprint($scope.selectedFootprintCheckinID, $scope.selectedFootprintUserID, $scope.selectedFootprintIndex);
             }
@@ -530,7 +547,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     $scope.showShareOptions = function (footprint) {
       $scope.shareOptions = $ionicPopup.show({
         title: 'suggest this footprint:',
-        templateUrl: 'share-options.html',
+        templateUrl: 'modals/share-options.html',
         scope: $scope
       })
       //function placed inside timeout to ensure anchor tag href exists in DOM before value of message is set
@@ -575,7 +592,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
         s:  '%ds',
         m:  '1m',
         mm: '%dm',
-        h:  'h',
+        h:  '1h',
         hh: '%dh',
         d:  '1d',
         dd: '%dd',

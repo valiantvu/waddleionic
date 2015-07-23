@@ -1,0 +1,32 @@
+<style>
+	div.popup-head {
+		display: none;
+	}
+	div.popup {
+		background: white;
+		opacity: 1 !important;
+	}
+	div.popup-body {
+		padding: 0 !important;
+		opacity: 1 !important;
+	}
+	.button-full {
+		font-family: 'Open Sans', sans-serif;
+		font-weight: 300;
+		background: transparent !important;
+		border-bottom: 1px solid #dbdbdb !important;
+		border-top: 0 !important;
+		margin-top: -0.8em !important;
+		padding: 0 important!;
+	}
+	.waddle-close {
+		height: 10px !important;
+		width: auto !important;
+	}
+</style>
+<body>
+	<button class="button button-icon inline-block icon waddle-close" ng-click="optionsPopup.close()"></button>
+	<button disabled="true" ng-if="!checkUserID(selectedFootprintUserID)" class="button button-full">(coming soon!)</button>
+	<button ng-if="checkUserID(selectedFootprintUserID)" ng-click="optionsPopup.close()" ui-sref="tab.checkin-edit" class="button button-full">Edit</button>
+	<button ng-if="checkUserID(selectedFootprintUserID)" ng-click="openDeleteFootprintPopup()" class="button button-full">Delete</button>
+</body>

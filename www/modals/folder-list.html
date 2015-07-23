@@ -1,0 +1,28 @@
+<style>
+	div.popup-head {
+		padding-bottom: 0 !important;
+	}
+	div.popup-body {
+		padding: 0 0.5em 0 0.5em !important;
+		height: 30vh !important;
+		overflow-y: scroll !important;
+	}
+	.button {
+		border-radius: 5px !important;
+		width: auto !important;
+		height 4em !important;
+		font-family: 'Open Sans', sans-serif;
+		font-size: 14px;
+		font-weight: 400;
+	}
+	.button-positive {
+		border: 1px solid #e1876a !important;
+		background-color: #e1876a !important;
+	}
+</style>
+<body>
+	<h5 class="coral" ng-click="showFolderCreationPopup()"><img class="create-new" src="img/savetofolder-1.svg"> Create a new folder</h5>
+	<div class="folderList" ng-repeat="folder in folders">
+		<h5 ng-class="{'selected': selectedFolder === $index}" ng-click="passSelectedFolderInfo(folder, $index)">{{folder.folder.name}}</h5>
+	</div>
+</body>

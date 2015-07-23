@@ -8,19 +8,27 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   $scope.usersAlsoBeenHere = [];
 
   $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
-      if($previousRoute.url === "/home" || $previousRoute.url === "/enlarged-footprint") {
-        FootprintRequests.currentTab = "feed";
-        $scope.headerTitle = "feed";
-      } else if($previousRoute.url === "/folders" || $previousRoute.url === "/enlarged-footprint-folders") {
-        FootprintRequests.currentTab = "folders";
-        $scope.headerTitle = "folders";
-      } else if($previousRoute.url === "/notifications" || $previousRoute.url === "/enlarged-footprint-notifications") {
-        FootprintRequests.currentTab = "notifications";
-        $scope.headerTitle = "notifications";
-      } else if($previousRoute.url === "/profile" || $previousRoute.url === "/enlarged-footprint-profile") {
-        FootprintRequests.currentTab = "me";
-        $scope.headerTitle = "me";
-      } 
+    console.log($previousRoute);
+    if($previousRoute.url === "/home" || $previousRoute.url === "/enlarged-footprint") {
+      FootprintRequests.currentTab = "feed";
+      $scope.headerTitle = "feed";
+    } else if($previousRoute.url === "/folders" || $previousRoute.url === "/enlarged-footprint-folders") {
+      FootprintRequests.currentTab = "folders";
+      $scope.headerTitle = "folders";
+    } else if($previousRoute.url === "/notifications" || $previousRoute.url === "/enlarged-footprint-notifications") {
+      FootprintRequests.currentTab = "notifications";
+      $scope.headerTitle = "notifications";
+    } else if($previousRoute.url === "/profile" || $previousRoute.url === "/enlarged-footprint-profile") {
+      FootprintRequests.currentTab = "me";
+      $scope.headerTitle = "me";
+    }
+
+    if(FootprintRequests.editedCheckin) {
+      $scope.footprint.checkin.rating = FootprintRequests.editedCheckin.rating;
+      $scope.footprint.checkin.caption = FootprintRequests.editedCheckin.caption;
+      $scope.footprint.checkin.photoLarge = FootprintRequests.editedCheckin.photoLarge;
+      FootprintRequests.editedCheckin = false;
+    } 
   });
 
   $scope.fetchVenueInfo = function() {
@@ -48,13 +56,20 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     })
   };
 
+   $scope.openFoursquarePage = function() {
+    // var foursquareLink = document.getElementsByName('view-in-foursquare')[0];
+    // console.log(foursquareLink);
+    // foursquareLink.setAttribute('href', $scope.linkToFoursquare);
+    window.open($scope.linkToFoursquare, '_system', 'location=yes');
+  };
+
   $scope.findUsersAlsoBeenHere = function() {
     FootprintRequests.findUsersAlsoBeenHere($scope.footprint.place.foursquareID, window.sessionStorage.userFbID)
     .then(function (users) {
       console.log(users);
       for(i = 0; i < users.data[0].users.length; i++) {
         if(users.data[0].users[i].facebookID !== window.sessionStorage.userFbID) {
-          $scope.usersAlsoBeenHere.push(user.data[0].users[i]);
+          $scope.usersAlsoBeenHere.push(users.data[0].users[i]);
         }
       }
     });
@@ -104,7 +119,7 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     $scope.selectedFootprintCheckinID = footprint.checkin.checkinID;
     // $scope.selectedFootprintIndex = index;
     $scope.optionsPopup = $ionicPopup.show({
-      templateUrl: 'options-menu.html',
+      templateUrl: 'modals/options-menu.html',
       scope: $scope
     });
   };
@@ -131,16 +146,34 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     $state.go(route);
   };
 
-  $scope.openFoursquarePage = function() {
-  	$window.open($scope.linkToFoursquare, '_system', 'location=yes');
-  };
+ 
 
   $scope.openMenu = function() {
   	$window.open($scope.menu.mobileUrl, '_system', 'location=yes');
   };
 
+  $scope.toggleMapDisplay = function() {
+    console.log('toggling')
+    $scope.mapDisplay = $scope.mapDisplay === true ? false : true;
+  };
+
+   $scope.toggleCategoryNameDisplay = function() {
+    console.log('toggling')
+    $scope.categoryName = $scope.categoryName === true ? false : true;
+  };
+
   $scope.openMap = function () {
-    $window.open('http://maps.google.com/?saddr=Current%20Location&daddr= 894%20Granville%20Street%20Vancouver%20BC%20V6Z%201K3', '_system', 'location=yes');
+  var address = encodeURIComponent($scope.address)
+  var lat = $scope.footprint.place.lat;
+  var lng = $scope.footprint.place.lng;
+  var mapLink = "maps://maps.apple.com/?q=" + address + "&ll=" + lat + "," + lng + "&near=" + lat + "," + lng;
+  console.log(mapLink);
+
+  // if(ionic.Platform.isIOS()) {
+    $window.open(mapLink, '_system', 'location=yes')  
+  // } else {
+  //   $window.open("geo:#{lat},#{long}?q=#{text}", '_system', 'location=yes')
+  // }
   };
 
   $scope.setShareMessage = function () {
@@ -149,7 +182,7 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     console.log($localstorage.getObject('user').name);
 
     if(window.sessionStorage.userFbID === $scope.footprint.user.facebookID) {
-      var message = "Sent from Waddle fodr iOS:%0D%0A" 
+      var message = "Sent from Waddle for iOS:%0D%0A" 
       + $localstorage.getObject('user').name + 
       " thought you'd like "+ $scope.footprint.place.name + "!%0D%0A%0D%0AThey rated " + $scope.footprint.place.name + " " + $scope.footprint.checkin.rating + 
       " stars out of 5.%0D%0A";
@@ -187,14 +220,13 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   $scope.openDeleteFootprintPopup = function () {
     $scope.optionsPopup.close();
     var deleteFootprintPopup = $ionicPopup.show({
-      templateUrl: 'delete-footprint.html',
-      // title: 'Add Folder',
+      templateUrl: 'modals/delete-footprint.html',
       scope: $scope,
       buttons: [
         { text: 'Cancel' },
         {
           text: '<b>Yes</b>',
-          type: 'button-energized',
+          type: 'button-positive',
           onTap: function(e) {
               $scope.deleteFootprint($scope.selectedFootprintCheckinID, $scope.selectedFootprintUserID, $scope.selectedFootprintIndex);
           }
@@ -206,10 +238,9 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   $scope.showCreationSuccessAlert = function() {
     var creationSuccessAlert = $ionicPopup.show({
       title: 'New Folder Added!',
-      templateUrl: 'folder-create-success.html'
+      templateUrl: 'modals/folder-create-success.html'
     });
-    // creationSuccessAlert.then(function(res) {
-    // });
+   
     $timeout(function() {
      creationSuccessAlert.close(); //close the popup after 1 second
     }, 1500);
@@ -218,7 +249,7 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   $scope.showShareOptions = function () {
     $scope.shareOptions = $ionicPopup.show({
       title: 'suggest this footprint:',
-      templateUrl: 'share-options.html',
+      templateUrl: 'modals/share-options.html',
       scope: $scope
     })
     //function placed inside timeout to ensure anchor tag href exists in DOM before value of message is set
@@ -228,27 +259,32 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   $scope.setMarker = function(map) {
     // $scope.map = map;
   	map.setView([$scope.footprint.place.lat, $scope.footprint.place.lng], 12);
-  	L.mapbox.featureLayer({
-	    type: 'Feature',
-	    geometry: {
-	        type: 'Point',
-	        // coordinates here are in longitude, latitude order because
-	        // x, y is the standard for GeoJSON and many formats
-	        coordinates: [
-	          $scope.footprint.place.lng, 
-	          $scope.footprint.place.lat
-	        ]
-	    },
-	    properties: {
-	        title: $scope.footprint.place.name,
-	        description: $scope.address,
-	        'marker-size': 'large',
-	        'marker-color': '#FF5050',
-	        'marker-symbol': 'circle-stroked'
-	    }
-		}).addTo(map);
-  };
+    var myLayer = L.mapbox.featureLayer().addTo(map);
 
+    var geojson = {
+      type: 'Feature Collection',
+      features: [{
+  	    type: 'Feature',
+  	    geometry: {
+  	        type: 'Point',
+  	        // coordinates here are in longitude, latitude order because
+  	        // x, y is the standard for GeoJSON and many formats
+  	        coordinates: [
+  	          $scope.footprint.place.lng, 
+  	          $scope.footprint.place.lat
+  	        ]
+  	    },
+  	    properties: {
+  	        title: $scope.footprint.place.name,
+  	        description: $scope.address,
+  	        'marker-size': 'large',
+  	        'marker-color': '#FF5050',
+  	        'marker-symbol': 'circle-stroked'
+  	    }
+  		}]
+    };
+    myLayer.setGeoJSON(geojson);
+  };
 };
 
 EnlargedFootprintController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicHistory', '$ionicPopup', '$timeout', '$window', '$cordovaContacts', '$cordovaSms', '$cordovaSocialSharing', '$localstorage'];
@@ -260,10 +296,17 @@ var MapLocationDirective = function ($location) {
 		scope: {
 			setMarker: "="
 		},
-    template: '<div class="map" ng-click="openMap()"></div>',
+    template: '<div class="map"></div>',
 		link: function(scope, element, attributes) {
 			L.mapbox.accessToken = 'pk.eyJ1Ijoid2FkZGxldXNlciIsImEiOiItQWlwaU5JIn0.mTIpotbZXv5KVgP4pkcYrA';
-      var map = L.mapbox.map(element[0], 'injeyeo.8fac2415');
+      var map = L.mapbox.map(element[0], 'injeyeo.8fac2415', {
+        attributionControl: false,
+        zoomControl: false
+      });
+      map.dragging.disable();
+      map.touchZoom.disable();
+      map.doubleClickZoom.disable();
+      map.scrollWheelZoom.disable();
       scope.setMarker(map);
 		}
 	}
