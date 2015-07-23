@@ -434,7 +434,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
      
       $timeout(function() {
        deletionSuccessAlert.close(); //close the popup after 1 second
-      }, 1500);
+      }, 1700);
     };
 
     $scope.showShareOptions = function (footprint) {
