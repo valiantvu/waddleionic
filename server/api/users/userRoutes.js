@@ -20,6 +20,7 @@ module.exports = function(app){
   app.get('/searchfeed/:user/:query/:page?/:skip?', userController.searchUserFeed);
   app.get('/friendslist/:user/:page?/:skip?', userController.getFriendsList);
   app.get('/friendslist/search/:user/:query/:page?/:skip?', userController.searchFriendsList);
+  app.post('/publish/facebook', userController.publishFacebookPost);
 	//the next line must be listed last because it catches all paths
 	app.get('/:friend/:viewer/:page?/:skip?', userController.getUserData);
 };

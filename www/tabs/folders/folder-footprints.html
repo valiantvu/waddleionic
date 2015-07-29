@@ -66,8 +66,9 @@
         <text x="50%" y="150" text-anchor="middle" alignment-baseline="middle" font-family="Verdana" font-size="45" fill="white">{{ openFolder }}</text>
       </g>
     </svg>
-    <div class="list" style="margin-top:-10px">
-      <a ui-sref="tab.enlarged-footprint{{subRouting}}" ng-click="openFootprint(footprint, $index)" ng-repeat="footprint in folderContents" class="item item-thumbnail-right">
+
+    <ion-list class="list" style="margin-top:-10px">
+      <ion-item ui-sref="tab.enlarged-footprint{{subRouting}}" ng-click="openFootprint(footprint, $index)" ng-repeat="footprint in folderContents" class="item item-thumbnail-right">
         <img/>
         <img class="folder-footprint-image" ng-if="footprint.checkin.photoLarge !== 'null'" ng-src="{{footprint.checkin.photoLarge}}">
         <img class="folder-footprint-folder-propic" ng-src="{{footprint.user.fbProfilePicture}}">
@@ -80,10 +81,11 @@
           <p ng-if="!checkUserID(footprint) && openFolder !== 'Suggested By Friends'">Added from {{footprint.user.name}}</p>
           <p ng-if="!checkUserID(footprint) && openFolder === 'Suggested By Friends'">Suggested by {{footprint.suggester.name}} via {{footprint.user.name}}</p>
           <p ng-if="checkUserID(footprint) && openFolder === 'Suggested By Friends'">Suggested by {{footprint.suggester.name}}</p>
-
         </div>
-      </a>
-    </div>
+        <ion-option-button class="button-active" ng-click="showRemoveFootprintFromFolderPopup(footprint.checkin.checkinID, $index)">delete</ion-option-button>
+      </ion-item>
+    </ion-list>
+
   <ion-infinite-scroll
     on-infinite="fetchFolderContents()"
     ng-if="moreDataCanBeLoaded"

@@ -8,7 +8,7 @@
 // window.ionic.Platform.ready(function() {
 //     angular.bootstrap(document, ['waddle']);
 // });
-angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.services', 'angularMoment', 'uuid4'])
+angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.services', 'angularMoment', 'uuid4', 'monospaced.elastic', 'ezfb'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -24,8 +24,11 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider, ezfbProvider) {
 
+  ezfbProvider.setInitParams({
+    appId: '898529293496515'
+  });
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
   // Set up the various states which the app can be in.

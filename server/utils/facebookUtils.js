@@ -74,6 +74,32 @@ utils.getFBFriends = function (user) {
   return deferred.promise;
 };
 
+utils.publishToFeed = function (user, linkObject) {
+  var deferred = Q.defer();
+
+  var fbID = user.getProperty('facebookID');
+  var fbToken = user.getProperty('fbToken');
+
+  var body = {
+    access_token: fbToken,
+    link: linkObject.link,
+    picture: linkObject.picture,
+    name: linkObject.name,
+    caption: linkObject.caption
+  };
+
+  var queryPath = 'https://graph.facebook.com/' + fbID + '/feed?';
+
+  helpers.httpsPost(queryPath, body)
+  .then(function (data) {
+    console.log(data);
+    deferred.resolve(JSON.parse(data));
+  })
+  .catch(function (err) {
+    deferred.reject(err);
+  });
+};
+
 utils.getFBTaggedPosts = function (user) {
   var deferred = Q.defer();
 

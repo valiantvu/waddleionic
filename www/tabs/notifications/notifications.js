@@ -88,7 +88,7 @@ var NotificationsController = function (Auth, UserRequests, MapFactory, Footprin
         place: notification.place,
         category: notification.category
       };
-      console.log(FootprintRequests.openFootprint);
+      console.log(FootprintRequests.openFootprintNotifications);
       FootprintRequests.selectedFootprintIndex = index;
     };
 

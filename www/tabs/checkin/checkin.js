@@ -13,6 +13,7 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicScrollDel
 	$scope.toggleSearch = function() {
       $scope.showSearch = $scope.showSearch === true ? false : true;
       if ($scope.showSearch) {
+      	$scope.venues = [];
         $ionicScrollDelegate.scrollTop();
         $scope.searchFoursquareVenuesByKeyword();
       }

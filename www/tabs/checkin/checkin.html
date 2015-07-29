@@ -2,9 +2,11 @@
 <!-- Header Bar -->
 <ion-header-bar align-title="center" class="bg-header">
 <div class="buttons">
-    <button class="button button-icon icon waddle-search light" ng-click="toggleSearch()"></button>
-  </div>
-  <h1 class="title">select a venue</h1>
+    <button ng-if="!showSearch" class="button button-icon icon waddle-search light" ng-click="toggleSearch()"></button>
+    <button ng-if="showSearch" class="button button-icon icon ion-arrow-left-b" ng-click="toggleSearch()"></button>
+</div>
+<h1 ng-if="!showSearch" class="title">select a venue</h1>
+<h1 ng-if="showSearch" class="title">search for a venue</h1>
 </ion-header-bar>
 
 <ion-view cache-view="false" title="Checkins">

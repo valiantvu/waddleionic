@@ -748,8 +748,8 @@ span{
 	display: inline-block;
 	position: absolute;
 	top: 1.4em;
-	width: 83vw;
-
+	width: 82vw;
+	left: 3.5em;
 }
 
 .newcomment {
@@ -855,7 +855,7 @@ span{
 	/*border-radius: 10px;*/
 	background-color: #eee;
 	border: none;
-	width: 75vw;
+	width: 77vw;
 	/*padding-right: 0.5em !important;*/
 }
 
@@ -868,7 +868,7 @@ span{
 
 .review-text {
 	border-radius: 10px;
-	height: 10em;
+	height: 6em;
 	width: 100%;
 	background-color: #eee;
 	border: none;

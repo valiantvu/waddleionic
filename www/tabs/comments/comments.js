@@ -6,6 +6,8 @@ var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequ
     $scope.currentTab = FootprintRequests.currentTab;
     $scope.selectedFootprintInteractions = {};
     $scope.userFbProfilePicture = $localstorage.getObject('user').fbProfilePicture;
+    $scope.editing = -1;
+    $scope.editText = {};
 
   if($scope.currentTab === 'folders') {
     $scope.footprint = FootprintRequests.openFootprintFolders;
@@ -21,11 +23,9 @@ var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequ
     console.log($scope.currentTab);
     // Ensure that a user comment is posted in the database before displaying
     $scope.updateFootprint = function (footprint){
-      console.log('is my footprint being updated?');
       var checkinID = footprint.checkin.checkinID;
       FootprintRequests.getFootprintInteractions(checkinID)
       .then(function (data) {
-        console.log('dis be ma data', data.data);
         $scope.footprint.comments = data.data.comments;
       });
     };
@@ -34,16 +34,85 @@ var CommentsController = function (Auth, UserRequests, MapFactory, FootprintRequ
       $ionicHistory.goBack();
     };
 
+    $scope.editComment = function ($index) {
+      //closes the slider so user can type in input without first manually closing it
+      document.getElementsByClassName('item-options')[$index].className += ' invisible';
+      document.getElementsByClassName('item-content')[$index].style.removeProperty('-webkit-transform');
+      
+      $scope.editing = $index;
+      $scope.editText.text = $scope.footprint.comments[$index].comment.text;
+    };
+
+    $scope.submitEditedComment = function ($index) {
+      var commentData = {
+        facebookID: window.sessionStorage.userFbID,
+        checkinID: $scope.footprint.checkin.checkinID,
+        commentID: $scope.footprint.comments[$index].comment.commentID,
+        commentText: $scope.editText.text
+      };
+
+      FootprintRequests.editComment(commentData)
+      .then(function (commentText) {
+        console.log(commentText);
+        $scope.editing = -1;
+        $scope.footprint.comments[$index].comment.text = commentText.data.text;
+      });
+    };
+
+    $scope.deleteComment = function ($index) {
+      var comment = $scope.footprint.comments[$index];
+      var commentData = {
+          facebookID: comment.commenter.facebookID,
+          checkinID: $scope.footprint.checkin.checkinID,
+          commentID: comment.comment.commentID
+      };
+
+      console.log(commentData);
+
+      FootprintRequests.removeComment(commentData)
+      .then(function (data){
+        $scope.footprint.comments.splice($index, 1);
+        console.log("comment removed");
+      });
+    };
+
+    $scope.checkDeletePermissions = function ($index) {
+      var loggedInUser = window.sessionStorage.userFbID
+      var commenter = $scope.footprint.comments[$index].commenter.facebookID;
+      if(($scope.footprint.user.facebookID === loggedInUser || commenter === loggedInUser)) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
+    $scope.checkEditPermissions = function ($index) {
+      var loggedInUser = window.sessionStorage.userFbID
+      var commenter = $scope.footprint.comments[$index].commenter.facebookID;
+      if(commenter === loggedInUser) {
+        return true;
+      } else {
+        return false;
+      }
+    };
 
      // Triggered on a button click, or some other target
     $scope.show = function(comment, footprint, $index) {
       // Show the action sheet if the footprint was posted by the logged in user, OR if the comment was posted by the logged in user
-      if($scope.footprint.user.facebookID === window.sessionStorage.userFbID || comment.commenter.facebookID === window.sessionStorage.userFbID) {
+      if(($scope.footprint.user.facebookID === window.sessionStorage.userFbID || comment.commenter.facebookID === window.sessionStorage.userFbID) && $scope.editing < 0) {
         var hideSheet = $ionicActionSheet.show({
           destructiveText: 'Delete',
           cancelText: 'Cancel',
           cancel: function() {
             hideSheet();
+          },
+          buttons: [
+            {text: "Edit"}
+          ],
+          buttonClicked: function() {
+            $scope.editing = $index;
+            $scope.editText.text = $scope.footprint.comments[$index].comment.text;
+            return true;
           },
           destructiveButtonClicked: function(index) {
 

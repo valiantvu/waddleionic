@@ -277,6 +277,10 @@ checkinController.realtimeFoursquareData = function (req, res) {
   res.status(200).end();
 };
 
+checkinController.requestTokenFromTwitter = function (req, res) {
+  
+}
+
 checkinController.addToBucketList = function (req, res){
   var checkinID = req.body.checkinID;
   var facebookID = req.body.facebookID;
@@ -333,7 +337,26 @@ checkinController.addComment = function (req, res){
     });
 };
 
-checkinController.removeComment = function (req, res){
+checkinController.editComment = function (req, res) {
+  var checkinID = req.body.checkinID;
+  var facebookID = req.body.facebookID;
+  var commentID = req.body.commentID;
+  var commentText = req.body.commentText;
+
+  Checkin.editComment(facebookID, checkinID, commentID, commentText)
+  .then (function (data) {
+    console.log(data);
+    res.json(data);
+    res.status(201).end();
+    
+  })
+  .catch(function (err) {
+    console.log(err);
+    res.status(500).end();
+  });
+};
+
+checkinController.removeComment = function (req, res) {
   var checkinID = req.body.checkinID;
   var facebookID = req.body.facebookID;
   var commentID = req.body.commentID;
@@ -351,7 +374,7 @@ checkinController.removeComment = function (req, res){
       console.log(err);
       res.status(500).end();
     });
-}
+};
 
 checkinController.addToFolder = function (req, res) {
   var checkinID = req.body.checkinID;

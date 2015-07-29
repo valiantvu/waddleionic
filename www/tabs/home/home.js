@@ -1,11 +1,12 @@
 (function(){
 
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage) {
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage, ezfb) {
   Auth.checkLogin()
   .then(function () {
     $scope.numHypes = 0;
     $scope.footprints = [];
+    $scope.folders = [];
     $scope.search = {};
     $scope.footprintSearch = false;
     $scope.selectedFolderInfo = {};
@@ -14,6 +15,9 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     var page = 0;
     var skipAmount = 5;
     $scope.moreDataCanBeLoaded = true;
+    var folderPage = 0;
+    var folderSkipAmount = 10;
+    $scope.moreFoldersCanBeLoaded = true;
     $scope.newFootprint = UserRequests.newFootprint;
 
     FootprintRequests.currentTab = 'feed';
@@ -82,11 +86,6 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       }
     });
 
-    $scope.$on('$ionicView.enter', function (scopes, states) {
-      console.log($ionicHistory.backView());
-
-    })
-
     $scope.updateFeedWithNewFootprint = function() {
       if(UserRequests.newFootprint) {
         $scope.footprints.unshift(UserRequests.newFootprint);
@@ -103,17 +102,26 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     }
 
     $scope.viewFoldersList = function() {
-      UserRequests.fetchFolders(window.sessionStorage.userFbID, 0, 10)
+      console.log("attemoting to viewfolders");
+      UserRequests.fetchFolders(window.sessionStorage.userFbID, folderPage, folderSkipAmount)
       .then(function (folders) {
-        $scope.folders = folders.data;
-        //remove suggested by friends folder from array;
-        $scope.folders.shift();
-        UserRequests.userFolderData = folders.data
-        console.log($scope.folders)
+        if(folders.data.length > 0) {
+          if(folderPage === 0) {
+          //remove suggested by friends folder from array;
+          folders.data.shift();
+          }
+          $scope.folders = $scope.folders.concat(folders.data);
+          UserRequests.userFolderData = $scope.folders;
+          console.log($scope.folders)
+          folderPage++; 
+        } else {
+          $scope.moreFoldersCanBeLoaded = false;
+        }
+        $scope.$broadcast('scroll.infiniteScrollComplete');
       })
     };
 
-    $scope.viewFoldersList();
+    // $scope.viewFoldersList();
     $scope.updateFeedWithNewFootprint();
 
     $scope.addCheckinToBucketList = function (footprint, index){
@@ -150,8 +158,9 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       // console.log(folderName);
       // console.log(folderDescription);
       UserRequests.addFolder(window.sessionStorage.userFbID, folderName, folderDescription)
-      .then(function (data) {
-        console.log(data);
+      .then(function (folder) {
+        console.log(folder.data);
+        $scope.folders.unshift(folder.data[0]);
         UserRequests.addFootprintToFolder(window.sessionStorage.userFbID, selectedFootprintCheckinID, folderName)
         .then(function (data) {
           // console.log(data)
@@ -241,6 +250,45 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       } else {
         $scope.categoryNameIndex = $index;
       }
+    };
+
+    $scope.publishToFacebook = function() {
+      var footprint = $scope.selectedFootprint;
+      var linkObject = {
+        message: 'This is a test',
+        link: 'http://www.gowaddle.com',
+        picture: 'https://s3-us-west-2.amazonaws.com/waddle/logo+assets/WaddleLogo_1024x1024-6-2-5.png',
+        name: $localstorage.getObject('user').name + " suggests " + footprint.place.name,
+        caption: footprint.user.name + " rated " + footprint.place.name + " " + footprint.checkin.rating + 
+        " stars out of 5.",
+        description: "This is a test description."
+      };
+
+      //overwrite default pic (waddle logo) if the footprint has a photo
+      if(footprint.checkin.photoLarge !== "null") {
+        linkObject.picture = footprint.checkin.photoLarge;
+      }
+
+      // if(footprint.checkin.caption !== "null") {
+      //   linkObject.description = "Here's what " + footprint.user.name + " said: " + '"' + footprint.checkin.caption + '"'
+      // }
+
+
+
+      console.log(linkObject);
+
+       // ezfb.api('/me', function (res) {
+       //  console.log(res);
+       //    $scope.apiMe = res;
+       // });
+       // ezfb.api('/me/permissions', function (res) {
+       //  console.log(res);
+       // });
+
+      ezfb.login(function(){
+        // Note: The call will only work if user accepts the permission request
+        ezfb.api('/me/feed', 'post', linkObject);
+      }, {scope: 'publish_actions'});
     };
 
     $scope.setShareMessage = function (footprint) {
@@ -447,6 +495,8 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $timeout(function() {
       $scope.setShareMessage(footprint);
     }, 0);
+
+    $scope.selectedFootprint = footprint;
   };
 
     if($state.current.name === 'footprints-map') {
@@ -522,7 +572,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory', '$localstorage'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory', '$localstorage', 'ezfb'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 

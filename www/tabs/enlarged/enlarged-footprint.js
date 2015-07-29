@@ -163,17 +163,11 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   };
 
   $scope.openMap = function () {
-  var address = encodeURIComponent($scope.address)
-  var lat = $scope.footprint.place.lat;
-  var lng = $scope.footprint.place.lng;
-  var mapLink = "maps://maps.apple.com/?q=" + address + "&ll=" + lat + "," + lng + "&near=" + lat + "," + lng;
-  console.log(mapLink);
-
-  // if(ionic.Platform.isIOS()) {
-    $window.open(mapLink, '_system', 'location=yes')  
-  // } else {
-  //   $window.open("geo:#{lat},#{long}?q=#{text}", '_system', 'location=yes')
-  // }
+    var placeName = encodeURIComponent($scope.footprint.place.name)
+    var lat = $scope.footprint.place.lat;
+    var lng = $scope.footprint.place.lng;
+    var mapLink = "maps://maps.apple.com/?q=" + placeName + "&ll=" + lat + "," + lng + "&near=" + lat + "," + lng;
+    $window.open(mapLink, '_system', 'location=yes');
   };
 
   $scope.setShareMessage = function () {

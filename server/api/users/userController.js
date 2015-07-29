@@ -816,4 +816,24 @@ userController.searchFriendsList = function (req, res) {
   });
 };
 
+userController.publishFacebookPost = function (req, res) {
+  var user;
+  var linkObject = req.body.link;
+  var facebookID = req.body.facebookID;
+
+  User.find({facebookID: facebookID})
+  .then(function (userNode) {
+    user = userNode;
+    return facebookUtils.publishToFeed(user, linkObject);
+  })
+  .then( function (data) {
+    console.log(data);
+    res.status(204).end();
+  })
+  .catch(function (err) {
+    console.log(err);
+    res.status(500).end();
+  });
+}
+
 module.exports = userController;

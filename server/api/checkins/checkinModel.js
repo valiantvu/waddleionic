@@ -207,6 +207,33 @@ Checkin.addComment = function (clickerID, checkinID, text, checkinTime){
   return deferred.promise;
 };
 
+Checkin.editComment = function (facebookID, checkinID, commentID, commentText) {
+  var deferred = Q.defer();
+
+  var query = [
+  'MATCH (clicker:User{facebookID:{facebookID}})-[rel1:madeComment]->(comment:Comment{commentID: {commentID}})-[rel2:gotComment]->(checkin:Checkin {checkinID:{checkinID}})',
+  'SET comment.text = {commentText}',
+  'RETURN comment.text'
+  ].join('\n');
+
+  var params = {
+    facebookID: facebookID,
+    checkinID: checkinID,
+    commentID: commentID,
+    commentText: commentText
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      console.log(results[0]);
+      deferred.resolve({text: results[0]['comment.text']});
+    }
+  });
+
+  return deferred.promise;
+};
+
 Checkin.removeComment = function(facebookID, checkinID, commentID){
   var deferred = Q.defer();
 

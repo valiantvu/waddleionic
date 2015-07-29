@@ -1,6 +1,6 @@
 (function(){
 
-var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests, $scope, $state, $ionicHistory, $ionicScrollDelegate) {
+var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests, $scope, $state, $ionicHistory, $ionicPopup, $ionicScrollDelegate) {
   Auth.checkLogin()
   .then(function () {
     $scope.folderContents = [];
@@ -105,10 +105,41 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
       $scope.getUserData(true);
     };
 
+    $scope.removeFootprintFromFolder = function (footprintCheckinID, $index) {
+      FootprintRequests.removeFootprintFromFavorites(window.sessionStorage.userFbID, footprintCheckinID)
+      .then(function (data) {
+        console.log(data);
+        $scope.folderContents.splice($index, 1);
+      });
+    };
+
+    $scope.showRemoveFootprintFromFolderPopup = function (footprintCheckinID, $index) {
+      $scope.selectedFootprintIndex = $index;
+      $scope.selectedFootprintCheckinID = footprintCheckinID;
+
+      // An elaborate, custom popup
+      $scope.removeFootprintFromFolderPopup = $ionicPopup.show({
+        templateUrl: 'modals/remove-footprint-from-folder.html',
+        // subTitle: 'Please use normal things',
+        scope: $scope,
+        buttons: [
+          { text: 'Cancel'
+           },
+          {
+            text: '<b>Yes</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+             $scope.removeFootprintFromFolder($scope.selectedFootprintCheckinID, $scope.selectedFolderInfo.name, $index);
+            }
+          }
+        ]
+      });
+    }
+
   });
 };
 
-FolderFootprintsController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$scope', '$state', '$ionicHistory', '$ionicScrollDelegate'];
+FolderFootprintsController.$inject = ['Auth', 'UserRequests', 'FootprintRequests', '$scope', '$state', '$ionicHistory', '$ionicPopup', '$ionicScrollDelegate'];
 
 angular.module('waddle.folder-footprints', [])
   .controller('FolderFootprintsController', FolderFootprintsController);

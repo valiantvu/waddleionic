@@ -12,14 +12,16 @@ module.exports = function (app) {
   app.post('/realtimeinstagram', checkinController.handleIGPost);
   app.get('/realtimefacebook', checkinController.facebookHubChallenge);
   app.post('/realtimefacebook', checkinController.handleFBPost);
+  app.post('/request_token/twitter', checkinController.requestTokenFromTwitter);
 
   //Routes for user actions
   app.post('/bucketlist', checkinController.addToBucketList);
   app.post('/removebucket', checkinController.removeFromBucketList);
   app.post('/folder', checkinController.addToFolder);
-  app.post('/removefromfolder', checkinController.removeFromFolder);
-  app.post('/removefromfavorites', checkinController.removeFromFavorites);
+  app.post('/folder/remove', checkinController.removeFromFolder);
+  app.post('/folders/removefavorite', checkinController.removeFromFavorites);
   app.post('/comment', checkinController.addComment);
+  app.post('/comment/edit', checkinController.editComment);
   app.post('/removecomment', checkinController.removeComment);
   app.post('/props', checkinController.giveProps);
   app.post('/delete', checkinController.deleteFootprint);
