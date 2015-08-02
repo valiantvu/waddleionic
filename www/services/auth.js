@@ -1,6 +1,6 @@
 (function(){
 
-var Auth = function ($q, $state, $window){
+var Auth = function ($q, $state, $window, ezfb) {
   var checkLogin = function () {
     var deferred = $q.defer();
 
@@ -14,6 +14,18 @@ var Auth = function ($q, $state, $window){
         deferred.reject(new Error('not connected'));
       }
     });
+    // ezfb.getLoginStatus()
+    // .then(function (response) {
+    //   console.log(response);
+    //   if (response.status === 'connected'){
+    //     console.log('connected');
+    //     deferred.resolve();
+    //   } else {
+    //     console.log('not connected');
+    //     $state.go('frontpage');
+    //     deferred.reject(new Error('not connected'));
+    //   }
+    // });
 
     return deferred.promise;
   };
@@ -23,10 +35,10 @@ var Auth = function ($q, $state, $window){
 
     window.sessionStorage.clear();
     window.localStorage.clear();
-    
-
     $state.go('frontpage', {}, {reload: true});
-    $window.location.reload();
+    // ezfb.logout();
+    // $window.location.reload();
+
   };
 
   return {
@@ -35,7 +47,7 @@ var Auth = function ($q, $state, $window){
   };
 };
 
-Auth.$inject = ['$q', '$state', '$window'];
+Auth.$inject = ['$q', '$state', '$window', 'ezfb'];
 
 angular.module('waddle.services.auth', [])
   .factory('Auth', Auth);

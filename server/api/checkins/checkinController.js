@@ -171,7 +171,42 @@ checkinController.searchFoursquareVenuesMobile = function (req, res) {
     console.log(err);
     res.status(500).end();
   });
-}
+};
+
+checkinController.searchFoursquareVenuesBySearchQueryAndGeolocation = function (req, res) {
+  var user, foursquareToken, miles;
+  var facebookID = req.params.facebookID;
+  var latlng = req.params.lat + ',' + req.params.lng;
+  var query = req.params.query;
+
+  User.find({facebookID: facebookID})
+  .then(function (userNode) {
+    user = userNode;
+    return foursquareUtils.searchFoursquareVenuesBySearchQueryAndGeolocation(user, latlng, query)
+  })
+  .then(function (venues) {
+    _.each(venues, function(venue) {
+      if(venue.location.distance) {
+        //convert meters to miles, rounded to the nearest .1 mi;
+        miles = Math.round((venue.location.distance * 0.00062137119) * 10) / 10;
+        venue.location.distance = miles;
+      }
+      if(venue.categories[0] && venue.categories[0].name && categoryList.dictionary[venue.categories[0].name]) {
+        venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
+        venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
+      }
+      else {
+        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.iconUrlSuffix = '-2.svg';
+      }
+    })
+    res.json(venues);
+  })
+  .catch(function (err){
+    console.log(err);
+    res.status(500).end();
+  });
+};
 
 checkinController.instagramHubChallenge = function (req, res) {
   res.status(200).send(req.query['hub.challenge']);
@@ -278,7 +313,7 @@ checkinController.realtimeFoursquareData = function (req, res) {
 };
 
 checkinController.requestTokenFromTwitter = function (req, res) {
-  
+
 }
 
 checkinController.addToBucketList = function (req, res){

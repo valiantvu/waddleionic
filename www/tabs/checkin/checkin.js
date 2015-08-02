@@ -22,16 +22,29 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicScrollDel
       }
     };
 
-	$scope.searchFoursquareVenuesByKeyword = function () {
+	$scope.searchFoursquareVenuesBySearchQueryAndNearKeyword = function () {
+		var query;
 		if($scope.search.query && $scope.search.near) {
-			$scope.search.query = $scope.search.query.replace(" ", "%20");
-			NativeCheckin.searchFoursquareVenuesByKeyword(window.sessionStorage.userFbID, $scope.search.query, $scope.search.near)
+			query = $scope.search.query.replace(" ", "%20");
+			NativeCheckin.searchFoursquareVenuesBySearchQueryAndNearKeyword(window.sessionStorage.userFbID, query, $scope.search.near)
+			.then(function (venues) {
+				console.log(venues);
+				$scope.venues = venues.data;
+			});
+		} else if ($scope.search.query) {
+			query = $scope.search.query.replace(" ", "%20");
+			console.log(query);
+			NativeCheckin.searchFoursquareVenuesBySearchQueryAndGeolocation(window.sessionStorage.userFbID, currentLocation, query)
 			.then(function (venues) {
 				console.log(venues);
 				$scope.venues = venues.data;
 			});
 		}
 	};
+
+	// $scope.searchFoursquareVenuesBySearchQueryAndGeolocation = function () {
+
+	// }
 
 	$scope.searchFoursquareVenuesByGeolocation = function () {
 

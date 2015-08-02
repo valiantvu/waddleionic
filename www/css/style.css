@@ -116,10 +116,15 @@ p{
 
 .searchbox {
 	border-radius: 25px;
-	height: 2em;
+	height: 1.8em;
 	width: auto;
-	margin-right: .3em;
-	margin-left: .3em;
+	margin-right: .75em;
+	margin-left: .75em;
+}
+
+.search-bottom {
+	margin-top: -0.5em;
+	margin-bottom: 0.5em;
 }
 
 .searchinput {
@@ -894,6 +899,12 @@ span{
 	margin-top: -0.3em;
 }
 
+.margin-zero {
+	margin-top: 0 !important;
+	margin-left: 10px;
+}
+
+
 .savefave {
 	margin-bottom: -10px;
 	border-style: none;
@@ -925,6 +936,10 @@ border-radius: 0px;
 
 .selected {
 	background-color: #dbdbdb;
+}
+
+.folderList {
+	margin-left: 10px;
 }
 
 .folder-tab-curve {
@@ -1290,6 +1305,17 @@ div.share-option-icon {
 
 .clock-comment-footprint {
 	margin-top: 0.2em;
+}
+
+.clock-comments-list {
+	margin-right: -4px;
+	margin-bottom: -1px;
+}
+
+.timestamp-comments-list {
+	display: inline-block; 
+	position:absolute; 
+	right: 5px;
 }
 
 .clock-notifications {

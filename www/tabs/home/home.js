@@ -255,13 +255,12 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $scope.publishToFacebook = function() {
       var footprint = $scope.selectedFootprint;
       var linkObject = {
-        message: 'This is a test',
+        message: '  ',
         link: 'http://www.gowaddle.com',
         picture: 'https://s3-us-west-2.amazonaws.com/waddle/logo+assets/WaddleLogo_1024x1024-6-2-5.png',
-        name: $localstorage.getObject('user').name + " suggests " + footprint.place.name,
-        caption: footprint.user.name + " rated " + footprint.place.name + " " + footprint.checkin.rating + 
-        " stars out of 5.",
-        description: "This is a test description."
+        name: $localstorage.getObject('user').name + " suggests " + footprint.place.name + "!",
+        caption: footprint.place.name + " | gowaddle.com",
+        description: null
       };
 
       //overwrite default pic (waddle logo) if the footprint has a photo
@@ -269,26 +268,45 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         linkObject.picture = footprint.checkin.photoLarge;
       }
 
-      // if(footprint.checkin.caption !== "null") {
-      //   linkObject.description = "Here's what " + footprint.user.name + " said: " + '"' + footprint.checkin.caption + '"'
-      // }
+      if(footprint.user.facebookID === window.sessionStorage.userFbID) {
+        linkObject.description = footprint.user.name + " rated " + footprint.place.name + " " + footprint.checkin.rating 
+        + " stars out of 5."
+      } else {
+        linkObject.description = $localstorage.getObject('user').name + "'s friend, " + footprint.user.name + ", rated " + footprint.place.name + " " + footprint.checkin.rating + 
+        + "stars out of 5.";
+      }
 
-
-
+      if(footprint.checkin.caption !== "null" ) {
+        linkObject.description +=   " Here's what they said about this place: " + '"' + footprint.checkin.caption + '"';
+      }
+    
       console.log(linkObject);
+      
+      openFB.login(function() {
+        openFB.api({
+          method: 'POST',
+          path: '/me/feed',
+          params: linkObject,
+          success: function(response) {
+            console.log(response);
+          },
+          error: function(err) {
+            console.log(err);
+          }
+        }), {scope: 'publish_actions'};
+      });
 
-       // ezfb.api('/me', function (res) {
-       //  console.log(res);
-       //    $scope.apiMe = res;
-       // });
-       // ezfb.api('/me/permissions', function (res) {
-       //  console.log(res);
-       // });
-
-      ezfb.login(function(){
-        // Note: The call will only work if user accepts the permission request
-        ezfb.api('/me/feed', 'post', linkObject);
-      }, {scope: 'publish_actions'});
+      // ezfb.login(function(){
+      //   // Note: The call will only work if user accepts the permission request
+      //   ezfb.api('/me/feed', 'post', linkObject);
+      // }, {scope: 'publish_actions'})
+      // .then(function (success, err) {
+      //   if(err) {
+      //     console.log(err)
+      //   } else {
+      //     console.log(success);
+      //   }
+      // })
     };
 
     $scope.setShareMessage = function (footprint) {

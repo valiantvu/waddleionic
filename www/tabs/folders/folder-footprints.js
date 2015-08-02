@@ -129,7 +129,7 @@ var FolderFootprintsController = function (Auth, UserRequests, FootprintRequests
             text: '<b>Yes</b>',
             type: 'button-positive',
             onTap: function(e) {
-             $scope.removeFootprintFromFolder($scope.selectedFootprintCheckinID, $scope.selectedFolderInfo.name, $index);
+             $scope.removeFootprintFromFolder($scope.selectedFootprintCheckinID, $index);
             }
           }
         ]

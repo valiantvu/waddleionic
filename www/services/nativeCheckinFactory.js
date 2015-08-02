@@ -6,7 +6,7 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
   return {
     selectedVenue: null,
 
-    searchFoursquareVenuesByKeyword: function(facebookID, query, location) {
+    searchFoursquareVenuesBySearchQueryAndNearKeyword: function(facebookID, query, location) {
       var url = '/api/checkins/venuesearchweb/' + facebookID + '/' + query + '/' + location;
       if(ionic.Platform.isIOS()) {
         url = productionServerURL.concat(url);
@@ -19,6 +19,18 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
 
 	  searchFoursquareVenuesByGeolocation: function (facebookID, currentLocation) {
       var url = '/api/checkins/venuesearchmobile/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng;
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
+      return $http({
+        method: 'GET',
+        url: url
+      });
+    },
+
+    searchFoursquareVenuesBySearchQueryAndGeolocation: function (facebookID, currentLocation, query) {
+      var url = '/api/checkins/venuesearch/geolocation/query/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng + '/' + query;
+      console.log(url);
       if(ionic.Platform.isIOS()) {
         url = productionServerURL.concat(url);
       }
