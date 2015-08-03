@@ -117,13 +117,23 @@ p{
 .searchbox {
 	border-radius: 25px;
 	height: 1.8em;
+	margin-bottom: -0.5em;
 	width: auto;
-	margin-right: .75em;
-	margin-left: .75em;
+	margin-right: 0.5em;
+	margin-left: 0.5em;
+}
+
+.searchbox-top {
+	border-radius: 25px;
+	height: 1.6em;
+	width: auto;
+	margin-top: 0.15em;
+	margin-right: 1em;
+	margin-left: 1em;
 }
 
 .search-bottom {
-	margin-top: -0.5em;
+	margin-top: -0.75em;
 	margin-bottom: 0.5em;
 }
 
@@ -177,6 +187,29 @@ h6 {
 	font-family: 'Open Sans', sans-serif;
 	font-size: 14px;
 	font-weight: 400;
+}
+input[type="text"] {
+	font-family: 'Open Sans', sans-serif;
+	line-height: 1.6em;
+  font-size: 12px;
+}
+
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  line-height: 1.6em;
+}
+
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  line-height: 1.6em;
+}
+
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  line-height: 1.6em;
 }
 
 i.icon.ion-record {

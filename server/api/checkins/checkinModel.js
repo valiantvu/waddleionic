@@ -93,6 +93,7 @@ Checkin.addToFolder = function (facebookID, checkinID, folderName) {
     'MATCH (user:User {facebookID: {facebookID}})',
     'MATCH (checkin:Checkin {checkinID: {checkinID}})',
     'MATCH (user)-[:hasFolder]->(folder:Folder {name:{folderName}})',
+    'SET folder.updatedAt = timestamp()',
     'MERGE (user)-[bucket:hasBucket]->(checkin)',
     'ON CREATE SET bucket.createdAt = timestamp()',
     'MERGE (folder)-[contains:containsCheckin]->(checkin)',

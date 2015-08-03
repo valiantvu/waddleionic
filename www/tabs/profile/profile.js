@@ -9,14 +9,18 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     var friends = [];
 		var page = 0;
     var friendsPage = 0;
+    var folderPage = 0;
 		var skip = 5;
+    var folderSkipAmount = 10;
     $scope.footprints = [];
+    $scope.folders = [];
     var user = window.sessionStorage.userFbID;
     $scope.moreDataCanBeLoaded = true;
     $scope.moreFriendsCanBeLoaded = true;
+    $scope.moreFoldersCanBeLoaded = true;
 		$scope.search = {};
 		$scope.selectedFolderInfo = {};
-    $scope.selectedFolder = null;
+    $scope.selectedFolderIndex = -1;
     $scope.newFolderInfo = {};
 		$scope.foursquareConnected = false;
 		$scope.instagramConnected = false;
@@ -215,7 +219,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     };
 
     $scope.passSelectedFolderInfo = function(folder, $index) {
-      $scope.selectedFolder = $index;
+      $scope.selectedFolderIndex = $index;
       $scope.selectedFolderInfo.name = folder.folder.name;
       // $scope.selectedFolderInfo.description = folder.folder.description;
     };
@@ -320,18 +324,32 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       }
     });
 
-    $scope.viewFoldersList = function() {
-      UserRequests.fetchFolders(window.sessionStorage.userFbID, 0, 10)
+    $scope.viewFoldersList = function(reload) {
+      if(reload) {
+        folderPage = 0;
+        $scope.moreFoldersCanBeLoaded = false;
+      }
+      console.log("attemoting to viewfolders");
+      UserRequests.fetchFolders(window.sessionStorage.userFbID, folderPage, folderSkipAmount)
       .then(function (folders) {
-        $scope.folders = folders.data;
-         //remove suggested by friends folder from array;
-        $scope.folders.shift();
-        UserRequests.userFolderData = folders.data
-        console.log($scope.folders)
+        if(folders.data.length > 0) {
+          if(folderPage === 0) {
+          //remove suggested by friends folder from array;
+          folders.data.shift();
+          }
+          $scope.folders = reload ? folders.data : $scope.folders.concat(folders.data);
+          UserRequests.userFolderData = $scope.folders;
+          console.log($scope.folders)
+          if (reload) {
+            $scope.moreFoldersCanBeLoaded = true;
+          }
+          folderPage++; 
+        } else {
+          $scope.moreFoldersCanBeLoaded = false;
+        }
+        $scope.$broadcast('scroll.infiniteScrollComplete');
       })
     };
-
-    $scope.viewFoldersList();
 
 
     $scope.addFootprintToFolder = function (checkinID, folderName, index) {
@@ -340,6 +358,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
         $scope.footprints[index].folders = [];
         $scope.footprints[index].folders.push(data.data[0].folder);
         $scope.showFootprintAdditionSuccessAlert();
+        $scope.viewFoldersList(true);
       })
     };
 
@@ -355,13 +374,14 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
           $scope.footprints[index].folders = [];
           $scope.footprints[index].folders.push(data.data[0].folder);
           $scope.showCreationSuccessAlert();
+          $scope.viewFoldersList(true);
         })
       });
     };
 
 
     $scope.passSelectedFolderInfo = function(folder, $index) {
-      $scope.selectedFolder = $index;
+      $scope.selectedFolderIndex = $index;
       $scope.selectedFolderInfo.name = folder.folder.name;
       // $scope.selectedFolderInfo.description = folder.folder.description;
     }
@@ -484,7 +504,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
           { text: 'Cancel' },
           {
             text: '<b>Save</b>',
-            type: 'button-energized',
+            type: 'button-positive',
             onTap: function(e) {
                 $scope.createFolderAndAddFootprintToFolder($scope.newFolderInfo.name, $scope.newFolderInfo.description, $scope.selectedFootprintCheckinID, $scope.selectedFootprintIndex);
             }

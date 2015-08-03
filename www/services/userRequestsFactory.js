@@ -119,7 +119,7 @@ var UserRequests = function ($http, ezfb){
       }
     },
 
-    addFolder: function(userFbID, folderName, folderDescription) {
+    addFolder: function(userFbID, folderName) {
       var url = '/api/users/folders/add';
       if(ionic.Platform.isIOS()) {
         url = productionServerURL.concat(url);
@@ -130,8 +130,7 @@ var UserRequests = function ($http, ezfb){
           url: url,
           data: {
             facebookID: userFbID,
-            folderName: folderName,
-            folderDescription: folderDescription
+            folderName: folderName
           }
         });
       }

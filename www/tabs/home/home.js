@@ -10,7 +10,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $scope.search = {};
     $scope.footprintSearch = false;
     $scope.selectedFolderInfo = {};
-    $scope.selectedFolder = null;
+    $scope.selectedFolderIndex = -1;
     $scope.newFolderInfo = {};
     var page = 0;
     var skipAmount = 5;
@@ -101,7 +101,11 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       $scope.$broadcast('scroll.refreshComplete');
     }
 
-    $scope.viewFoldersList = function() {
+    $scope.viewFoldersList = function(reload) {
+      if(reload) {
+        folderPage = 0;
+        $scope.moreFoldersCanBeLoaded = false;
+      }
       console.log("attemoting to viewfolders");
       UserRequests.fetchFolders(window.sessionStorage.userFbID, folderPage, folderSkipAmount)
       .then(function (folders) {
@@ -110,9 +114,12 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
           //remove suggested by friends folder from array;
           folders.data.shift();
           }
-          $scope.folders = $scope.folders.concat(folders.data);
+          $scope.folders = reload ? folders.data : $scope.folders.concat(folders.data);
           UserRequests.userFolderData = $scope.folders;
           console.log($scope.folders)
+          if (reload) {
+            $scope.moreFoldersCanBeLoaded = true;
+          }
           folderPage++; 
         } else {
           $scope.moreFoldersCanBeLoaded = false;
@@ -144,29 +151,32 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       });
     };
 
-    $scope.addFootprintToFolder = function (checkinID, folderName, index) {
+    $scope.addFootprintToFolder = function (checkinID, folderName, footprintIndex, folderIndex) {
       UserRequests.addFootprintToFolder(window.sessionStorage.userFbID, checkinID, folderName)
       .then(function (data) {
-        $scope.footprints[index].folders = [];
-        $scope.footprints[index].folders.push(data.data[0].folder);
+        //add folder label to appropriate footprint
+        $scope.footprints[footprintIndex].folders = [];
+        $scope.footprints[footprintIndex].folders.push(data.data[0].folder);
         $scope.showFootprintAdditionSuccessAlert();
+
+        $scope.viewFoldersList(true);
+
         // console.log(data);
       })
     };
 
-    $scope.createFolderAndAddFootprintToFolder = function (folderName, folderDescription, selectedFootprintCheckinID, index) {
+    $scope.createFolderAndAddFootprintToFolder = function (folderName, selectedFootprintCheckinID, selectedFootprintIndex) {
       // console.log(folderName);
-      // console.log(folderDescription);
-      UserRequests.addFolder(window.sessionStorage.userFbID, folderName, folderDescription)
+      UserRequests.addFolder(window.sessionStorage.userFbID, folderName)
       .then(function (folder) {
-        console.log(folder.data);
-        $scope.folders.unshift(folder.data[0]);
         UserRequests.addFootprintToFolder(window.sessionStorage.userFbID, selectedFootprintCheckinID, folderName)
         .then(function (data) {
-          // console.log(data)
-          $scope.footprints[index].folders = [];
-          $scope.footprints[index].folders.push(data.data[0].folder);
+          //add folder label to appropriate footprint
+          $scope.footprints[selectedFootprintIndex].folders = [];
+          $scope.footprints[selectedFootprintIndex].folders.push(data.data[0].folder);
           $scope.showCreationSuccessAlert();
+
+          $scope.viewFoldersList(true);
         })
       });
     };
@@ -200,7 +210,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     };
 
     $scope.passSelectedFolderInfo = function(folder, $index) {
-      $scope.selectedFolder = $index;
+      $scope.selectedFolderIndex = $index;
       $scope.selectedFolderInfo.name = folder.folder.name;
       // $scope.selectedFolderInfo.description = folder.folder.description;
     }
@@ -401,7 +411,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
             text: '<b>Save</b>',
             type: 'button-positive',
             onTap: function(e) {
-             $scope.addFootprintToFolder($scope.selectedFootprintCheckinID, $scope.selectedFolderInfo.name, $index);
+             $scope.addFootprintToFolder($scope.selectedFootprintCheckinID, $scope.selectedFolderInfo.name, $index, $scope.selectedFolderIndex);
             }
           }
         ]
@@ -428,7 +438,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
             text: '<b>Save</b>',
             type: 'button-positive',
             onTap: function(e) {
-                $scope.createFolderAndAddFootprintToFolder($scope.newFolderInfo.name, $scope.newFolderInfo.description, $scope.selectedFootprintCheckinID, $scope.selectedFootprintIndex);
+                $scope.createFolderAndAddFootprintToFolder($scope.newFolderInfo.name, $scope.selectedFootprintCheckinID, $scope.selectedFootprintIndex);
             }
           }
         ]

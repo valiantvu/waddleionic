@@ -12,18 +12,18 @@
   <ion-content class="padding bg-scroll">
 
     <!-- <div ng-show="showSearch" class="list"> -->
-      <div class="item item-input-inset searchbox">
+      <div class="item item-input-inset searchbox-top">
         <label class="item-input-wrapper white-bg">
           <i class="icon waddle-search placeholder-icon"></i>
-          <input id="folder-search" type="text" placeholder="type in the name of the place (required)" ng-keyup="searchFoursquareVenuesBySearchQueryAndNearKeyword()" ng-model="search.query">
+          <input id="folder-search" type="text" placeholder="search by venue name" ng-keyup="searchFoursquareVenuesBySearchQueryAndNearKeyword()" ng-model="search.query">
         </label>
           <button class="button button-clear" ng-if="searchFolders.query" ng-click="clearSearch()">x</button>
           <!-- <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button> -->
       </div>
       <br>
-      <div class="item item-input-inset searchbox search-bottom">
+      <div class="item item-input-inset searchbox-top search-bottom">
         <label class="item-input-wrapper white-bg">
-          <input type="text" placeholder="Near Me" ng-keyup="searchFoursquareVenuesBySearchQueryAndNearKeyword()" ng-model="search.near">
+          <input type="text" placeholder="near me" ng-keyup="searchFoursquareVenuesBySearchQueryAndNearKeyword()" ng-model="search.near">
         </label>
         <button class="button button-clear" ng-if="searchFolders.query" ng-click="clearSearch()">x</button>
       </div>

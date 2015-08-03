@@ -954,7 +954,7 @@ User.addFolder = function (facebookID, folderName) {
   var query = [
     'MATCH (user:User {facebookID:{facebookID}})',
     'MERGE (user)-[:hasFolder]->(folder:Folder {name: {folderName}})',
-    'ON CREATE SET folder.name = {folderName}, folder.createdAt = timestamp()',
+    'ON CREATE SET folder.name = {folderName}, folder.createdAt = timestamp(), folder.updatedAt = timestamp()',
     'RETURN user, folder'
   ].join('\n');
 
@@ -990,7 +990,7 @@ User.fetchFolders = function(facebookID, page, skipAmount) {
     'OPTIONAL MATCH (folder)-[contains:containsCheckin]->(checkin:Checkin)',
     'OPTIONAL MATCH (user)<-[receivedSuggestion:receivedSuggestion]-(suggestion:Suggestion)',
     'RETURN user, folder, count(DISTINCT contains) AS checkinCount, count(DISTINCT receivedSuggestion) AS receivedSuggestionsCount',
-    'ORDER BY folder.createdAt DESC',
+    'ORDER BY folder.updatedAt DESC',
     'SKIP { skipNum }', 
     'LIMIT { skipAmount }'
   ].join('\n');
@@ -1042,7 +1042,7 @@ User.searchFoldersByName = function (facebookID, folderName, page, skipAmount) {
     'WHERE folder.name =~ {folderName}',
     'OPTIONAL MATCH (folder)-[contains:containsCheckin]->(checkin:Checkin)',
     'RETURN user, folder, count(contains) AS checkinCount',
-    'ORDER BY folder.createdAt DESC',
+    'ORDER BY folder.updatedAt DESC',
     'SKIP { skipNum }', 
     'LIMIT { skipAmount }'
   ].join('\n');

@@ -39,6 +39,8 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicScrollDel
 				console.log(venues);
 				$scope.venues = venues.data;
 			});
+		} else if(!$scope.search.query && !$scope.search.near) {
+			$scope.searchFoursquareVenuesByGeolocation();
 		}
 	};
 
