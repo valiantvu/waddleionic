@@ -103,7 +103,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     if (!friend) {
       $scope.getUserProfileData()
     } else {
-      $scope.userInfo = user.user;
+      $scope.userInfo = user;
       if(user.footprints.length > 0) {
         footprints = user.footprints;
         $scope.footprints = $scope.footprints.concat(footprints);
@@ -186,7 +186,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       page = 0;
       // console.log('switching profile page: ', newUser);
       // user = newUser.facebookID;
-      UserRequests.friendProfile = newUser.facebookID;
+      UserRequests.friends.profile = newUser.facebookID;
       // $scope.userInfo = newUser;
       $scope.footprints = [];
 			// UserRequests.userProfileData = userInfo;

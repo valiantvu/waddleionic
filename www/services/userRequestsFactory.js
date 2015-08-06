@@ -20,8 +20,6 @@ var UserRequests = function ($http, ezfb){
       notifications: 1
     },
 
-    friendProfile: null,
-
     // Sends request to server with relevant user data 
     // for creation of new user or retrieval of existing user' checkins/data
     sendUserData: function (data) {
@@ -82,28 +80,7 @@ var UserRequests = function ($http, ezfb){
 
     getFriendProfileData: function (tab) {
       console.log('getting friend profile data for tab: ', tab);
-      console.log('heey')
-        var url = '/api/users/10202833487341857/10203426526517301/0/5';
-        
-        if (arguments[2] !== undefined) {
-            var page = arguments[2]
-            url +=  "/" + page;
-        }
-
-        if (arguments[3] !== undefined) {
-            var skip = arguments[3]
-            url +=  "/" + skip;
-        }
-
-        if(ionic.Platform.isIOS()) {
-          url = productionServerURL.concat(url);
-        }
-
-        return $http({
-          method: 'GET',
-          url: url
-        });
-
+      return this.getUserData(this.friends[tab], window.sessionStorage.userFbID, 0, 5);
     },
 
     getAggregatedFeedData:function (userFbID) {
