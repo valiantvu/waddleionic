@@ -12,6 +12,14 @@ var UserRequests = function ($http, ezfb){
     userProfileData: null,
     userFolderData: null,
 
+    // Stores the user data for a friend's profile
+    friends: {
+      profile: null,
+      home: null,
+      folders: null,
+      notifications: null
+    },
+
     // Sends request to server with relevant user data 
     // for creation of new user or retrieval of existing user' checkins/data
     sendUserData: function (data) {
@@ -67,6 +75,10 @@ var UserRequests = function ($http, ezfb){
           url: url
         });
       }
+    },
+
+    getFriendProfileData: function (tab) {
+      return getUserData(friends[tab]);
     },
 
     getAggregatedFeedData:function (userFbID) {

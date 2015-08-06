@@ -163,9 +163,14 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
     .state('tab.profile-friend', {
       url: '/profile-friend',
       views: {
-        'profile_friend-tab': {
+        'profile-tab': {
           templateUrl: 'tabs/profile/profile.html',
-          controller: 'ProfileController'
+          controller: 'ProfileController',
+          resolve: {
+            friend: function(UserRequests) {
+              return UserRequests.getFriendProfileData('profile');
+            }
+          }
         }
       }
     })

@@ -1,6 +1,6 @@
 (function(){
 
-var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintRequests, $ionicModal, $ionicPopup, $timeout, moment, $localstorage) {
+var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintRequests, $ionicModal, $ionicPopup, $timeout, moment, $localstorage, friend) {
 
 	Auth.checkLogin()
   .then(function () {
@@ -14,7 +14,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     var folderSkipAmount = 10;
     $scope.footprints = [];
     $scope.folders = [];
-    var user = window.sessionStorage.userFbID;
+    var user = friend ? friend : window.sessionStorage.userFbID;
     $scope.moreDataCanBeLoaded = true;
     $scope.moreFriendsCanBeLoaded = true;
     $scope.moreFoldersCanBeLoaded = true;
@@ -168,7 +168,9 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 	
 			$scope.friends = [];
 			friends = [];
-      $scope.getUserProfileData();
+
+      $state.go('tab.profile-friend');
+      // $scope.getUserProfileData();
       // getOwnProfileData();
 		};
 
