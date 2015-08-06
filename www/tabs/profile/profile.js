@@ -66,7 +66,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 			// else {
 			// 	getOwnProfileData();
 			// }
-          console.log('hello again')
+      console.log('hello again')
       $scope.searchPlaceHolder = 'search footprints'
       console.log(user);
       UserRequests.getUserData(user, window.sessionStorage.userFbID, page, skip)
