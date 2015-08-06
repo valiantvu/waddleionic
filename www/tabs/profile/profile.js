@@ -14,8 +14,6 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     var folderSkipAmount = 10;
     $scope.footprints = [];
     $scope.folders = [];
-    console.log('resolved friend');
-    console.dir(friend);
     var user = friend ? friend : window.sessionStorage.userFbID;
     $scope.moreDataCanBeLoaded = true;
     $scope.moreFriendsCanBeLoaded = true;
@@ -30,7 +28,10 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		FootprintRequests.currentTab = 'me';
 
     $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
-      console.log($previousRoute)
+      console.log($previousRoute);
+      console.dir(user);
+      reloadData();
+
       if($previousRoute.url === "/profile") {
         FootprintRequests.currentTab = 'me';
       }
@@ -41,6 +42,24 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
         FootprintRequests.editedCheckin = false;
       }
     });
+
+    var reloadData = function() {
+      if (!friend) {
+        $scope.getUserProfileData()
+      } else {
+        $scope.userInfo = user;
+        // if(user.footprints.length > 0) {
+          // footprints = user.footprints;
+          // $scope.footprints = $scope.footprints.concat(footprints);
+          $scope.footprints = user.footprints;
+          page++;
+          console.log('page: ', page);
+          // $scope.getUserProfileData();
+        // } else {
+        //   $scope.moreDataCanBeLoaded = false;
+        // }
+      }
+    };
 
     $scope.getCorrectData = function () {
       console.log('getting correct data');
@@ -100,21 +119,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       });
 		};
 
-    if (!friend) {
-      $scope.getUserProfileData()
-    } else {
-      $scope.userInfo = user;
-      if(user.footprints.length > 0) {
-        footprints = user.footprints;
-        $scope.footprints = $scope.footprints.concat(footprints);
-        page++;
-        console.log('page: ', page);
-        // $scope.getUserProfileData();
-      } else {
-        $scope.moreDataCanBeLoaded = false;
-      }
-    }
-
+    reloadData();
 
 		$scope.checkUserID = function(facebookID) {
       if(facebookID === window.sessionStorage.userFbID) {
@@ -325,7 +330,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 			})
 		};
 
-    $scope.reloadOwnProfile = function () {
+    $scope.goBack = function () {
       console.log($state.current);
       var historyId = $ionicHistory.currentHistoryId();
       console.dir(historyId);
