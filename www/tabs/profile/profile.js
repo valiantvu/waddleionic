@@ -15,7 +15,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     $scope.footprints = [];
     $scope.folders = [];
     console.dir(friend);
-    var user = friend ? friend : window.sessionStorage.userFbID;
+    var user = friend ? friend.facebookID : window.sessionStorage.userFbID;
     $scope.moreDataCanBeLoaded = true;
     $scope.moreFriendsCanBeLoaded = true;
     $scope.moreFoldersCanBeLoaded = true;
@@ -29,8 +29,6 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		FootprintRequests.currentTab = 'me';
 
     $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
-      console.log($state.current, $previousRoute);
-      console.dir(user);
 
       if($previousRoute.url === "/profile") {
         FootprintRequests.currentTab = 'me';
@@ -48,10 +46,12 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       console.log('reloading data');
       if (!friend) {
         friendsPage = 0;
-        $scope.getUserProfileData()
+        $scope.getUserProfileData();
       } else {
-        $scope.userInfo = user;
-        $scope.footprints = user.footprints;
+        console.dir(friend);
+        $scope.user = friend.facebookID;
+        $scope.userInfo = friend;
+        $scope.footprints = friend.footprints;
         page++;
         console.log('page: ', page);
       }
@@ -59,6 +59,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
     $scope.getCorrectData = function () {
       console.log('getting correct data');
+      console.dir($state.current);
       if(friends.length) {
         $scope.showFriendsList();
       } else {
