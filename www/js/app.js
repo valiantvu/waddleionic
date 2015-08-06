@@ -156,7 +156,12 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       views: {
         'profile-tab': {
           templateUrl: 'tabs/profile/profile.html',
-          controller: 'ProfileController'
+          controller: 'ProfileController',
+          resolve: {
+            friend: function() {
+              return null;
+            }
+          }
         }
       }
     })
@@ -168,7 +173,14 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
           controller: 'ProfileController',
           resolve: {
             friend: function(UserRequests) {
-              return UserRequests.getFriendProfileData('profile');
+              return UserRequests.getFriendProfileData('profile')
+                .then(function(response) {
+                  console.dir(response);
+                  return response.data;
+                })
+                .catch(function(error){
+                  console.dir(error);
+                });
             }
           }
         }

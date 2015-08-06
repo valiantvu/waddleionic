@@ -14,11 +14,13 @@ var UserRequests = function ($http, ezfb){
 
     // Stores the user data for a friend's profile
     friends: {
-      profile: null,
-      home: null,
-      folders: null,
-      notifications: null
+      profile: 1,
+      home: 1,
+      folders: 1,
+      notifications: 1
     },
+
+    friendProfile: null,
 
     // Sends request to server with relevant user data 
     // for creation of new user or retrieval of existing user' checkins/data
@@ -53,6 +55,7 @@ var UserRequests = function ($http, ezfb){
     // this allows the viewer to see whether they have liked another user's checkin
 
     getUserData: function (userFbID, viewerID) {
+      console.log(userFbID, viewerID);
       var url = '/api/users/' + userFbID + "/" + viewerID;
       
       if (arguments[2] !== undefined) {
@@ -78,7 +81,29 @@ var UserRequests = function ($http, ezfb){
     },
 
     getFriendProfileData: function (tab) {
-      return getUserData(friends[tab]);
+      console.log('getting friend profile data for tab: ', tab);
+      console.log('heey')
+        var url = '/api/users/10202833487341857/10203426526517301/0/5';
+        
+        if (arguments[2] !== undefined) {
+            var page = arguments[2]
+            url +=  "/" + page;
+        }
+
+        if (arguments[3] !== undefined) {
+            var skip = arguments[3]
+            url +=  "/" + skip;
+        }
+
+        if(ionic.Platform.isIOS()) {
+          url = productionServerURL.concat(url);
+        }
+
+        return $http({
+          method: 'GET',
+          url: url
+        });
+
     },
 
     getAggregatedFeedData:function (userFbID) {

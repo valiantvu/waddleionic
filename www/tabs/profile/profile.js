@@ -1,6 +1,6 @@
 (function(){
 
-var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintRequests, $ionicModal, $ionicPopup, $timeout, moment, $localstorage, friend) {
+var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintRequests, $ionicModal, $ionicPopup, $ionicHistory, $timeout, moment, $localstorage, friend) {
 
 	Auth.checkLogin()
   .then(function () {
@@ -14,6 +14,8 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     var folderSkipAmount = 10;
     $scope.footprints = [];
     $scope.folders = [];
+    console.log('resolved friend');
+    console.dir(friend);
     var user = friend ? friend : window.sessionStorage.userFbID;
     $scope.moreDataCanBeLoaded = true;
     $scope.moreFriendsCanBeLoaded = true;
@@ -41,10 +43,11 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     });
 
     $scope.getCorrectData = function () {
+      console.log('getting correct data');
       if(friends.length) {
         $scope.showFriendsList();
       } else {
-        $scope.getUserProfileData();
+        // $scope.getUserProfileData();
       }
     };
 
@@ -89,9 +92,29 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
           // if($scope.userInfo.instagramID) {
           //  $scope.instagramConnected = true;
           // }
+
         $scope.$broadcast('scroll.infiniteScrollComplete');
       })
+      .catch(function(error) {
+        console.log(error);
+      });
 		};
+
+    if (!friend) {
+      $scope.getUserProfileData()
+    } else {
+      $scope.userInfo = user.user;
+      if(user.footprints.length > 0) {
+        footprints = user.footprints;
+        $scope.footprints = $scope.footprints.concat(footprints);
+        page++;
+        console.log('page: ', page);
+        // $scope.getUserProfileData();
+      } else {
+        $scope.moreDataCanBeLoaded = false;
+      }
+    }
+
 
 		$scope.checkUserID = function(facebookID) {
       if(facebookID === window.sessionStorage.userFbID) {
@@ -131,6 +154,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 			// }
 		};
 
+
 		$scope.showFootprints = function () {
       $scope.searchPlaceHolder = 'search footprints'
 			$scope.hypelist = null;
@@ -160,9 +184,10 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
 		$scope.switchProfilePage = function (newUser) {
       page = 0;
-      console.log(newUser);
-      user = newUser.facebookID;
-      $scope.userInfo = newUser;
+      // console.log('switching profile page: ', newUser);
+      // user = newUser.facebookID;
+      UserRequests.friendProfile = newUser.facebookID;
+      // $scope.userInfo = newUser;
       $scope.footprints = [];
 			// UserRequests.userProfileData = userInfo;
 	
@@ -299,6 +324,19 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
         $scope.$broadcast('scroll.infiniteScrollComplete');
 			})
 		};
+
+    $scope.reloadOwnProfile = function () {
+      console.log($state.current);
+      var historyId = $ionicHistory.currentHistoryId();
+      console.dir(historyId);
+      var history = $ionicHistory.viewHistory().histories[historyId];
+      console.dir(history);
+      // set the view 'depth' back in the stack as the back view
+      var targetViewIndex = history.stack.length - 1;
+      // $ionicHistory.backView(history.stack[targetViewIndex]);
+      // navigate to it
+      $ionicHistory.goBack();
+    };
 
     $scope.refreshFootprints = function() {
       console.log('refreshFootprints');
@@ -650,7 +688,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
 };
 
-ProfileController.$inject = ['$scope', '$state', 'UserRequests', 'Auth', 'FootprintRequests', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$localstorage']
+ProfileController.$inject = ['$scope', '$state', 'UserRequests', 'Auth', 'FootprintRequests', '$ionicModal', '$ionicPopup', '$ionicHistory', '$timeout', 'moment', '$localstorage', 'friend']
 
 angular.module('waddle.profile', [])
   .controller('ProfileController', ProfileController);
