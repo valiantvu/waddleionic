@@ -14,6 +14,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     var folderSkipAmount = 10;
     $scope.footprints = [];
     $scope.folders = [];
+    console.dir(friend);
     var user = friend ? friend : window.sessionStorage.userFbID;
     $scope.moreDataCanBeLoaded = true;
     $scope.moreFriendsCanBeLoaded = true;
@@ -28,12 +29,12 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		FootprintRequests.currentTab = 'me';
 
     $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
-      console.log($previousRoute);
+      console.log($state.current, $previousRoute);
       console.dir(user);
-      reloadData();
 
       if($previousRoute.url === "/profile") {
         FootprintRequests.currentTab = 'me';
+        reloadData();
       }
       if(FootprintRequests.editedCheckin) {
         $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.rating = FootprintRequests.editedCheckin.rating;
@@ -44,20 +45,15 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     });
 
     var reloadData = function() {
+      console.log('reloading data');
       if (!friend) {
+        friendsPage = 0;
         $scope.getUserProfileData()
       } else {
         $scope.userInfo = user;
-        // if(user.footprints.length > 0) {
-          // footprints = user.footprints;
-          // $scope.footprints = $scope.footprints.concat(footprints);
-          $scope.footprints = user.footprints;
-          page++;
-          console.log('page: ', page);
-          // $scope.getUserProfileData();
-        // } else {
-        //   $scope.moreDataCanBeLoaded = false;
-        // }
+        $scope.footprints = user.footprints;
+        page++;
+        console.log('page: ', page);
       }
     };
 
@@ -88,7 +84,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 			// else {
 			// 	getOwnProfileData();
 			// }
-          console.log('hello again')
+      console.log('hello again')
       $scope.searchPlaceHolder = 'search footprints'
       console.log(user);
       UserRequests.getUserData(user, window.sessionStorage.userFbID, page, skip)
@@ -101,6 +97,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
           $scope.footprints = $scope.footprints.concat(footprints);
           page++;
           console.log('page: ', page);
+          console.log('friend page: ', friendsPage);
           // $scope.getUserProfileData();
         } else {
           $scope.moreDataCanBeLoaded = false;
