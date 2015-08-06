@@ -15,7 +15,8 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     $scope.footprints = [];
     $scope.folders = [];
     console.dir(friend);
-    var user = friend ? friend.facebookID : window.sessionStorage.userFbID;
+    var user = friend ? friend.user.facebookID : window.sessionStorage.userFbID;
+    console.log(user);
     $scope.moreDataCanBeLoaded = true;
     $scope.moreFriendsCanBeLoaded = true;
     $scope.moreFoldersCanBeLoaded = true;
