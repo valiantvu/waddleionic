@@ -6,7 +6,7 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
   return {
     selectedVenue: null,
 
-    searchFoursquareVenuesByKeyword: function(facebookID, query, location) {
+    searchFoursquareVenuesBySearchQueryAndNearKeyword: function(facebookID, query, location) {
       var url = '/api/checkins/venuesearchweb/' + facebookID + '/' + query + '/' + location;
       if(ionic.Platform.isIOS()) {
         url = productionServerURL.concat(url);
@@ -19,6 +19,18 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
 
 	  searchFoursquareVenuesByGeolocation: function (facebookID, currentLocation) {
       var url = '/api/checkins/venuesearchmobile/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng;
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
+      return $http({
+        method: 'GET',
+        url: url
+      });
+    },
+
+    searchFoursquareVenuesBySearchQueryAndGeolocation: function (facebookID, currentLocation, query) {
+      var url = '/api/checkins/venuesearch/geolocation/query/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng + '/' + query;
+      console.log(url);
       if(ionic.Platform.isIOS()) {
         url = productionServerURL.concat(url);
       }
@@ -74,30 +86,39 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
         return deferred.promise;
     },
 
-    getCurrentLocation: function() {
+    getCurrentLocation: function(successCallback, errCallback) {
       console.log('getting currentLocation');
-      // var options = {
-      //   enableHighAccuracy: false,
-      //   timeout: 30000,
-      //   maximumAge: 0
-      // };
-      return $cordovaGeolocation.getCurrentPosition({timeout: 5000, enableHighAccuracy: false})
-      .then(function (position) {
-        console.log(position);
-        return position;
-      }, function (err) {
-        return err;
+      // return $cordovaGeolocation.getCurrentPosition({timeout: 5000, enableHighAccuracy: false})
+      // .then(function (position) {
+      //   console.log(position);
+      //   return position;
+      // }, function (err) {
+      //   return err;
+      // });
+      var options = {
+        enableHighAccuracy: false,
+        timeout: 5000,
+        maximumAge: 0
+      };
+
+      $ionicPlatform.ready(function() {
+        //if the geolocation object has no methods, then user has likely denied location permissions
+        if(!navigator.geolocation.length) {
+          navigator.geolocation.getCurrentPosition(
+            function(position) {
+              console.log(position);
+              return successCallback(position);
+            },
+            function(err) {
+              return errCallback(err);
+            },
+            options
+          );
+        } else {
+          //return location permissions denied error code
+          return errCallback({code: 1});
+        }
       });
-      // return navigator.geolocation.getCurrentPosition(
-      //   function(position) {
-      //     console.log(position);
-      //     return callback(position);
-      //   },
-      //   function(err) {
-      //     return err;
-      //   },
-      //   options
-      // );
     },
 
     watchPosition: function() {

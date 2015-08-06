@@ -2,11 +2,18 @@
 	div.popup-head {
 		padding-bottom: 0 !important;
 	}
+
+	ion-content.folder-list {
+		height: 30vh !important;
+		padding: 0 !important;
+	}
+
 	div.popup-body {
 		padding: 0 0.5em 0 0.5em !important;
-		height: 30vh !important;
-		overflow-y: scroll !important;
+		height: 34vh !important;
+		/*overflow-y: scroll !important;*/
 	}
+
 	.button {
 		border-radius: 5px !important;
 		width: auto !important;
@@ -21,8 +28,15 @@
 	}
 </style>
 <body>
-	<h5 class="coral" ng-click="showFolderCreationPopup()"><img class="create-new" src="img/savetofolder-1.svg"> Create a new folder</h5>
-	<div class="folderList" ng-repeat="folder in folders">
-		<h5 ng-class="{'selected': selectedFolder === $index}" ng-click="passSelectedFolderInfo(folder, $index)">{{folder.folder.name}}</h5>
-	</div>
+	<ion-content class="folder-list">
+		<h5 class="coral margin-zero" ng-click="showFolderCreationPopup()"><img class="create-new" src="img/savetofolder-1.svg"> Create a new folder</h5>
+		<div class="folderList" ng-repeat="folder in folders">
+			<h5 ng-class="{'selected': selectedFolderIndex === $index}" ng-click="passSelectedFolderInfo(folder, $index)">{{folder.folder.name}}</h5>
+		</div>
+		<ion-infinite-scroll
+	  on-infinite="viewFoldersList()"
+	  ng-if="moreFoldersCanBeLoaded"
+	  icon="ion-loading-c">
+	 </ion-infinite-scroll>
+ </ion-content>
 </body>

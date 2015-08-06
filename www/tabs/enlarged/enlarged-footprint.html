@@ -70,8 +70,8 @@
       
       <div class="position-relative">
         <map-location ng-click="toggleMapDisplay()" set-marker="setMarker"></map-location>
-        <div ng-if="mapDisplay" class="transparent-black">
-          <button href="#" ng-click="openMap()" class="button button-small button-outline suggest">open in maps</button>
+        <div ng-show="mapDisplay" class="transparent-black">
+          <button href="#" ng-click="openMap()" class="open-map button button-small button-outline suggest">open in maps</button>
         </div>
       </div>
       <h6 class="also-been"><b>Also Been Here:</b></h6>

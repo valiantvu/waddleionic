@@ -75,26 +75,29 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     });
   }
 
-  $scope.getFootprintInteractions = function () {
+  $scope.getFootprintInteractions = function (openFootprint) {
     FootprintRequests.getFootprintInteractions($scope.footprint.checkin.checkinID)
     .then(function (footprintInteractions) {
+      console.log(footprintInteractions.data)
       $scope.footprint.comments = footprintInteractions.data.comments;
       $scope.footprint.hypes = footprintInteractions.data.hypes;
+      openFootprint.comment = footprintInteractions.data.comments;
+      openFootprint.hypes = footprintInteractions.data.hypes;
     })
   };
 
   if($scope.headerTitle === 'folders') {
     $scope.subRouting = '-folders';
     $scope.footprint = FootprintRequests.openFootprintFolders;
-    $scope.getFootprintInteractions();
+    $scope.getFootprintInteractions(FootprintRequests.openFootprintFolders);
   } else if($scope.headerTitle === 'notifications') {
     $scope.subRouting = '-notifications';
     $scope.footprint = FootprintRequests.openFootprintNotifications;
-    $scope.getFootprintInteractions();
+    $scope.getFootprintInteractions(FootprintRequests.openFootprintNotifications);
   } else if($scope.headerTitle === 'me') {
     $scope.subRouting = '-profile';
     $scope.footprint = FootprintRequests.openFootprintProfile;
-    $scope.getFootprintInteractions();
+    $scope.getFootprintInteractions(FootprintRequests.openFootprintProfile);
   } else {
     $scope.subRouting = '';
     $scope.footprint = FootprintRequests.openFootprint;
@@ -132,7 +135,7 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
       };
       FootprintRequests.deleteFootprint(deleteFootprintData)
       .then(function(data) {
-        $scope.showCreationSuccessAlert();
+        $scope.showDeletionSuccessAlert();
         FootprintRequests.deletedFootprint = true;
         console.log(data);
         $ionicHistory.goBack();
@@ -163,17 +166,11 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   };
 
   $scope.openMap = function () {
-  var address = encodeURIComponent($scope.address)
-  var lat = $scope.footprint.place.lat;
-  var lng = $scope.footprint.place.lng;
-  var mapLink = "maps://maps.apple.com/?q=" + address + "&ll=" + lat + "," + lng + "&near=" + lat + "," + lng;
-  console.log(mapLink);
-
-  // if(ionic.Platform.isIOS()) {
-    $window.open(mapLink, '_system', 'location=yes')  
-  // } else {
-  //   $window.open("geo:#{lat},#{long}?q=#{text}", '_system', 'location=yes')
-  // }
+    var placeName = encodeURIComponent($scope.footprint.place.name)
+    var lat = $scope.footprint.place.lat;
+    var lng = $scope.footprint.place.lng;
+    var mapLink = "maps://maps.apple.com/?q=" + placeName + "&ll=" + lat + "," + lng + "&near=" + lat + "," + lng;
+    $window.open(mapLink, '_system', 'location=yes');
   };
 
   $scope.setShareMessage = function () {
@@ -219,6 +216,11 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
 
   $scope.openDeleteFootprintPopup = function () {
     $scope.optionsPopup.close();
+
+    //janky way to remove myPopup from DOM (fix for .close() method not completely working in ionic 1.0.1)
+    var popup = document.getElementsByClassName('popup-container')[0];
+    document.body.removeChild(popup);
+
     var deleteFootprintPopup = $ionicPopup.show({
       templateUrl: 'modals/delete-footprint.html',
       scope: $scope,
@@ -244,6 +246,16 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     $timeout(function() {
      creationSuccessAlert.close(); //close the popup after 1 second
     }, 1500);
+  };
+
+  $scope.showDeletionSuccessAlert = function () {
+    var deletionSuccessAlert = $ionicPopup.show({
+      templateUrl: 'modals/footprint-delete-success.html'
+    });
+   
+    $timeout(function() {
+     deletionSuccessAlert.close(); //close the popup after 1 second
+    }, 1700);
   };
 
   $scope.showShareOptions = function () {

@@ -171,7 +171,42 @@ checkinController.searchFoursquareVenuesMobile = function (req, res) {
     console.log(err);
     res.status(500).end();
   });
-}
+};
+
+checkinController.searchFoursquareVenuesBySearchQueryAndGeolocation = function (req, res) {
+  var user, foursquareToken, miles;
+  var facebookID = req.params.facebookID;
+  var latlng = req.params.lat + ',' + req.params.lng;
+  var query = req.params.query;
+
+  User.find({facebookID: facebookID})
+  .then(function (userNode) {
+    user = userNode;
+    return foursquareUtils.searchFoursquareVenuesBySearchQueryAndGeolocation(user, latlng, query)
+  })
+  .then(function (venues) {
+    _.each(venues, function(venue) {
+      if(venue.location.distance) {
+        //convert meters to miles, rounded to the nearest .1 mi;
+        miles = Math.round((venue.location.distance * 0.00062137119) * 10) / 10;
+        venue.location.distance = miles;
+      }
+      if(venue.categories[0] && venue.categories[0].name && categoryList.dictionary[venue.categories[0].name]) {
+        venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
+        venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
+      }
+      else {
+        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.iconUrlSuffix = '-2.svg';
+      }
+    })
+    res.json(venues);
+  })
+  .catch(function (err){
+    console.log(err);
+    res.status(500).end();
+  });
+};
 
 checkinController.instagramHubChallenge = function (req, res) {
   res.status(200).send(req.query['hub.challenge']);
@@ -277,6 +312,10 @@ checkinController.realtimeFoursquareData = function (req, res) {
   res.status(200).end();
 };
 
+checkinController.requestTokenFromTwitter = function (req, res) {
+
+}
+
 checkinController.addToBucketList = function (req, res){
   var checkinID = req.body.checkinID;
   var facebookID = req.body.facebookID;
@@ -333,7 +372,26 @@ checkinController.addComment = function (req, res){
     });
 };
 
-checkinController.removeComment = function (req, res){
+checkinController.editComment = function (req, res) {
+  var checkinID = req.body.checkinID;
+  var facebookID = req.body.facebookID;
+  var commentID = req.body.commentID;
+  var commentText = req.body.commentText;
+
+  Checkin.editComment(facebookID, checkinID, commentID, commentText)
+  .then (function (data) {
+    console.log(data);
+    res.json(data);
+    res.status(201).end();
+    
+  })
+  .catch(function (err) {
+    console.log(err);
+    res.status(500).end();
+  });
+};
+
+checkinController.removeComment = function (req, res) {
   var checkinID = req.body.checkinID;
   var facebookID = req.body.facebookID;
   var commentID = req.body.commentID;
@@ -351,7 +409,7 @@ checkinController.removeComment = function (req, res){
       console.log(err);
       res.status(500).end();
     });
-}
+};
 
 checkinController.addToFolder = function (req, res) {
   var checkinID = req.body.checkinID;

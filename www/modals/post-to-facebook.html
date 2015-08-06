@@ -1,0 +1,18 @@
+<style>
+	div.popup-head {
+		display: none;
+	}
+	div.popup {
+		background-color: transparent !important;
+	}
+	div.popup-body {
+		padding: 0 !important;
+	}
+</style>
+<body>
+	 <form name="review" class='review-form item-input-wrapper' novalidate>
+        <textarea class='msd-elastic review-text' ng-model='facebookInfo.message' name='caption' placeholder='Write a message...' data-ng-minlength="1" data-ng-maxlength="1000" maxlength="1000" required>
+          {{facebookInfo.message}}
+        </textarea>
+   </form>
+</body>

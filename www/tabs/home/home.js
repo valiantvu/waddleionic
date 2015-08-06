@@ -1,19 +1,23 @@
 (function(){
 
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage) {
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage, ezfb) {
   Auth.checkLogin()
   .then(function () {
     $scope.numHypes = 0;
     $scope.footprints = [];
+    $scope.folders = [];
     $scope.search = {};
     $scope.footprintSearch = false;
     $scope.selectedFolderInfo = {};
-    $scope.selectedFolder = null;
+    $scope.selectedFolderIndex = -1;
     $scope.newFolderInfo = {};
     var page = 0;
     var skipAmount = 5;
     $scope.moreDataCanBeLoaded = true;
+    var folderPage = 0;
+    var folderSkipAmount = 10;
+    $scope.moreFoldersCanBeLoaded = true;
     $scope.newFootprint = UserRequests.newFootprint;
 
     FootprintRequests.currentTab = 'feed';
@@ -80,12 +84,11 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.photoLarge = FootprintRequests.editedCheckin.photoLarge;
         FootprintRequests.editedCheckin = false;
       }
+      if(FootprintRequests.newFolder) {
+        $scope.viewFoldersList(true);
+        FootprintRequests.newFolder = false;
+      }
     });
-
-    $scope.$on('$ionicView.enter', function (scopes, states) {
-      console.log($ionicHistory.backView());
-
-    })
 
     $scope.updateFeedWithNewFootprint = function() {
       if(UserRequests.newFootprint) {
@@ -102,18 +105,34 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       $scope.$broadcast('scroll.refreshComplete');
     }
 
-    $scope.viewFoldersList = function() {
-      UserRequests.fetchFolders(window.sessionStorage.userFbID, 0, 10)
+    $scope.viewFoldersList = function(reload) {
+      if(reload) {
+        folderPage = 0;
+        $scope.moreFoldersCanBeLoaded = false;
+      }
+      console.log("attemoting to viewfolders");
+      UserRequests.fetchFolders(window.sessionStorage.userFbID, folderPage, folderSkipAmount)
       .then(function (folders) {
-        $scope.folders = folders.data;
-        //remove suggested by friends folder from array;
-        $scope.folders.shift();
-        UserRequests.userFolderData = folders.data
-        console.log($scope.folders)
+        if(folders.data.length > 0) {
+          if(folderPage === 0) {
+          //remove suggested by friends folder from array;
+          folders.data.shift();
+          }
+          $scope.folders = reload ? folders.data : $scope.folders.concat(folders.data);
+          UserRequests.userFolderData = $scope.folders;
+          console.log($scope.folders)
+          if (reload) {
+            $scope.moreFoldersCanBeLoaded = true;
+          }
+          folderPage++; 
+        } else {
+          $scope.moreFoldersCanBeLoaded = false;
+        }
+        $scope.$broadcast('scroll.infiniteScrollComplete');
       })
     };
 
-    $scope.viewFoldersList();
+    // $scope.viewFoldersList();
     $scope.updateFeedWithNewFootprint();
 
     $scope.addCheckinToBucketList = function (footprint, index){
@@ -136,28 +155,32 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       });
     };
 
-    $scope.addFootprintToFolder = function (checkinID, folderName, index) {
+    $scope.addFootprintToFolder = function (checkinID, folderName, footprintIndex, folderIndex) {
       UserRequests.addFootprintToFolder(window.sessionStorage.userFbID, checkinID, folderName)
       .then(function (data) {
-        $scope.footprints[index].folders = [];
-        $scope.footprints[index].folders.push(data.data[0].folder);
+        //add folder label to appropriate footprint
+        $scope.footprints[footprintIndex].folders = [];
+        $scope.footprints[footprintIndex].folders.push(data.data[0].folder);
         $scope.showFootprintAdditionSuccessAlert();
+
+        $scope.viewFoldersList(true);
+
         // console.log(data);
       })
     };
 
-    $scope.createFolderAndAddFootprintToFolder = function (folderName, folderDescription, selectedFootprintCheckinID, index) {
+    $scope.createFolderAndAddFootprintToFolder = function (folderName, selectedFootprintCheckinID, selectedFootprintIndex) {
       // console.log(folderName);
-      // console.log(folderDescription);
-      UserRequests.addFolder(window.sessionStorage.userFbID, folderName, folderDescription)
-      .then(function (data) {
-        console.log(data);
+      UserRequests.addFolder(window.sessionStorage.userFbID, folderName)
+      .then(function (folder) {
         UserRequests.addFootprintToFolder(window.sessionStorage.userFbID, selectedFootprintCheckinID, folderName)
         .then(function (data) {
-          // console.log(data)
-          $scope.footprints[index].folders = [];
-          $scope.footprints[index].folders.push(data.data[0].folder);
+          //add folder label to appropriate footprint
+          $scope.footprints[selectedFootprintIndex].folders = [];
+          $scope.footprints[selectedFootprintIndex].folders.push(data.data[0].folder);
           $scope.showCreationSuccessAlert();
+
+          $scope.viewFoldersList(true);
         })
       });
     };
@@ -191,7 +214,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     };
 
     $scope.passSelectedFolderInfo = function(folder, $index) {
-      $scope.selectedFolder = $index;
+      $scope.selectedFolderIndex = $index;
       $scope.selectedFolderInfo.name = folder.folder.name;
       // $scope.selectedFolderInfo.description = folder.folder.description;
     }
@@ -241,6 +264,63 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       } else {
         $scope.categoryNameIndex = $index;
       }
+    };
+
+    $scope.publishToFacebook = function() {
+      var footprint = $scope.selectedFootprint;
+      var linkObject = {
+        message: '  ',
+        link: 'http://www.gowaddle.com',
+        picture: 'https://s3-us-west-2.amazonaws.com/waddle/logo+assets/WaddleLogo_1024x1024-6-2-5.png',
+        name: $localstorage.getObject('user').name + " suggests " + footprint.place.name + "!",
+        caption: footprint.place.name + " | gowaddle.com",
+        description: null
+      };
+
+      //overwrite default pic (waddle logo) if the footprint has a photo
+      if(footprint.checkin.photoLarge !== "null") {
+        linkObject.picture = footprint.checkin.photoLarge;
+      }
+
+      if(footprint.user.facebookID === window.sessionStorage.userFbID) {
+        linkObject.description = footprint.user.name + " rated " + footprint.place.name + " " + footprint.checkin.rating 
+        + " stars out of 5."
+      } else {
+        linkObject.description = $localstorage.getObject('user').name + "'s friend, " + footprint.user.name + ", rated " + footprint.place.name + " " + footprint.checkin.rating + 
+        + "stars out of 5.";
+      }
+
+      if(footprint.checkin.caption !== "null" ) {
+        linkObject.description +=   " Here's what they said about this place: " + '"' + footprint.checkin.caption + '"';
+      }
+    
+      console.log(linkObject);
+      
+      openFB.login(function() {
+        openFB.api({
+          method: 'POST',
+          path: '/me/feed',
+          params: linkObject,
+          success: function(response) {
+            console.log(response);
+          },
+          error: function(err) {
+            console.log(err);
+          }
+        }), {scope: 'publish_actions'};
+      });
+
+      // ezfb.login(function(){
+      //   // Note: The call will only work if user accepts the permission request
+      //   ezfb.api('/me/feed', 'post', linkObject);
+      // }, {scope: 'publish_actions'})
+      // .then(function (success, err) {
+      //   if(err) {
+      //     console.log(err)
+      //   } else {
+      //     console.log(success);
+      //   }
+      // })
     };
 
     $scope.setShareMessage = function (footprint) {
@@ -335,7 +415,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
             text: '<b>Save</b>',
             type: 'button-positive',
             onTap: function(e) {
-             $scope.addFootprintToFolder($scope.selectedFootprintCheckinID, $scope.selectedFolderInfo.name, $index);
+             $scope.addFootprintToFolder($scope.selectedFootprintCheckinID, $scope.selectedFolderInfo.name, $index, $scope.selectedFolderIndex);
             }
           }
         ]
@@ -362,7 +442,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
             text: '<b>Save</b>',
             type: 'button-positive',
             onTap: function(e) {
-                $scope.createFolderAndAddFootprintToFolder($scope.newFolderInfo.name, $scope.newFolderInfo.description, $scope.selectedFootprintCheckinID, $scope.selectedFootprintIndex);
+                $scope.createFolderAndAddFootprintToFolder($scope.newFolderInfo.name, $scope.selectedFootprintCheckinID, $scope.selectedFootprintIndex);
             }
           }
         ]
@@ -447,6 +527,8 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $timeout(function() {
       $scope.setShareMessage(footprint);
     }, 0);
+
+    $scope.selectedFootprint = footprint;
   };
 
     if($state.current.name === 'footprints-map') {
@@ -522,7 +604,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory', '$localstorage'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory', '$localstorage', 'ezfb'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 

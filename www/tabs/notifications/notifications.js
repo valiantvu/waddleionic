@@ -18,6 +18,14 @@ var NotificationsController = function (Auth, UserRequests, MapFactory, Footprin
       }
     });
 
+    $scope.$on('$ionicView.afterLeave', function(scopes, states) {
+        console.log(states);
+        UserRequests.updateNotificationReadStatus(window.sessionStorage.userFbID)
+        .then(function (data) {
+          console.log(data);
+        })
+    });
+
     $scope.getUserData = function () {
       if(moreUnreadNotificationsCanBeLoaded) {
         $scope.fetchUnreadNotifications();
@@ -34,10 +42,6 @@ var NotificationsController = function (Auth, UserRequests, MapFactory, Footprin
           console.log('unread: ', $scope.notifications);
           page++;
           console.log('page: ', page);
-          UserRequests.updateNotificationReadStatus(window.sessionStorage.userFbID)
-          .then(function (data) {
-            console.log(data);
-          })
         } else {
           moreUnreadNotificationsCanBeLoaded = false;
           page = 0;
@@ -51,6 +55,9 @@ var NotificationsController = function (Auth, UserRequests, MapFactory, Footprin
       UserRequests.fetchReadNotifications(window.sessionStorage.userFbID, page, skipAmount)
       .then(function (notifications) {
         if (notifications.data.length > 0) {
+          // if(page === 0) {
+          //   notifications.data.splice(0, )
+          // }
           console.log(notifications);
           $scope.notifications = $scope.notifications.concat(notifications.data);
           page++;
@@ -88,7 +95,7 @@ var NotificationsController = function (Auth, UserRequests, MapFactory, Footprin
         place: notification.place,
         category: notification.category
       };
-      console.log(FootprintRequests.openFootprint);
+      console.log(FootprintRequests.openFootprintNotifications);
       FootprintRequests.selectedFootprintIndex = index;
     };
 

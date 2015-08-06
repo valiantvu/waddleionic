@@ -1,7 +1,7 @@
 (function(){
 
 // Requests to server sending and retrieving data for specific users
-var UserRequests = function ($http){
+var UserRequests = function ($http, ezfb){
   var userData;
   var productionServerURL = 'http://waddleionic.herokuapp.com';
 
@@ -119,7 +119,7 @@ var UserRequests = function ($http){
       }
     },
 
-    addFolder: function(userFbID, folderName, folderDescription) {
+    addFolder: function(userFbID, folderName) {
       var url = '/api/users/folders/add';
       if(ionic.Platform.isIOS()) {
         url = productionServerURL.concat(url);
@@ -130,8 +130,7 @@ var UserRequests = function ($http){
           url: url,
           data: {
             facebookID: userFbID,
-            folderName: folderName,
-            folderDescription: folderDescription
+            folderName: folderName
           }
         });
       }
@@ -390,7 +389,24 @@ var UserRequests = function ($http){
         url: url,
         data: params
       });
+    },
+
+    publishToFacebook: function (userFbID, linkObject) {
+      var params = {
+        facebookID: userFbID,
+        link: linkObject
+      };
+      var url = '/api/users/publish/facebook';
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      };
+      return $http({
+        method: 'POST',
+        url: url,
+        data: params
+      });
     }
+
   };
 
 };

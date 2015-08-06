@@ -333,7 +333,7 @@ utils.searchFoursquareVenuesMobile = function (user, latlng) {
   var deferred = Q.defer();
 
   var query = {
-    v: '20140512',
+    v: '20150512',
     ll: latlng,
     intent: 'checkin'
   };
@@ -358,6 +358,38 @@ utils.searchFoursquareVenuesMobile = function (user, latlng) {
     deferred.reject(e);
   });
 
+  return deferred.promise;
+}
+
+utils.searchFoursquareVenuesBySearchQueryAndGeolocation = function (user, latlng, query) {
+  var deferred = Q.defer();
+
+  var query = {
+    v: '20150801',
+    ll: latlng,
+    query: query,
+    intent: 'checkin'
+  };
+
+  var oauthToken = user.getProperty('fsqToken');
+
+  if (oauthToken) {
+    query.oauth_token = oauthToken;
+  } else {
+    query.client_id = process.env.WADDLE_FOURSQUARE_CLIENT_ID;
+    query.client_secret = process.env.WADDLE_FOURSQUARE_CLIENT_SECRET;
+  }
+
+  var queryPath = 'https://api.foursquare.com/v2/venues/search?' + qs.stringify(query);
+
+  helpers.httpsGet(queryPath)
+  .then(function (data) {
+    var venues = JSON.parse(data).response.venues;
+    deferred.resolve(venues);
+  })
+  .catch(function (e) {
+    deferred.reject(e);
+  });
   return deferred.promise;
 }
 

@@ -93,6 +93,7 @@ Checkin.addToFolder = function (facebookID, checkinID, folderName) {
     'MATCH (user:User {facebookID: {facebookID}})',
     'MATCH (checkin:Checkin {checkinID: {checkinID}})',
     'MATCH (user)-[:hasFolder]->(folder:Folder {name:{folderName}})',
+    'SET folder.updatedAt = timestamp()',
     'MERGE (user)-[bucket:hasBucket]->(checkin)',
     'ON CREATE SET bucket.createdAt = timestamp()',
     'MERGE (folder)-[contains:containsCheckin]->(checkin)',
@@ -201,6 +202,33 @@ Checkin.addComment = function (clickerID, checkinID, text, checkinTime){
     if (err) { deferred.reject(err); }
     else {
       deferred.resolve(results);
+    }
+  });
+
+  return deferred.promise;
+};
+
+Checkin.editComment = function (facebookID, checkinID, commentID, commentText) {
+  var deferred = Q.defer();
+
+  var query = [
+  'MATCH (clicker:User{facebookID:{facebookID}})-[rel1:madeComment]->(comment:Comment{commentID: {commentID}})-[rel2:gotComment]->(checkin:Checkin {checkinID:{checkinID}})',
+  'SET comment.text = {commentText}',
+  'RETURN comment.text'
+  ].join('\n');
+
+  var params = {
+    facebookID: facebookID,
+    checkinID: checkinID,
+    commentID: commentID,
+    commentText: commentText
+  };
+
+  db.query(query, params, function (err, results) {
+    if (err) { deferred.reject(err); }
+    else {
+      console.log(results[0]);
+      deferred.resolve({text: results[0]['comment.text']});
     }
   });
 
@@ -441,6 +469,13 @@ Checkin.deleteFootprint = function (facebookID, checkinID) {
    'OPTIONAL MATCH (checkin)-[hCRead:hasReadNotification]->(folder)',
    'DELETE checkin, hCheckin, hPlace, hBucket, gComment, comment, mComment, hUnread, hRead, cCheckin, hCUnread, hCRead'
   ].join('\n');
+
+  // var query = [
+  //  'MATCH (user:User {facebookID:{facebookID}})-[hCheckin:hasCheckin]->(checkin:Checkin{checkinID:{checkinID}})', 
+  //  'MATCH (checkin)-[a]-(b)',
+  //  'OPTIONAL MATCH (checkin)<-[gComment:gotComment]-(comment:Comment)<-[mComment:madeComment]-(commenter:User)', 
+  //  'DELETE checkin, a, comment, mComment'
+  // ].join('\n');
   
   var params = {
     'facebookID': facebookID,

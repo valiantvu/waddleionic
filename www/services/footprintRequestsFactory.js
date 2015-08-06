@@ -11,6 +11,7 @@ var FootprintRequests = function ($http){
   var editedCheckin;
   var openFolder;
   var openFolderIndex;
+  var newFolder;
   var footprints;
   var currentTab;
   var productionServerURL = 'http://waddleionic.herokuapp.com';
@@ -69,6 +70,18 @@ var FootprintRequests = function ($http){
       }
     },
 
+    editComment: function (data) {
+      var url = '/api/checkins/comment/edit';
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
+      return $http({
+        method : 'POST',
+        data : data,
+        url : url
+      });
+    },
+
     removeComment : function(data) {
       var url = '/api/checkins/removecomment';
       if(ionic.Platform.isIOS()) {
@@ -106,6 +119,23 @@ var FootprintRequests = function ($http){
           url : url
         });
       }
+    },
+
+    removeFootprintFromFavorites: function (facebookID, checkinID) {
+      var url = '/api/checkins/folders/removefavorite';
+      if(ionic.Platform.isIOS()) {
+        url = productionServerURL.concat(url);
+      }
+      var data = {
+        facebookID: facebookID,
+        checkinID: checkinID
+      };
+
+      return $http({
+        method: 'POST',
+        data: data,
+        url: url
+      });
     },
 
     getFoursquareVenueInfo: function (foursquareVenueID, facebookID) {

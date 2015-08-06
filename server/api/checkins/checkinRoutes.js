@@ -3,6 +3,7 @@ var checkinController = require('./checkinController.js');
 module.exports = function (app) {
   app.get('/venuesearchweb/:facebookID/:query/:near', checkinController.searchFoursquareVenuesWeb);
   app.get('/venuesearchmobile/:facebookID/:lat/:lng', checkinController.searchFoursquareVenuesMobile);
+  app.get('/venuesearch/geolocation/query/:facebookID/:lat/:lng/:query', checkinController.searchFoursquareVenuesBySearchQueryAndGeolocation);
   app.get('/venue/:venueID/:facebookID', checkinController.getVenueInfo);
   app.post('/nativecheckin', checkinController.handleNativeCheckin);
   app.post('/nativecheckin/edit', checkinController.editNativeCheckin);
@@ -12,14 +13,16 @@ module.exports = function (app) {
   app.post('/realtimeinstagram', checkinController.handleIGPost);
   app.get('/realtimefacebook', checkinController.facebookHubChallenge);
   app.post('/realtimefacebook', checkinController.handleFBPost);
+  app.post('/request_token/twitter', checkinController.requestTokenFromTwitter);
 
   //Routes for user actions
   app.post('/bucketlist', checkinController.addToBucketList);
   app.post('/removebucket', checkinController.removeFromBucketList);
   app.post('/folder', checkinController.addToFolder);
-  app.post('/removefromfolder', checkinController.removeFromFolder);
-  app.post('/removefromfavorites', checkinController.removeFromFavorites);
+  app.post('/folder/remove', checkinController.removeFromFolder);
+  app.post('/folders/removefavorite', checkinController.removeFromFavorites);
   app.post('/comment', checkinController.addComment);
+  app.post('/comment/edit', checkinController.editComment);
   app.post('/removecomment', checkinController.removeComment);
   app.post('/props', checkinController.giveProps);
   app.post('/delete', checkinController.deleteFootprint);

@@ -116,10 +116,25 @@ p{
 
 .searchbox {
 	border-radius: 25px;
-	height: 2em;
+	height: 1.8em;
+	margin-bottom: -0.5em;
 	width: auto;
-	margin-right: .3em;
-	margin-left: .3em;
+	margin-right: 0.5em;
+	margin-left: 0.5em;
+}
+
+.searchbox-top {
+	border-radius: 25px;
+	height: 1.6em;
+	width: auto;
+	margin-top: 0.15em;
+	margin-right: 1em;
+	margin-left: 1em;
+}
+
+.search-bottom {
+	margin-top: -0.75em;
+	margin-bottom: 0.5em;
 }
 
 .searchinput {
@@ -172,6 +187,29 @@ h6 {
 	font-family: 'Open Sans', sans-serif;
 	font-size: 14px;
 	font-weight: 400;
+}
+input[type="text"] {
+	font-family: 'Open Sans', sans-serif;
+	line-height: 1.6em;
+  font-size: 12px;
+}
+
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  line-height: 1.6em;
+}
+
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  line-height: 1.6em;
+}
+
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  line-height: 1.6em;
 }
 
 i.icon.ion-record {
@@ -748,8 +786,8 @@ span{
 	display: inline-block;
 	position: absolute;
 	top: 1.4em;
-	width: 83vw;
-
+	width: 82vw;
+	left: 3.5em;
 }
 
 .newcomment {
@@ -855,7 +893,7 @@ span{
 	/*border-radius: 10px;*/
 	background-color: #eee;
 	border: none;
-	width: 75vw;
+	width: 77vw;
 	/*padding-right: 0.5em !important;*/
 }
 
@@ -868,7 +906,7 @@ span{
 
 .review-text {
 	border-radius: 10px;
-	height: 10em;
+	height: 6em;
 	width: 100%;
 	background-color: #eee;
 	border: none;
@@ -893,6 +931,12 @@ span{
 .notifications-message2 {
 	margin-top: -0.3em;
 }
+
+.margin-zero {
+	margin-top: 0 !important;
+	margin-left: 10px;
+}
+
 
 .savefave {
 	margin-bottom: -10px;
@@ -925,6 +969,10 @@ border-radius: 0px;
 
 .selected {
 	background-color: #dbdbdb;
+}
+
+.folderList {
+	margin-left: 10px;
 }
 
 .folder-tab-curve {
@@ -1290,6 +1338,17 @@ div.share-option-icon {
 
 .clock-comment-footprint {
 	margin-top: 0.2em;
+}
+
+.clock-comments-list {
+	margin-right: -4px;
+	margin-bottom: -1px;
+}
+
+.timestamp-comments-list {
+	display: inline-block; 
+	position:absolute; 
+	right: 5px;
 }
 
 .clock-notifications {

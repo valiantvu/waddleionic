@@ -1,6 +1,8 @@
 var https = require('https');
 var _ = require('lodash');
 var Q = require('q');
+var request = require('request');
+var qs = require('querystring');
 
 var helpers = {};
 
@@ -18,6 +20,25 @@ helpers.httpsGet = function (queryPath) {
   }).on('error', function(err) {
     deferred.reject(err);
   });
+
+  return deferred.promise;
+};
+
+helpers.httpsPost = function (queryPath, headers, body) {
+  console.log(queryPath);
+  var deferred = Q.defer();
+
+  request.post({
+    uri: queryPath,
+    headers: headers,
+    body: qs.stringify(body)
+  }, function (err, res, body) {
+       console.log('my posting bodayy', body);
+       console.log('my lil res', res);
+       console.log(err);
+       // console.log(res.statusCode);
+       deferred.resolve(body);
+  })
 
   return deferred.promise;
 };

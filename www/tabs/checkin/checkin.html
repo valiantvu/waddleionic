@@ -1,32 +1,37 @@
 
 <!-- Header Bar -->
 <ion-header-bar align-title="center" class="bg-header">
-<div class="buttons">
-    <button class="button button-icon icon waddle-search light" ng-click="toggleSearch()"></button>
-  </div>
-  <h1 class="title">select a venue</h1>
+<!-- <div class="buttons">
+    <button ng-if="!showSearch" class="button button-icon icon waddle-search light" ng-click="toggleSearch()"></button>
+    <button ng-if="showSearch" class="button button-icon icon ion-arrow-left-b" ng-click="toggleSearch()"></button>
+</div> -->
+<h1 class="title">select a venue to review</h1>
 </ion-header-bar>
 
 <ion-view cache-view="false" title="Checkins">
   <ion-content class="padding bg-scroll">
 
-    <div ng-show="showSearch" class="list">
-      <div class="item item-input-inset searchbox">
+    <!-- <div ng-show="showSearch" class="list"> -->
+      <div class="item item-input-inset searchbox-top">
         <label class="item-input-wrapper white-bg">
           <i class="icon waddle-search placeholder-icon"></i>
-          <input id="folder-search" type="text" placeholder="type in the name of the place (required)" ng-keyup="searchFoursquareVenuesByKeyword()" ng-model="search.query">
+          <input id="folder-search" type="text" placeholder="search by venue name" ng-keyup="searchFoursquareVenuesBySearchQueryAndNearKeyword()" ng-model="search.query">
         </label>
           <button class="button button-clear" ng-if="searchFolders.query" ng-click="clearSearch()">x</button>
           <!-- <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button> -->
       </div>
       <br>
-      <div class="item item-input-inset searchbox">
+      <div class="item item-input-inset searchbox-top search-bottom">
         <label class="item-input-wrapper white-bg">
-          <input type="text" placeholder="type in a city or state (required)" ng-keyup="searchFoursquareVenuesByKeyword()" ng-model="search.near">
+          <input type="text" placeholder="near me" ng-keyup="searchFoursquareVenuesBySearchQueryAndNearKeyword()" ng-model="search.near">
         </label>
         <button class="button button-clear" ng-if="searchFolders.query" ng-click="clearSearch()">x</button>
       </div>
-    </div>
+      <div ng-if="err" class="item item-text-wrap">
+        <h5>{{err}}</h5>
+      </div>
+      <h4 class="white-text">{{error}}</h4>
+    <!-- </div> -->
      <!--  <h2>{{location}}</h2> -->
     <div class="item item-avatar item-text-wrap notifications-list" ng-repeat="venue in venues" ui-sref="tab.checkin-post" ng-click='passSelectedVenueInfoToPostTab(venue)' ui-sref-opts="{reload: true}">
         <img class="waddlebadge-checkin-list" ng-src="{{venue.iconUrlPrefix}}40x40{{venue.iconUrlSuffix}}">
@@ -37,7 +42,7 @@
 
   <ion-infinite-scroll
     on-infinite="getUserData()"
-    ng-if="!venues"
+    ng-if="!venues && !err"
     distance="10%">
   </ion-infinite-scroll>
   <h5 class="white-text margin-indent" ng-if="venues">No more results to show!</h5>
