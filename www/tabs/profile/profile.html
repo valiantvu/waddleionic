@@ -1,9 +1,12 @@
 <!-- Header Bar -->
 <ion-header-bar align-title="center" class="bg-header">
+  <div class="buttons">
+    <button ng-click="goBack();" class="transparentbutton button button-icon icon"><i class="icon ion-arrow-left-b"></i></button>
+
+  </div>
   <h1 class="title">me</h1>
   <div class="buttons">
     <button ng-click="openModal();" class="transparentbutton button button-icon icon"><i class="icon ion-gear-a light"></i></button>
-
   </div>
 </ion-header-bar>
 
@@ -100,10 +103,10 @@
 
 <div ng-repeat="friend in friends" ng-if='friend.footprintsCount >= 0' class="item item-avatar notifications-list">
 
-  <div class="item item-avatar" ng-click="switchProfilePage(friend)">
+  <div class="item item-avatar" ng-click="switchProfilePage(friend)" ui-sref="tab.profile-friend">
 
     <!-- Profile Picture -->
-    <img class="commentslist-propic" ng-src='{{friend.fbProfilePicture}}' ng-click="switchProfilePage(friend)">
+    <img class="commentslist-propic" ng-src='{{friend.fbProfilePicture}}' ng-click="switchProfilePage(friend)" ui-sref="tab.profile-friend">
 
     <!-- User Name -->
     <!-- <h2>{{friend.user.name}}</h2> -->
@@ -111,10 +114,10 @@
     <div class="row">
       <!-- Location -->
       <div class="col col-73">
-        <h2 class='feeditemname' ng-click="switchProfilePage(friend)">
+        <h2 class='feeditemname' ng-click="switchProfilePage(friend)" ui-sref="tab.profile-friend">
           {{friend.name}}
         </h2>
-        <h3 class='feeditemname' ng-click="switchProfilePage(friend)">
+        <h3 class='feeditemname' ng-click="switchProfilePage(friend)" ui-sref="tab.profile-friend">
           {{friend.footprintsCount}} footprints
         </h3>
       </div>

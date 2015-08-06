@@ -12,6 +12,14 @@ var UserRequests = function ($http, ezfb){
     userProfileData: null,
     userFolderData: null,
 
+    // Stores the user data for a friend's profile
+    friends: {
+      profile: 1,
+      home: 1,
+      folders: 1,
+      notifications: 1
+    },
+
     // Sends request to server with relevant user data 
     // for creation of new user or retrieval of existing user' checkins/data
     sendUserData: function (data) {
@@ -45,6 +53,7 @@ var UserRequests = function ($http, ezfb){
     // this allows the viewer to see whether they have liked another user's checkin
 
     getUserData: function (userFbID, viewerID) {
+      console.log(userFbID, viewerID);
       var url = '/api/users/' + userFbID + "/" + viewerID;
       
       if (arguments[2] !== undefined) {
@@ -67,6 +76,11 @@ var UserRequests = function ($http, ezfb){
           url: url
         });
       }
+    },
+
+    getFriendProfileData: function (tab) {
+      console.log('getting friend profile data for tab: ', tab);
+      return this.getUserData(this.friends[tab], window.sessionStorage.userFbID, 0, 5);
     },
 
     getAggregatedFeedData:function (userFbID) {
