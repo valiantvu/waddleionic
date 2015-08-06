@@ -62,7 +62,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       if(friends.length) {
         $scope.showFriendsList();
       } else {
-        // $scope.getUserProfileData();
+        $scope.getUserProfileData();
       }
     };
 
