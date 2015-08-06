@@ -84,6 +84,10 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.photoLarge = FootprintRequests.editedCheckin.photoLarge;
         FootprintRequests.editedCheckin = false;
       }
+      if(FootprintRequests.newFolder) {
+        $scope.viewFoldersList(true);
+        FootprintRequests.newFolder = false;
+      }
     });
 
     $scope.updateFeedWithNewFootprint = function() {

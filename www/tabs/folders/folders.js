@@ -105,6 +105,7 @@ var FoldersController = function (Auth, UserRequests, FootprintRequests, $ionicM
         // $scope.folders = [];
         $scope.getUserData(true);
         $scope.showCreationSuccessAlert();
+        FootprintRequests.newFolder = true;
       });
     };
 

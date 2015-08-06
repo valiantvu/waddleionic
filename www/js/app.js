@@ -113,12 +113,14 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
           templateUrl: 'tabs/checkin/checkin.html',
           controller: 'CheckinController'
         }
-      },
-      resolve: {
-        location: function(NativeCheckin) {
-          return NativeCheckin.getCurrentLocation();
-        }
       }
+      // resolve: {
+      //   location: function(NativeCheckin) {
+      //     ionic.Platform.ready(function(){
+      //       return NativeCheckin.getCurrentLocation();
+      //     });
+      //   }
+      // }
     })
     .state('tab.checkin-post', {
       cache: false,

@@ -11,6 +11,7 @@ var FootprintRequests = function ($http){
   var editedCheckin;
   var openFolder;
   var openFolderIndex;
+  var newFolder;
   var footprints;
   var currentTab;
   var productionServerURL = 'http://waddleionic.herokuapp.com';

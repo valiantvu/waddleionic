@@ -86,30 +86,39 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
         return deferred.promise;
     },
 
-    getCurrentLocation: function() {
+    getCurrentLocation: function(successCallback, errCallback) {
       console.log('getting currentLocation');
-      // var options = {
-      //   enableHighAccuracy: false,
-      //   timeout: 30000,
-      //   maximumAge: 0
-      // };
-      return $cordovaGeolocation.getCurrentPosition({timeout: 5000, enableHighAccuracy: false})
-      .then(function (position) {
-        console.log(position);
-        return position;
-      }, function (err) {
-        return err;
+      // return $cordovaGeolocation.getCurrentPosition({timeout: 5000, enableHighAccuracy: false})
+      // .then(function (position) {
+      //   console.log(position);
+      //   return position;
+      // }, function (err) {
+      //   return err;
+      // });
+      var options = {
+        enableHighAccuracy: false,
+        timeout: 5000,
+        maximumAge: 0
+      };
+
+      $ionicPlatform.ready(function() {
+        //if the geolocation object has no methods, then user has likely denied location permissions
+        if(!navigator.geolocation.length) {
+          navigator.geolocation.getCurrentPosition(
+            function(position) {
+              console.log(position);
+              return successCallback(position);
+            },
+            function(err) {
+              return errCallback(err);
+            },
+            options
+          );
+        } else {
+          //return location permissions denied error code
+          return errCallback({code: 1});
+        }
       });
-      // return navigator.geolocation.getCurrentPosition(
-      //   function(position) {
-      //     console.log(position);
-      //     return callback(position);
-      //   },
-      //   function(err) {
-      //     return err;
-      //   },
-      //   options
-      // );
     },
 
     watchPosition: function() {
