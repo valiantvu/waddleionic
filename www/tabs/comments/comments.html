@@ -32,7 +32,7 @@
          </form>
          <h6 ng-if="editing === $index" class="comment-limit">{{120 - editText.text.length}}</h6>
          <ion-option-button ng-if="checkEditPermissions($index)" class="button-active" ng-click="editComment($index)">edit</ion-option-button>
-         <ion-option-button ng-if="checkDeletePermissions($index)" class="button-active" ng-click="deleteComment($index)">delete</ion-option-button>
+         <ion-option-button ng-if="checkDeletePermissions($index)" class="button-assertive" ng-click="deleteComment($index)">delete</ion-option-button>
       </ion-item>
     <ion-list>
 

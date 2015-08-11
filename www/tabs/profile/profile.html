@@ -1,8 +1,7 @@
 <!-- Header Bar -->
 <ion-header-bar align-title="center" class="bg-header">
-  <div class="buttons">
+  <div ng-if="backButton" class="buttons">
     <button ng-click="goBack();" class="transparentbutton button button-icon icon"><i class="icon ion-arrow-left-b"></i></button>
-
   </div>
   <h1 class="title">me</h1>
   <div class="buttons">
@@ -26,7 +25,7 @@
 
 
     <div class="list profile-search">
-      <div class="item item-input-inset searchbox">
+      <div class="item item-input-inset profile-searchbox searchbox">
         <label class="item-input-wrapper white-bg">
           <input type="text" placeholder="{{searchPlaceHolder}}" ng-keyup="bifurcateSearch()" ng-model="search.query">
         </label>
@@ -125,6 +124,7 @@
   </div>
 </div>
 </div>
+<h5 class="white-text margin-indent" ng-if="friendsNotViewable">{{friendsNotViewable}}</h5>
 
   <ion-infinite-scroll
     on-infinite="getCorrectData()"
@@ -145,9 +145,9 @@
       <ul class="list">
       <h4>Connect Accounts</h4>
         <li class="item item-toggle">
-          Foursquare
+          Foursquare (coming soon!)
           <label class="toggle toggle-assertive">
-            <input type="checkbox"  ng-checked="foursquareConnected" ng-disabled="foursquareConnected" ng-click="addFoursquare()">
+            <input type="checkbox"  ng-checked="foursquareConnected" ng-disabled="!foursquareConnected" ng-click="addFoursquare()">
             <div class="track">
               <div class="handle"></div>
             </div>
@@ -155,9 +155,9 @@
        </li>
 
        <li class="item item-toggle">
-          Instagram
+          Instagram (coming soon!)
           <label class="toggle toggle-assertive">
-            <input type="checkbox" ng-checked="instagramConnected" ng-disabled="instagramConnected" ng-click="addInstagram()">
+            <input type="checkbox" ng-checked="instagramConnected" ng-disabled="!instagramConnected" ng-click="addInstagram()">
             <div class="track">
               <div class="handle"></div>
             </div>

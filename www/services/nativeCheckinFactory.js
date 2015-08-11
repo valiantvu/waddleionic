@@ -1,6 +1,6 @@
 (function(){
 
-var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
+var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $timeout){
   var productionServerURL = 'http://waddleionic.herokuapp.com';
 
   return {
@@ -97,25 +97,35 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
       // });
       var options = {
         enableHighAccuracy: false,
-        timeout: 5000,
+        timeout: 3000,
         maximumAge: 0
       };
 
       $ionicPlatform.ready(function() {
-        //if the geolocation object has no methods, then user has likely denied location permissions
-        if(!navigator.geolocation.length) {
+ 
+        if(navigator.geolocation) {
+          console.log(Object.keys(navigator.geolocation.__proto__));
+
+          //called if getCurrentPosition never returns either success or err
+          var locationTimeout = $timeout(function() {
+            return errCallback({code: 1, message:"User denied location permissions"})
+          }, 3100);
+
           navigator.geolocation.getCurrentPosition(
             function(position) {
+              $timeout.cancel(locationTimeout);
               console.log(position);
               return successCallback(position);
             },
             function(err) {
+              console.log('nativecheckin', err);
+              $timeout.cancel(locationTimeout);
               return errCallback(err);
             },
             options
           );
         } else {
-          //return location permissions denied error code
+          //triggered if geolocation is unavailable
           return errCallback({code: 1});
         }
       });
@@ -148,7 +158,7 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform){
   }; 
 };
 
-NativeCheckin.$inject = ['$http', '$q', '$cordovaGeolocation', '$ionicPlatform'];
+NativeCheckin.$inject = ['$http', '$q', '$cordovaGeolocation', '$ionicPlatform', '$timeout'];
 
 //Start creating Angular module
 angular.module('waddle.services.nativeCheckin', [])  

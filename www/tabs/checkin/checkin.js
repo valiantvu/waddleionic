@@ -6,11 +6,6 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicScrollDel
  $scope.showSearch = false;
  var currentLocation = {};
 
-	// var currentLocation = {
-	// 	lat: location.coords.latitude,
-	// 	lng: location.coords.longitude
-	// };
-
 	$scope.toggleSearch = function() {
       $scope.showSearch = $scope.showSearch === true ? false : true;
       if ($scope.showSearch) {
@@ -45,10 +40,6 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicScrollDel
 		}
 	};
 
-	// $scope.searchFoursquareVenuesBySearchQueryAndGeolocation = function () {
-
-	// }
-
 	$scope.searchFoursquareVenuesByGeolocation = function () {
 		// 	NativeCheckin.searchFoursquareVenuesByGeolocation(window.sessionStorage.userFbID, currentLocation)
 		// 	.then(function (venues) {
@@ -57,7 +48,6 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicScrollDel
 		// });
     NativeCheckin.getCurrentLocation(
     	function(location) {
-
     		console.log(location);
     		currentLocation = {
     			lat: location.coords.latitude,
@@ -69,14 +59,15 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicScrollDel
     		})
       },
       function (err) {
-    	$scope.error = err;
+      	$scope.err = {};
       	if(err.code === 1) {
-      		$scope.err = 'Oh no! Looks like you didn’t allow location services! This makes it harder for you to search for places to review. To enable location permissions, either 1) restart Waddle, tap the star tab, and tap "OK" on the pop-up dialog or 2) go to Settings on your iPhone —> scroll down to your list of apps —> select Waddle —> tap Location under ‘Allow Waddle to Access” —> select “While Using”';
+      		$scope.err.message1 = 'Oh no! Looks like you didn’t allow location services!'; 
+      		$scope.err.message2 = 'This makes it harder for you to search for places to review. To enable location permissions, either 1) restart Waddle, tap the star tab, and tap "OK" on the pop-up dialog or 2) go to Settings on your iPhone —> scroll down to your list of apps —> select Waddle —> tap Location under ‘Allow Waddle to Access” —> select “While Using App”';
       	} else {
-      		$scope.err = "Oh no! Looks like something went wrong with accessing your current location. Re-start the app and try again!";
+      		$scope.err.message1 = "Oh no! Looks like something went wrong with accessing your current location. Re-start the app and try again!";
       	}
-      console.log(err);
-    });
+      }
+    );
 	};
 
 	$scope.passSelectedVenueInfoToPostTab = function (venueInfo) {

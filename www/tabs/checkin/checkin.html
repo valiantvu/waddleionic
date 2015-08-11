@@ -12,25 +12,24 @@
   <ion-content class="padding bg-scroll">
 
     <!-- <div ng-show="showSearch" class="list"> -->
-      <div class="item item-input-inset searchbox-top">
+      <div class="item item-input-inset search-query search-icon-settings searchbox-top">
         <label class="item-input-wrapper white-bg">
-          <i class="icon waddle-search placeholder-icon"></i>
-          <input id="folder-search" type="text" placeholder="search by venue name" ng-keyup="searchFoursquareVenuesBySearchQueryAndNearKeyword()" ng-model="search.query">
+          <input type="text" placeholder="search by venue name" ng-keyup="searchFoursquareVenuesBySearchQueryAndNearKeyword()" ng-model="search.query">
         </label>
           <button class="button button-clear" ng-if="searchFolders.query" ng-click="clearSearch()">x</button>
           <!-- <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button> -->
       </div>
       <br>
-      <div class="item item-input-inset searchbox-top search-bottom">
+      <div class="item item-input-inset searchbox-top search-icon-settings search-near search-bottom">
         <label class="item-input-wrapper white-bg">
           <input type="text" placeholder="near me" ng-keyup="searchFoursquareVenuesBySearchQueryAndNearKeyword()" ng-model="search.near">
         </label>
         <button class="button button-clear" ng-if="searchFolders.query" ng-click="clearSearch()">x</button>
       </div>
-      <div ng-if="err" class="item item-text-wrap">
-        <h5>{{err}}</h5>
+      <div ng-if="err && !venues" class="item item-text-wrap">
+        <h3>{{err.message1}}<h3>
+        <h5>{{err.message2}}</h5>
       </div>
-      <h4 class="white-text">{{error}}</h4>
     <!-- </div> -->
      <!--  <h2>{{location}}</h2> -->
     <div class="item item-avatar item-text-wrap notifications-list" ng-repeat="venue in venues" ui-sref="tab.checkin-post" ng-click='passSelectedVenueInfoToPostTab(venue)' ui-sref-opts="{reload: true}">

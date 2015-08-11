@@ -123,6 +123,10 @@ p{
 	margin-left: 0.5em;
 }
 
+.profile-searchbox {
+	margin-bottom: -0.125em;
+}
+
 .searchbox-top {
 	border-radius: 25px;
 	height: 1.6em;
@@ -291,6 +295,22 @@ i.icon.ion-record {
 	width: 30vw !important;
 	border: none; 
 	color: white
+}
+
+.search-icon-settings {
+  padding-left: 25px;
+	background-size: 15px;
+  background-repeat:no-repeat;
+  background-position-x: 2.5%;
+  background-position-y: 50%; 
+}
+
+.search-query {
+	background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/search-grey-1.svg');
+}
+
+.search-near {
+	background-image: url('https://s3-us-west-2.amazonaws.com/waddle/app+assets/navigation-2.svg');
 }
 
 span{
