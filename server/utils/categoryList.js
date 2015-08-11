@@ -551,7 +551,7 @@ categories.dictionary = {
   },
   "French Restaurant": {
    prefix: "https://s3-us-west-2.amazonaws.com/waddle/Badges/frenchrestaurant-",
-   suffix: "-2.svg"
+   suffix: "-1.svg"
   },
   "Fried Chicken Joint": {
    prefix: "https://s3-us-west-2.amazonaws.com/waddle/Badges/southernsoulfood-",
