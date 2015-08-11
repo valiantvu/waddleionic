@@ -82,7 +82,7 @@
           <p ng-if="!checkUserID(footprint) && openFolder === 'Suggested By Friends'">Suggested by {{footprint.suggester.name}} via {{footprint.user.name}}</p>
           <p ng-if="checkUserID(footprint) && openFolder === 'Suggested By Friends'">Suggested by {{footprint.suggester.name}}</p>
         </div>
-        <ion-option-button class="button-active" ng-click="showRemoveFootprintFromFolderPopup(footprint.checkin.checkinID, $index)">delete</ion-option-button>
+        <ion-option-button class="button-assertive" ng-click="showRemoveFootprintFromFolderPopup(footprint.checkin.checkinID, $index)">delete</ion-option-button>
       </ion-item>
     </ion-list>
 

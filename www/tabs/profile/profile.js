@@ -1,6 +1,6 @@
 (function(){
 
-var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintRequests, $ionicModal, $ionicPopup, $timeout, moment, $localstorage) {
+var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintRequests, $ionicModal, $ionicPopup, $ionicHistory, $timeout, moment, $localstorage, friend, $ionicScrollDelegate) {
 
 	Auth.checkLogin()
   .then(function () {
@@ -14,7 +14,9 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     var folderSkipAmount = 10;
     $scope.footprints = [];
     $scope.folders = [];
-    var user = window.sessionStorage.userFbID;
+    console.dir(friend);
+    var user = friend ? friend.user.facebookID : window.sessionStorage.userFbID;
+    console.log(user);
     $scope.moreDataCanBeLoaded = true;
     $scope.moreFriendsCanBeLoaded = true;
     $scope.moreFoldersCanBeLoaded = true;
@@ -24,13 +26,19 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     $scope.newFolderInfo = {};
 		$scope.foursquareConnected = false;
 		$scope.instagramConnected = false;
+    $scope.backButton = false;
 
 		FootprintRequests.currentTab = 'me';
+    if($state.current.name === "tab.profile-friend") {
+      $scope.backButton = true;
+    }
 
     $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
-      console.log($previousRoute)
-      if($previousRoute.url === "/profile") {
+
+      $ionicScrollDelegate.scrollTop();
+      if($previousRoute.url === "/profile-friend") {
         FootprintRequests.currentTab = 'me';
+        reloadData();
       }
       if(FootprintRequests.editedCheckin) {
         $scope.footprints[FootprintRequests.selectedFootprintIndex].checkin.rating = FootprintRequests.editedCheckin.rating;
@@ -40,7 +48,27 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       }
     });
 
+    var reloadData = function() {
+      console.log('reloading data');
+      if (!friend) {
+        friendsPage = 0;
+        friends = [];
+        $scope.moreFriendsCanBeLoaded = true;
+        $scope.getCorrectData();
+      } else {
+        console.dir(friend);
+        $scope.user = friend.user.facebookID;
+        $scope.userInfo = friend.user;
+        $scope.searchPlaceHolder = "search footprints";
+        $scope.footprints = friend.footprints;
+        page++;
+        console.log('page: ', page);
+      }
+    };
+
     $scope.getCorrectData = function () {
+      console.log('getting correct data');
+      console.dir($state.current);
       if(friends.length) {
         $scope.showFriendsList();
       } else {
@@ -66,7 +94,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 			// else {
 			// 	getOwnProfileData();
 			// }
-          console.log('hello again')
+      console.log(footprints);
       $scope.searchPlaceHolder = 'search footprints'
       console.log(user);
       UserRequests.getUserData(user, window.sessionStorage.userFbID, page, skip)
@@ -74,11 +102,11 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
         console.log(data.data);
         $scope.userInfo = data.data.user;
         if(data.data.footprints.length > 0) {
-          console.log(data.data);
           footprints = data.data.footprints;
           $scope.footprints = $scope.footprints.concat(footprints);
           page++;
           console.log('page: ', page);
+          console.log('friend page: ', friendsPage);
           // $scope.getUserProfileData();
         } else {
           $scope.moreDataCanBeLoaded = false;
@@ -89,9 +117,15 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
           // if($scope.userInfo.instagramID) {
           //  $scope.instagramConnected = true;
           // }
+
         $scope.$broadcast('scroll.infiniteScrollComplete');
       })
+      .catch(function(error) {
+        console.log(error);
+      });
 		};
+
+    // reloadData();
 
 		$scope.checkUserID = function(facebookID) {
       if(facebookID === window.sessionStorage.userFbID) {
@@ -102,12 +136,16 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     };
 
 		$scope.showFriendsList = function () {
-			$scope.hypelist = null;
-			$scope.footprints = [];
+      $scope.hypelist = null;
+      $scope.footprints = [];
       footprints = [];
       $scope.moreDataCanBeLoaded = true;
       page = 0;
       $scope.searchPlaceHolder = 'search friends'
+      if($state.current.name === "tab.profile-friend") {
+        $scope.friendsNotViewable = "You can't see your friends' friends right now. Sorry!";
+        return;
+      }
 
 			// if(friends.length) {
    //      console.log($scope.friends);
@@ -130,6 +168,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 				})
 			// }
 		};
+
 
 		$scope.showFootprints = function () {
       $scope.searchPlaceHolder = 'search footprints'
@@ -160,22 +199,25 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
 		$scope.switchProfilePage = function (newUser) {
       page = 0;
-      console.log(newUser);
-      user = newUser.facebookID;
-      $scope.userInfo = newUser;
-      $scope.footprints = [];
+      // console.log('switching profile page: ', newUser);
+      // user = newUser.facebookID;
+      UserRequests.friends.profile = newUser.facebookID;
+      // $scope.userInfo = newUser;
+      // $scope.footprints = [];
 			// UserRequests.userProfileData = userInfo;
 	
 			$scope.friends = [];
 			friends = [];
-      $scope.getUserProfileData();
+
+      $state.go('tab.profile-friend');
+      // $scope.getUserProfileData();
       // getOwnProfileData();
 		};
 
 		
 		$scope.searchUserFootprints = function () {
-      if($scope.search.query.length > 2) {
-        UserRequests.searchUserFootprints($scope.userInfo.facebookID, $scope.search.query, 0, 10)
+      if($scope.search.query.length > 0) {
+        UserRequests.searchUserFootprints($scope.userInfo.facebookID, $scope.search.query, 0, 20)
         .then(function(footprints) {
           $scope.footprints = footprints.data;
           $scope.moreDataCanBeLoaded = false;
@@ -185,22 +227,22 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
 
 		$scope.searchFriendsList = function () {
-      if($scope.search.query.length > 2) {
-        UserRequests.searchFriendsList($scope.userInfo.facebookID, $scope.search.query, 0, 10)
+      if($scope.search.query.length > 0) {
+        UserRequests.searchFriendsList($scope.userInfo.facebookID, $scope.search.query, 0, 20)
         .then(function (friends) {
         	console.log(friends);
           $scope.friends = friends.data;
-          $scope.moreDataCanBeLoaded = false;
+          $scope.moreFriendsCanBeLoaded = false;
         })
       }
     };
 
     $scope.bifurcateSearch = function () {
-    	if($scope.footprints) {
+    	if($scope.searchPlaceHolder === "search footprints") {
     		console.log('footprintsss')
     		$scope.searchUserFootprints();
     	}
-    	else if($scope.friends) {
+    	else if($scope.searchPlaceHolder === "search friends") {
     		console.log('freidsss')
     		$scope.searchFriendsList();
     	}
@@ -210,10 +252,10 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       $scope.search = {};
       page = 0;
       $scope.moreDataCanBeLoaded = true;
-      if($scope.footprints) {
+      if($scope.searchPlaceHolder === "search footprints") {
 	      $scope.showFootprints();
       }
-      else if($scope.friends) {
+      else if($scope.searchPlaceHolder === "search friends") {
       	$scope.showFriendsList();
       }
     };
@@ -297,6 +339,19 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
         $scope.$broadcast('scroll.infiniteScrollComplete');
 			})
 		};
+
+    $scope.goBack = function () {
+      console.log($state.current);
+      var historyId = $ionicHistory.currentHistoryId();
+      console.dir(historyId);
+      var history = $ionicHistory.viewHistory().histories[historyId];
+      console.dir(history);
+      // set the view 'depth' back in the stack as the back view
+      var targetViewIndex = history.stack.length - 1;
+      // $ionicHistory.backView(history.stack[targetViewIndex]);
+      // navigate to it
+      $ionicHistory.goBack();
+    };
 
     $scope.refreshFootprints = function() {
       console.log('refreshFootprints');
@@ -648,7 +703,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
 };
 
-ProfileController.$inject = ['$scope', '$state', 'UserRequests', 'Auth', 'FootprintRequests', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$localstorage']
+ProfileController.$inject = ['$scope', '$state', 'UserRequests', 'Auth', 'FootprintRequests', '$ionicModal', '$ionicPopup', '$ionicHistory', '$timeout', 'moment', '$localstorage', 'friend', '$ionicScrollDelegate']
 
 angular.module('waddle.profile', [])
   .controller('ProfileController', ProfileController);
