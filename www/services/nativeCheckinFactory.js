@@ -88,13 +88,6 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $t
 
     getCurrentLocation: function(successCallback, errCallback) {
       console.log('getting currentLocation');
-      // return $cordovaGeolocation.getCurrentPosition({timeout: 5000, enableHighAccuracy: false})
-      // .then(function (position) {
-      //   console.log(position);
-      //   return position;
-      // }, function (err) {
-      //   return err;
-      // });
       var options = {
         enableHighAccuracy: false,
         timeout: 3000,
@@ -103,31 +96,41 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $t
 
       $ionicPlatform.ready(function() {
  
-        if(navigator.geolocation) {
-          console.log(Object.keys(navigator.geolocation.__proto__));
+        return $cordovaGeolocation.getCurrentPosition({timeout: 5000, enableHighAccuracy: false})
+        .then(function (position) {
+          console.log(position);
+          return successCallback(position);
+          // return position;
+        }, function (err) {
+          return errCallback(err);
+        });
 
-          //called if getCurrentPosition never returns either success or err
-          var locationTimeout = $timeout(function() {
-            return errCallback({code: 1, message:"User denied location permissions"})
-          }, 3100);
 
-          navigator.geolocation.getCurrentPosition(
-            function(position) {
-              $timeout.cancel(locationTimeout);
-              console.log(position);
-              return successCallback(position);
-            },
-            function(err) {
-              console.log('nativecheckin', err);
-              $timeout.cancel(locationTimeout);
-              return errCallback(err);
-            },
-            options
-          );
-        } else {
-          //triggered if geolocation is unavailable
-          return errCallback({code: 1});
-        }
+        // if(navigator.geolocation) {
+        //   console.log(Object.keys(navigator.geolocation.__proto__));
+
+        //   //called if getCurrentPosition never returns either success or err
+        //   var locationTimeout = $timeout(function() {
+        //     return errCallback({code: 1, message:"User denied location permissions"})
+        //   }, 3100);
+
+        //   navigator.geolocation.getCurrentPosition(
+        //     function(position) {
+        //       $timeout.cancel(locationTimeout);
+        //       console.log(position);
+        //       return successCallback(position);
+        //     },
+        //     function(err) {
+        //       console.log('nativecheckin', err);
+        //       $timeout.cancel(locationTimeout);
+        //       return errCallback(err);
+        //     },
+        //     options
+        //   );
+        // } else {
+        //   //triggered if geolocation is unavailable
+        //   return errCallback({code: 1});
+        // }
       });
     },
 

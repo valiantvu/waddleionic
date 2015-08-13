@@ -19,6 +19,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     var folderSkipAmount = 10;
     $scope.moreFoldersCanBeLoaded = true;
     $scope.newFootprint = UserRequests.newFootprint;
+    $scope.facebookInfo = {};
 
     FootprintRequests.currentTab = 'feed';
 
@@ -269,13 +270,16 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $scope.publishToFacebook = function() {
       var footprint = $scope.selectedFootprint;
       var linkObject = {
-        message: '  ',
-        link: 'http://www.gowaddle.com',
+        message: $scope.facebookInfo.message,
+        link: 'http://www.letswaddle.com',
         picture: 'https://s3-us-west-2.amazonaws.com/waddle/logo+assets/WaddleLogo_1024x1024-6-2-5.png',
         name: $localstorage.getObject('user').name + " suggests " + footprint.place.name + "!",
-        caption: footprint.place.name + " | gowaddle.com",
+        caption: footprint.place.name + " | letswaddle.com",
         description: null
       };
+
+      //set value of message to empty string after setting linkObject
+      $scope.facebookInfo.message = '';
 
       //overwrite default pic (waddle logo) if the footprint has a photo
       if(footprint.checkin.photoLarge !== "null") {
@@ -522,7 +526,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       title: 'suggest this footprint:',
       templateUrl: 'modals/share-options.html',
       scope: $scope
-    })
+    });
     //function placed inside timeout to ensure anchor tag href exists in DOM before value of message is set
     $timeout(function() {
       $scope.setShareMessage(footprint);
@@ -530,6 +534,31 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     $scope.selectedFootprint = footprint;
   };
+
+  $scope.showPostToFacebookModal = function () {
+    $scope.shareOptions.close();
+
+     //janky way to remove myPopup from DOM (fix for .close() method not completely working in ionic 1.0.1)
+    var popup = document.getElementsByClassName('popup-container')[0];
+    document.body.removeChild(popup);
+
+    $scope.postToFacebookModal = $ionicPopup.show({
+      title: 'suggest this footprint:',
+      templateUrl: 'modals/post-to-facebook.html',
+      scope: $scope,
+     buttons: [
+      { text: 'Cancel' },
+      {
+        text: '<b>Post</b>',
+        type: 'button-positive',
+        onTap: function(e) {
+            $scope.publishToFacebook();
+        }
+      }
+    ]
+    });
+
+  }
 
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);

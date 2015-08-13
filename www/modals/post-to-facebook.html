@@ -3,16 +3,32 @@
 		display: none;
 	}
 	div.popup {
-		background-color: transparent !important;
+		/*background-color: transparent !important;*/
+	  width: 85vw !important;
 	}
 	div.popup-body {
 		padding: 0 !important;
 	}
+	.button-positive {
+		border: 1px solid #e1876a !important;
+		background-color: #e1876a !important;
+	}
+
 </style>
 <body>
-	 <form name="review" class='review-form item-input-wrapper' novalidate>
-        <textarea class='msd-elastic review-text' ng-model='facebookInfo.message' name='caption' placeholder='Write a message...' data-ng-minlength="1" data-ng-maxlength="1000" maxlength="1000" required>
+	<!-- <button class="button button-icon icon waddle-close popup-close light" ng-click="postToFacebookModal.close()"></button> -->
+	<h3 class="facebook-post-title">{{selectedFootprint.place.name}}</h3>
+	<h5 class="facebook-post-caption">Suggest this place to your friends on Facebook</h5>
+
+	 <form name="review" class='facebook-post-message item-input-wrapper' novalidate>
+        <textarea class='msd-elastic facebook-post-text' ng-model='facebookInfo.message' name='caption' placeholder='Write a message for your timeline post' data-ng-minlength="1" data-ng-maxlength="1000" maxlength="1000" required>
           {{facebookInfo.message}}
         </textarea>
    </form>
+   <!-- <div class="share-option-icon facebook" ng-if="selectedFootprint.checkin.photoLarge === 'null' && selectedFootprint.checkin.caption === 'null'">
+   	<img src="img/share_icons/facebook-1-1-100x100.png">
+   	</div>
+   <img ng-if="selectedFootprint.checkin.photoLarge !== 'null'" ng-src="selectedFootprint.checkin.photoLarge">
+   <p ng-if="selectedFootprint.checkin.photoLarge === 'null' && selectedFootprint.checkin.caption !== 'null'"><p> -->
+
 </body>
