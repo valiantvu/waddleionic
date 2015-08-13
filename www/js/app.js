@@ -21,9 +21,10 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
-    NativeCheckin.getLocation().then(function(location){
-      NativeCheckin.location = location;
-    });
+    
+    // NativeCheckin.getLocation().then(function(location){
+    //   NativeCheckin.location = location;
+    // });
   });
 })
 

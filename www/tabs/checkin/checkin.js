@@ -48,34 +48,36 @@ var CheckinController = function ($scope, $state, NativeCheckin, $ionicScrollDel
     //    $scope.venues = venues.data;
     //  })
     // });
-    var location = NativeCheckin.location;
-    currentLocation = {
-      lat: location.coords.latitude,
-      lng: location.coords.longitude
-    };
-    console.dir(currentLocation);
-    NativeCheckin.searchFoursquareVenuesByGeolocation(window.sessionStorage.userFbID, currentLocation)
-    .then(function (venues) {
-      $scope.venues = venues.data;
-    })
-    .catch(function(err) {
-      console.err(err);
-    });
-    // NativeCheckin.getCurrentLocation()
-    // .then(function(location) {
-    //     currentLocation = {
-    //       lat: location.coords.latitude,
-    //       lng: location.coords.longitude
-    //     };
-    //     console.dir(currentLocation);
-    //     return NativeCheckin.searchFoursquareVenuesByGeolocation(window.sessionStorage.userFbID, currentLocation);
-    // })
+
+    // var location = NativeCheckin.location;
+    // currentLocation = {
+    //   lat: location.coords.latitude,
+    //   lng: location.coords.longitude
+    // };
+    // console.dir(currentLocation);
+    // NativeCheckin.searchFoursquareVenuesByGeolocation(window.sessionStorage.userFbID, currentLocation)
     // .then(function (venues) {
     //   $scope.venues = venues.data;
     // })
     // .catch(function(err) {
     //   console.err(err);
     // });
+
+    NativeCheckin.getLocation()
+    .then(function(location) {
+        currentLocation = {
+          lat: location.coords.latitude,
+          lng: location.coords.longitude
+        };
+        console.dir(currentLocation);
+        return NativeCheckin.searchFoursquareVenuesByGeolocation(window.sessionStorage.userFbID, currentLocation);
+    })
+    .then(function (venues) {
+      $scope.venues = venues.data;
+    })
+    .catch(function(err) {
+      console.err(err);
+    });
       // function(location) {
       //   console.log(location);
       //   currentLocation = {

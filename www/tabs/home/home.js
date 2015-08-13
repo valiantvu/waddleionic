@@ -599,7 +599,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         yy: '%dy'
       }
     });
-  })
+  });
     
 
 };
