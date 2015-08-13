@@ -16,8 +16,7 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $t
         url: url
       });
     },
-
-	  searchFoursquareVenuesByGeolocation: function (facebookID, currentLocation) {
+    searchFoursquareVenuesByGeolocation: function (facebookID, currentLocation) {
       var url = '/api/checkins/venuesearchmobile/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng;
       if(ionic.Platform.isIOS()) {
         url = productionServerURL.concat(url);
@@ -85,50 +84,80 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $t
         }, file_element);
         return deferred.promise;
     },
+    getLocation: function() {
+      console.log('getting location!!!');
+      return $cordovaGeolocation.getCurrentPosition({timeout: 100000, enableHighAccuracy: false})
+          .then(function(position) {
+            console.log('location success');
+            return position;
+          }, function(err) {
+            console.log('location error');
+            return err;
+          });
+    },
 
-    getCurrentLocation: function(successCallback, errCallback) {
+    getCurrentLocation: function() {
       console.log('getting currentLocation');
-      // return $cordovaGeolocation.getCurrentPosition({timeout: 5000, enableHighAccuracy: false})
-      // .then(function (position) {
-      //   console.log(position);
-      //   return position;
-      // }, function (err) {
-      //   return err;
-      // });
-      var options = {
-        enableHighAccuracy: false,
-        timeout: 3000,
-        maximumAge: 0
-      };
-
       $ionicPlatform.ready(function() {
- 
-        if(navigator.geolocation) {
-          console.log(Object.keys(navigator.geolocation.__proto__));
-
-          //called if getCurrentPosition never returns either success or err
-          var locationTimeout = $timeout(function() {
-            return errCallback({code: 1, message:"User denied location permissions"})
-          }, 3100);
-
-          navigator.geolocation.getCurrentPosition(
-            function(position) {
-              $timeout.cancel(locationTimeout);
-              console.log(position);
-              return successCallback(position);
-            },
-            function(err) {
-              console.log('nativecheckin', err);
-              $timeout.cancel(locationTimeout);
-              return errCallback(err);
-            },
-            options
-          );
-        } else {
-          //triggered if geolocation is unavailable
-          return errCallback({code: 1});
-        }
+      return $cordovaGeolocation.getCurrentPosition(function(position) {
+            alert('retrieved position');
+            console.log(position);
+            return position;
+        }, function(err) {
+            return err;
+        }, {timeout: 10000, enableHighAccuracy: true});
+        // .then(function(position) {
+        //     alert('retrieved position');
+        //     console.log(position);
+        //     return position;
+        // })
+        // .catch(function(err) {
+        //     return err;
+        // });
+        // .then(function (position) {
+        //   console.log(position);
+        //   return successCallback(position);
+        // })
+        // .catch(function (err) {
+        //   console.err(err);
+        //   return errCallback(err);
+        // });
       });
+
+      // var options = {
+      //   enableHighAccuracy: false,
+      //   timeout: 3000,
+      //   maximumAge: 0
+      // };
+
+      // $ionicPlatform.ready(function() {
+ 
+      //   if(navigator.geolocation) {
+      //     console.log(Object.keys(navigator.geolocation.__proto__));
+
+      //     //called if getCurrentPosition never returns either success or err
+      //     var locationTimeout = $timeout(function() {
+      //       return errCallback({code: 1, message:"User denied location permissions"})
+      //     }, 3100);
+
+      //     navigator.geolocation.getCurrentPosition(
+      //       function(position) {
+      //         $timeout.cancel(locationTimeout);
+      //         console.log(position);
+      //         return successCallback(position);
+      //       },
+      //       function(err) {
+      //         console.log('nativecheckin', err);
+      //         $timeout.cancel(locationTimeout);
+      //         return errCallback(err);
+      //       },
+      //       options
+      //     );
+      //   } else {
+      //     //triggered if geolocation is unavailable
+      //     return errCallback({code: 1});
+      //   }
+      // });
     },
 
     watchPosition: function() {
