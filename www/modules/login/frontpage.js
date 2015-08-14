@@ -26,11 +26,13 @@ var FrontpageController = function (UserRequests, $scope, $state, $window, $loca
       name: fbData.name,
       fbToken: fbToken
     };
+
 //when sucessfully connected to fb account , loading screen is made active 
     console.log(userData);
 
     UserRequests.sendUserData(userData)
     .then(function(storedUserData){
+      console.log(storedUserData.data);
       $scope.loading = false;
       $state.go('walkthrough');
       UserRequests.allData = storedUserData.data

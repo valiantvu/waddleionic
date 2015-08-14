@@ -291,7 +291,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         + " stars out of 5."
       } else {
         linkObject.description = $localstorage.getObject('user').name + "'s friend, " + footprint.user.name + ", rated " + footprint.place.name + " " + footprint.checkin.rating + 
-        + "stars out of 5.";
+        + " stars out of 5.";
       }
 
       if(footprint.checkin.caption !== "null" ) {
@@ -307,6 +307,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
           params: linkObject,
           success: function(response) {
             console.log(response);
+            $scope.showFacebookPostSuccessAlert();
           },
           error: function(err) {
             console.log(err);
@@ -323,6 +324,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       //     console.log(err)
       //   } else {
       //     console.log(success);
+      //     $scope.showFacebookPostSuccessAlert();
       //   }
       // })
     };
@@ -533,6 +535,13 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     }, 0);
 
     $scope.selectedFootprint = footprint;
+
+    //initialize connection with fb using ezfb
+
+    // ezfb.init({
+    //   appId: '898529293496515'
+    // });
+
   };
 
   $scope.showPostToFacebookModal = function () {
@@ -557,6 +566,17 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       }
     ]
     });
+
+  };
+
+  $scope.showFacebookPostSuccessAlert = function () {
+     var facebookPostSuccessAlert = $ionicPopup.show({
+        templateUrl: 'modals/facebook-post-success.html'
+      });
+     
+      $timeout(function() {
+       facebookPostSuccessAlert.close(); //close the popup after 1 second
+      }, 1700);
 
   }
 
@@ -628,7 +648,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         yy: '%dy'
       }
     });
-  })
+  });
     
 
 };
