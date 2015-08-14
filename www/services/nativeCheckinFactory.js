@@ -98,6 +98,51 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $t
 
     getCurrentLocation: function() {
       console.log('getting currentLocation');
+// <<<<<<< HEAD
+      // var options = {
+      //   enableHighAccuracy: false,
+      //   timeout: 3000,
+      //   maximumAge: 0
+      // };
+
+      // $ionicPlatform.ready(function() {
+ 
+      //   return $cordovaGeolocation.getCurrentPosition({timeout: 5000, enableHighAccuracy: false})
+      //   .then(function (position) {
+      //     console.log(position);
+      //     return successCallback(position);
+      //     // return position;
+      //   }, function (err) {
+      //     return errCallback(err);
+      //   });
+
+
+        // if(navigator.geolocation) {
+        //   console.log(Object.keys(navigator.geolocation.__proto__));
+
+        //   //called if getCurrentPosition never returns either success or err
+        //   var locationTimeout = $timeout(function() {
+        //     return errCallback({code: 1, message:"User denied location permissions"})
+        //   }, 3100);
+
+        //   navigator.geolocation.getCurrentPosition(
+        //     function(position) {
+        //       $timeout.cancel(locationTimeout);
+        //       console.log(position);
+        //       return successCallback(position);
+        //     },
+        //     function(err) {
+        //       console.log('nativecheckin', err);
+        //       $timeout.cancel(locationTimeout);
+        //       return errCallback(err);
+        //     },
+        //     options
+        //   );
+        // } else {
+        //   //triggered if geolocation is unavailable
+        //   return errCallback({code: 1});
+        // }
+// =======
       $ionicPlatform.ready(function() {
       return $cordovaGeolocation.getCurrentPosition(function(position) {
             alert('retrieved position');
@@ -122,6 +167,7 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $t
         //   console.err(err);
         //   return errCallback(err);
         // });
+// >>>>>>> d3ba844a3bdf3059dc1f7708b23676e89ea149b3
       });
 
       // var options = {
