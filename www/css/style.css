@@ -780,6 +780,39 @@ span{
 	margin-bottom: -1em;
 }
 
+.facebook-post-title {
+	display: block;
+	text-align: center;
+	/*margin-top: -1em;*/
+}
+
+.facebook-post-caption {
+	text-align: center;
+	margin-top: -0.5em;
+}
+
+.facebook-post-message {
+	/*display: inline-block;*/
+	width: 100%;
+	height: 20vh !important;
+	border-radius: 10px;
+	background-color: #eee;
+	border: none;
+	padding-right: 0.2em !important;
+	margin: -0.3em 0.3em 0.3em 0.3em;
+}
+
+.facebook-post-text {
+	width: 100%;
+	height: 20vh !important;
+	border-radius: 10px;
+	background-color: #eee;
+	border: none;
+	padding-right: 0.2em !important;
+	margin: -0.3em 0.3em 0.3em 0.3em;
+
+}
+
 .full-image{
 	border-radius:0px;
 	margin-top:-17px;

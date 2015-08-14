@@ -116,8 +116,7 @@ var openFB = (function () {
         // Inappbrowser exit handler: Used when running in Cordova only
         function loginWindow_exitHandler() {
             console.log('exit and remove listeners');
-            // Handle the situation where the user closes the login window manually before completing the login process
-            deferredLogin.reject({error: 'user_cancelled', error_description: 'User cancelled login process', error_reason: "user_cancelled"});
+            // deferredLogin.reject({error: 'user_cancelled', error_description: 'User cancelled login process', error_reason: "user_cancelled"});
             loginWindow.removeEventListener('loadstop', loginWindow_loadStartHandler);
             loginWindow.removeEventListener('exit', loginWindow_exitHandler);
             loginWindow = null;
@@ -140,6 +139,8 @@ var openFB = (function () {
         startTime = new Date().getTime();
         loginWindow = window.open(FB_LOGIN_URL + '?client_id=' + fbAppId + '&redirect_uri=' + oauthRedirectURL +
             '&response_type=token&scope=' + scope, '_blank', 'location=yes');
+        // loginWindow = window.open(FB_LOGIN_URL + '?client_id=' + fbAppId + '&redirect_uri=' + oauthRedirectURL +
+        //     '&response_type=token&scope=' + scope, '_blank', 'location=yes');
 
         // If the app is running in Cordova, listen to URL changes in the InAppBrowser until we get a URL with an access_token or an error
         if (runningInCordova) {

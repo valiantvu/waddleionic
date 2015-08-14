@@ -21,6 +21,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
+
   });
 })
 
@@ -114,13 +115,6 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
           controller: 'CheckinController'
         }
       }
-      // resolve: {
-      //   location: function(NativeCheckin) {
-      //     ionic.Platform.ready(function(){
-      //       return NativeCheckin.getCurrentLocation();
-      //     });
-      //   }
-      // }
     })
     .state('tab.checkin-post', {
       cache: false,
