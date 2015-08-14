@@ -10,7 +10,7 @@
 // });
 angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.services', 'angularMoment', 'uuid4', 'monospaced.elastic', 'ezfb'])
 
-.run(function($ionicPlatform, NativeCheckin) {
+.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -21,10 +21,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
-    
-    // NativeCheckin.getLocation().then(function(location){
-    //   NativeCheckin.location = location;
-    // });
+
   });
 })
 
@@ -118,15 +115,6 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
           controller: 'CheckinController'
         }
       }
-      // ,
-      // resolve: {
-      //   location: function(NativeCheckin) {
-      //     console.log('getting location...');
-      //     // $ionic.Platform.ready(function(){
-      //       return NativeCheckin.getLocation();
-      //     // });
-      //   }
-      // }
     })
     .state('tab.checkin-post', {
       cache: false,
