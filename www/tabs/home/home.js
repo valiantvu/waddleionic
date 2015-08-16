@@ -1,7 +1,7 @@
 (function(){
 
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage, ezfb) {
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage, $cordovaFacebook) {
   Auth.checkLogin()
   .then(function () {
     $scope.numHypes = 0;
@@ -268,8 +268,10 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     };
 
     $scope.publishToFacebook = function() {
+      $scope.shareOptions.close()
       var footprint = $scope.selectedFootprint;
       var linkObject = {
+        method: 'feed',
         message: $scope.facebookInfo.message,
         link: 'http://www.letswaddle.com',
         picture: 'https://s3-us-west-2.amazonaws.com/waddle/logo+assets/WaddleLogo_1024x1024-6-2-5.png',
@@ -290,8 +292,8 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         linkObject.description = footprint.user.name + " rated " + footprint.place.name + " " + footprint.checkin.rating 
         + " stars out of 5."
       } else {
-        linkObject.description = $localstorage.getObject('user').name + "'s friend, " + footprint.user.name + ", rated " + footprint.place.name + " " + footprint.checkin.rating + 
-        + "stars out of 5.";
+        linkObject.description = $localstorage.getObject('user').name + "'s friend, " + footprint.user.name + ", rated " + footprint.place.name + " " + footprint.checkin.rating
+        + " stars out of 5.";
       }
 
       if(footprint.checkin.caption !== "null" ) {
@@ -300,19 +302,19 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     
       console.log(linkObject);
       
-      openFB.login(function() {
-        openFB.api({
-          method: 'POST',
-          path: '/me/feed',
-          params: linkObject,
-          success: function(response) {
-            console.log(response);
-          },
-          error: function(err) {
-            console.log(err);
-          }
-        }), {scope: 'publish_actions'};
-      });
+      // openFB.login(function() {
+      //   openFB.api({
+      //     method: 'POST',
+      //     path: '/me/feed',
+      //     params: linkObject,
+      //     success: function(response) {
+      //       console.log(response);
+      //     },
+      //     error: function(err) {
+      //       console.log(err);
+      //     }
+      //   }), {scope: 'publish_actions'};
+      // });
 
       // ezfb.login(function(){
       //   // Note: The call will only work if user accepts the permission request
@@ -325,6 +327,20 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       //     console.log(success);
       //   }
       // })
+      $cordovaFacebook.login(["publish_actions"])
+      .then(function(response) {
+        $cordovaFacebook.showDialog(linkObject)
+        .then(function (success) {
+          $scope.showPostToFacebookSuccess();
+          console.log(success);
+
+        }, function (err) {
+          console.log(err);
+
+        })      
+      }, function (error) {
+        console.log(error);
+      });
     };
 
     $scope.setShareMessage = function (footprint) {
@@ -535,30 +551,17 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $scope.selectedFootprint = footprint;
   };
 
-  $scope.showPostToFacebookModal = function () {
-    $scope.shareOptions.close();
+  $scope.showPostToFacebookSuccess = function () {
 
-     //janky way to remove myPopup from DOM (fix for .close() method not completely working in ionic 1.0.1)
-    var popup = document.getElementsByClassName('popup-container')[0];
-    document.body.removeChild(popup);
-
-    $scope.postToFacebookModal = $ionicPopup.show({
-      title: 'suggest this footprint:',
-      templateUrl: 'modals/post-to-facebook.html',
-      scope: $scope,
-     buttons: [
-      { text: 'Cancel' },
-      {
-        text: '<b>Post</b>',
-        type: 'button-positive',
-        onTap: function(e) {
-            $scope.publishToFacebook();
-        }
-      }
-    ]
+    var postToFacebookSuccess = $ionicPopup.show({
+      templateUrl: 'modals/facebook-post-success.html'
     });
 
-  }
+    $timeout(function() {
+      postToFacebookSuccess.close(); //close the popup after 1 second
+    }, 1700);
+
+  };
 
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);
@@ -633,7 +636,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory', '$localstorage', 'ezfb'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory', '$localstorage', '$cordovaFacebook'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 

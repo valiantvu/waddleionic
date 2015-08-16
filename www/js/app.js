@@ -24,15 +24,21 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider, ezfbProvider) {
+.config(function($stateProvider, $urlRouterProvider, ezfbProvider, $cordovaFacebookProvider) {
 
   // ezfbProvider.setInitParams({
   //   appId: '898529293496515'
   // });
-  // Ionic uses AngularUI Router which uses the concept of states
-  // Learn more here: https://github.com/angular-ui/ui-router
-  // Set up the various states which the app can be in.
-  // Each state's controller can be found in controllers.js
+
+  //required for browser integration of $cordovaFacebookProvider, not for phone development
+
+  if(!window.cordova) { 
+    var appID = 898529293496515;
+    $cordovaFacebookProvider.browserInit(appID);
+  }
+  // console.log($cordovaFacebookProvider);
+
+
   $stateProvider
 
     // setup an abstract state for the tabs directive
@@ -332,7 +338,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
     });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/');
+  $urlRouterProvider.otherwise('/tab/home');
 
 });
 
