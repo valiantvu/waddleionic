@@ -292,7 +292,11 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         linkObject.description = footprint.user.name + " rated " + footprint.place.name + " " + footprint.checkin.rating 
         + " stars out of 5."
       } else {
+<<<<<<< HEAD
         linkObject.description = $localstorage.getObject('user').name + "'s friend, " + footprint.user.name + ", rated " + footprint.place.name + " " + footprint.checkin.rating
+=======
+        linkObject.description = $localstorage.getObject('user').name + "'s friend, " + footprint.user.name + ", rated " + footprint.place.name + " " + footprint.checkin.rating + 
+>>>>>>> b3a044e2b6cc6a01bc77f2bd664dcf0b865d6462
         + " stars out of 5.";
       }
 
@@ -302,6 +306,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     
       console.log(linkObject);
       
+<<<<<<< HEAD
       // openFB.login(function() {
       //   openFB.api({
       //     method: 'POST',
@@ -315,6 +320,22 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       //     }
       //   }), {scope: 'publish_actions'};
       // });
+=======
+      openFB.login(function() {
+        openFB.api({
+          method: 'POST',
+          path: '/me/feed',
+          params: linkObject,
+          success: function(response) {
+            console.log(response);
+            $scope.showFacebookPostSuccessAlert();
+          },
+          error: function(err) {
+            console.log(err);
+          }
+        }), {scope: 'publish_actions'};
+      });
+>>>>>>> b3a044e2b6cc6a01bc77f2bd664dcf0b865d6462
 
       // ezfb.login(function(){
       //   // Note: The call will only work if user accepts the permission request
@@ -325,6 +346,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       //     console.log(err)
       //   } else {
       //     console.log(success);
+      //     $scope.showFacebookPostSuccessAlert();
       //   }
       // })
       $cordovaFacebook.login(["publish_actions"])
@@ -549,6 +571,13 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     }, 0);
 
     $scope.selectedFootprint = footprint;
+
+    //initialize connection with fb using ezfb
+
+    // ezfb.init({
+    //   appId: '898529293496515'
+    // });
+
   };
 
   $scope.showPostToFacebookSuccess = function () {
@@ -557,11 +586,26 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       templateUrl: 'modals/facebook-post-success.html'
     });
 
+<<<<<<< HEAD
     $timeout(function() {
       postToFacebookSuccess.close(); //close the popup after 1 second
     }, 1700);
 
   };
+=======
+  };
+
+  $scope.showFacebookPostSuccessAlert = function () {
+     var facebookPostSuccessAlert = $ionicPopup.show({
+        templateUrl: 'modals/facebook-post-success.html'
+      });
+     
+      $timeout(function() {
+       facebookPostSuccessAlert.close(); //close the popup after 1 second
+      }, 1700);
+
+  }
+>>>>>>> b3a044e2b6cc6a01bc77f2bd664dcf0b865d6462
 
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);
@@ -631,7 +675,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         yy: '%dy'
       }
     });
-  })
+  });
     
 
 };
