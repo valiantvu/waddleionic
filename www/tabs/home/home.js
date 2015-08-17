@@ -334,6 +334,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       .then(function(response) {
         $cordovaFacebook.showDialog(linkObject)
         .then(function (success) {
+          console.log(success);
           $scope.showFacebookPostSuccessAlert();
           console.log(success);
 

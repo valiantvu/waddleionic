@@ -1,6 +1,6 @@
 (function(){
 
-var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintRequests, $ionicModal, $ionicPopup, $ionicHistory, $timeout, moment, $localstorage, friend, $ionicScrollDelegate) {
+var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintRequests, $ionicModal, $ionicPopup, $ionicHistory, $timeout, moment, $localstorage, friend, $ionicScrollDelegate, $cordovaFacebook) {
 
 	Auth.checkLogin()
   .then(function () {
@@ -27,6 +27,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 		$scope.foursquareConnected = false;
 		$scope.instagramConnected = false;
     $scope.backButton = false;
+    $scope.facebookInfo = {};
 
 		FootprintRequests.currentTab = 'me';
     if($state.current.name === "tab.profile-friend") {
@@ -516,6 +517,58 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
     mailElement.setAttribute('href', 'mailto:?subject=Suggestion via Waddle for iOS&body=' + message);
   };
 
+   $scope.publishToFacebook = function() {
+    $scope.shareOptions.close();
+    var footprint = $scope.selectedFootprint;
+    var linkObject = {
+      method: 'feed',
+      message: $scope.facebookInfo.message,
+      link: 'http://www.gowaddle.com',
+      picture: 'https://s3-us-west-2.amazonaws.com/waddle/logo+assets/WaddleLogo_1024x1024-6-2-5.png',
+      name: $localstorage.getObject('user').name + " suggests " + footprint.place.name + "!",
+      caption: footprint.place.name + " | letswaddle.com",
+      description: null
+    };
+
+    //set value of message to empty string after setting linkObject
+    $scope.facebookInfo.message = '';
+
+    //overwrite default pic (waddle logo) if the footprint has a photo
+    if(footprint.checkin.photoLarge !== "null") {
+      linkObject.picture = footprint.checkin.photoLarge;
+    }
+
+    if(footprint.user.facebookID === window.sessionStorage.userFbID) {
+      linkObject.description = footprint.user.name + " rated " + footprint.place.name + " " + footprint.checkin.rating 
+      + " stars out of 5."
+    } else {
+      linkObject.description = $localstorage.getObject('user').name + "'s friend, " + footprint.user.name + ", rated " + footprint.place.name + " " + footprint.checkin.rating
+      + " stars out of 5.";
+    }
+
+    if(footprint.checkin.caption !== "null" ) {
+      linkObject.description +=   " Here's what they said about this place: " + '"' + footprint.checkin.caption + '"';
+    }
+  
+    console.log(linkObject);
+    
+    $cordovaFacebook.login(["publish_actions"])
+    .then(function(response) {
+      $cordovaFacebook.showDialog(linkObject)
+      .then(function (success) {
+        $scope.showFacebookPostSuccessAlert();
+        console.log(success);
+
+      }, function (err) {
+        console.log(err);
+
+      })      
+    }, function (error) {
+      console.log(error);
+    });
+  };
+
+
 		  $scope.showPopup = function(footprintCheckinID, $index) {
       console.log('footprint index', $index);
       $scope.selectedFootprintIndex = $index;
@@ -648,7 +701,19 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
       $timeout(function() {
         $scope.setShareMessage(footprint);
       }, 0);
+
+      $scope.selectedFootprint = footprint;
    };
+
+  $scope.showFacebookPostSuccessAlert = function () {
+     var facebookPostSuccessAlert = $ionicPopup.show({
+        templateUrl: 'modals/facebook-post-success.html'
+      });
+     
+      $timeout(function() {
+       facebookPostSuccessAlert.close(); //close the popup after 1 second
+      }, 2000);
+  };
 
 	  $ionicModal.fromTemplateUrl('settings.html', {
 	    scope: $scope,
@@ -703,7 +768,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
 
 };
 
-ProfileController.$inject = ['$scope', '$state', 'UserRequests', 'Auth', 'FootprintRequests', '$ionicModal', '$ionicPopup', '$ionicHistory', '$timeout', 'moment', '$localstorage', 'friend', '$ionicScrollDelegate']
+ProfileController.$inject = ['$scope', '$state', 'UserRequests', 'Auth', 'FootprintRequests', '$ionicModal', '$ionicPopup', '$ionicHistory', '$timeout', 'moment', '$localstorage', 'friend', '$ionicScrollDelegate', '$cordovaFacebook']
 
 angular.module('waddle.profile', [])
   .controller('ProfileController', ProfileController);
