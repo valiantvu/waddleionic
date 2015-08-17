@@ -13,7 +13,7 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
+    // for form inputs
     if(window.cordova && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
     }
@@ -24,18 +24,22 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider, ezfbProvider, $cordovaFacebookProvider) {
+.config(function($stateProvider, $urlRouterProvider, ezfbProvider) {
 
-  // ezfbProvider.setInitParams({
-  //   appId: '898529293496515'
-  // });
+  if(!window.cordova) {
+    ezfbProvider.setInitParams({
+      appId: '898529293496515'
+    });
+  }
 
   //required for browser integration of $cordovaFacebookProvider, not for phone development
-
-  if(!window.cordova) { 
-    var appID = 898529293496515;
-    $cordovaFacebookProvider.browserInit(appID);
-  }
+//   $ionicPlatform.ready(function(){
+//      // cordova fb code here
+//   if(!window.cordova) { 
+//     var appID = 898529293496515;
+//     $cordovaFacebookProvider.browserInit(appID);
+//   }
+// });
   // console.log($cordovaFacebookProvider);
 
 

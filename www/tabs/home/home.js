@@ -1,7 +1,7 @@
 (function(){
 
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage, $cordovaFacebook) {
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage, ezfb, $cordovaFacebook) {
   Auth.checkLogin()
   .then(function () {
     $scope.numHypes = 0;
@@ -636,7 +636,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory', '$localstorage', '$cordovaFacebook'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory', '$localstorage', 'ezfb', '$cordovaFacebook'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 

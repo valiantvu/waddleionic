@@ -12,19 +12,20 @@ var FrontpageController = function (UserRequests, $scope, $state, $window, $loca
     //   },
     //   error: function(err) { console.log(err); }
     // });
-    // ezfb.api('/me', function (fbData) {
-    //     sendUserDataToServer(fbToken, fbData);
-    // });
 
-    $cordovaFacebook.api("me")
-    .then(function(fbData) {
-      console.log(fbData);
-      sendUserDataToServer(fbToken, fbData);
-    }, function (error) {
-      console.log(error);
-    });
-
-
+    if(window.cordova) {
+      $cordovaFacebook.api("me")
+      .then(function(fbData) {
+        console.log(fbData);
+        sendUserDataToServer(fbToken, fbData);
+      }, function (error) {
+        console.log(error);
+      });
+    } else {
+      ezfb.api('/me', function (fbData) {
+          sendUserDataToServer(fbToken, fbData);
+      });
+    }
   };
   
 
@@ -90,31 +91,35 @@ var FrontpageController = function (UserRequests, $scope, $state, $window, $loca
     //   //to tell fb that these information of the user will be accessed
     //   scope: 'user_friends, user_tagged_places, user_photos, read_stream'
     // });
-    // ezfb.login(function (response) {
-    //   if(response.status === 'connected') {
-    //     console.log('connected');
-    //     enterSiteWhenConnected(response.authResponse.accessToken);
-    //   } else {
-    //     alert('Facebook login failed: ' + response.error);
-    //   }
-    // }, {
-    //   //to tell fb that these information of the user will be accessed
-    //   scope: 'user_friends, user_tagged_places, user_photos, read_stream'
-    // });
-
-    $cordovaFacebook.login(["public_profile", "email", "user_friends"])
-    .then(function(response) {
-      console.log(response);
-       if(response.status === 'connected') {
-        console.log('connected');
+    if(window.cordova) {
+      $cordovaFacebook.login(["public_profile", "email", "user_friends"])
+      .then(function(response) {
         console.log(response);
-        enterSiteWhenConnected(response.authResponse.accessToken);
-      } else {
-        alert('Facebook login failed: ' + response.error);
-      }
-    }, function (error) {
-      console.log('Facebook login failed: ' + error);
-    });
+         if(response.status === 'connected') {
+          console.log('connected');
+          console.log(response);
+          enterSiteWhenConnected(response.authResponse.accessToken);
+        } else {
+          alert('Facebook login failed: ' + response.error);
+        }
+      }, function (error) {
+        console.log('Facebook login failed: ' + error);
+      });
+    } else {
+      ezfb.login(function (response) {
+        if(response.status === 'connected') {
+          console.log('connected');
+          enterSiteWhenConnected(response.authResponse.accessToken);
+        } else {
+          alert('Facebook login failed: ' + response.error);
+        }
+      }, {
+        //to tell fb that these information of the user will be accessed
+        scope: 'user_friends, user_tagged_places, user_photos, read_stream'
+      });
+      
+    }
+
 
   };
 
