@@ -16,8 +16,7 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $t
         url: url
       });
     },
-
-	  searchFoursquareVenuesByGeolocation: function (facebookID, currentLocation) {
+    searchFoursquareVenuesByGeolocation: function (facebookID, currentLocation) {
       var url = '/api/checkins/venuesearchmobile/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng;
       if(ionic.Platform.isIOS()) {
         url = productionServerURL.concat(url);
@@ -85,7 +84,6 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $t
         }, file_element);
         return deferred.promise;
     },
-
     getCurrentLocation: function(successCallback, errCallback) {
       console.log('getting currentLocation');
       var options = {
@@ -104,36 +102,8 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $t
         }, function (err) {
           return errCallback(err);
         });
-
-
-        // if(navigator.geolocation) {
-        //   console.log(Object.keys(navigator.geolocation.__proto__));
-
-        //   //called if getCurrentPosition never returns either success or err
-        //   var locationTimeout = $timeout(function() {
-        //     return errCallback({code: 1, message:"User denied location permissions"})
-        //   }, 3100);
-
-        //   navigator.geolocation.getCurrentPosition(
-        //     function(position) {
-        //       $timeout.cancel(locationTimeout);
-        //       console.log(position);
-        //       return successCallback(position);
-        //     },
-        //     function(err) {
-        //       console.log('nativecheckin', err);
-        //       $timeout.cancel(locationTimeout);
-        //       return errCallback(err);
-        //     },
-        //     options
-        //   );
-        // } else {
-        //   //triggered if geolocation is unavailable
-        //   return errCallback({code: 1});
-        // }
       });
     },
-
     watchPosition: function() {
       var options = {
         timeout: 30000,
