@@ -273,7 +273,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       var linkObject = {
         method: 'feed',
         message: $scope.facebookInfo.message,
-        link: 'http://www.letswaddle.com',
+        link: 'http://www.gowaddle.com',
         picture: 'https://s3-us-west-2.amazonaws.com/waddle/logo+assets/WaddleLogo_1024x1024-6-2-5.png',
         name: $localstorage.getObject('user').name + " suggests " + footprint.place.name + "!",
         caption: footprint.place.name + " | letswaddle.com",
@@ -292,11 +292,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         linkObject.description = footprint.user.name + " rated " + footprint.place.name + " " + footprint.checkin.rating 
         + " stars out of 5."
       } else {
-<<<<<<< HEAD
         linkObject.description = $localstorage.getObject('user').name + "'s friend, " + footprint.user.name + ", rated " + footprint.place.name + " " + footprint.checkin.rating
-=======
-        linkObject.description = $localstorage.getObject('user').name + "'s friend, " + footprint.user.name + ", rated " + footprint.place.name + " " + footprint.checkin.rating + 
->>>>>>> b3a044e2b6cc6a01bc77f2bd664dcf0b865d6462
         + " stars out of 5.";
       }
 
@@ -306,7 +302,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     
       console.log(linkObject);
       
-<<<<<<< HEAD
+
       // openFB.login(function() {
       //   openFB.api({
       //     method: 'POST',
@@ -314,28 +310,13 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       //     params: linkObject,
       //     success: function(response) {
       //       console.log(response);
+      //       $scope.showFacebookPostSuccessAlert();
       //     },
       //     error: function(err) {
       //       console.log(err);
       //     }
       //   }), {scope: 'publish_actions'};
       // });
-=======
-      openFB.login(function() {
-        openFB.api({
-          method: 'POST',
-          path: '/me/feed',
-          params: linkObject,
-          success: function(response) {
-            console.log(response);
-            $scope.showFacebookPostSuccessAlert();
-          },
-          error: function(err) {
-            console.log(err);
-          }
-        }), {scope: 'publish_actions'};
-      });
->>>>>>> b3a044e2b6cc6a01bc77f2bd664dcf0b865d6462
 
       // ezfb.login(function(){
       //   // Note: The call will only work if user accepts the permission request
@@ -353,7 +334,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       .then(function(response) {
         $cordovaFacebook.showDialog(linkObject)
         .then(function (success) {
-          $scope.showPostToFacebookSuccess();
+          $scope.showFacebookPostSuccessAlert();
           console.log(success);
 
         }, function (err) {
@@ -580,21 +561,6 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
   };
 
-  $scope.showPostToFacebookSuccess = function () {
-
-    var postToFacebookSuccess = $ionicPopup.show({
-      templateUrl: 'modals/facebook-post-success.html'
-    });
-
-<<<<<<< HEAD
-    $timeout(function() {
-      postToFacebookSuccess.close(); //close the popup after 1 second
-    }, 1700);
-
-  };
-=======
-  };
-
   $scope.showFacebookPostSuccessAlert = function () {
      var facebookPostSuccessAlert = $ionicPopup.show({
         templateUrl: 'modals/facebook-post-success.html'
@@ -602,10 +568,9 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
      
       $timeout(function() {
        facebookPostSuccessAlert.close(); //close the popup after 1 second
-      }, 1700);
+      }, 2000);
 
-  }
->>>>>>> b3a044e2b6cc6a01bc77f2bd664dcf0b865d6462
+  };
 
     if($state.current.name === 'footprints-map') {
       console.log($state.current.name);

@@ -1,11 +1,12 @@
 (function(){
 
-var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicHistory, $ionicPopup, $timeout, $window, $cordovaContacts, $cordovaSms, $cordovaSocialSharing, $localstorage) {
+var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $ionicHistory, $ionicPopup, $timeout, $window, $cordovaContacts, $cordovaSms, $cordovaFacebook, $localstorage) {
     
   // $scope.footprint = FootprintRequests.openFootprint;
   $scope.selectedFootprintIndex = FootprintRequests.selectedFootprintIndex;
   $scope.headerTitle = FootprintRequests.currentTab;
   $scope.usersAlsoBeenHere = [];
+  $scope.facebookInfo = {};
 
   $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
     console.log($previousRoute);
@@ -139,17 +140,14 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
         FootprintRequests.deletedFootprint = true;
         console.log(data);
         $ionicHistory.goBack();
-        // $state.go('tab.home', null, {reload: true});
-      });
-    }
-  };
+      })
+    };
+  }
 
   $scope.viewFriendsList = function() {
     var route = 'tab.friends' + $scope.subRouting;
     $state.go(route);
   };
-
- 
 
   $scope.openMenu = function() {
   	$window.open($scope.menu.mobileUrl, '_system', 'location=yes');
@@ -214,6 +212,57 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     mailElement.setAttribute('href', 'mailto:?subject=Suggestion via Waddle for iOS&body=' + message);
   };
 
+  $scope.publishToFacebook = function() {
+    $scope.shareOptions.close();
+    var footprint = $scope.footprint;
+    var linkObject = {
+      method: 'feed',
+      message: $scope.facebookInfo.message,
+      link: 'http://www.gowaddle.com',
+      picture: 'https://s3-us-west-2.amazonaws.com/waddle/logo+assets/WaddleLogo_1024x1024-6-2-5.png',
+      name: $localstorage.getObject('user').name + " suggests " + footprint.place.name + "!",
+      caption: footprint.place.name + " | letswaddle.com",
+      description: null
+    };
+
+    //set value of message to empty string after setting linkObject
+    $scope.facebookInfo.message = '';
+
+    //overwrite default pic (waddle logo) if the footprint has a photo
+    if(footprint.checkin.photoLarge !== "null") {
+      linkObject.picture = footprint.checkin.photoLarge;
+    }
+
+    if(footprint.user.facebookID === window.sessionStorage.userFbID) {
+      linkObject.description = footprint.user.name + " rated " + footprint.place.name + " " + footprint.checkin.rating 
+      + " stars out of 5."
+    } else {
+      linkObject.description = $localstorage.getObject('user').name + "'s friend, " + footprint.user.name + ", rated " + footprint.place.name + " " + footprint.checkin.rating
+      + " stars out of 5.";
+    }
+
+    if(footprint.checkin.caption !== "null" ) {
+      linkObject.description +=   " Here's what they said about this place: " + '"' + footprint.checkin.caption + '"';
+    }
+  
+    console.log(linkObject);
+    
+    $cordovaFacebook.login(["publish_actions"])
+    .then(function(response) {
+      $cordovaFacebook.showDialog(linkObject)
+      .then(function (success) {
+        $scope.showFacebookPostSuccessAlert();
+        console.log(success);
+
+      }, function (err) {
+        console.log(err);
+
+      })      
+    }, function (error) {
+      console.log(error);
+    });
+  };
+
   $scope.openDeleteFootprintPopup = function () {
     $scope.optionsPopup.close();
 
@@ -268,6 +317,16 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     $timeout($scope.setShareMessage, 0);
   };
 
+  $scope.showFacebookPostSuccessAlert = function () {
+    var facebookPostSuccessAlert = $ionicPopup.show({
+      templateUrl: 'modals/facebook-post-success.html'
+    });
+     
+    $timeout(function() {
+      facebookPostSuccessAlert.close(); //close the popup after 1 second
+    }, 2000);
+  };
+
   $scope.setMarker = function(map) {
     // $scope.map = map;
   	map.setView([$scope.footprint.place.lat, $scope.footprint.place.lng], 12);
@@ -299,7 +358,7 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   };
 };
 
-EnlargedFootprintController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicHistory', '$ionicPopup', '$timeout', '$window', '$cordovaContacts', '$cordovaSms', '$cordovaSocialSharing', '$localstorage'];
+EnlargedFootprintController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$ionicHistory', '$ionicPopup', '$timeout', '$window', '$cordovaContacts', '$cordovaSms', '$cordovaFacebook', '$localstorage'];
 
 var MapLocationDirective = function ($location) {
 	return {
