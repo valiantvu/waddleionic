@@ -334,10 +334,10 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       .then(function(response) {
         $cordovaFacebook.showDialog(linkObject)
         .then(function (success) {
+          if(success.post_id) {
+            $scope.showFacebookPostSuccessAlert();
+          }
           console.log(success);
-          $scope.showFacebookPostSuccessAlert();
-          console.log(success);
-
         }, function (err) {
           console.log(err);
 

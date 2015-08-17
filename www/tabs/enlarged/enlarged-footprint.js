@@ -251,9 +251,10 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     .then(function(response) {
       $cordovaFacebook.showDialog(linkObject)
       .then(function (success) {
-        $scope.showFacebookPostSuccessAlert();
+        if(success.post_id) {
+          $scope.showFacebookPostSuccessAlert();
+        }
         console.log(success);
-
       }, function (err) {
         console.log(err);
 
