@@ -1,6 +1,5 @@
 (function(){
 
-
 var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage, ezfb, $cordovaFacebook) {
   Auth.checkLogin()
   .then(function () {
