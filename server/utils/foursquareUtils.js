@@ -211,7 +211,8 @@ utils.parseNativeCheckin = function (venue) {
   //TODO: figure out how to generate different size images from AWS url
 
   if (venue.photo) {
-    formattedCheckin.photoLarge = venue.photoLarge;
+    formattedCheckin.photoLarge = venue.photo + '/full';
+    formattedCheckin.photoSmall = venue.photo + '/thumb';
     formattedCheckin.photo = venue.photo;
     formattedCheckin.pointValue += 3;
   }
