@@ -15,6 +15,7 @@ var FootprintRequests = function ($http){
   var footprints;
   var currentTab;
   var productionServerURL = 'http://waddleionic.herokuapp.com';
+  var stagingServerURL = 'https://protected-reaches-9372.herokuapp.com/';
 
   return {
     // Contains comments and props
@@ -59,7 +60,11 @@ var FootprintRequests = function ($http){
     addComment: function (data) {
       var url = '/api/checkins/comment';
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       if (data.text) {
         return $http({
@@ -73,7 +78,11 @@ var FootprintRequests = function ($http){
     editComment: function (data) {
       var url = '/api/checkins/comment/edit';
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       return $http({
         method : 'POST',
@@ -85,7 +94,11 @@ var FootprintRequests = function ($http){
     removeComment : function(data) {
       var url = '/api/checkins/removecomment';
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       return $http({
         method : 'POST',
@@ -97,7 +110,11 @@ var FootprintRequests = function ($http){
     getFootprintInteractions: function (checkinID) {
       var url = '/api/checkins/interactions/' + checkinID;
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       if (checkinID) {
         return $http({
@@ -110,7 +127,11 @@ var FootprintRequests = function ($http){
     deleteFootprint: function (data) {
       var url = '/api/checkins/delete';
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       if (data) {
          return $http({
@@ -124,7 +145,11 @@ var FootprintRequests = function ($http){
     removeFootprintFromFavorites: function (facebookID, checkinID) {
       var url = '/api/checkins/folders/removefavorite';
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       var data = {
         facebookID: facebookID,
@@ -141,7 +166,11 @@ var FootprintRequests = function ($http){
     getFoursquareVenueInfo: function (foursquareVenueID, facebookID) {
       var url = '/api/checkins/venue/' + foursquareVenueID + '/' + facebookID;
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       return $http({
         method: 'GET',
@@ -152,7 +181,11 @@ var FootprintRequests = function ($http){
     findUsersAlsoBeenHere: function (foursquareVenueID, facebookID) {
       var url = '/api/places/beenhere/' + foursquareVenueID + '/' + facebookID;
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       return $http({
         method: 'GET',
