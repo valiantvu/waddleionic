@@ -12,8 +12,8 @@
 <ion-view title="Home">
 
   <ion-content class="padding bg-scroll tabs-item-hide">
-    <button ng-if="!footprint.folders" class="button icon-left ion-star button-small button-light savefave" ng-click="openModal()">Save to Folder</button>
-    <button ng-if="footprint.folders" class="button button-small button-light savefave" ng-click="openModal()">{{footprint.folders[0].name}}</button>
+    <button ng-if="!footprint.folders" class="button icon-left ion-star button-small button-light savefave" ng-click="showPopup()">Save to Folder</button>
+    <button ng-if="footprint.folders" class="button button-small button-light savefave">{{footprint.folders[0].name}}</button>
     <img src="img/TabCurve-1.png" class="folder-tab-curve">
     <button ng-click="openOptions(footprint, 0)" class="options button button-icon icon waddle-more light"></button>
     <div ng-if="categoryName" class="relative-absolute-hack">
@@ -78,7 +78,7 @@
       <h5 class="also-been" ng-if="!usersAlsoBeenHere.length">You're the first! <a ng-click="showShareOptions()" class="underline">Suggest it to a friend.</a><h5>
       <div class="margin-indent" ng-if="usersAlsoBeenHere.length">
         <span ng-repeat="user in usersAlsoBeenHere">
-          <img ng-if="user.facebookID !== footprint.user.facebookID" class="propic commenterpic" ng-src="{{user.fbProfilePicture}}">
+          <img ng-if="user.facebookID !== footprint.user.facebookID" class="propic also-been-pic" ng-src="{{user.fbProfilePicture}}">
         <span>
       </div>
       

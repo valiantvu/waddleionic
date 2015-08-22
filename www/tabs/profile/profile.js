@@ -415,6 +415,7 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
         $scope.footprints[index].folders.push(data.data[0].folder);
         $scope.showFootprintAdditionSuccessAlert();
         $scope.viewFoldersList(true);
+        $scope.selectedFolderIndex = -1;
       })
     };
 
@@ -583,7 +584,11 @@ var ProfileController = function ($scope, $state, UserRequests, Auth, FootprintR
         // subTitle: 'Please use normal things',
         scope: $scope,
         buttons: [
-          { text: 'Cancel' },
+          { text: 'Cancel',
+            onTap: function(e) {
+              $scope.selectedFolderIndex = -1;
+            } 
+          },
           {
             text: '<b>Save</b>',
             type: 'button-positive',

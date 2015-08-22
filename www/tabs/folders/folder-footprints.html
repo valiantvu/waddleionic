@@ -67,9 +67,9 @@
       </g>
     </svg>
 
-    <ion-list class="list" style="margin-top:-10px">
+    <ion-list class="list move-up" style="margin-top:-10px">
       <ion-item ui-sref="tab.enlarged-footprint{{subRouting}}" ng-click="openFootprint(footprint, $index)" ng-repeat="footprint in folderContents" class="item item-thumbnail-right">
-        <img/>
+        <!-- <img/> -->
         <img class="folder-footprint-image" ng-if="footprint.checkin.photoLarge !== 'null'" ng-src="{{footprint.checkin.photoLarge}}">
         <img class="folder-footprint-folder-propic" ng-src="{{footprint.user.fbProfilePicture}}">
         <h4 class="ratinghex-short" ng-if="footprint.checkin.rating">{{footprint.checkin.rating}}</h4>
