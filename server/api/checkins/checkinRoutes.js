@@ -4,7 +4,8 @@ module.exports = function (app) {
   app.get('/venuesearchweb/:facebookID/:query/:near', checkinController.searchFoursquareVenuesWeb);
   // app.get('/venuesearchmobile/:facebookID/:lat/:lng', checkinController.searchFoursquareVenuesMobile);
   app.get('/venuesearchmobile/:facebookID/:lat/:lng', checkinController.searchFactualVenuesByGeolocation);
-  app.get('/venuesearch/geolocation/query/:facebookID/:lat/:lng/:query', checkinController.searchFoursquareVenuesBySearchQueryAndGeolocation);
+  // app.get('/venuesearch/geolocation/query/:facebookID/:lat/:lng/:query', checkinController.searchFoursquareVenuesBySearchQueryAndGeolocation);
+  app.get('/venuesearch/geolocation/query/:facebookID/:lat/:lng/:query', checkinController.searchFactualVenuesBySearchQueryAndGeolocation);
   app.get('/venue/:venueID/:facebookID', checkinController.getVenueInfo);
   app.post('/nativecheckin', checkinController.handleNativeCheckin);
   app.post('/nativecheckin/edit', checkinController.editNativeCheckin);

@@ -1,16 +1,16 @@
-var https = require('https');
-var qs = require('querystring');
+// var https = require('https');
+// var qs = require('querystring');
 
 var Q = require('q');
-var _ = require('lodash');
+// var _ = require('lodash');
 
-var helpers = require('./helpers.js');
-var foursquareUtils = require('./foursquareUtils');
+// var helpers = require('./helpers.js');
+// var foursquareUtils = require('./foursquareUtils');
 
 var Factual = require('factual-api');
 var factual = new Factual(process.env.WADDLE_FACTUAL_OAUTH_KEY, process.env.WADDLE_FACTUAL_OAUTH_SECRET);
 
-var User = require('../api/users/userModel.js');
+// var User = require('../api/users/userModel.js');
 
 var utils = {};
 
@@ -28,7 +28,7 @@ utils.searchVenuesByGeolocation = function (latlng) {
 	var deferred = Q.defer();
 	console.log(latlng);
 
-	factual.get('/t/places-us', {geo:{"$circle":{"$center": latlng, "$meters": 5000}}}, function (err, res) {
+	factual.get('/t/places-us', {filters:{"category_ids":{"$includes_any":[308, 107]}}, geo:{"$circle":{"$center": latlng, "$meters": 25000}}, sort:{"distance": 100, "placerank": 3}}, function (err, res) {
 		if(err) {
 			console.log(err);
 		} else {
@@ -38,6 +38,19 @@ utils.searchVenuesByGeolocation = function (latlng) {
 	});
 	return deferred.promise;
 
+}
+
+utils.searchVenuesBySearchQueryAndGeolocation = function (latlng, query) {
+	var deferred = Q.defer();
+	factual.get('/t/places-us', {filters:{"category_ids":{"$includes_any":[308, 107]}}, q: query, geo:{"$circle":{"$center": latlng, "$meters": 25000}}}, function (err, res) {
+		if(err) {
+			console.log(err);
+		} else {
+			console.log(res.data);
+			deferred.resolve(res.data);
+		}
+	});
+	return deferred.promise;
 }
 
 utils.getFactualIDFromFoursquareID = function (venueID) {

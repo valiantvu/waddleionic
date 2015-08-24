@@ -142,6 +142,7 @@ checkinController.searchFoursquareVenuesWeb = function (req, res) {
 }
 
 checkinController.searchFactualVenuesByGeolocation = function (req, res) {
+  var miles;
   var latlng = [req.params.lat, req.params.lng];
 
   factualUtils.searchVenuesByGeolocation(latlng)
@@ -150,12 +151,16 @@ checkinController.searchFactualVenuesByGeolocation = function (req, res) {
       if(venue['$distance']) {
         //convert meters to miles, rounded to the nearest .1 mi;
         miles = Math.round((venue['$distance'] * 0.00062137119) * 10) / 10;
-        venue['$distance'] = miles;
+        // venue['$distance'] = miles;
+        venue.location = {};
+        venue.location.distance = miles;
       }
       if(venue.category_labels) {
         console.log(JSON.stringify(venue.category_labels));
         // venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
         // venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
+        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.iconUrlSuffix = '-2.svg';
       }
       else {
         venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
@@ -192,6 +197,41 @@ checkinController.searchFoursquareVenuesMobile = function (req, res) {
       if(venue.categories[0] && venue.categories[0].name && categoryList.dictionary[venue.categories[0].name]) {
         venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
         venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
+      }
+      else {
+        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.iconUrlSuffix = '-2.svg';
+      }
+    })
+    res.json(venues);
+  })
+  .catch(function (err){
+    console.log(err);
+    res.status(500).end();
+  });
+};
+
+checkinController.searchFactualVenuesBySearchQueryAndGeolocation = function (req, res) {
+  var miles;
+  var latlng = [req.params.lat, req.params.lng];
+  var query = req.params.query;
+
+  factualUtils.searchVenuesBySearchQueryAndGeolocation(latlng, query)
+  .then(function (venues) {
+    _.each(venues, function(venue) {
+      if(venue['$distance']) {
+        //convert meters to miles, rounded to the nearest .1 mi;
+        miles = Math.round((venue['$distance'] * 0.00062137119) * 10) / 10;
+        // venue['$distance'] = miles;
+        venue.location = {};
+        venue.location.distance = miles;
+      }
+      if(venue.category_labels) {
+        console.log(JSON.stringify(venue.category_labels));
+        // venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
+        // venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
+        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.iconUrlSuffix = '-2.svg';
       }
       else {
         venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
