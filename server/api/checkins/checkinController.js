@@ -6,6 +6,7 @@ var uuid = require('node-uuid');
 var Checkin = require('./checkinModel.js');
 var User = require('../users/userModel.js');
 
+var factualUtils = require('../../utils/factualUtils.js');
 var foursquareUtils = require('../../utils/foursquareUtils.js');
 var instagramUtils = require('../../utils/instagramUtils.js');
 var facebookUtils = require('../../utils/facebookUtils.js');
@@ -73,7 +74,8 @@ checkinController.getVenueInfo = function (req, res) {
   User.find({facebookID: facebookID})
   .then(function (userNode) {
     user = userNode;
-    return foursquareUtils.getVenueInfo(venueID, user)
+    return factualUtils.getFoursquareVenueInfo(venueID);
+    // return foursquareUtils.getVenueInfo(venueID, user)
   })
   .then(function (venueInfo) {
     res.json(venueInfo);
@@ -139,15 +141,46 @@ checkinController.searchFoursquareVenuesWeb = function (req, res) {
   });
 }
 
+checkinController.searchFactualVenuesByGeolocation = function (req, res) {
+  var latlng = [req.params.lat, req.params.lng];
+
+  factualUtils.searchVenuesByGeolocation(latlng)
+  .then(function(venues) {
+    _.each(venues, function(venue) {
+      if(venue['$distance']) {
+        //convert meters to miles, rounded to the nearest .1 mi;
+        miles = Math.round((venue['$distance'] * 0.00062137119) * 10) / 10;
+        venue['$distance'] = miles;
+      }
+      if(venue.category_labels) {
+        console.log(JSON.stringify(venue.category_labels));
+        // venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
+        // venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
+      }
+      else {
+        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.iconUrlSuffix = '-2.svg';
+      }
+    })
+    res.json(venues);
+  })
+  .catch(function (err){
+    console.log(err);
+    res.status(500).end();
+  });
+}
+
 checkinController.searchFoursquareVenuesMobile = function (req, res) {
   var user, foursquareToken, miles;
   var facebookID = req.params.facebookID;
-  var latlng = req.params.lat + ',' + req.params.lng;
+  // var latlng = req.params.lat + ',' + req.params.lng;
+  var latlng = [req.params.lat, req.params.lng];
 
   User.find({facebookID: facebookID})
   .then(function (userNode) {
     user = userNode;
-    return foursquareUtils.searchFoursquareVenuesMobile(user, latlng);
+    return factualUtils.searchVenuesByGeolocation(latlng);
+    // return foursquareUtils.searchFoursquareVenuesMobile(user, latlng);
   })
   .then(function (venues) {
     _.each(venues, function(venue) {
