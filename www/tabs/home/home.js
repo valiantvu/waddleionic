@@ -1,7 +1,7 @@
 (function(){
 
 var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage, ezfb, $cordovaFacebook) {
-  // window.sessionStorage.stagingEnvironment = true;
+  window.sessionStorage.stagingEnvironment = true;
   Auth.checkLogin()
   .then(function () {
     $scope.numHypes = 0;
