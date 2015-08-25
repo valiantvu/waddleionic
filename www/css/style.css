@@ -114,6 +114,10 @@ p{
 	margin: 0px;
 }
 
+.move-up div.list {
+	margin-top: -5px;
+}
+
 .searchbox {
 	border-radius: 25px;
 	height: 1.8em;
@@ -722,6 +726,11 @@ span{
 	margin-left: -7px;
 }
 
+.also-been-pic {
+	margin-left: -4px;
+	margin-right: 7px;
+}
+
 .transparentbutton{
 	background:none;
 	border:0px;
@@ -1022,6 +1031,7 @@ border-radius: 0px;
 
 .selected {
 	background-color: #dbdbdb;
+	width: 99%;
 }
 
 .folderList {

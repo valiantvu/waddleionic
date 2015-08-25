@@ -2,6 +2,7 @@
 
 var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $timeout){
   var productionServerURL = 'http://waddleionic.herokuapp.com';
+  var stagingServerURL = 'https://protected-reaches-9372.herokuapp.com';
 
   return {
     selectedVenue: null,
@@ -9,7 +10,11 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $t
     searchFoursquareVenuesBySearchQueryAndNearKeyword: function(facebookID, query, location) {
       var url = '/api/checkins/venuesearchweb/' + facebookID + '/' + query + '/' + location;
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       return $http({
         method: 'GET',
@@ -19,7 +24,11 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $t
     searchFoursquareVenuesByGeolocation: function (facebookID, currentLocation) {
       var url = '/api/checkins/venuesearchmobile/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng;
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       return $http({
         method: 'GET',
@@ -31,7 +40,11 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $t
       var url = '/api/checkins/venuesearch/geolocation/query/' + facebookID + '/' + currentLocation.lat + '/' + currentLocation.lng + '/' + query;
       console.log(url);
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       return $http({
         method: 'GET',
@@ -42,7 +55,11 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $t
     sendCheckinDataToServer: function (checkinData) {
       var url = '/api/checkins/nativecheckin/';
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       if (checkinData) {
         return $http({
@@ -54,36 +71,41 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $t
     },
 
     s3_upload: function(file_element, facebookID, photoUUID, photoSize) {
-        var deferred = $q.defer();
-        var url = '/api/checkins/sign_s3/' + facebookID + '/' + photoUUID + '/' + photoSize;
+      var deferred = $q.defer();
+      var url = '/api/checkins/sign_s3/' + facebookID + '/' + photoUUID + '/' + photoSize;
 
-        if(ionic.Platform.isIOS()) {
+      if(ionic.Platform.isIOS()) {
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
           url = productionServerURL.concat(url);
         }
+      }
         // var status_elem = document.getElementById("status");
-        var preview_elem = document.getElementById("preview");
+      var preview_elem = document.getElementById("preview");
         // console.log('status: ' + status_elem + 'preview: ' + preview_elem);
 
-        var s3upload = new S3Upload({
-          file_dom_selector: 'files',
-          s3_sign_put_url: url,
-          onProgress: function(percent, message) {
-              console.log('Upload progress: ' + percent + '% ' + message);
-              // status_elem.innerHTML = 'Upload progress: ' + percent + '% ' + message;
-          },
-          onFinishS3Put: function(public_url) {
-              console.log(public_url)
-              // status_elem.innerHTML = 'Upload completed. Uploaded to: ' + public_url;
-              // preview_elem.innerHTML = '<img src="' + public_url + '"/>';
-              deferred.resolve(public_url);
-          },
-          onError: function(status) {
-              console.log('Upload error: ' + status);
-              // status_elem.innerHTML = 'Upload error: ' + status;
-          }
-        }, file_element);
-        return deferred.promise;
+      var s3upload = new S3Upload({
+        file_dom_selector: 'files',
+        s3_sign_put_url: url,
+        onProgress: function(percent, message) {
+          console.log('Upload progress: ' + percent + '% ' + message);
+          // status_elem.innerHTML = 'Upload progress: ' + percent + '% ' + message;
+        },
+        onFinishS3Put: function(public_url) {
+          console.log(public_url)
+          // status_elem.innerHTML = 'Upload completed. Uploaded to: ' + public_url;
+          // preview_elem.innerHTML = '<img src="' + public_url + '"/>';
+          deferred.resolve(public_url);
+        },
+        onError: function(status) {
+          console.log('Upload error: ' + status);
+          // status_elem.innerHTML = 'Upload error: ' + status;
+        }
+      }, file_element);
+      return deferred.promise;
     },
+
     getCurrentLocation: function(successCallback, errCallback) {
       console.log('getting currentLocation');
       var options = {
@@ -119,7 +141,11 @@ var NativeCheckin = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $t
     editCheckin: function(editedCheckinData) {
       var url = '/api/checkins/nativecheckin/edit';
       if(ionic.Platform.isIOS()) {
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
           url = productionServerURL.concat(url);
+        }
       }
       return $http({
         method: 'POST',

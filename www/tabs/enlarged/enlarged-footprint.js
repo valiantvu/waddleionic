@@ -6,7 +6,12 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
   $scope.selectedFootprintIndex = FootprintRequests.selectedFootprintIndex;
   $scope.headerTitle = FootprintRequests.currentTab;
   $scope.usersAlsoBeenHere = [];
+  $scope.folders = [];
   $scope.facebookInfo = {};
+  $scope.selectedFolderInfo = {};
+  var folderPage = 0;
+  var folderSkipAmount = 10;
+  $scope.moreFoldersCanBeLoaded = true;
 
   $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
     console.log($previousRoute);
@@ -128,6 +133,38 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     });
   };
 
+  $scope.viewFoldersList = function(reload) {
+    if(reload) {
+      folderPage = 0;
+      $scope.moreFoldersCanBeLoaded = false;
+    }
+    console.log("attemoting to viewfolders");
+    UserRequests.fetchFolders(window.sessionStorage.userFbID, folderPage, folderSkipAmount)
+    .then(function (folders) {
+      if(folders.data.length > 0) {
+        if(folderPage === 0) {
+        //remove suggested by friends folder from array;
+        folders.data.shift();
+        }
+        $scope.folders = reload ? folders.data : $scope.folders.concat(folders.data);
+        UserRequests.userFolderData = $scope.folders;
+        console.log($scope.folders)
+        if (reload) {
+          $scope.moreFoldersCanBeLoaded = true;
+        }
+        folderPage++; 
+      } else {
+        $scope.moreFoldersCanBeLoaded = false;
+      }
+      $scope.$broadcast('scroll.infiniteScrollComplete');
+    })
+  };
+
+  $scope.passSelectedFolderInfo = function(folder, $index) {
+      $scope.selectedFolderIndex = $index;
+      $scope.selectedFolderInfo.name = folder.folder.name;
+  }
+
   $scope.deleteFootprint = function (checkinID, facebookID) {
     if(window.sessionStorage.userFbID === facebookID) {
       var deleteFootprintData = {
@@ -149,8 +186,36 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     $state.go(route);
   };
 
+  $scope.addFootprintToFolder = function (checkinID, folderName, footprintIndex, folderIndex) {
+    UserRequests.addFootprintToFolder(window.sessionStorage.userFbID, checkinID, folderName)
+    .then(function (data) {
+      //add folder label to appropriate footprint
+      $scope.footprint.folders = [];
+      $scope.footprint.folders.push(data.data[0].folder);
+      $scope.showFootprintAdditionSuccessAlert();
+      $scope.viewFoldersList(true);
+    })
+  };
+
+  $scope.createFolderAndAddFootprintToFolder = function (folderName) {
+    // console.log(folderName);
+    UserRequests.addFolder(window.sessionStorage.userFbID, folderName)
+    .then(function (folder) {
+      UserRequests.addFootprintToFolder(window.sessionStorage.userFbID, $scope.footprint.checkin.checkinID, folderName)
+      .then(function (data) {
+        //add folder label to appropriate footprint
+        $scope.footprint.folders = [];
+        $scope.footprint.folders.push(data.data[0].folder);
+        $scope.showCreationSuccessAlert();
+
+        $scope.viewFoldersList(true);
+      })
+    });
+  };
+
+
   $scope.openMenu = function() {
-  	$window.open($scope.menu.mobileUrl, '_system', 'location=yes');
+    $window.open($scope.menu.mobileUrl, '_system', 'location=yes');
   };
 
   $scope.toggleMapDisplay = function() {
@@ -264,6 +329,62 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     });
   };
 
+  $scope.openModal = function(folderName) {
+      FootprintRequests.openFolder = folderName;
+      var route = 'tab.folder-footprints' + $scope.subRouting;
+      $state.go(route);
+  };
+
+  $scope.showPopup = function() {
+    // An elaborate, custom popup
+    $scope.myPopup = $ionicPopup.show({
+      templateUrl: 'modals/folder-list.html',
+      title: 'Choose a Folder',
+      scope: $scope,
+      buttons: [
+        { text: 'Cancel'
+         },
+        {
+          text: '<b>Save</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+           $scope.addFootprintToFolder($scope.footprint.checkin.checkinID, $scope.selectedFolderInfo.name);
+          }
+        }
+      ]
+    });
+  };
+
+
+  $scope.showFolderCreationPopup = function() {
+    $scope.newFolderInfo = {};
+    $scope.myPopup.close();
+
+    //janky way to remove myPopup from DOM (fix for .close() method not completely working in ionic 1.0.1)
+    var popup = document.getElementsByClassName('popup-container')[0];
+    document.body.removeChild(popup);
+
+    // An elaborate, custom popup
+    var folderCreationPopup = $ionicPopup.show({
+      templateUrl: 'modals/add-folder.html',
+      title: 'Add Folder',
+      scope: $scope,
+      buttons: [
+        { text: 'Cancel'},
+        {
+          text: '<b>Save</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+              $scope.createFolderAndAddFootprintToFolder($scope.newFolderInfo.name);
+          }
+        }
+      ]
+    });
+    // myPopup.then(function(res) {
+    //   console.log('Tapped!', res);
+    // });
+  };
+
   $scope.openDeleteFootprintPopup = function () {
     $scope.optionsPopup.close();
 
@@ -287,6 +408,16 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
     });
   };
 
+  $scope.showFootprintAdditionSuccessAlert = function() {
+    var creationSuccessAlert = $ionicPopup.show({
+      templateUrl: 'modals/footprint-addition-success.html'
+    });
+
+    $timeout(function() {
+     creationSuccessAlert.close(); //close the popup after 1.5 seconds
+    }, 1700);
+  };
+
   $scope.showCreationSuccessAlert = function() {
     var creationSuccessAlert = $ionicPopup.show({
       title: 'New Folder Added!',
@@ -295,7 +426,7 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
    
     $timeout(function() {
      creationSuccessAlert.close(); //close the popup after 1 second
-    }, 1500);
+    }, 1700);
   };
 
   $scope.showDeletionSuccessAlert = function () {

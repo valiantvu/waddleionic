@@ -1,7 +1,7 @@
 (function(){
 
-
 var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage, ezfb, $cordovaFacebook) {
+  // window.sessionStorage.stagingEnvironment = true;
   Auth.checkLogin()
   .then(function () {
     $scope.numHypes = 0;
@@ -182,6 +182,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
           $scope.showCreationSuccessAlert();
 
           $scope.viewFoldersList(true);
+          $scope.selectedFolderIndex = -1;
         })
       });
     };
@@ -398,7 +399,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
       FootprintRequests.openFolder = folderName;
       FootprintRequests.selectedFolderIndex = 1;
-      $state.transitionTo('tab.folder-footprints-home');
+      $state.go('tab.folder-footprints-home');
     };
 
     $scope.closeModal = function() {
@@ -433,7 +434,10 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         // subTitle: 'Please use normal things',
         scope: $scope,
         buttons: [
-          { text: 'Cancel'
+          { text: 'Cancel',
+            onTap: function(e) {
+              $scope.selectedFolderIndex = -1;
+            }
            },
           {
             text: '<b>Save</b>',

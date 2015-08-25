@@ -18,8 +18,11 @@ var Auth = function ($q, $state, $window, $localstorage, $cordovaFacebook, ezfb)
       $cordovaFacebook.getLoginStatus()
       .then(function(response) {
         if (response.status === 'connected'){
-          console.log('connected');
+          console.log('connectedddd');
+          console.log(window.sessionStorage);
           if(window.sessionStorage.userFbID) {
+            console.log('hi i am here');
+            console.log(window.sessionStorage.userFbID);
             deferred.resolve();
           } else if ($localstorage.getObject('user').facebookID) {
             window.sessionStorage.name = $localstorage.getObject('user').name;
@@ -31,12 +34,13 @@ var Auth = function ($q, $state, $window, $localstorage, $cordovaFacebook, ezfb)
             deferred.reject(new Error('not connected'));
           }
         } else {
-          console.log('not connected');
+          console.log('not connecteddd');
           $state.go('frontpage');
           deferred.reject(new Error('not connected'));
         }
       }, function (error) {
         console.log(error);
+        $state.go('frontpage');
         deferred.reject(new Error('not connected'));
       });
     } else {

@@ -4,6 +4,7 @@
 var UserRequests = function ($http, ezfb){
   var userData;
   var productionServerURL = 'http://waddleionic.herokuapp.com';
+  var stagingServerURL = 'https://protected-reaches-9372.herokuapp.com';
 
   return {
     allData: userData,
@@ -26,7 +27,11 @@ var UserRequests = function ($http, ezfb){
       var url = '/api/users/userdata';
 
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
 
       if(data) {
@@ -67,7 +72,11 @@ var UserRequests = function ($http, ezfb){
       }
 
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
 
       if (userFbID) {
@@ -96,7 +105,11 @@ var UserRequests = function ($http, ezfb){
           url +=  "/" + skip;
       }
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       console.log(url);
 
@@ -122,7 +135,11 @@ var UserRequests = function ($http, ezfb){
       }
 
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
 
       if (userFbID) {
@@ -136,7 +153,11 @@ var UserRequests = function ($http, ezfb){
     addFolder: function(userFbID, folderName) {
       var url = '/api/users/folders/add';
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       if (userFbID) {
         return $http({
@@ -164,7 +185,11 @@ var UserRequests = function ($http, ezfb){
       }
 
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
 
       return $http({
@@ -189,7 +214,11 @@ var UserRequests = function ($http, ezfb){
       }
 
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
 
       return $http({
@@ -202,7 +231,11 @@ var UserRequests = function ($http, ezfb){
       var url = '/api/checkins/folder/';
 
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
 
       return $http({
@@ -231,7 +264,11 @@ var UserRequests = function ($http, ezfb){
       };
 
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
 
       return $http({
@@ -242,10 +279,14 @@ var UserRequests = function ($http, ezfb){
 
     deleteFolderAndContents: function(userFbID, folderName) {
       var url = '/api/users/folders/delete';
+      
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
-
       console.log(url);
       return $http({
         method: 'POST',
@@ -271,7 +312,11 @@ var UserRequests = function ($http, ezfb){
       }
 
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
 
       return $http({
@@ -294,7 +339,11 @@ var UserRequests = function ($http, ezfb){
       }
 
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
 
       if (userFbID && query) {
@@ -318,7 +367,11 @@ var UserRequests = function ($http, ezfb){
           url +=  "/" + skip;
       }
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       console.log(url);
 
@@ -343,7 +396,11 @@ var UserRequests = function ($http, ezfb){
           url +=  "/" + skip;
       }
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       console.log(url);
 
@@ -358,9 +415,12 @@ var UserRequests = function ($http, ezfb){
     fetchUnreadNotifications: function (userFbID, page, limit) {
       var url = '/api/users/notifications/unread/' + userFbID + '/' + page + '/' + limit;
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
-
       return $http ({
         method: 'GET',
         url: url
@@ -370,7 +430,11 @@ var UserRequests = function ($http, ezfb){
     updateNotificationReadStatus: function (userFbID) {
       var url = '/api/users/notifications/update';
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
 
       return $http({
@@ -383,7 +447,11 @@ var UserRequests = function ($http, ezfb){
     fetchReadNotifications: function (userFbID, page, limit) {
       var url = '/api/users/notifications/read/' + userFbID + '/' + page + '/' + limit;
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
       }
       
       console.log(url);
@@ -396,8 +464,12 @@ var UserRequests = function ($http, ezfb){
     suggestToFriend: function (params) {
       var url = '/api/checkins/suggest';
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
-      };
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
+      }
       return $http({
         method: 'POST',
         url: url,
@@ -412,8 +484,12 @@ var UserRequests = function ($http, ezfb){
       };
       var url = '/api/users/publish/facebook';
       if(ionic.Platform.isIOS()) {
-        url = productionServerURL.concat(url);
-      };
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
+      }
       return $http({
         method: 'POST',
         url: url,

@@ -1,7 +1,7 @@
 
 (function(){
 
-var FrontpageController = function (UserRequests, $scope, $state, $window, $localstorage, ezfb, $cordovaFacebook) {
+var FrontpageController = function (UserRequests, $scope, $state, $window, $localstorage, ezfb, $cordovaFacebook, $ionicHistory) {
   $scope.loading = false;
 
   var enterSiteWhenConnected = function (fbToken) {
@@ -16,7 +16,7 @@ var FrontpageController = function (UserRequests, $scope, $state, $window, $loca
     if(window.cordova) {
       $cordovaFacebook.api("me")
       .then(function(fbData) {
-        console.log(fbData);
+        // console.log(fbData);
         sendUserDataToServer(fbToken, fbData);
       }, function (error) {
         console.log(error);
@@ -31,6 +31,8 @@ var FrontpageController = function (UserRequests, $scope, $state, $window, $loca
 
   var sendUserDataToServer = function(fbToken, fbData) {
     window.sessionStorage.userFbID = fbData.id;
+    window.sessionStorage.fbToken = fbToken;
+    window.sessionStorage.name = fbData.name;
 
     var userData = {
       facebookID: fbData.id,
@@ -39,18 +41,21 @@ var FrontpageController = function (UserRequests, $scope, $state, $window, $loca
     };
 
 //when sucessfully connected to fb account , loading screen is made active 
-    console.log(userData);
+    // console.log(userData);
 
     UserRequests.sendUserData(userData)
     .then(function(storedUserData){
-      console.log(storedUserData.data);
+      // console.log(storedUserData.data);
+      $localstorage.setObject('user', storedUserData.data.user);
+      UserRequests.allData = storedUserData.data;
       $scope.loading = false;
-      $state.go('walkthrough');
-      UserRequests.allData = storedUserData.data
-      console.log('alldata:  ', UserRequests.allData)
-      $localstorage.setObject('user', UserRequests.allData.user);
+      // console.log('alldata:  ', UserRequests.allData)
       if(UserRequests.allData.user.footprintsCount >= 0) {
-        $state.go('tab.home');
+        console.log('heeyah');
+        $ionicHistory.clearCache()
+        .then(function() {
+          $state.go('tab.home');
+        })
       }
       else {
         $state.go('walkthrough');
@@ -96,10 +101,10 @@ var FrontpageController = function (UserRequests, $scope, $state, $window, $loca
     if(window.cordova) {
       $cordovaFacebook.login(["public_profile", "email", "user_friends"])
       .then(function(response) {
-        console.log(response);
+        // console.log(response);
          if(response.status === 'connected') {
-          console.log('connected');
-          console.log(response);
+          // console.log('connected');
+          // console.log(response);
           enterSiteWhenConnected(response.authResponse.accessToken);
         } else {
           alert('Facebook login failed: ' + response.error);
@@ -129,7 +134,7 @@ var FrontpageController = function (UserRequests, $scope, $state, $window, $loca
 
 
 //Injects the services needed by the controller
-FrontpageController.$inject = ['UserRequests', '$scope', '$state', '$window', '$localstorage', 'ezfb', '$cordovaFacebook']
+FrontpageController.$inject = ['UserRequests', '$scope', '$state', '$window', '$localstorage', 'ezfb', '$cordovaFacebook', '$ionicHistory']
 
 //Start creating Angular module
 angular.module('waddle.frontpage', [])
