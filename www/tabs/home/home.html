@@ -20,8 +20,8 @@
     </div>
 
     <ion-refresher on-refresh="doRefresh()"></ion-refresher>
-
-    <div collection-repeat="footprint in footprints" >
+    <!-- <div ng-repeat="footprint in footprints"> -->
+    <div class="checkin-card" collection-repeat="footprint in footprints" item-height="footprint.checkin.photoLarge !== 'null' ? '100%' : '30%'" item-render-buffer="10">
       <button ng-if="!footprint.folders" class="button icon waddle-folder-plus button-small button-light savefave text-align-right" ng-click="showPopup(footprint.checkin.checkinID, $index)">Save to Folder</button>
       <button ng-if="footprint.folders" class="button button-small button-light savefave" ng-click="openModal(footprint.folders[0].name)">{{footprint.folders[0].name}}</button>
       <img src="img/TabCurve-1.png" class="folder-tab-curve">

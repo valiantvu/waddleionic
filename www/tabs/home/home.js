@@ -60,6 +60,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
             $scope.$broadcast('scroll.infiniteScrollComplete');
         });
     };
+    $scope.getAggregatedFeedData();
 
     //posts new footprint from checkin screen
     $scope.$on('newFootprint', function(event, footprint) {
@@ -409,9 +410,9 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     };
 
     //Cleanup the modal when we're done with it!
-    $scope.$on('$destroy', function() {
-      $scope.modal.remove();
-    });
+    // $scope.$on('$destroy', function() {
+    //   $scope.modal.remove();
+    // });
 
     // Execute action on hide modal
     $scope.$on('modal.hidden', function() {
