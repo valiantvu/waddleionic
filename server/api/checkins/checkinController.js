@@ -141,6 +141,34 @@ checkinController.searchFoursquareVenuesWeb = function (req, res) {
   });
 }
 
+checkinController.searchFactualVenuesByQueryAndNear = function (req, res) {
+  var near = req.params.near;
+  var query = req.params.query;
+
+  factualUtils.searchVenuesByQueryAndNear(near, query)
+  .then(function (venues) {
+    console.log(JSON.stringify(venues[0]));
+    _.each(venues, function(venue) {
+      if(venue.category_labels) {
+        console.log(JSON.stringify(venue.category_labels));
+        // venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
+        // venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
+        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.iconUrlSuffix = '-2.svg';
+      }
+      else {
+        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.iconUrlSuffix = '-2.svg';
+      }
+    })
+    res.json(venues);
+  })
+  .catch(function (err){
+    console.log(err);
+    res.status(500).end();
+  });
+}
+
 checkinController.searchFactualVenuesByGeolocation = function (req, res) {
   var miles;
   var latlng = [req.params.lat, req.params.lng];
@@ -178,14 +206,12 @@ checkinController.searchFactualVenuesByGeolocation = function (req, res) {
 checkinController.searchFoursquareVenuesMobile = function (req, res) {
   var user, foursquareToken, miles;
   var facebookID = req.params.facebookID;
-  // var latlng = req.params.lat + ',' + req.params.lng;
-  var latlng = [req.params.lat, req.params.lng];
+  var latlng = req.params.lat + ',' + req.params.lng;
 
   User.find({facebookID: facebookID})
   .then(function (userNode) {
     user = userNode;
-    return factualUtils.searchVenuesByGeolocation(latlng);
-    // return foursquareUtils.searchFoursquareVenuesMobile(user, latlng);
+    return foursquareUtils.searchFoursquareVenuesMobile(user, latlng);
   })
   .then(function (venues) {
     _.each(venues, function(venue) {

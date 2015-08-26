@@ -56,9 +56,12 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 		if($scope.checkinInfo.footprintCaption) {
 			checkinData.footprintCaption = $scope.checkinInfo.footprintCaption
 		}
-		if(venueInfo.categories[0] && venueInfo.categories[0].name) {
-			checkinData.categories = venueInfo.categories[0].name;
-		}
+		// if(venueInfo.categories[0] && venueInfo.categories[0].name) {
+		// 	checkinData.categories = venueInfo.categories[0].name;
+		// }
+    if(venueInfo.category_ids.length) {
+      checkinData.categories = venueInfo.category_ids[0];
+    }
 		if($scope.checkinInfo.folder) {
 			checkinData.folderName = $scope.checkinInfo.folder
 		}

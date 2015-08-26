@@ -1,7 +1,8 @@
 var checkinController = require('./checkinController.js');
 
 module.exports = function (app) {
-  app.get('/venuesearchweb/:facebookID/:query/:near', checkinController.searchFoursquareVenuesWeb);
+  // app.get('/venuesearchweb/:facebookID/:query/:near', checkinController.searchFoursquareVenuesWeb);
+  app.get('/venuesearchweb/:facebookID/:query/:near', checkinController.searchFactualVenuesByQueryAndNear);
   // app.get('/venuesearchmobile/:facebookID/:lat/:lng', checkinController.searchFoursquareVenuesMobile);
   app.get('/venuesearchmobile/:facebookID/:lat/:lng', checkinController.searchFactualVenuesByGeolocation);
   // app.get('/venuesearch/geolocation/query/:facebookID/:lat/:lng/:query', checkinController.searchFoursquareVenuesBySearchQueryAndGeolocation);

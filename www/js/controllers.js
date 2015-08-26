@@ -15,6 +15,7 @@ angular.module('waddle.controllers', [
     'waddle.comments',
     'waddle.hypers',
     'waddle.enlarged-footprint',
+    'waddle.redirect',
     'waddle.walkthrough'
     ]);
 })();

@@ -1,7 +1,16 @@
-
 (function(){
 
-var FrontpageController = function (UserRequests, $scope, $state, $window, $localstorage, ezfb, $cordovaFacebook, $ionicHistory) {
+
+
+var FrontpageController = function (UserRequests, $scope, $state, $window, $localstorage, ezfb, $cordovaFacebook, $ionicHistory, Auth) {
+setTimeout(function() {
+
+  console.log('time out');
+
+  console.log('BEFORE AUTH CHECK');
+  Auth.checkLogin()
+  .then(function() {
+  console.log('past auth check');
   $scope.loading = false;
 
   var enterSiteWhenConnected = function (fbToken) {
@@ -85,6 +94,7 @@ var FrontpageController = function (UserRequests, $scope, $state, $window, $loca
   // });
 
 //when user clicks lets waddle this function is invoked which calls facebook login function in return
+ 
   $scope.login = function(){
     $scope.loading = true;
     // openFB.login(function (response) {
@@ -129,15 +139,19 @@ var FrontpageController = function (UserRequests, $scope, $state, $window, $loca
 
 
   };
+    
+  })
+}, 1000);
 
 };
 
 
 //Injects the services needed by the controller
-FrontpageController.$inject = ['UserRequests', '$scope', '$state', '$window', '$localstorage', 'ezfb', '$cordovaFacebook', '$ionicHistory']
+FrontpageController.$inject = ['UserRequests', '$scope', '$state', '$window', '$localstorage', 'ezfb', '$cordovaFacebook', '$ionicHistory', 'Auth']
 
 //Start creating Angular module
 angular.module('waddle.frontpage', [])
   .controller('FrontpageController', FrontpageController);
+
 
 })();

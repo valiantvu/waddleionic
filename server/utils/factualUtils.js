@@ -28,7 +28,7 @@ utils.searchVenuesByGeolocation = function (latlng) {
 	var deferred = Q.defer();
 	console.log(latlng);
 
-	factual.get('/t/places-us', {filters:{"category_ids":{"$includes_any":[308, 107]}}, geo:{"$circle":{"$center": latlng, "$meters": 25000}}, sort:{"distance": 100, "placerank": 3}}, function (err, res) {
+	factual.get('/t/places-us', {filters:{"category_ids":{"$includes_any":[308, 107]}}, geo:{"$circle":{"$center": latlng, "$meters": 25000}}, sort:{"distance": 100, "placerank": 10}}, function (err, res) {
 		if(err) {
 			console.log(err);
 		} else {
@@ -37,15 +37,28 @@ utils.searchVenuesByGeolocation = function (latlng) {
 		}
 	});
 	return deferred.promise;
-
 }
 
 utils.searchVenuesBySearchQueryAndGeolocation = function (latlng, query) {
 	var deferred = Q.defer();
-	factual.get('/t/places-us', {filters:{"category_ids":{"$includes_any":[308, 107]}}, q: query, geo:{"$circle":{"$center": latlng, "$meters": 25000}}}, function (err, res) {
+	factual.get('/t/places-us', {filters:{"name":{"$search": query}, "category_ids":{"$includes_any":[308, 107]}}, geo:{"$circle":{"$center": latlng, "$meters": 25000}}, sort:"$relevance"}, function (err, res) {
 		if(err) {
 			console.log(err);
 		} else {
+			console.log(res.data);
+			deferred.resolve(res.data);
+		}
+	});
+	return deferred.promise;
+}
+
+utils.searchVenuesByQueryAndNear = function (near, query) {
+	var deferred = Q.defer();
+	factual.get('/t/places-us', {filters:{"name":{"$search": query}, "$or": [{"locality": {"$search": near}}, {"region": {"$search": near}}], "category_ids":{"$includes_any":[308, 107]}}, sort:"$relevance"}, function (err, res) {
+		if(err) {
+			console.log(err);
+		} else {
+			console.log('ehud');
 			console.log(res.data);
 			deferred.resolve(res.data);
 		}

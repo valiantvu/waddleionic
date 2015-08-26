@@ -8,12 +8,16 @@
 // window.ionic.Platform.ready(function() {
 //     angular.bootstrap(document, ['waddle']);
 // });
-angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.services', 'angularMoment', 'uuid4', 'monospaced.elastic', 'ezfb'])
 
-.run(function($ionicPlatform) {
+angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.services', 'angularMoment', 'uuid4', 'monospaced.elastic', 'ezfb'])
+.run(function($ionicPlatform, $ionicHistory) {
+  
+  $ionicHistory.clearCache();
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs
+    console.log('am i ready?');
+    // debugger;
     if(window.cordova && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
     }
@@ -61,6 +65,12 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       url: '/walkthrough',
       templateUrl: 'modules/walkthrough/walkthrough.html',
       controller: 'WalkthroughController'
+    })
+    .state('redirect', {
+      url: '/redirect',
+      cache: false,
+      controller: 'RedirectController',
+      templateUrl: 'modules/redirect/redirect.html'
     })
     .state('tab', {
       url: "/tab",
@@ -336,8 +346,8 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
     });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/home');
 
-});
+  $urlRouterProvider.otherwise('/');
+})
 
 
