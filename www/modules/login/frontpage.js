@@ -52,10 +52,10 @@ var FrontpageController = function (UserRequests, $scope, $state, $window, $loca
       // console.log('alldata:  ', UserRequests.allData)
       if(UserRequests.allData.user.footprintsCount >= 0) {
         console.log('heeyah');
-        $ionicHistory.clearCache()
-        .then(function() {
+        // $ionicHistory.clearCache()
+        // .then(function() {
           $state.go('tab.home');
-        })
+        // })
       }
       else {
         $state.go('walkthrough');
