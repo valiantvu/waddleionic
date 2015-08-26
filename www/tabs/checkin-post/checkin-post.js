@@ -46,10 +46,10 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
     $scope.loading = true;
     console.log($scope.checkinInfo.photo);
 		var checkinData = {
-			id: venueInfo.id,
+			factual_id: venueInfo.factual_id,
 			name: venueInfo.name,
-			lat: venueInfo.location.lat,
-			lng: venueInfo.location.lng,
+			lat: venueInfo.latitude,
+			lng: venueInfo.longitude,
 			rating: $scope.checkinInfo.rating,
 			facebookID: window.sessionStorage.userFbID
 		};

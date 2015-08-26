@@ -23,7 +23,8 @@ checkinController.handleNativeCheckin = function (req, res) {
   User.find({facebookID: facebookID})
   .then(function (userNode) {
     user = userNode;
-    return foursquareUtils.parseNativeCheckin(nativeCheckin);
+    // return foursquareUtils.parseNativeCheckin(nativeCheckin);
+    return helpers.parseNativeCheckin(nativeCheckin);
   })
   .then(function (parsedCheckin) {
     console.log('parsedCheckin: ' + JSON.stringify(parsedCheckin));
@@ -34,6 +35,10 @@ checkinController.handleNativeCheckin = function (req, res) {
     newFootprint = footprint
     if(nativeCheckin.folderName) {
       addNativeCheckinToFolder();
+    }
+    if(!footprint.place.foursquareID) {
+      console.log('hi');
+      getFoursquareVenueInfoFromFactualID();
     }
     else {
       res.json(newFootprint);
@@ -50,11 +55,29 @@ checkinController.handleNativeCheckin = function (req, res) {
     res.status(500).end();
   });
 
-
   var addNativeCheckinToFolder = function() {
+    var newFootprintWithFolder;
     Checkin.addToFolder(newFootprint.user.facebookID, newFootprint.checkin.checkinID, nativeCheckin.folderName)
     .then(function (data) {
       newFootprint.folders = {name: nativeCheckin.folderName};
+      newFootprintWithFolder = newFootprint;
+      if(!newFootprint.place.foursquareID) {
+        helpers.getFoursquareIDFromFactualID();
+      } else {
+        res.json(newFootprint);
+        res.status(201).end();
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+      res.status(500).end();
+    });
+  };
+
+  var getFoursquareVenueInfoFromFactualID = function () {
+    factualUtils.getFoursquareIDFromFactualID(newFootprint.place.factualID)
+    .then(function (foursquareVenueInfo) {
+      console.log(foursquareVenueInfo);
       res.json(newFootprint);
       res.status(201).end();
     })
@@ -63,7 +86,6 @@ checkinController.handleNativeCheckin = function (req, res) {
       res.status(500).end();
     });
   };
-
 };
 
 checkinController.getVenueInfo = function (req, res) {

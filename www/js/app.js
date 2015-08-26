@@ -9,10 +9,12 @@
 //     angular.bootstrap(document, ['waddle']);
 // });
 
+// setTimeout(function () {
+ 
 angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.services', 'angularMoment', 'uuid4', 'monospaced.elastic', 'ezfb'])
 .run(function($ionicPlatform, $ionicHistory) {
   
-  $ionicHistory.clearCache();
+  // $ionicHistory.clearCache();
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs
@@ -349,5 +351,6 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
 
   $urlRouterProvider.otherwise('/');
 })
+// }, 10000);
 
 

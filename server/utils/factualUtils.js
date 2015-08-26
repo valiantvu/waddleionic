@@ -66,17 +66,32 @@ utils.searchVenuesByQueryAndNear = function (near, query) {
 	return deferred.promise;
 }
 
-utils.getFactualIDFromFoursquareID = function (venueID) {
-	console.log(venueID);
+utils.getFactualIDFromFoursquareID = function (foursquareID) {
+	console.log(foursquareID);
 	var deferred = Q.defer();
 
-	factual.get('/t/crosswalk?filters={"namespace":"foursquare", "namespace_id":"' + venueID  + '"}', function (error, res) {
+	factual.get('/t/crosswalk?filters={"namespace":"foursquare", "namespace_id":"' + foursquareID  + '"}', function (error, res) {
 		if(error) {
 			console.log(error);
 		} else {
 			
 		console.log(res.data);
   	deferred.resolve(res.data);
+		}
+  });
+
+  return deferred.promise;
+};
+
+utils.getFoursquareIDFromFactualID = function (factualID) {
+	console.log(factualID);
+	var deferred = Q.defer();
+
+	factual.get('/t/crosswalk?filters={"factual_id":"' + factualID + '", "namespace": "foursquare"}', function (error, res) {
+		if(error) {
+			console.log(error);
+		} else {
+  	  deferred.resolve(res.data.namespace_id);
 		}
   });
 
