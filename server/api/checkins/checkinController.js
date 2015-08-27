@@ -5,6 +5,7 @@ var uuid = require('node-uuid');
 
 var Checkin = require('./checkinModel.js');
 var User = require('../users/userModel.js');
+var Place = require('../places/placeModel.js');
 
 var factualUtils = require('../../utils/factualUtils.js');
 var foursquareUtils = require('../../utils/foursquareUtils.js');
@@ -16,7 +17,7 @@ var categoryList = require('../../utils/categoryList.js');
 var checkinController = {};
 
 checkinController.handleNativeCheckin = function (req, res) {
-  var user, categories, newFootprint;
+  var user, categories, newFootprint, place;
   var nativeCheckin = req.body;
   var facebookID = req.body.facebookID;
 
@@ -38,7 +39,7 @@ checkinController.handleNativeCheckin = function (req, res) {
     }
     if(!footprint.place.foursquareID) {
       console.log('hi');
-      getFoursquareVenueInfoFromFactualID();
+      getFoursquareIDFromFactualID();
     }
     else {
       res.json(newFootprint);
@@ -74,10 +75,20 @@ checkinController.handleNativeCheckin = function (req, res) {
     });
   };
 
-  var getFoursquareVenueInfoFromFactualID = function () {
-    factualUtils.getFoursquareIDFromFactualID(newFootprint.place.factualID)
+  var getFoursquareIDFromFactualID = function () {
+    Place.find(newFootprint.place.factualID)
+    .then(function (placeNode) {
+      place = placeNode;
+      return factualUtils.getFoursquareIDFromFactualID(newFootprint.place.factualID)
+    })
+    .then(function (foursquareID) {
+      place.setProperty('foursquareID', foursquareID);
+      console.log('foursquareID', foursquareID);
+      return foursquareUtils.getVenueInfo(foursquareID, user);
+    })
     .then(function (foursquareVenueInfo) {
-      console.log(foursquareVenueInfo);
+      console.log(JSON.stringify(foursquareVenueInfo.venue.categories));
+      // place.setProperty()
       res.json(newFootprint);
       res.status(201).end();
     })
@@ -96,8 +107,8 @@ checkinController.getVenueInfo = function (req, res) {
   User.find({facebookID: facebookID})
   .then(function (userNode) {
     user = userNode;
-    return factualUtils.getFoursquareVenueInfo(venueID);
-    // return foursquareUtils.getVenueInfo(venueID, user)
+    // return factualUtils.getFoursquareID(venueID);
+    return foursquareUtils.getVenueInfo(venueID, user)
   })
   .then(function (venueInfo) {
     res.json(venueInfo);

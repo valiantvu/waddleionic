@@ -91,7 +91,8 @@ utils.getFoursquareIDFromFactualID = function (factualID) {
 		if(error) {
 			console.log(error);
 		} else {
-  	  deferred.resolve(res.data.namespace_id);
+			console.log(res.data);
+  	  deferred.resolve(res.data[0].namespace_id);
 		}
   });
 

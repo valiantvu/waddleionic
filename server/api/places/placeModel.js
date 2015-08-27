@@ -143,21 +143,33 @@ Place.create = function(data){
   });
 }
 
-Place.find = function (data){
+Place.find = function (factualID) {
 
   var query = [
-    'MATCH (place:Place {foursquareID: {foursquareID}})',
+    'MATCH (place:Place {factualID: {factualID}})',
     'RETURN place'
   ].join('\n');
-  var params = data;
+
+  var params = {
+    factualID: factualID
+  };
 
   var deferred = Q.defer();
 
   db.query(query, params, function (err, results) {
-    if (err) { deferred.reject(err); }
+    if (err) { 
+      console.log(err);
+      deferred.reject(err); 
+    }
     else {
-      var place = new Place(results[0]['place']);
-      deferred.resolve(place);
+      if (results && results[0] && results[0]['place']) {
+        console.log(results)
+        deferred.resolve(new Place(results[0]['place']));
+      }
+      else {
+        console.log(params);
+        deferred.reject(new Error('place does not exist'));
+      }
     }
   });
 
