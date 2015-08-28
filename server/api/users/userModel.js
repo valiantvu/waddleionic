@@ -161,7 +161,7 @@ User.prototype.addCheckins = function(combinedCheckins){
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})',
     'MERGE (checkin:Checkin {checkinID: {checkinID}})',
-    'ON CREATE SET checkin = {checkinID: {checkinID}, likes: {likes}, photoSmall: {photoSmall}, photoLarge: {photoLarge}, photo: {photo}, caption: {caption}, checkinTime: {checkinTime}, pointValue: {pointValue}, rating: {rating}, source: {source}}',
+    'ON CREATE SET checkin = {checkinID: {checkinID}, likes: {likes}, photoSmall: {photoSmall}, photoLarge: {photoLarge}, photo: {photo}, photoHeight: {photoHeight}, caption: {caption}, checkinTime: {checkinTime}, pointValue: {pointValue}, rating: {rating}, source: {source}}',
     // 'ON MATCH SET checkin.checkinTime = {checkinTime}, checkin.likes = {likes}, checkin.photoSmall = {photoSmall}, checkin.photoLarge = {photoLarge}, checkin.caption = {caption}, checkin.rating = {rating}, checkin.source = {source}',
     'MERGE (place:Place {foursquareID: {foursquareID}})',
     'ON CREATE SET place = {name: {name}, foursquareID: {foursquareID}, lat: {lat}, lng: {lng}, country: {country}, province:{province}, city:{city}, category: {category}}',
