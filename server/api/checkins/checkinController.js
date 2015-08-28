@@ -99,7 +99,7 @@ checkinController.handleNativeCheckin = function (req, res) {
   };
 };
 
-checkinController.getVenueInfo = function (req, res) {
+checkinController.getFoursquareVenueInfo = function (req, res) {
   var user;
   var venueID = req.params.venueID;
   var facebookID = req.params.facebookID;
@@ -112,6 +112,29 @@ checkinController.getVenueInfo = function (req, res) {
   })
   .then(function (venueInfo) {
     res.json(venueInfo);
+    res.status(200).end()
+  })
+  .catch(function (err) {
+    console.log(err);
+    res.status(500).end();
+  })
+};
+
+checkinController.getFactualVenueInfo = function (req, res) {
+  var venueData;
+  var venueID = req.params.venueID;
+
+  factualUtils.getVenueInfo(venueID)
+  .then(function (venueInfo) {
+    venueData = venueInfo;
+    return factualUtils.getMenu(venueID);
+  })
+  .then(function (menuData) {
+    console.log('menu', menuData);
+    if(menuData[0].url) {
+      venueData[0].menu = menuData[0].url;
+    };
+    res.json(venueData[0]);
     res.status(200).end()
   })
   .catch(function (err) {

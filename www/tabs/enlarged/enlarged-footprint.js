@@ -39,26 +39,16 @@ var EnlargedFootprintController = function (Auth, UserRequests, MapFactory, Foot
 
   $scope.fetchVenueInfo = function() {
     var location;
-    FootprintRequests.getFoursquareVenueInfo($scope.footprint.place.foursquareID, window.sessionStorage.userFbID)
+    FootprintRequests.getFactualVenueInfo($scope.footprint.place.factualID, window.sessionStorage.userFbID)
     .then(function (venueInfo) {
-      // console.log(venueInfo);
-      location = venueInfo.data.venue.location;
-      $scope.linkToFoursquare = venueInfo.data.venue.canonicalUrl;
-      $scope.address = location.address;
-      console.log($scope.address);
-      $scope.textAddress = location.address + ", " + location.city;
-      if(location.country === "United States" && location.state) {
-        $scope.address += ", " + location.state;
+      console.log(venueInfo.data);
+      // $scope.linkToFoursquare = venueInfo.data.venue.canonicalUrl;
+      $scope.address = venueInfo.data.address;
+      $scope.textAddress = venueInfo.data.address + ", " + venueInfo.data.locality;
+      if(venueInfo.data.menu) {
+        $scope.menu = venueInfo.data.menu;
       }
-      if(location.country !== "United States") {
-        $scope.address += ", " + location.country;
-      }
-        
-      console.log(venueInfo.data.venue.location)
-      if(venueInfo.data.venue.hasMenu) {
-        $scope.menu = venueInfo.data.venue.menu;
-      }
-      $scope.phone = venueInfo.data.venue.contact.formattedPhone;
+      $scope.phone = venueInfo.data.tel;
     })
   };
 
