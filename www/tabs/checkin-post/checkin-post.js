@@ -65,12 +65,14 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
     if($scope.checkinInfo.photo) {
       var photoUUID = uuid4.generate();
       console.log(photoUUID);
-      var iphone6Photo = $scope.checkinInfo.photo.splice(0,1);
+      var iphone6Photo = $scope.checkinInfo.photo.splice(1,1);
       var formattedPhoto = {files: {0:iphone6Photo[0], length: 1}};
       console.log(formattedPhoto);
   		NativeCheckin.s3_upload(formattedPhoto, window.sessionStorage.userFbID, photoUUID, 'iphone6')
   		.then(function (public_url) {
-  		  checkinData.photo = public_url;
+        var photoURL = public_url.split('/iphone6')[0];
+        console.log(photoURL);
+  		  checkinData.photo = photoURL;
   		  console.log('venueInfo: ' + JSON.stringify(checkinData));
   		  return NativeCheckin.sendCheckinDataToServer(checkinData);
   		})
@@ -87,7 +89,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
         $state.go('tab.home');
         $rootScope.$broadcast('newFootprint', footprint);
         //Other two sizes are uploaded to AWS
-        // uploadImagesToAWS(photoUUID);
+        uploadImagesToAWS(photoUUID);
   		});
     } else {
       console.log(checkinData);
@@ -371,10 +373,13 @@ var PictureSelectDirective = function ($q) {
                 console.log(event.target);
                 document.getElementById('preview').src = event.target.result;
                 for(var i = 0; i < desiredDimensions.length; i++) {
+                  console.log('fileReader.result')
+                  console.log(fileReader.result);
                   resizeImageAndGenerateAsBlob(desiredDimensions[i], fileReader.result, fileType)
                   .then(function (resizedImageAsBlob) {
                     console.log(resizedImageAsBlob);
                     photoBucket.push(resizedImageAsBlob);
+                    console.dir(photoBucket);
                   });
                 }                  
                   scope.photoFile = photoBucket; 

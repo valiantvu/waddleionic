@@ -498,7 +498,7 @@ Checkin.editNativeCheckin = function (checkin) {
 
   var query = [
    'MATCH (user:User {facebookID:{facebookID}})-[hCheckin:hasCheckin]->(checkin:Checkin{checkinID:{checkinID}})',
-   'SET checkin.caption = {caption}, checkin.rating = {rating}, checkin.photoLarge = {photoLarge}, checkin.pointValue = {pointValue}',
+   'SET checkin.caption = {caption}, checkin.rating = {rating}, checkin.photoLarge = {photoLarge}, checkin.photo = {photo}, checkin.pointValue = {pointValue}',
    'RETURN checkin'
   ].join('\n');
   
