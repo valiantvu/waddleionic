@@ -21,7 +21,7 @@
 
     <ion-refresher on-refresh="doRefresh()"></ion-refresher>
     <!-- <div ng-repeat="footprint in footprints"> -->
-    <div class="checkin-card" collection-repeat="footprint in footprints" item-height="footprint.checkin.photoLarge !== 'null' ? '100%' : '30%'" item-render-buffer="10">
+    <div class="checkin-card" collection-repeat="footprint in footprints" item-height="getCardHeight(footprint.checkin)" item-render-buffer="1">
       <button ng-if="!footprint.folders" class="button icon waddle-folder-plus button-small button-light savefave text-align-right" ng-click="showPopup(footprint.checkin.checkinID, $index)">Save to Folder</button>
       <button ng-if="footprint.folders" class="button button-small button-light savefave" ng-click="openModal(footprint.folders[0].name)">{{footprint.folders[0].name}}</button>
       <img src="img/TabCurve-1.png" class="folder-tab-curve">
@@ -77,11 +77,17 @@
       </div>
     </div>
 
-<!--     <ion-infinite-scroll
+    <!-- <ion-scroll 
+    delegate-handle="libScroll" 
+    on-scroll="checkScroll()" 
+    direction="y" 
+    style="width: 100%; height: 100%"> -->
+
+    <ion-infinite-scroll
     on-infinite="getAggregatedFeedData()"
     ng-if="moreDataCanBeLoaded"
     distance="10%">
-    </ion-infinite-scroll> -->
+    </ion-infinite-scroll>
 
   </ion-content>
 </ion-view>

@@ -174,6 +174,7 @@ utils.parseNativeCheckin = function (venue) {
     'photoSmall': 'null',
     'photoLarge': 'null',
     'photo': 'null',
+    'photoHeight': 'null',
     'caption': 'null',
     'address': 'null',
     'city': 'null',
@@ -214,6 +215,7 @@ utils.parseNativeCheckin = function (venue) {
     formattedCheckin.photoLarge = venue.photo + '/full';
     formattedCheckin.photoSmall = venue.photo + '/thumb';
     formattedCheckin.photo = venue.photo;
+    formattedCheckin.photoHeight = venue.photoHeight;
     formattedCheckin.pointValue += 3;
   }
 

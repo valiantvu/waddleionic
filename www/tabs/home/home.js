@@ -13,7 +13,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $scope.selectedFolderIndex = -1;
     $scope.newFolderInfo = {};
     var page = 0;
-    var skipAmount = 5;
+    var skipAmount = 50;
     $scope.moreDataCanBeLoaded = true;
     var folderPage = 0;
     var folderSkipAmount = 10;
@@ -44,6 +44,21 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       }
     };
 
+    $scope.getCardHeight = function(checkin) {
+      return checkin.photo !== 'null' ? checkin.photoHeight + 200 : 200;
+    };
+
+    // $scope.checkScroll = function () {
+
+    //     var currentTop = $ionicScrollDelegate.$getByHandle('libScroll').getScrollPosition().top;
+    //     var maxTop = $ionicScrollDelegate.$getByHandle('libScroll').getScrollView().__maxScrollTop;
+
+    //     if ((currentTop >= maxTop) && (!$scope.libraryLoading))
+    //     {
+    //         $scope.getAggregatedFeedData();
+    //     }
+    // }
+
     $scope.getAggregatedFeedData = function () {
         UserRequests.getAggregatedFeedData(window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {
@@ -60,7 +75,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
             $scope.$broadcast('scroll.infiniteScrollComplete');
         });
     };
-    $scope.getAggregatedFeedData();
+    // $scope.getAggregatedFeedData();
 
     //posts new footprint from checkin screen
     $scope.$on('newFootprint', function(event, footprint) {
