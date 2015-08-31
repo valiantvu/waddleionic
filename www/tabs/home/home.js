@@ -44,8 +44,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       }
     };
 
-    $scope.getCaptionHeight = function(checkin, charsPerLine) {
-      // debugger;
+    $scope.getCaptionHeight = function(checkin, charsPerLine, lineHeight) {
       if (checkin) {
         var caption = checkin.caption;
         var numLines = caption.length / charsPerLine;
@@ -62,20 +61,17 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
             line.push(words[i]);
           }
         }
-        var height = 30 * lines.length;
-        console.dir(lines)
-        console.log(height);
+        var height = lineHeight * lines.length;
         return lines ? height: 0;
       }
-
     };
 
-
+    // Duplicate function as getCaptionHeight due to ionic bug where
+    // ng-init doesn't work with in the collection-repeat directive
     $scope.createCaption = function(checkin) {
-      // console.log('creating captions');
       if (checkin.caption) {
         var caption = checkin.caption;
-        var charsPerLine = 20;
+        var charsPerLine = 40;
         var numLines = caption.length / charsPerLine;
         var words = caption.split(" ");
         var line = [];
@@ -95,40 +91,43 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     };
 
-    // var countLines = function(text, charsPerLine) {
-    //   // console.log(text.length, charsPerLine);
-    //   var numLines = text !== 'null' ? text.length / charsPerLine : 0;
-    //   // console.log(numLines);
-    //   return Math.ceil(numLines);
-    // };
+    $scope.getCommentHeight = function(footprint, charsPerLine, lineHeight) {
+      if (footprint.comments) {
+        var comment = footprint.comments[0].comment.text;
+        console.log(comment);
+        var numLines = Math.ceil(comment.length / charsPerLine);
+        return lineHeight * numLines;
+      }
+      return 0;
+    };
 
-    $scope.getCardHeight = function(checkin) {
+    $scope.getCardHeight = function(footprint) {
       var height;
+      var checkin = footprint.checkin;
       // console.log($window.innerWidth, checkin.photoHeight, checkin.photoWidth);
       if (checkin.photoHeight && checkin.photoWidth && checkin.photoHeight !== 'null' && checkin.photoWidth !== 'null') {
         var scale = $window.innerWidth/checkin.photoWidth;
-        height = scale * checkin.photoHeight + 250;
+        height = scale * checkin.photoHeight + 200;
       } else if (checkin.photoLarge !== 'null') {
-        height = 500;
+        // For checkins without the new photoHeight and photoWidth property
+        // use photoLarge and assume that the card height with photoLarge is 600px
+        height = 700;
       } else {
-        height = 250;
+        height = 200;
       }
-      var captionHeight = $scope.getCaptionHeight(checkin, 60);
-      // var lineHeight = 30;
-      height += captionHeight;
+      var textHeight = 30;
+      var commentSectionHeight = 38;
+      var iconHeight = 15;
+      var charsPerLine = 40;
+
+      var captionHeight = $scope.getCaptionHeight(checkin, charsPerLine, textHeight);
+      var commentHeight = $scope.getCommentHeight(footprint, charsPerLine, commentSectionHeight);
+      height += captionHeight + commentHeight;
+      if (footprint.comments || footprint.checkin.likes !== 'null') {
+        height += iconHeight;
+      }
       return height;
     };
-
-    // $scope.checkScroll = function () {
-
-    //     var currentTop = $ionicScrollDelegate.$getByHandle('libScroll').getScrollPosition().top;
-    //     var maxTop = $ionicScrollDelegate.$getByHandle('libScroll').getScrollView().__maxScrollTop;
-
-    //     if ((currentTop >= maxTop) && (!$scope.libraryLoading))
-    //     {
-    //         $scope.getAggregatedFeedData();
-    //     }
-    // }
 
     $scope.getAggregatedFeedData = function () {
         UserRequests.getAggregatedFeedData(window.sessionStorage.userFbID, page, skipAmount)
@@ -146,7 +145,6 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
             $scope.$broadcast('scroll.infiniteScrollComplete');
         });
     };
-    // $scope.getAggregatedFeedData();
 
     //posts new footprint from checkin screen
     $scope.$on('newFootprint', function(event, footprint) {
@@ -154,7 +152,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       $state.go('tab.home', {}, {reload: true});
       $scope.footprints.unshift(footprint.data);
       $ionicScrollDelegate.scrollTop();
-    })
+    });
 
     $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
       console.log($previousRoute);
@@ -191,7 +189,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       $scope.moreDataCanBeLoaded = true;
       $scope.getAggregatedFeedData();
       $scope.$broadcast('scroll.refreshComplete');
-    }
+    };
 
     $scope.viewFoldersList = function(reload) {
       if(reload) {
@@ -208,16 +206,15 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
           }
           $scope.folders = reload ? folders.data : $scope.folders.concat(folders.data);
           UserRequests.userFolderData = $scope.folders;
-          console.log($scope.folders)
           if (reload) {
             $scope.moreFoldersCanBeLoaded = true;
           }
-          folderPage++; 
+          folderPage++;
         } else {
           $scope.moreFoldersCanBeLoaded = false;
         }
         $scope.$broadcast('scroll.infiniteScrollComplete');
-      })
+      });
     };
 
     // $scope.viewFoldersList();
@@ -252,9 +249,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         $scope.showFootprintAdditionSuccessAlert();
 
         $scope.viewFoldersList(true);
-
-        // console.log(data);
-      })
+      });
     };
 
     $scope.createFolderAndAddFootprintToFolder = function (folderName, selectedFootprintCheckinID, selectedFootprintIndex) {
@@ -270,7 +265,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
           $scope.viewFoldersList(true);
           $scope.selectedFolderIndex = -1;
-        })
+        });
       });
     };
 
@@ -298,7 +293,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         .then(function(footprints) {
           $scope.footprints = footprints.data;
           $scope.moreDataCanBeLoaded = false;
-        })
+        });
       }
     };
 
@@ -306,9 +301,9 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       $scope.selectedFolderIndex = $index;
       $scope.selectedFolderInfo.name = folder.folder.name;
       // $scope.selectedFolderInfo.description = folder.folder.description;
-    }
+    };
 
-     $scope.clearSearch = function () {
+    $scope.clearSearch = function () {
       $scope.search = {};
       $scope.footprints = [];
       page = 0;
@@ -321,13 +316,13 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       .then(function (folderContents) {
         $scope.folderContents = folderContents.data;
         console.log(folderContents);
-      })
+      });
     };
 
     $scope.deleteFootprint = function (checkinID, facebookID, index) {
       var splicedElem;
       if(window.sessionStorage.userFbID === facebookID) {
-        console.log('facebookIDs match')
+        console.log('facebookIDs match');
         var deleteFootprintData = {
           facebookID: window.sessionStorage.userFbID,
           checkinID: checkinID
@@ -356,7 +351,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     };
 
     $scope.publishToFacebook = function() {
-      $scope.shareOptions.close()
+      $scope.shareOptions.close();
       var footprint = $scope.selectedFootprint;
       var linkObject = {
         method: 'feed',
@@ -378,7 +373,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
       if(footprint.user.facebookID === window.sessionStorage.userFbID) {
         linkObject.description = footprint.user.name + " rated " + footprint.place.name + " " + footprint.checkin.rating 
-        + " stars out of 5."
+        + " stars out of 5.";
       } else {
         linkObject.description = $localstorage.getObject('user').name + "'s friend, " + footprint.user.name + ", rated " + footprint.place.name + " " + footprint.checkin.rating
         + " stars out of 5.";
@@ -429,7 +424,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         }, function (err) {
           console.log(err);
 
-        })      
+        });
       }, function (error) {
         console.log(error);
       });

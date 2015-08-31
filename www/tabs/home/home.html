@@ -22,7 +22,7 @@
     <ion-refresher on-refresh="doRefresh()"></ion-refresher>
     <!-- <div ng-repeat="footprint in footprints"> -->
 
-    <div class="checkin-card" collection-repeat="footprint in footprints" item-height="getCardHeight(footprint.checkin)" item-render-buffer="1">
+    <div class="checkin-card" collection-repeat="footprint in footprints" item-height="getCardHeight(footprint)" item-render-buffer="5" force-refresh-images="true">
       <button ng-if="!footprint.folders" class="button icon waddle-folder-plus button-small button-light savefave text-align-right" ng-click="showPopup(footprint.checkin.checkinID, $index)">Save to Folder</button>
       <button ng-if="footprint.folders" class="button button-small button-light savefave" ng-click="openModal(footprint.folders[0].name)">{{footprint.folders[0].name}}</button>
       <img src="img/TabCurve-1.png" class="folder-tab-curve">
@@ -54,7 +54,9 @@
         
         <!-- Photo, Caption, Number of Comments/Hypes--> 
         <div class="item item-body">
-          <img class="full-image" ng-if="footprint.checkin.photo!== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photo}}/iphone6">
+          <img class="full-image" ng-if="footprint.checkin.photo && footprint.checkin.photo!== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photo}}/iphone6">
+
+          <img class="full-image" ng-if="(!footprint.checkin.photo || footprint.checkin.photo === 'null') && footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
           
           <p ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'" ng-repeat="line in createCaption(footprint.checkin)">{{ line }}</p>
           
@@ -89,7 +91,7 @@
     <ion-infinite-scroll
     on-infinite="getAggregatedFeedData()"
     ng-if="moreDataCanBeLoaded"
-    distance="10%">
+    distance="30%">
     </ion-infinite-scroll>
 
   </ion-content>
