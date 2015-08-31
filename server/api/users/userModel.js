@@ -161,7 +161,7 @@ User.prototype.addCheckins = function(combinedCheckins){
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})',
     'MERGE (checkin:Checkin {checkinID: {checkinID}})',
-    'ON CREATE SET checkin = {checkinID: {checkinID}, likes: {likes}, photoSmall: {photoSmall}, photoLarge: {photoLarge}, photo: {photo}, photoHeight: {photoHeight}, caption: {caption}, checkinTime: {checkinTime}, pointValue: {pointValue}, rating: {rating}, source: {source}}',
+    'ON CREATE SET checkin = {checkinID: {checkinID}, likes: {likes}, photoSmall: {photoSmall}, photoLarge: {photoLarge}, photo: {photo}, photoHeight: {photoHeight}, photoWidth: {photoWidth}, caption: {caption}, checkinTime: {checkinTime}, pointValue: {pointValue}, rating: {rating}, source: {source}}',
     // 'ON MATCH SET checkin.checkinTime = {checkinTime}, checkin.likes = {likes}, checkin.photoSmall = {photoSmall}, checkin.photoLarge = {photoLarge}, checkin.caption = {caption}, checkin.rating = {rating}, checkin.source = {source}',
     'MERGE (place:Place {foursquareID: {foursquareID}})',
     'ON CREATE SET place = {name: {name}, foursquareID: {foursquareID}, lat: {lat}, lng: {lng}, country: {country}, province:{province}, city:{city}, category: {category}}',
@@ -205,7 +205,7 @@ User.prototype.addCheckins = function(combinedCheckins){
     'body': JSON.stringify(batchRequest)
   };
   request.post(options, function(err, response, body) {
-    if (err) { deferred.reject(err) }
+    if (err) { deferred.reject(err); }
     else {
       console.log(body);
       deferred.resolve({
@@ -283,7 +283,7 @@ User.searchFriends = function (user, friendNameQuery, page, skipAmount) {
   });
 
   return deferred.promise;
-}
+};
 
 // Basic query to find all user's checkins
 // Uses this.getProperty to grab instantiated user's facebookID as query parameter
@@ -412,7 +412,7 @@ User.prototype.countAllCheckins = function (facebookID) {
   });
 
   return deferred.promise;
-}
+};
 
 User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) {
   console.log('getAggregatedFootprintList', skipAmount);

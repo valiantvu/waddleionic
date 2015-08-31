@@ -1,6 +1,6 @@
 (function(){
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage, ezfb, $cordovaFacebook) {
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage, ezfb, $cordovaFacebook, $window) {
   window.sessionStorage.stagingEnvironment = true;
   Auth.checkLogin()
   .then(function () {
@@ -13,7 +13,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $scope.selectedFolderIndex = -1;
     $scope.newFolderInfo = {};
     var page = 0;
-    var skipAmount = 50;
+    var skipAmount = 20;
     $scope.moreDataCanBeLoaded = true;
     var folderPage = 0;
     var folderSkipAmount = 10;
@@ -44,8 +44,28 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       }
     };
 
+    var countLines = function(text, charsPerLine) {
+      // console.log(text.length, charsPerLine)
+      var numLines = text.length > 4 ? text.length / charsPerLine : 0;
+      return Math.ceil(numLines);
+    };
+
     $scope.getCardHeight = function(checkin) {
-      return checkin.photo !== 'null' ? checkin.photoHeight + 200 : 200;
+      var height;
+      // console.log($window.innerWidth, checkin.photoHeight, checkin.photoWidth);
+      if (checkin.photoHeight && checkin.photoWidth && checkin.photoHeight !== 'null' && checkin.photoWidth !== 'null') {
+        var scale = $window.innerWidth/checkin.photoWidth;
+        // Add caption and comments height
+        height = scale * checkin.photoHeight + 200;
+      } else {
+        // Add caption and comments height
+        height = 300;
+      }
+      // console.log(height);
+      console.dir(checkin);
+      var numLines = countLines(checkin.caption, 50);
+      console.log('numLines: ', numLines);
+      return height;
     };
 
     // $scope.checkScroll = function () {
@@ -666,7 +686,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory', '$localstorage', 'ezfb', '$cordovaFacebook'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory', '$localstorage', 'ezfb', '$cordovaFacebook', '$window'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 

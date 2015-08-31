@@ -75,6 +75,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
         console.log(photoURL);
   		  checkinData.photo = photoURL;
         checkinData.photoHeight = iphone6Photo[0].height ? iphone6Photo[0].height : 'null';
+        checkinData.photoWidth = iphone6Photo[0].width ? iphone6Photo[0].width : 'null';
   		  console.log('venueInfo: ' + JSON.stringify(checkinData));
   		  return NativeCheckin.sendCheckinDataToServer(checkinData);
   		})
@@ -352,7 +353,7 @@ var PictureSelectDirective = function ($q) {
                   // //data url converted to blob for aws upload
                   // var blob = dataURItoBlob(resizedFileAsDataURL, fileType);
                   // console.log(blob); 
-                  deferred.resolve({blob: blob, height: canvas.height});
+                  deferred.resolve({blob: blob, height: canvas.height, width: canvas.width});
                 }
                 return deferred.promise;
               }
@@ -367,7 +368,7 @@ var PictureSelectDirective = function ($q) {
                var photoBucket = [];
                var desiredDimensions = [{width: 640, height: 1200}, {width: 100, height: 200}];
                // pushing in the original photo file
-               photoBucket.push({blob: file, height: null});
+               photoBucket.push({blob: file, height: null, width: null});
             
                angular.element(document.getElementById('files')).val('');
                var fileReader = new FileReader();
