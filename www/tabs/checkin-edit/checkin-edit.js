@@ -11,7 +11,7 @@ var CheckinEditController = function ($scope, $rootScope, $state, NativeCheckin,
   $scope.fbProfilePicture = $localstorage.getObject('user').fbProfilePicture;
   var photoUUID;
   var backView = $ionicHistory.backView();
-  console.log(backView);
+  // console.log(backView);
     if(backView.stateName === "tab.home" || backView.stateName === "tab.enlarged-footprint") {
     FootprintRequests.currentTab = "feed";
     $scope.footprint = FootprintRequests.openFootprint;
@@ -43,7 +43,7 @@ var CheckinEditController = function ($scope, $rootScope, $state, NativeCheckin,
     .then(function (folders) {
       $scope.folders = folders.data;
       UserRequests.userFolderData = folders.data
-      console.log($scope.folders)
+      // console.log($scope.folders)
     })
    };
 
@@ -109,7 +109,7 @@ var CheckinEditController = function ($scope, $rootScope, $state, NativeCheckin,
         //close loading modal
     $scope.loading = false;
 
-    console.log(editedCheckin);
+    // console.log(editedCheckin);
     FootprintRequests.editedCheckin = editedCheckin.data[0].checkin;
     $ionicHistory.goBack();
   };

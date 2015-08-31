@@ -56,17 +56,20 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       if (checkin.photoHeight && checkin.photoWidth && checkin.photoHeight !== 'null' && checkin.photoWidth !== 'null') {
         var scale = $window.innerWidth/checkin.photoWidth;
         // Add caption and comments height
-        height = scale * checkin.photoHeight;
+        height = scale * checkin.photoHeight + 220;
       } else {
         // Add caption and comments height
-        height = 300;
+        height = 200;
       }
       // console.log(height);
       // console.dir(checkin);
-      var numLines = countLines(checkin.caption, 50);
-      var lineHeight = 20;
-      height += lineHeight * numLines;
-      console.log('numLines: ', numLines, lineHeight * numLines);
+      var numLines = countLines(checkin.caption, 30);
+      var lineHeight = 30;
+      var iconHeight = 10;
+      if (numLines > 0) {
+        height += lineHeight * numLines + iconHeight;
+        console.log('numLines: ', numLines, lineHeight * numLines);
+      }
       return height;
     };
 
