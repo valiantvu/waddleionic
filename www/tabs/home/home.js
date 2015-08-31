@@ -806,7 +806,25 @@ HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintReques
 
 // CustomSubmitDirective.$inject = ['FootprintRequests'];
 
+// myApp.directive('resettingImg', function() {
+var ResetImageDirective = function() {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attr) {
+
+      var currentElement = element;
+      attr.$observe('src', function(src) {
+        var newImg = element.clone(true);
+        newImg.attr('src', src);
+        currentElement.replaceWith(newImg);
+        currentElement = newImg;
+      });
+    }
+  };
+};
+
 angular.module('waddle.home', [])
-  .controller('HomeController', HomeController);
+  .controller('HomeController', HomeController)
   // .directive( 'customSubmit' , CustomSubmitDirective);
+  .directive( 'resetImage' , ResetImageDirective);
 })();
