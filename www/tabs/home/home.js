@@ -46,7 +46,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     var countLines = function(text, charsPerLine) {
       // console.log(text.length, charsPerLine)
-      var numLines = text.length > 4 ? text.length / charsPerLine : 0;
+      var numLines = text === 'null' ? text.length / charsPerLine : 0;
       return Math.ceil(numLines);
     };
 
@@ -56,15 +56,17 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       if (checkin.photoHeight && checkin.photoWidth && checkin.photoHeight !== 'null' && checkin.photoWidth !== 'null') {
         var scale = $window.innerWidth/checkin.photoWidth;
         // Add caption and comments height
-        height = scale * checkin.photoHeight + 200;
+        height = scale * checkin.photoHeight;
       } else {
         // Add caption and comments height
         height = 300;
       }
       // console.log(height);
-      console.dir(checkin);
+      // console.dir(checkin);
       var numLines = countLines(checkin.caption, 50);
-      console.log('numLines: ', numLines);
+      var lineHeight = 20;
+      height += lineHeight * numLines;
+      console.log('numLines: ', numLines, lineHeight * numLines);
       return height;
     };
 

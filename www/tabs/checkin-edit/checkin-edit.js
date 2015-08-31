@@ -80,7 +80,8 @@ var CheckinEditController = function ($scope, $rootScope, $state, NativeCheckin,
       console.log(formattedPhoto);
       NativeCheckin.s3_upload(formattedPhoto, window.sessionStorage.userFbID, photoUUID, 'iphone6')
       .then(function (public_url) {
-        checkinData.photo = public_url;
+        console.log(public_url);
+        checkinData.photo = public_url.split('/iphone6')[0];
         checkinData.photoHeight = iphone6Photo[0].height ? iphone6Photo[0].height : 'null';
         checkinData.photoWidth = iphone6Photo[0].width ? iphone6Photo[0].width : 'null';
         console.log('venueInfo: ' + JSON.stringify(checkinData));
@@ -90,7 +91,7 @@ var CheckinEditController = function ($scope, $rootScope, $state, NativeCheckin,
         editCheckinSuccess(editedCheckin);
       });
     } else if($scope.footprint.checkin.photoLarge !== 'null') {
-      checkinData.photo = $scope.footprint.checkin.photoLarge;
+      checkinData.photo = $scope.footprint.checkin.photo;
       NativeCheckin.editCheckin(checkinData)
       .then(function (editedCheckin) {
         editCheckinSuccess(editedCheckin);
