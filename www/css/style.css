@@ -1156,8 +1156,8 @@ z-index: 11;
 
 .footprintcaption {
 	text-align: center;
-	max-width: 30ch;
-	/*max-width: 40em; */
+	/*max-width: 30ch;*/
+	max-width: 40em; 
 }
 
 .hypelisttabimg{

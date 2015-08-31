@@ -44,32 +44,78 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       }
     };
 
-    var countLines = function(text, charsPerLine) {
-      // console.log(text.length, charsPerLine)
-      var numLines = text === 'null' ? text.length / charsPerLine : 0;
-      return Math.ceil(numLines);
+    $scope.getCaptionHeight = function(checkin, charsPerLine) {
+      // debugger;
+      if (checkin) {
+        var caption = checkin.caption;
+        var numLines = caption.length / charsPerLine;
+        var words = caption.split(" ");
+        var line = [];
+        var lines = [];
+        for (var i = 0; i < words.length; i++) {
+          if(line.join(" ").length <= charsPerLine) {
+            line.push(words[i]);
+          } else {
+            var lastWord = line.splice(line.length - 1, 1);
+            lines.push(line.join(" "));
+            line = lastWord;
+            line.push(words[i]);
+          }
+        }
+        var height = 30 * lines.length;
+        console.dir(lines)
+        console.log(height);
+        return lines ? height: 0;
+      }
+
     };
+
+
+    $scope.createCaption = function(checkin) {
+      // console.log('creating captions');
+      if (checkin.caption) {
+        var caption = checkin.caption;
+        var charsPerLine = 20;
+        var numLines = caption.length / charsPerLine;
+        var words = caption.split(" ");
+        var line = [];
+        var lines = [];
+        for (var i = 0; i < words.length; i++) {
+          if(line.join(" ").length <= charsPerLine) {
+            line.push(words[i]);
+          } else {
+            var lastWord = line.splice(line.length - 1, 1);
+            lines.push(line.join(" "));
+            line = lastWord;
+            line.push(words[i]);
+          }
+        }
+        return lines;
+      }
+
+    };
+
+    // var countLines = function(text, charsPerLine) {
+    //   // console.log(text.length, charsPerLine);
+    //   var numLines = text !== 'null' ? text.length / charsPerLine : 0;
+    //   // console.log(numLines);
+    //   return Math.ceil(numLines);
+    // };
 
     $scope.getCardHeight = function(checkin) {
       var height;
       // console.log($window.innerWidth, checkin.photoHeight, checkin.photoWidth);
       if (checkin.photoHeight && checkin.photoWidth && checkin.photoHeight !== 'null' && checkin.photoWidth !== 'null') {
         var scale = $window.innerWidth/checkin.photoWidth;
-        // Add caption and comments height
-        height = scale * checkin.photoHeight + 220;
+        height = scale * checkin.photoHeight + 250;
+      } else if (checkin.photoLarge !== 'null') {
+        height = 500;
       } else {
-        // Add caption and comments height
-        height = 200;
+        height = 250;
       }
-      // console.log(height);
-      // console.dir(checkin);
-      var numLines = countLines(checkin.caption, 30);
-      var lineHeight = 30;
-      var iconHeight = 10;
-      if (numLines > 0) {
-        height += lineHeight * numLines + iconHeight;
-        console.log('numLines: ', numLines, lineHeight * numLines);
-      }
+      var captionHeight = $scope.getCaptionHeight(checkin, 60);
+      // var lineHeight = 30;
+      height += captionHeight;
       return height;
     };
 
