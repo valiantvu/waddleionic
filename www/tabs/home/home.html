@@ -56,10 +56,10 @@
         <div class="item item-body">
 
           <!-- iphone 6 image -->
-          <img reset-image class="full-image" ng-if="footprint.checkin.photo && footprint.checkin.photo!== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photo}}/iphone6">
+          <img reset-photo ng-if="footprint.checkin.photo && footprint.checkin.photo!== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photo}}/iphone6">
 
           <!-- photoLarge (show if .photo doesn't exist) -->
-          <img reset-image class="full-image" ng-if="(!footprint.checkin.photo || footprint.checkin.photo === 'null') && footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
+          <img reset-photo-large ng-if="(!footprint.checkin.photo || footprint.checkin.photo === 'null') && footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
           
           <p ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'" ng-repeat="line in createCaption(footprint.checkin)">{{ line }}</p>
           

@@ -806,19 +806,48 @@ HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintReques
 
 // CustomSubmitDirective.$inject = ['FootprintRequests'];
 
-// myApp.directive('resettingImg', function() {
-var ResetImageDirective = function() {
+var ResetPhotoDirective = function() {
   return {
     restrict: 'A',
     link: function(scope, element, attr) {
 
       var currentElement = element;
-      attr.$observe('src', function(src) {
+      var applyNewSrc = function(src) {
         var newImg = element.clone(true);
         newImg.attr('src', src);
+        newImg.attr('ng-if', "footprint.checkin.photo && footprint.checkin.photo!== 'null'");
+        newImg.attr('ui-sref', 'tab.enlarged-footprint');
+        newImg.attr('ng-click', "openFootprint(footprint, $index)");
+        newImg.attr('class', 'full-image');
         currentElement.replaceWith(newImg);
         currentElement = newImg;
-      });
+      };
+
+      attr.$observe('src', applyNewSrc);
+      attr.$observe('ngSrc', applyNewSrc);
+    }
+  };
+};
+
+var ResetPhotoLargeDirective = function() {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attr) {
+
+      var currentElement = element;
+      var applyNewSrc = function(src) {
+        var newImg = element.clone(true);
+        newImg.attr('src', src);
+        newImg.attr('ng-if', "(!footprint.checkin.photo || footprint.checkin.photo === 'null') && footprint.checkin.photoLarge !== 'null'");
+        newImg.attr('ui-sref', 'tab.enlarged-footprint');
+        newImg.attr('ng-click', "openFootprint(footprint, $index)");
+        newImg.attr('class', 'full-image');
+        currentElement.replaceWith(newImg);
+        currentElement = newImg;
+      };
+
+      attr.$observe('src', applyNewSrc);
+      attr.$observe('ngSrc', applyNewSrc);
     }
   };
 };
@@ -826,5 +855,6 @@ var ResetImageDirective = function() {
 angular.module('waddle.home', [])
   .controller('HomeController', HomeController)
   // .directive( 'customSubmit' , CustomSubmitDirective);
-  .directive( 'resetImage' , ResetImageDirective);
+  .directive( 'resetPhoto' , ResetPhotoDirective)
+  .directive( 'resetPhotoLarge' , ResetPhotoLargeDirective);
 })();
