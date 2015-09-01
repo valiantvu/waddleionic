@@ -3,6 +3,7 @@ var _ = require('lodash');
 var Q = require('q');
 var request = require('request');
 var qs = require('querystring');
+var uuid = require('node-uuid');
 
 var helpers = {};
 
@@ -95,6 +96,79 @@ helpers.addCityProvinceAndCountryInfoToParsedCheckins = function (parsedCheckins
       deferred.reject(err);
   })
 
+  return deferred.promise;
+}
+
+helpers.parseNativeCheckin = function (venue) {
+  var deferred = Q.defer();
+
+  var formattedCheckin = {
+    'checkinID': uuid.v4(),
+    'name': venue.name,
+    'lat': venue.lat,
+    'lng': venue.lng,
+    'checkinTime': new Date(),
+    'factualID': venue.factual_id,
+    'foursquareID': 'null',
+    'likes': 'null',
+    'photoSmall': 'null',
+    'photoLarge': 'null',
+    'caption': 'null',
+    'address': 'null',
+    'city': 'null',
+    'province': 'null',
+    'country': 'null',
+    'postalCode': 'null',
+    'category': 'null',
+    'pointValue': 5,
+    'rating': 0,
+    'source': 'waddle'
+  };
+
+  if (venue.categories) {
+    formattedCheckin.category = venue.categories;
+  }
+
+  if (venue.address) {
+    formattedCheckin.address = venue.address;
+  }
+
+  if (venue.postalCode) {
+    formattedCheckin.postalCode = venue.postalCode;
+  }
+
+  if (venue.footprintCaption) {
+    formattedCheckin.caption = venue.footprintCaption;
+    formattedCheckin.pointValue += 3;
+  }
+
+  if (venue.rating > 0) {
+    formattedCheckin.rating = venue.rating;
+    formattedCheckin.pointValue += 3;
+  }
+
+  //TODO: figure out how to generate different size images from AWS url
+
+  if (venue.photo) {
+    formattedCheckin.photoLarge = venue.photo;
+    formattedCheckin.pointValue += 3;
+  }
+
+
+  helpers.findCityProvinceAndCountry(formattedCheckin.lat, formattedCheckin.lng)
+  .then(function (geocodeData) {
+    console.log(geocodeData);
+      if(geocodeData.city) {
+        formattedCheckin.city = geocodeData.city;
+      }
+      if(geocodeData.province) {
+        formattedCheckin.province = geocodeData.province;
+      }
+      if(geocodeData.country) {
+        formattedCheckin.country = geocodeData.country;
+      }
+    deferred.resolve(formattedCheckin);
+  })
   return deferred.promise;
 }
 

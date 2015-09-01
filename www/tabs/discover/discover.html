@@ -1,0 +1,44 @@
+<!-- Header Bar -->
+<ion-header-bar align-title="center" class="bg-header">
+  <h1 class="title" ng-click="clearSearch()">discover</h1>
+  <div class="buttons">
+    <button class="button button-small button-outline suggest" ng-click="showFilterOptions()">filter</button>
+  </div>
+</ion-header-bar>
+
+<ion-view title="Discover">
+
+  <ion-content class="padding bg-scroll">
+
+	  <div class="item item-input-inset search-query search-icon-settings searchbox-top">
+	    <label class="item-input-wrapper white-bg">
+	      <input type="text" placeholder="search by venue name or category" ng-keyup="bifurcateSearch()" ng-model="search.query">
+	    </label>
+	      <button class="button button-clear" ng-if="searchFolders.query" ng-click="clearSearch()">x</button>
+	      <!-- <button class="button button-small" type="submit" ng-click="searchFeed()">Submit</button> -->
+	  </div>
+	  <br>
+	  <div class="item item-input-inset searchbox-top search-icon-settings search-near search-bottom">
+	    <label class="item-input-wrapper white-bg">
+	      <input type="text" placeholder="near me" ng-keyup="bifurcateSearch()" ng-model="search.location">
+	    </label>
+	    <button class="button button-clear" ng-if="searchFolders.query" ng-click="clearSearch()">x</button>
+	  </div>
+
+	  <div ng-repeat="(venueID, venue) in venues" class="item item-avatar item-text-wrap notifications-list">
+	  	<h4 class="ratinghex-discover" ng-if="venue[0].checkin.rating">{{venue[0].checkin.rating}}</h4>
+	  	<h4>{{venue[0].place.name}}</h4>
+	  	<h5>{{venue[0].place.city}}, {{venue[0].place.province}}</h5>
+	  	<h5>Rated by {{venue[0].user.name}}</h5>
+	  	<img class="discover-image" ng-if="venue[0].checkin.photoLarge !== 'null'" ng-src="{{venue[0].checkin.photoLarge}}">
+	  	<img ng-if="venue[0].checkin.photoLarge === 'null'" ng-src="{{venue[0].category.iconPrefix}}40x40{{venue[0].category.iconSuffix}}" class="waddlebadge-discover">
+	  	<button class="button icon waddle-folder-plus-discover-inactive button-small button-light savefave-discover text-align-right" ng-if="!venue[0].folder">save</button>
+	  	<button class="button icon waddle-folder-plus-discover-active button-small button-light savefave-discover text-align-right" ng-if="venue[0].folder">saved!</button>
+	  </div>
+
+	  <h5 class="white-text margin-indent" ng-if="venues">No more results to show</h5>
+
+  </ion-content>
+</ion-view>
+
+<!--   -->

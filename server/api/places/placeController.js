@@ -62,4 +62,53 @@ placeController.findFriendsAlreadyBeen = function (req, res) {
 	})
 };
 
+placeController.discoverPlacesByCategoryOrName = function (req, res) {
+	var facebookID = req.params.user;
+	var query = req.params.query;
+
+	Place.discoverByCategoryOrName(facebookID, query)
+	.then(function (data) {
+		console.log(data);
+		res.json(data);
+	  res.status(200).end();
+	})
+	.catch(function (err) {
+		console.log(err);
+		res.status(500).end();
+	})
+};
+
+placeController.discoverPlacesByLocation = function (req, res) {
+	var facebookID = req.params.user;
+	var location = req.params.location;
+
+	Place.discoverByLocation(facebookID, location)
+	.then(function (data) {
+		console.log(data);
+		res.json(data);
+	  res.status(200).end();
+	})
+	.catch(function (err) {
+		console.log(err);
+		res.status(500).end();
+	})
+};
+
+placeController.discoverPlacesByCategoryOrNameAndLocation = function (req, res) {
+	var facebookID = req.params.user;
+	var location = req.params.location;
+	var query = req.params.query
+
+	Place.discoverByCategoryOrNameAndLocation(facebookID, location, query)
+	.then(function (data) {
+		console.log(data);
+		res.json(data);
+	  res.status(200).end();
+	})
+	.catch(function (err) {
+		console.log(err);
+		res.status(500).end();
+	})
+}
+
 module.exports = placeController;

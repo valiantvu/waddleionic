@@ -2,6 +2,7 @@
 angular.module('waddle.controllers', [
     'waddle.tabs',
     'waddle.home',
+    'waddle.discover',
     'waddle.notifications',
     'waddle.folders',
     'waddle.folder-footprints',
@@ -15,6 +16,7 @@ angular.module('waddle.controllers', [
     'waddle.comments',
     'waddle.hypers',
     'waddle.enlarged-footprint',
+    'waddle.redirect',
     'waddle.walkthrough'
     ]);
 })();
