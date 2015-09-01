@@ -39,9 +39,9 @@ var Auth = function ($q, $state, $window, $localstorage, $cordovaFacebook, ezfb)
           }
         } else {
           console.log('not connecteddd');
-          // $state.go('frontpage');
-          deferred.resolve();
-          // deferred.reject(new Error('not connected'));
+          $state.go('frontpage');
+          // deferred.resolve();
+          deferred.reject(new Error('not connected'));
         }
       }, function (error) {
         console.log(error);
