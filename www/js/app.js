@@ -92,6 +92,15 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         }
       }
     })
+    .state('tab.discover', {
+      url: '/discover',
+      views: {
+        'discover-tab': {
+          templateUrl: 'tabs/discover/discover.html',
+          controller: 'DiscoverController'
+        }
+      }
+    })
     .state('tab.notifications', {
       url: '/notifications',
       views: {

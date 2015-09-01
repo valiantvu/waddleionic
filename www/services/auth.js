@@ -24,13 +24,13 @@ var Auth = function ($q, $state, $window, $localstorage, $cordovaFacebook, ezfb)
           if(window.sessionStorage.userFbID) {
             console.log('hi i am here');
             console.log(window.sessionStorage.userFbID);
-            $state.go('tab.home');
+            // $state.go('tab.home');
             deferred.resolve();
           } else if ($localstorage.getObject('user')) {
             window.sessionStorage.name = $localstorage.getObject('user').name;
             window.sessionStorage.fbToken = $localstorage.getObject('user').fbToken;
             window.sessionStorage.userFbID = $localstorage.getObject('user').facebookID;
-            $state.go('tab.home');
+            // $state.go('tab.home');
             deferred.resolve();
           } else {
             // $state.go('frontpage');

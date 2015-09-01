@@ -99,6 +99,11 @@ utils.getFactualIDFromFoursquareID = function (foursquareID) {
   return deferred.promise;
 };
 
+utils.findRestaurantsByCategoryAndLocationTerm = function () {
+
+
+}
+
 utils.getFoursquareIDFromFactualID = function (factualID) {
 	console.log(factualID);
 	var deferred = Q.defer();

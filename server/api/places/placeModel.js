@@ -268,4 +268,171 @@ Place.findAllByCountryOrCityName = function (userID, locationName) {
   return deferred.promise;
 }
 
+Place.discoverByLocation = function (facebookID, locationTerm) {
+  console.log('locationnnnn');
+  var deferred = Q.defer();
+
+  var query = [
+    'MATCH (loc:City)<-[:hasCity]-(place:Place)<-[:hasPlace]-(checkin:Checkin)<-[:hasCheckin]-(friend:User)<-[:hasFriend*0..2]-(user:User{facebookID:{facebookID}}),',
+    'p=shortestPath((friend)<-[:hasFriend]-(user))',
+    'WHERE loc.name =~ {locationQuery} OR loc.province =~ {locationQuery} OR loc.country =~ {locationQuery}',
+    'MATCH (place)-[:hasCategory]->(category:Category)',
+    'OPTIONAL MATCH (user)-[:hasFolder]->(folder:Folder)-[:containsCheckin]->(checkin)',
+    'RETURN category, place, friend, count(DISTINCT friend) AS userCount, user, p, checkin, folder',
+    'ORDER BY checkin.rating DESC'
+  ].join('\n');
+
+  var params = {
+    facebookID: facebookID,
+    locationQuery: '(?i).*' + locationTerm + '.*'
+  };
+
+  console.log('dis b ma params:', params);
+
+  db.query(query, params, function (err, results) {
+    if (err) {
+      deferred.reject(err);
+    }
+    else {
+
+      var parsedResults = _.map(results, function (item) {
+        
+        var singleResult = {
+          "checkin": item.checkin.data,
+          "place": item.place.data,
+          "category": item.category.data,
+          "p": item.p,
+          "user": item.friend.data,
+          "userCount": item.userCount
+        };
+
+        if(item.folder) {
+          singleResult.folder = item.folder.data
+        }
+
+        return singleResult
+      });
+
+      var groupedResults = _.groupBy(parsedResults, function (item) {
+        return item.place.foursquareID;
+      });
+
+      deferred.resolve(groupedResults);
+
+    }
+  })
+  return deferred.promise;
+
+}
+
+Place.discoverByCategoryOrName = function (facebookID, searchTerm) {
+  var deferred = Q.defer();
+  var query = [
+    'MATCH (category:Category)<-[:hasCategory]-(place:Place)',
+    'WHERE str(category.name) =~ {searchQuery} OR str(place.name) =~ {searchQuery}',
+    'MATCH (place)<-[:hasPlace]-(checkin:Checkin)<-[:hasCheckin]-(friend:User)<-[:hasFriend*0..2]-(user:User{facebookID:{facebookID}}),',
+    'p=shortestPath((friend)<-[:hasFriend]-(user))',
+    'OPTIONAL MATCH (user)-[:hasFolder]->(folder:Folder)-[:containsCheckin]->(checkin)',
+    'RETURN category, place, friend, count(DISTINCT friend) AS userCount, user, p, checkin, folder',
+    'ORDER BY checkin.rating DESC'
+  ].join('\n');
+
+  var params = {
+    facebookID: facebookID,
+    searchQuery: '(?i).*' + searchTerm + '.*'
+  };
+
+  console.log('dis b ma params:', params);
+
+  db.query(query, params, function (err, results) {
+    if (err) {
+      deferred.reject(err);
+    }
+    else {
+
+      var parsedResults = _.map(results, function (item) {
+        
+        var singleResult = {
+          "checkin": item.checkin.data,
+          "place": item.place.data,
+          "category": item.category.data,
+          "p": item.p,
+          "user": item.friend.data,
+          "userCount": item.userCount
+        };
+
+        if(item.folder) {
+          singleResult.folder = item.folder.data
+        }
+
+        return singleResult
+      });
+
+      var groupedResults = _.groupBy(parsedResults, function (item) {
+        return item.place.foursquareID;
+      });
+
+      deferred.resolve(groupedResults);
+
+    }
+  })
+  return deferred.promise;
+};
+
+Place.discoverByCategoryOrNameAndLocation = function (facebookID, locationTerm, searchTerm) {
+  var deferred = Q.defer();
+  var query = [
+    'MATCH (loc:City)<-[:hasCity]-(place:Place)<-[:hasPlace]-(checkin:Checkin)<-[:hasCheckin]-(friend:User)<-[:hasFriend*0..2]-(user:User{facebookID:{facebookID}}),',
+    'p=shortestPath((friend)<-[:hasFriend]-(user))',
+    'WHERE loc.name =~ {locationQuery} OR loc.province =~ {locationQuery} OR loc.country =~ {locationQuery}',
+    'MATCH (place)-[:hasCategory]->(category:Category)',
+    'WHERE str(category.name) =~ {searchQuery} OR str(place.name) =~ {searchQuery}',
+    'OPTIONAL MATCH (user)-[:hasFolder]->(folder:Folder)-[:containsCheckin]->(checkin)',
+    'RETURN category, place, friend, count(DISTINCT friend) AS userCount, user, p, checkin, folder',
+    'ORDER BY checkin.rating DESC'
+  ].join('\n');
+
+  var params = {
+    facebookID: facebookID,
+    locationQuery: '(?i).*' + locationTerm + '.*',
+    searchQuery: '(?i).*' + searchTerm + '.*'
+  };
+
+  console.log('dis b ma params:', params);
+
+  db.query(query, params, function (err, results) {
+    if (err) {
+      deferred.reject(err);
+    }
+    else {
+
+      var parsedResults = _.map(results, function (item) {
+        
+        var singleResult = {
+          "checkin": item.checkin.data,
+          "place": item.place.data,
+          "category": item.category.data,
+          "p": item.p,
+          "user": item.friend.data,
+          "userCount": item.userCount
+        };
+
+        if(item.folder) {
+          singleResult.folder = item.folder.data
+        }
+
+        return singleResult
+      });
+
+      var groupedResults = _.groupBy(parsedResults, function (item) {
+        return item.place.foursquareID;
+      });
+
+      deferred.resolve(groupedResults);
+
+    }
+  })
+  return deferred.promise;
+};
+
 module.exports = Place;
