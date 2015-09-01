@@ -56,10 +56,16 @@
         <div class="item item-body">
 
           <!-- iphone 6 image -->
-          <img reset-photo ng-if="footprint.checkin.photo && footprint.checkin.photo!== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photo}}/iphone6">
+          <img ng-if="footprint.checkin.photo && footprint.checkin.photo!== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photo}}/iphone6">
 
           <!-- photoLarge (show if .photo doesn't exist) -->
-          <img reset-photo-large ng-if="(!footprint.checkin.photo || footprint.checkin.photo === 'null') && footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
+          <img ng-if="(!footprint.checkin.photo || footprint.checkin.photo === 'null') && footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
+
+          <!-- iphone 6 image -->
+         <!--  <img reset-photo ng-if="footprint.checkin.photo && footprint.checkin.photo!== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photo}}/iphone6"> -->
+
+          <!-- photoLarge (show if .photo doesn't exist) -->
+          <!-- <img reset-photo-large ng-if="(!footprint.checkin.photo || footprint.checkin.photo === 'null') && footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}"> -->
           
           <p ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="footprintcaption" ng-if="footprint.checkin.caption !== 'null'" ng-repeat="line in createCaption(footprint.checkin)">{{ line }}</p>
           
@@ -85,17 +91,11 @@
       </div>
     </div>
 
-    <!-- <ion-scroll 
-    delegate-handle="libScroll" 
-    on-scroll="checkScroll()" 
-    direction="y" 
-    style="width: 100%; height: 100%"> -->
-
-    <ion-infinite-scroll
+    <!-- <ion-infinite-scroll
     on-infinite="getAggregatedFeedData()"
     ng-if="moreDataCanBeLoaded"
     distance="30%">
-    </ion-infinite-scroll>
+    </ion-infinite-scroll> -->
 
   </ion-content>
 </ion-view>

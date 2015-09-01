@@ -146,6 +146,8 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         });
     };
 
+    $scope.getAggregatedFeedData();
+
     //posts new footprint from checkin screen
     $scope.$on('newFootprint', function(event, footprint) {
       // $ionicHistory.clearCache();
@@ -806,21 +808,28 @@ HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintReques
 
 // CustomSubmitDirective.$inject = ['FootprintRequests'];
 
-var ResetPhotoDirective = function() {
+var ResetPhotoDirective = function($compile) {
   return {
     restrict: 'A',
     link: function(scope, element, attr) {
 
       var currentElement = element;
       var applyNewSrc = function(src) {
-        var newImg = element.clone(true);
-        newImg.attr('src', src);
-        newImg.attr('ng-if', "footprint.checkin.photo && footprint.checkin.photo!== 'null'");
-        newImg.attr('ui-sref', 'tab.enlarged-footprint');
-        newImg.attr('ng-click', "openFootprint(footprint, $index)");
-        newImg.attr('class', 'full-image');
+        // footprint.checkin.photo && footprint.checkin.photo!== \'null\'
+        var html = '<img ng-src=' + src + ' class="full-image" ng-if="footprint.checkin.photo && footprint.checkin.photo!== \'null\'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)"' + '>';
+        // var html = '<img ng-src=' + src + ' class="full-image" ng-if="false" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)"' + '>';
+        // var newImg = $compile(element.clone(true, true)
+        // .attr('src', src)
+        // .attr('ng-if', "footprint.checkin.photo && footprint.checkin.photo!== 'null'")
+        // .attr('ui-sref', 'tab.enlarged-footprint')
+        // .attr('ng-click', "openFootprint(footprint, $index)"));
+        // newImg.attr('class', 'full-image');
+        // currentElement.replaceWith(newImg);
+        var newImg = angular.element(html);
+        compiled = $compile(newImg);
         currentElement.replaceWith(newImg);
         currentElement = newImg;
+        compiled(scope);
       };
 
       attr.$observe('src', applyNewSrc);
@@ -829,21 +838,31 @@ var ResetPhotoDirective = function() {
   };
 };
 
-var ResetPhotoLargeDirective = function() {
+ResetPhotoDirective.$inject = ['$compile'];
+
+var ResetPhotoLargeDirective = function($compile) {
   return {
     restrict: 'A',
     link: function(scope, element, attr) {
 
       var currentElement = element;
       var applyNewSrc = function(src) {
-        var newImg = element.clone(true);
-        newImg.attr('src', src);
-        newImg.attr('ng-if', "(!footprint.checkin.photo || footprint.checkin.photo === 'null') && footprint.checkin.photoLarge !== 'null'");
-        newImg.attr('ui-sref', 'tab.enlarged-footprint');
-        newImg.attr('ng-click', "openFootprint(footprint, $index)");
-        newImg.attr('class', 'full-image');
+        // (!footprint.checkin.photo || footprint.checkin.photo === \'null\') && footprint.checkin.photoLarge !== \'null\'
+        var html = '<img src=' + src + ' class="full-image" ng-if="(!footprint.checkin.photo || footprint.checkin.photo === \'null\') && footprint.checkin.photoLarge !== \'null\'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)"' + '>';
+        // var html = '<img src=' + src + ' class="full-image" ng-if="true" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)"' + '>';
+        // var newImg = element.clone(true, true);
+        // newImg.attr('src', src);
+        // var newImg = $compile(element.clone(true, true)
+        // .attr('src', src)
+        // .attr('ng-if', "(!footprint.checkin.photo || footprint.checkin.photo === 'null') && footprint.checkin.photoLarge !== 'null'")
+        // .attr('ui-sref', 'tab.enlarged-footprint')
+        // .attr('ng-click', "openFootprint(footprint, $index)")
+        // .attr('class', 'full-image'));
+        var newImg = angular.element(html);
+        compiled = $compile(newImg);
         currentElement.replaceWith(newImg);
         currentElement = newImg;
+        compiled(scope);
       };
 
       attr.$observe('src', applyNewSrc);
@@ -851,6 +870,8 @@ var ResetPhotoLargeDirective = function() {
     }
   };
 };
+
+ResetPhotoLargeDirective.$inject = ['$compile'];
 
 angular.module('waddle.home', [])
   .controller('HomeController', HomeController)

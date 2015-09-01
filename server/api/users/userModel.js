@@ -311,9 +311,9 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
     'OPTIONAL MATCH (checkin)<-[connection:containsCheckin]-(folderHype:Folder)<-[:hasFolder]-(hyper:User)',
     'OPTIONAL MATCH (checkin)<-[:containsCheckin]-(folder:Folder)<-[:hasFolder]-(viewer:User {facebookID: {viewerID}})',
     'RETURN user, checkin, place, collect(comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers, collect(DISTINCT folder) AS folders, category',
-    'ORDER BY checkin.checkinTime DESC',
-    'SKIP { skipNum }',
-    'LIMIT { skipAmount }'
+    'ORDER BY checkin.checkinTime DESC'
+    // 'SKIP { skipNum }',
+    // 'LIMIT { skipAmount }'
   ].join('\n');
 
   if(skipAmount > 0) {
