@@ -173,6 +173,9 @@ utils.parseNativeCheckin = function (venue) {
     'likes': 'null',
     'photoSmall': 'null',
     'photoLarge': 'null',
+    'photo': 'null',
+    'photoHeight': 'null',
+    'photoWidth': 'null',
     'caption': 'null',
     'address': 'null',
     'city': 'null',
@@ -210,7 +213,11 @@ utils.parseNativeCheckin = function (venue) {
   //TODO: figure out how to generate different size images from AWS url
 
   if (venue.photo) {
-    formattedCheckin.photoLarge = venue.photo;
+    formattedCheckin.photoLarge = venue.photo + '/full';
+    formattedCheckin.photoSmall = venue.photo + '/thumb';
+    formattedCheckin.photo = venue.photo;
+    formattedCheckin.photoHeight = venue.photoHeight;
+    formattedCheckin.photoWidth = venue.photoWidth;
     formattedCheckin.pointValue += 3;
   }
 
@@ -245,6 +252,7 @@ utils.parseCheckin = function (checkin) {
     'likes': 'null',
     'photoSmall': 'null',
     'photoLarge': 'null',
+    'photo': 'null',
     'caption': 'null',
     'address': 'null',
     'city': 'null',

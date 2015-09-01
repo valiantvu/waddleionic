@@ -104,6 +104,9 @@ helpers.parseEditedNativeCheckin = function (editedCheckin) {
     'checkinID': editedCheckin.checkinID,
     'photoSmall': 'null',
     'photoLarge': 'null',
+    'photo': 'null',
+    'photoHeight': 'null',
+    'photoWidth': 'null',
     'caption': 'null',
     'pointValue': 8,
     'rating': editedCheckin.rating,
@@ -115,7 +118,11 @@ helpers.parseEditedNativeCheckin = function (editedCheckin) {
   }
 
   if (editedCheckin.photo) {
-    formattedCheckin.photoLarge = editedCheckin.photo;
+    formattedCheckin.photoLarge = editedCheckin.photo + '/full';
+    formattedCheckin.photoSmall = editedCheckin.photo + '/thumb';
+    formattedCheckin.photo = editedCheckin.photo;
+    formattedCheckin.photoHeight = editedCheckin.photoHeight;
+    formattedCheckin.photoWidth = editedCheckin.photoWidth;
     formattedCheckin.pointValue += 3;
   }
   return formattedCheckin;

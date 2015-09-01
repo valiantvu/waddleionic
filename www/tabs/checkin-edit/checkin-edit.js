@@ -11,7 +11,7 @@ var CheckinEditController = function ($scope, $rootScope, $state, NativeCheckin,
   $scope.fbProfilePicture = $localstorage.getObject('user').fbProfilePicture;
   var photoUUID;
   var backView = $ionicHistory.backView();
-  console.log(backView);
+  // console.log(backView);
     if(backView.stateName === "tab.home" || backView.stateName === "tab.enlarged-footprint") {
     FootprintRequests.currentTab = "feed";
     $scope.footprint = FootprintRequests.openFootprint;
@@ -29,9 +29,9 @@ var CheckinEditController = function ($scope, $rootScope, $state, NativeCheckin,
   $scope.checkinInfo.rating = $scope.footprint.checkin.rating;
   $scope.footprintRating = $scope.footprint.checkin.rating;
 
-  if($scope.footprint.checkin.photoLarge !== 'null') {
-    console.log('photoLarge');
-    document.getElementById('preview').src = $scope.footprint.checkin.photoLarge;
+  if($scope.footprint.checkin.photo !== 'null') {
+    // console.log('photoLarge');
+    document.getElementById('preview').src = $scope.footprint.checkin.photo + '/iphone6';
   }
 
   if($scope.footprint.checkin.caption !== 'null') {
@@ -43,7 +43,7 @@ var CheckinEditController = function ($scope, $rootScope, $state, NativeCheckin,
     .then(function (folders) {
       $scope.folders = folders.data;
       UserRequests.userFolderData = folders.data
-      console.log($scope.folders)
+      // console.log($scope.folders)
     })
    };
 
@@ -75,12 +75,15 @@ var CheckinEditController = function ($scope, $rootScope, $state, NativeCheckin,
     if($scope.checkinInfo.photo) {
       var photoUUID = uuid4.generate();
       console.log(photoUUID);
-      var iphone6Photo = $scope.checkinInfo.photo.splice(0,1);
-      var formattedPhoto = {files: {0:iphone6Photo[0], length: 1}};
+      var iphone6Photo = $scope.checkinInfo.photo.splice(1,1);
+      var formattedPhoto = {files: {0:iphone6Photo[0].blob, length: 1}};
       console.log(formattedPhoto);
       NativeCheckin.s3_upload(formattedPhoto, window.sessionStorage.userFbID, photoUUID, 'iphone6')
       .then(function (public_url) {
-        checkinData.photo = public_url;
+        console.log(public_url);
+        checkinData.photo = public_url.split('/iphone6')[0];
+        checkinData.photoHeight = iphone6Photo[0].height ? iphone6Photo[0].height : 'null';
+        checkinData.photoWidth = iphone6Photo[0].width ? iphone6Photo[0].width : 'null';
         console.log('venueInfo: ' + JSON.stringify(checkinData));
         return NativeCheckin.editCheckin(checkinData);
       })
@@ -88,7 +91,7 @@ var CheckinEditController = function ($scope, $rootScope, $state, NativeCheckin,
         editCheckinSuccess(editedCheckin);
       });
     } else if($scope.footprint.checkin.photoLarge !== 'null') {
-      checkinData.photo = $scope.footprint.checkin.photoLarge;
+      checkinData.photo = $scope.footprint.checkin.photo;
       NativeCheckin.editCheckin(checkinData)
       .then(function (editedCheckin) {
         editCheckinSuccess(editedCheckin);
@@ -106,7 +109,7 @@ var CheckinEditController = function ($scope, $rootScope, $state, NativeCheckin,
         //close loading modal
     $scope.loading = false;
 
-    console.log(editedCheckin);
+    // console.log(editedCheckin);
     FootprintRequests.editedCheckin = editedCheckin.data[0].checkin;
     $ionicHistory.goBack();
   };
@@ -140,7 +143,7 @@ var CheckinEditController = function ($scope, $rootScope, $state, NativeCheckin,
           } else {
             size = 'thumb';
           }
-          formattedPhoto = {files: {0:$scope.checkinInfo.photo[i], length: 1}};
+          formattedPhoto = {files: {0:$scope.checkinInfo.photo[i].blob, length: 1}};
           console.log(formattedPhoto);
           console.log(size);
           NativeCheckin.s3_upload(formattedPhoto, window.sessionStorage.userFbID, photoUUID, size)
@@ -342,7 +345,7 @@ var PhotoSelectDirective = function ($q) {
                   // //data url converted to blob for aws upload
                   // var blob = dataURItoBlob(resizedFileAsDataURL, fileType);
                   // console.log(blob); 
-                  deferred.resolve(blob);
+                  deferred.resolve({blob: blob, height: canvas.height, width: canvas.width});
                 }
                 return deferred.promise;
               }
@@ -354,7 +357,7 @@ var PhotoSelectDirective = function ($q) {
                var photoBucket = [];
                var desiredDimensions = [{width: 640, height: 1200}, {width: 100, height: 200}];
                // pushing in the original photo file
-               photoBucket.push(file);
+               photoBucket.push({blob: file, height: null, width: null});
             
                angular.element(document.getElementById('files')).val('');
                var fileReader = new FileReader();
@@ -378,7 +381,7 @@ var PhotoSelectDirective = function ($q) {
                  console.log(photoBucket);
 
                }
-               fileReader.readAsDataURL(photoBucket[0]);
+               fileReader.readAsDataURL(photoBucket[0].blob);
             });
 
         }
