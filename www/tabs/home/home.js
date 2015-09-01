@@ -73,7 +73,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $scope.createCaption = function(checkin) {
       if (checkin.caption) {
         var caption = checkin.caption;
-        var charsPerLine = 40;
+        var charsPerLine = 50;
         var numLines = caption.length / charsPerLine;
         var words = caption.split(" ");
         var line = [];
@@ -487,23 +487,6 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       // $scope.modal.remove();
     };
 
-<<<<<<< HEAD
-    //Cleanup the modal when we're done with it!
-=======
-    // //Cleanup the modal when we're done with it!
->>>>>>> f4d3c6c6b1db6b5146d20deced65df81d5b46f67
-    // $scope.$on('$destroy', function() {
-    //   $scope.modal.remove();
-    // });
-
-    // // Execute action on hide modal
-    // $scope.$on('modal.hidden', function() {
-    //   // Execute action
-    // });
-    // // Execute action on remove modal
-    // $scope.$on('modal.removed', function() {
-    //   // Execute action
-    // });
 
     $scope.showPopup = function(footprintCheckinID, $index) {
       console.log('footprint index', $index);
