@@ -21,8 +21,9 @@
       <!-- Place Name and Location-->
         <h2>{{venue.name}}</h2>
         <p> 
-          <a ng-if="venue.location.city">{{venue.location.city}}</a><a ng-if="venue.location.city && venue.location.state">,</a>
-          <a ng-if="venue.location.state">{{venue.location.state}}</a>
+          <!-- <a ng-if="venue.location.city">{{venue.location.city}}</a><a ng-if="venue.location.city && venue.location.state">,</a>
+          <a ng-if="venue.location.state">{{venue.location.state}}</a> -->
+          <a>{{venue.locality}}, {{venue.region}}</a>
         </p>
     </div>
 

@@ -8,12 +8,18 @@
 // window.ionic.Platform.ready(function() {
 //     angular.bootstrap(document, ['waddle']);
 // });
-angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.services', 'angularMoment', 'uuid4', 'monospaced.elastic', 'ezfb'])
 
-.run(function($ionicPlatform) {
+// setTimeout(function () {
+ 
+angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.services', 'angularMoment', 'uuid4', 'monospaced.elastic', 'ezfb'])
+.run(function($ionicPlatform, $ionicHistory) {
+  
+  // $ionicHistory.clearCache();
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs
+    console.log('am i ready?');
+    // debugger;
     if(window.cordova && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
     }
@@ -62,6 +68,12 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
       templateUrl: 'modules/walkthrough/walkthrough.html',
       controller: 'WalkthroughController'
     })
+    .state('redirect', {
+      url: '/redirect',
+      cache: false,
+      controller: 'RedirectController',
+      templateUrl: 'modules/redirect/redirect.html'
+    })
     .state('tab', {
       url: "/tab",
       abstract: true,
@@ -77,6 +89,15 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
         'home-tab': {
           templateUrl: 'tabs/home/home.html',
           controller: 'HomeController'
+        }
+      }
+    })
+    .state('tab.discover', {
+      url: '/discover',
+      views: {
+        'discover-tab': {
+          templateUrl: 'tabs/discover/discover.html',
+          controller: 'DiscoverController'
         }
       }
     })
@@ -336,8 +357,9 @@ angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.se
     });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/');
 
-});
+  $urlRouterProvider.otherwise('/');
+})
+// }, 10000);
 
 
