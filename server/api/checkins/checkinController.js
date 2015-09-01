@@ -195,7 +195,7 @@ checkinController.searchFoursquareVenuesWeb = function (req, res) {
     console.log(err);
     res.status(500).end();
   });
-}
+};
 
 checkinController.searchFactualVenuesByQueryAndNear = function (req, res) {
   var near = req.params.near;
@@ -437,7 +437,7 @@ checkinController.handleFBPost = function (req, res) {
       console.log(e);
     });
   res.status(200).end();
-}
+};
 
 
 checkinController.realtimeFoursquareData = function (req, res) {
@@ -469,7 +469,7 @@ checkinController.realtimeFoursquareData = function (req, res) {
 
 checkinController.requestTokenFromTwitter = function (req, res) {
 
-}
+};
 
 checkinController.addToBucketList = function (req, res){
   var checkinID = req.body.checkinID;
@@ -499,7 +499,7 @@ checkinController.removeFromBucketList = function (req, res){
       console.log(err);
       res.status(500).end();
     });
-}
+};
 
 checkinController.addComment = function (req, res){
   var clickerID = req.body.clickerID;
@@ -617,7 +617,7 @@ checkinController.removeFromFavorites = function (req, res) {
     console.log(err);
     res.status(500).end();
   });
-}
+};
 
 checkinController.giveProps = function (req, res){
   var clickerID = req.body.clickerID;
@@ -715,7 +715,7 @@ checkinController.sign_s3 = function (req, res) {
           res.end();
       }
   });
-}
+};
 
   //executed once to convert waddle checkins;kept here for future reference
 // checkin.convertTime = function (req, res) {

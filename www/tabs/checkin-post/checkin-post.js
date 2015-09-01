@@ -68,12 +68,17 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
     if($scope.checkinInfo.photo) {
       var photoUUID = uuid4.generate();
       console.log(photoUUID);
-      var iphone6Photo = $scope.checkinInfo.photo.splice(0,1);
-      var formattedPhoto = {files: {0:iphone6Photo[0], length: 1}};
+      var iphone6Photo = $scope.checkinInfo.photo.splice(1,1);
+      var formattedPhoto = {files: {0:iphone6Photo[0].blob, length: 1}};
       console.log(formattedPhoto);
+
   		NativeCheckin.s3_upload(formattedPhoto, window.sessionStorage.userFbID, photoUUID, 'iphone6')
   		.then(function (public_url) {
-  		  checkinData.photo = public_url;
+        var photoURL = public_url.split('/iphone6')[0];
+        console.log(photoURL);
+  		  checkinData.photo = photoURL;
+        checkinData.photoHeight = iphone6Photo[0].height ? iphone6Photo[0].height : 'null';
+        checkinData.photoWidth = iphone6Photo[0].width ? iphone6Photo[0].width : 'null';
   		  console.log('venueInfo: ' + JSON.stringify(checkinData));
   		  return NativeCheckin.sendCheckinDataToServer(checkinData);
   		})
@@ -90,7 +95,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
         $state.go('tab.home');
         $rootScope.$broadcast('newFootprint', footprint);
         //Other two sizes are uploaded to AWS
-        // uploadImagesToAWS(photoUUID);
+        uploadImagesToAWS(photoUUID);
   		});
     } else {
       console.log(checkinData);
@@ -149,7 +154,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
           } else {
             size = 'thumb';
           }
-          formattedPhoto = {files: {0:$scope.checkinInfo.photo[i], length: 1}};
+          formattedPhoto = {files: {0:$scope.checkinInfo.photo[i].blob, length: 1}};
           console.log(formattedPhoto);
           console.log(size);
           NativeCheckin.s3_upload(formattedPhoto, window.sessionStorage.userFbID, photoUUID, size)
@@ -351,7 +356,7 @@ var PictureSelectDirective = function ($q) {
                   // //data url converted to blob for aws upload
                   // var blob = dataURItoBlob(resizedFileAsDataURL, fileType);
                   // console.log(blob); 
-                  deferred.resolve(blob);
+                  deferred.resolve({blob: blob, height: canvas.height, width: canvas.width});
                 }
                 return deferred.promise;
               }
@@ -359,11 +364,14 @@ var PictureSelectDirective = function ($q) {
 
 
                var file = e.target.files[0];
+               // var image = new Image();
+               // image.src = file;
+
                var fileType = file.type;
                var photoBucket = [];
                var desiredDimensions = [{width: 640, height: 1200}, {width: 100, height: 200}];
                // pushing in the original photo file
-               photoBucket.push(file);
+               photoBucket.push({blob: file, height: null, width: null});
             
                angular.element(document.getElementById('files')).val('');
                var fileReader = new FileReader();
@@ -374,10 +382,13 @@ var PictureSelectDirective = function ($q) {
                 console.log(event.target);
                 document.getElementById('preview').src = event.target.result;
                 for(var i = 0; i < desiredDimensions.length; i++) {
+                  console.log('fileReader.result')
+                  console.log(fileReader.result);
                   resizeImageAndGenerateAsBlob(desiredDimensions[i], fileReader.result, fileType)
                   .then(function (resizedImageAsBlob) {
                     console.log(resizedImageAsBlob);
                     photoBucket.push(resizedImageAsBlob);
+                    console.dir(photoBucket);
                   });
                 }                  
                   scope.photoFile = photoBucket; 
@@ -387,7 +398,8 @@ var PictureSelectDirective = function ($q) {
                  console.log(photoBucket);
 
                }
-               fileReader.readAsDataURL(photoBucket[0]);
+               console.dir(photoBucket);
+               fileReader.readAsDataURL(photoBucket[0].blob);
             });
 
         }

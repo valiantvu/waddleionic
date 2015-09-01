@@ -142,6 +142,7 @@ User.prototype.addFriends = function(friendsList){
 // Add checkins to a user
 // Requires a list of checkins that are mapped over and placed into batch request body
 User.prototype.addCheckins = function(combinedCheckins){
+  console.log(combinedCheckins);
   var deferred = Q.defer();
   //need to check for params!
   var facebookID = this.getProperty('facebookID');
@@ -160,10 +161,10 @@ User.prototype.addCheckins = function(combinedCheckins){
   var query = [
     'MATCH (user:User {facebookID: {facebookID}})',
     'MERGE (checkin:Checkin {checkinID: {checkinID}})',
-    'ON CREATE SET checkin = {checkinID: {checkinID}, likes: {likes}, photoSmall: {photoSmall}, photoLarge: {photoLarge}, caption: {caption}, checkinTime: {checkinTime}, pointValue: {pointValue}, rating: {rating}, source: {source}}',
-    'ON MATCH SET checkin.checkinTime = {checkinTime}, checkin.likes = {likes}, checkin.photoSmall = {photoSmall}, checkin.photoLarge = {photoLarge}, checkin.caption = {caption}, checkin.rating = {rating}, checkin.source = {source}',
-    'MERGE (place:Place {factualID: {factualID}})',
-    'ON CREATE SET place = {name: {name}, factualID: {factualID}, lat: {lat}, lng: {lng}, country: {country}, province:{province}, city:{city}, category: {category}}',
+    'ON CREATE SET checkin = {checkinID: {checkinID}, likes: {likes}, photoSmall: {photoSmall}, photoLarge: {photoLarge}, photo: {photo}, photoHeight: {photoHeight}, photoWidth: {photoWidth}, caption: {caption}, checkinTime: {checkinTime}, pointValue: {pointValue}, rating: {rating}, source: {source}}',
+    // 'ON MATCH SET checkin.checkinTime = {checkinTime}, checkin.likes = {likes}, checkin.photoSmall = {photoSmall}, checkin.photoLarge = {photoLarge}, checkin.caption = {caption}, checkin.rating = {rating}, checkin.source = {source}',
+    'MERGE (place:Place {foursquareID: {foursquareID}})',
+    'ON CREATE SET place = {name: {name}, foursquareID: {foursquareID}, lat: {lat}, lng: {lng}, country: {country}, province:{province}, city:{city}, category: {category}}',
     'ON MATCH SET place.name = {name}, place.lat = {lat}, place.lng = {lng}, place.country = {country}, place.province = {province}, place.city = {city}, place.category = {category}',
     'MERGE (country:Country {name: {country}})',
     'MERGE (province:Province {name: {province}, country: {country}})',
@@ -203,10 +204,10 @@ User.prototype.addCheckins = function(combinedCheckins){
     'json': true,
     'body': JSON.stringify(batchRequest)
   };
-
   request.post(options, function(err, response, body) {
-    if (err) { deferred.reject(err) }
+    if (err) { deferred.reject(err); }
     else {
+      console.log(body);
       deferred.resolve({
         user: body[0].body.data[0][0].data,
         checkin: body[0].body.data[0][1].data,
@@ -282,7 +283,7 @@ User.searchFriends = function (user, friendNameQuery, page, skipAmount) {
   });
 
   return deferred.promise;
-}
+};
 
 // Basic query to find all user's checkins
 // Uses this.getProperty to grab instantiated user's facebookID as query parameter
@@ -310,9 +311,9 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
     'OPTIONAL MATCH (checkin)<-[connection:containsCheckin]-(folderHype:Folder)<-[:hasFolder]-(hyper:User)',
     'OPTIONAL MATCH (checkin)<-[:containsCheckin]-(folder:Folder)<-[:hasFolder]-(viewer:User {facebookID: {viewerID}})',
     'RETURN user, checkin, place, collect(comment) AS comments, collect(commenter) AS commenters, collect(DISTINCT hyper) AS hypers, collect(DISTINCT folder) AS folders, category',
-    'ORDER BY checkin.checkinTime DESC',
-    'SKIP { skipNum }',
-    'LIMIT { skipAmount }'
+    'ORDER BY checkin.checkinTime DESC'
+    // 'SKIP { skipNum }',
+    // 'LIMIT { skipAmount }'
   ].join('\n');
 
   if(skipAmount > 0) {
@@ -411,7 +412,7 @@ User.prototype.countAllCheckins = function (facebookID) {
   });
 
   return deferred.promise;
-}
+};
 
 User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) {
   console.log('getAggregatedFootprintList', skipAmount);

@@ -2,9 +2,8 @@
 
 (function(){
 
-var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage, ezfb, $cordovaFacebook) {
-  // window.sessionStorage.stagingEnvironment = true;
-  console.log('hiii');
+var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage, ezfb, $cordovaFacebook, $window) {
+  window.sessionStorage.stagingEnvironment = true;
   Auth.checkLogin()
   .then(function () {
     $scope.numHypes = 0;
@@ -16,7 +15,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $scope.selectedFolderIndex = -1;
     $scope.newFolderInfo = {};
     var page = 0;
-    var skipAmount = 5;
+    var skipAmount = 20;
     $scope.moreDataCanBeLoaded = true;
     var folderPage = 0;
     var folderSkipAmount = 10;
@@ -47,6 +46,91 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       }
     };
 
+    $scope.getCaptionHeight = function(checkin, charsPerLine, lineHeight) {
+      if (checkin) {
+        var caption = checkin.caption;
+        var numLines = caption.length / charsPerLine;
+        var words = caption.split(" ");
+        var line = [];
+        var lines = [];
+        for (var i = 0; i < words.length; i++) {
+          if(line.join(" ").length <= charsPerLine) {
+            line.push(words[i]);
+          } else {
+            var lastWord = line.splice(line.length - 1, 1);
+            lines.push(line.join(" "));
+            line = lastWord;
+            line.push(words[i]);
+          }
+        }
+        var height = lineHeight * lines.length;
+        return lines ? height: 0;
+      }
+    };
+
+    // Duplicate function as getCaptionHeight due to ionic bug where
+    // ng-init doesn't work with in the collection-repeat directive
+    $scope.createCaption = function(checkin) {
+      if (checkin.caption) {
+        var caption = checkin.caption;
+        var charsPerLine = 40;
+        var numLines = caption.length / charsPerLine;
+        var words = caption.split(" ");
+        var line = [];
+        var lines = [];
+        for (var i = 0; i < words.length; i++) {
+          if(line.join(" ").length <= charsPerLine) {
+            line.push(words[i]);
+          } else {
+            var lastWord = line.splice(line.length - 1, 1);
+            lines.push(line.join(" "));
+            line = lastWord;
+            line.push(words[i]);
+          }
+        }
+        return lines;
+      }
+
+    };
+
+    $scope.getCommentHeight = function(footprint, charsPerLine, lineHeight) {
+      if (footprint.comments) {
+        var comment = footprint.comments[0].comment.text;
+        console.log(comment);
+        var numLines = Math.ceil(comment.length / charsPerLine);
+        return lineHeight * numLines;
+      }
+      return 0;
+    };
+
+    $scope.getCardHeight = function(footprint) {
+      var height;
+      var checkin = footprint.checkin;
+      // console.log($window.innerWidth, checkin.photoHeight, checkin.photoWidth);
+      if (checkin.photoHeight && checkin.photoWidth && checkin.photoHeight !== 'null' && checkin.photoWidth !== 'null') {
+        var scale = $window.innerWidth/checkin.photoWidth;
+        height = scale * checkin.photoHeight + 200;
+      } else if (checkin.photoLarge !== 'null') {
+        // For checkins without the new photoHeight and photoWidth property
+        // use photoLarge and assume that the card height with photoLarge is 600px
+        height = 700;
+      } else {
+        height = 200;
+      }
+      var textHeight = 30;
+      var commentSectionHeight = 38;
+      var iconHeight = 15;
+      var charsPerLine = 40;
+
+      var captionHeight = $scope.getCaptionHeight(checkin, charsPerLine, textHeight);
+      var commentHeight = $scope.getCommentHeight(footprint, charsPerLine, commentSectionHeight);
+      height += captionHeight + commentHeight;
+      if (footprint.comments || footprint.checkin.likes !== 'null') {
+        height += iconHeight;
+      }
+      return height;
+    };
+
     $scope.getAggregatedFeedData = function () {
         UserRequests.getAggregatedFeedData(window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {
@@ -64,13 +148,15 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         });
     };
 
+    $scope.getAggregatedFeedData();
+
     //posts new footprint from checkin screen
     $scope.$on('newFootprint', function(event, footprint) {
       // $ionicHistory.clearCache();
       $state.go('tab.home', {}, {reload: true});
       $scope.footprints.unshift(footprint.data);
       $ionicScrollDelegate.scrollTop();
-    })
+    });
 
     $scope.$on('$stateChangeSuccess', function($currentRoute, $previousRoute) {
       console.log($previousRoute);
@@ -107,7 +193,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       $scope.moreDataCanBeLoaded = true;
       $scope.getAggregatedFeedData();
       $scope.$broadcast('scroll.refreshComplete');
-    }
+    };
 
     $scope.viewFoldersList = function(reload) {
       if(reload) {
@@ -124,16 +210,15 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
           }
           $scope.folders = reload ? folders.data : $scope.folders.concat(folders.data);
           UserRequests.userFolderData = $scope.folders;
-          console.log($scope.folders)
           if (reload) {
             $scope.moreFoldersCanBeLoaded = true;
           }
-          folderPage++; 
+          folderPage++;
         } else {
           $scope.moreFoldersCanBeLoaded = false;
         }
         $scope.$broadcast('scroll.infiniteScrollComplete');
-      })
+      });
     };
 
     // $scope.viewFoldersList();
@@ -168,9 +253,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         $scope.showFootprintAdditionSuccessAlert();
 
         $scope.viewFoldersList(true);
-
-        // console.log(data);
-      })
+      });
     };
 
     $scope.createFolderAndAddFootprintToFolder = function (folderName, selectedFootprintCheckinID, selectedFootprintIndex) {
@@ -186,7 +269,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
           $scope.viewFoldersList(true);
           $scope.selectedFolderIndex = -1;
-        })
+        });
       });
     };
 
@@ -214,7 +297,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         .then(function(footprints) {
           $scope.footprints = footprints.data;
           $scope.moreDataCanBeLoaded = false;
-        })
+        });
       }
     };
 
@@ -222,9 +305,9 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       $scope.selectedFolderIndex = $index;
       $scope.selectedFolderInfo.name = folder.folder.name;
       // $scope.selectedFolderInfo.description = folder.folder.description;
-    }
+    };
 
-     $scope.clearSearch = function () {
+    $scope.clearSearch = function () {
       $scope.search = {};
       $scope.footprints = [];
       page = 0;
@@ -237,13 +320,13 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       .then(function (folderContents) {
         $scope.folderContents = folderContents.data;
         console.log(folderContents);
-      })
+      });
     };
 
     $scope.deleteFootprint = function (checkinID, facebookID, index) {
       var splicedElem;
       if(window.sessionStorage.userFbID === facebookID) {
-        console.log('facebookIDs match')
+        console.log('facebookIDs match');
         var deleteFootprintData = {
           facebookID: window.sessionStorage.userFbID,
           checkinID: checkinID
@@ -272,7 +355,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     };
 
     $scope.publishToFacebook = function() {
-      $scope.shareOptions.close()
+      $scope.shareOptions.close();
       var footprint = $scope.selectedFootprint;
       var linkObject = {
         method: 'feed',
@@ -294,7 +377,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
       if(footprint.user.facebookID === window.sessionStorage.userFbID) {
         linkObject.description = footprint.user.name + " rated " + footprint.place.name + " " + footprint.checkin.rating 
-        + " stars out of 5."
+        + " stars out of 5.";
       } else {
         linkObject.description = $localstorage.getObject('user').name + "'s friend, " + footprint.user.name + ", rated " + footprint.place.name + " " + footprint.checkin.rating
         + " stars out of 5.";
@@ -345,7 +428,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         }, function (err) {
           console.log(err);
 
-        })      
+        });
       }, function (error) {
         console.log(error);
       });
@@ -404,7 +487,11 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       // $scope.modal.remove();
     };
 
+<<<<<<< HEAD
+    //Cleanup the modal when we're done with it!
+=======
     // //Cleanup the modal when we're done with it!
+>>>>>>> f4d3c6c6b1db6b5146d20deced65df81d5b46f67
     // $scope.$on('$destroy', function() {
     //   $scope.modal.remove();
     // });
@@ -646,7 +733,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
 };
 
-HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory', '$localstorage', 'ezfb', '$cordovaFacebook'];
+HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintRequests', '$scope', '$state', '$rootScope', '$ionicModal', '$ionicPopup', '$timeout', 'moment', '$ionicScrollDelegate', '$ionicHistory', '$localstorage', 'ezfb', '$cordovaFacebook', '$window'];
 
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 
@@ -720,7 +807,74 @@ HomeController.$inject = ['Auth', 'UserRequests', 'MapFactory', 'FootprintReques
 
 // CustomSubmitDirective.$inject = ['FootprintRequests'];
 
+var ResetPhotoDirective = function($compile) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attr) {
+
+      var currentElement = element;
+      var applyNewSrc = function(src) {
+        // footprint.checkin.photo && footprint.checkin.photo!== \'null\'
+        var html = '<img ng-src=' + src + ' class="full-image" ng-if="footprint.checkin.photo && footprint.checkin.photo!== \'null\'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)"' + '>';
+        // var html = '<img ng-src=' + src + ' class="full-image" ng-if="false" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)"' + '>';
+        // var newImg = $compile(element.clone(true, true)
+        // .attr('src', src)
+        // .attr('ng-if', "footprint.checkin.photo && footprint.checkin.photo!== 'null'")
+        // .attr('ui-sref', 'tab.enlarged-footprint')
+        // .attr('ng-click', "openFootprint(footprint, $index)"));
+        // newImg.attr('class', 'full-image');
+        // currentElement.replaceWith(newImg);
+        var newImg = angular.element(html);
+        compiled = $compile(newImg);
+        currentElement.replaceWith(newImg);
+        currentElement = newImg;
+        compiled(scope);
+      };
+
+      attr.$observe('src', applyNewSrc);
+      attr.$observe('ngSrc', applyNewSrc);
+    }
+  };
+};
+
+ResetPhotoDirective.$inject = ['$compile'];
+
+var ResetPhotoLargeDirective = function($compile) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attr) {
+
+      var currentElement = element;
+      var applyNewSrc = function(src) {
+        // (!footprint.checkin.photo || footprint.checkin.photo === \'null\') && footprint.checkin.photoLarge !== \'null\'
+        var html = '<img src=' + src + ' class="full-image" ng-if="(!footprint.checkin.photo || footprint.checkin.photo === \'null\') && footprint.checkin.photoLarge !== \'null\'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)"' + '>';
+        // var html = '<img src=' + src + ' class="full-image" ng-if="true" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)"' + '>';
+        // var newImg = element.clone(true, true);
+        // newImg.attr('src', src);
+        // var newImg = $compile(element.clone(true, true)
+        // .attr('src', src)
+        // .attr('ng-if', "(!footprint.checkin.photo || footprint.checkin.photo === 'null') && footprint.checkin.photoLarge !== 'null'")
+        // .attr('ui-sref', 'tab.enlarged-footprint')
+        // .attr('ng-click', "openFootprint(footprint, $index)")
+        // .attr('class', 'full-image'));
+        var newImg = angular.element(html);
+        compiled = $compile(newImg);
+        currentElement.replaceWith(newImg);
+        currentElement = newImg;
+        compiled(scope);
+      };
+
+      attr.$observe('src', applyNewSrc);
+      attr.$observe('ngSrc', applyNewSrc);
+    }
+  };
+};
+
+ResetPhotoLargeDirective.$inject = ['$compile'];
+
 angular.module('waddle.home', [])
-  .controller('HomeController', HomeController);
+  .controller('HomeController', HomeController)
   // .directive( 'customSubmit' , CustomSubmitDirective);
+  .directive( 'resetPhoto' , ResetPhotoDirective)
+  .directive( 'resetPhotoLarge' , ResetPhotoLargeDirective);
 })();
