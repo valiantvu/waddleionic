@@ -146,7 +146,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         });
     };
 
-    $scope.getAggregatedFeedData();
+    // $scope.getAggregatedFeedData();
 
     //posts new footprint from checkin screen
     $scope.$on('newFootprint', function(event, footprint) {
@@ -827,8 +827,12 @@ var ResetPhotoDirective = function($compile) {
         // currentElement.replaceWith(newImg);
         var newImg = angular.element(html);
         compiled = $compile(newImg);
-        currentElement.replaceWith(newImg);
-        currentElement = newImg;
+        console.dir(currentElement);
+        console.dir(newImg);
+        newImg.insertBefore(currentElement);
+        currentElement.remove()
+        // currentElement.replaceWith(newImg);
+        // currentElement = newImg;
         compiled(scope);
       };
 
@@ -860,8 +864,12 @@ var ResetPhotoLargeDirective = function($compile) {
         // .attr('class', 'full-image'));
         var newImg = angular.element(html);
         compiled = $compile(newImg);
-        currentElement.replaceWith(newImg);
-        currentElement = newImg;
+        console.dir(currentElement);
+        console.dir(newImg);
+        newImg.insertBefore(currentElement);
+        currentElement.remove()
+        // currentElement.replaceWith(newImg);
+        // currentElement = newImg;
         compiled(scope);
       };
 
