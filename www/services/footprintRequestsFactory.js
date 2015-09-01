@@ -164,7 +164,22 @@ var FootprintRequests = function ($http){
     },
 
     getFoursquareVenueInfo: function (foursquareVenueID, facebookID) {
-      var url = '/api/checkins/venue/' + foursquareVenueID + '/' + facebookID;
+      var url = '/api/checkins/venue/foursquare/' + foursquareVenueID + '/' + facebookID;
+      if(ionic.Platform.isIOS()) {
+        if(window.sessionStorage.stagingEnvironment) {
+          url = stagingServerURL.concat(url);
+        } else {
+          url = productionServerURL.concat(url);
+        }
+      }
+      return $http({
+        method: 'GET',
+        url: url
+      })
+    },
+
+    getFactualVenueInfo: function (factualVenueID, facebookID) {
+      var url = '/api/checkins/venue/factual/' + factualVenueID + '/' + facebookID;
       if(ionic.Platform.isIOS()) {
         if(window.sessionStorage.stagingEnvironment) {
           url = stagingServerURL.concat(url);

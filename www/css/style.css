@@ -521,6 +521,13 @@ span{
 	width:auto;
 }
 
+.waddlebadge-discover {
+	position: absolute;
+	top: 0.5em;
+	right: 0.25em;
+	width: 40px;
+}
+
 .category-name-modal {
 	position: absolute;
 	top: 0.6em;
@@ -1026,6 +1033,49 @@ border-radius: 0px;
   border-bottom-left-radius: 0px;*/
 }
 
+.savefave-discover {
+	position: absolute;
+	bottom: 0.3em;
+	right: 0.3em;
+	border-style: solid 1px gray;
+	padding-right: 0;
+	text-align: left;
+	/*color: #e1876a !important;*/
+	font-family: 'Open Sans', sans-serif;
+	font-size: 10px;
+	font-weight: 300;
+	text-overflow: ellipsis; 
+  -webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+border-radius: 3px;
+}
+
+.waddle-folder-plus-discover-inactive {
+	background-repeat: no-repeat;
+  background-position: 9% 50%;
+ /* height: 100%;*/
+  background-image: url('../img/savetofolder-2.svg');
+  background-size: 1em;
+  /*padding-left: 15px;*/
+}
+
+.waddle-folder-plus-discover-active {
+	background-repeat: no-repeat;
+  background-position: 9% 50%;
+ /* height: 100%;*/
+  background-image: url('../img/savetofolder-1.svg');
+  background-size: 1em;
+  /*padding-left: 15px;*/
+}
+
+button.savefave-discover.button-small {
+	min-height: 2em !important;
+	min-width: 40px !important;
+	height: 2em;
+	line-height: 1.3em;
+	padding-right: 0.2em;
+}
+
 .text-align-right {
 	text-align: right;
 }
@@ -1064,6 +1114,21 @@ border-radius: 0px;
 	padding: 2px;
 	text-align: center;
 	color: #fff;
+}
+
+.ratinghex-discover {
+	font-weight: 300 !important;
+	font-size: 14px !important;
+	position: absolute;
+  background-image: url('../img/ratinghex-1.svg');
+  background-position: left;
+  background-repeat: no-repeat;
+  padding: 16px !important;
+  margin-left: -3.5em !important;
+  margin-top: 0.1em !important;
+  color: #fff;
+  width: 60px;
+  background-size: 70%;
 }
 
 .ratinghex-footprint {
@@ -1221,6 +1286,16 @@ div.share-option-icon {
   width: 100%;
 }
 
+.discover-image {
+	top: 0.25em;
+	right: 0.25em;
+	height: 100%;
+  position: absolute;
+  max-width: 40px;
+  max-height: 40px;
+  width: 100%;
+}
+
 .tabs {
 	padding-top: 0px;
 }
@@ -1320,6 +1395,24 @@ div.share-option-icon {
   background-position: 50%;
   height: 50%;
   background-image: url('../img/tabicon-folder-active-1.svg');
+  background-size: contain;
+}
+
+.tabs .tab-item .icon.waddle-discover {
+	margin-top: 5px;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  height: 50%;
+  background-image: url('../img/discovery-1.svg');
+  background-size: contain;
+}
+
+.tabs .tab-item .icon.waddle-discover-active {
+	margin-top: 5px;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  height: 50%;
+  background-image: url('../img/discovery-active-1.svg');
   background-size: contain;
 }
 

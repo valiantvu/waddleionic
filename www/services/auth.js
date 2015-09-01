@@ -15,6 +15,7 @@ var Auth = function ($q, $state, $window, $localstorage, $cordovaFacebook, ezfb)
     //   }
     // });
     if(window.cordova) {
+      console.log('this is window');
       $cordovaFacebook.getLoginStatus()
       .then(function(response) {
         if (response.status === 'connected'){
@@ -23,25 +24,30 @@ var Auth = function ($q, $state, $window, $localstorage, $cordovaFacebook, ezfb)
           if(window.sessionStorage.userFbID) {
             console.log('hi i am here');
             console.log(window.sessionStorage.userFbID);
+            // $state.go('tab.home');
             deferred.resolve();
-          } else if ($localstorage.getObject('user').facebookID) {
+          } else if ($localstorage.getObject('user')) {
             window.sessionStorage.name = $localstorage.getObject('user').name;
             window.sessionStorage.fbToken = $localstorage.getObject('user').fbToken;
             window.sessionStorage.userFbID = $localstorage.getObject('user').facebookID;
+            // $state.go('tab.home');
             deferred.resolve();
           } else {
-            $state.go('frontpage');
-            deferred.reject(new Error('not connected'));
+            // $state.go('frontpage');
+            deferred.resolve();
+            // deferred.reject(new Error('not connected'));
           }
         } else {
           console.log('not connecteddd');
-          $state.go('frontpage');
-          deferred.reject(new Error('not connected'));
+          // $state.go('frontpage');
+          deferred.resolve();
+          // deferred.reject(new Error('not connected'));
         }
       }, function (error) {
         console.log(error);
-        $state.go('frontpage');
-        deferred.reject(new Error('not connected'));
+        // $state.go('frontpage');
+        deferred.resolve();
+        // deferred.reject(new Error('not connected'));
       });
     } else {
       ezfb.getLoginStatus()
@@ -49,11 +55,13 @@ var Auth = function ($q, $state, $window, $localstorage, $cordovaFacebook, ezfb)
         console.log(response);
         if (response.status === 'connected'){
           console.log('connected');
+          $state.go('tab.home');
           deferred.resolve();
         } else {
           console.log('not connected');
-          $state.go('frontpage');
-          deferred.reject(new Error('not connected'));
+          // $state.go('frontpage');
+          deferred.resolve();
+          // deferred.reject(new Error('not connected'));
         }
       });
     }

@@ -1,3 +1,5 @@
+
+
 (function(){
 
 var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests, $scope, $state, $rootScope, $ionicModal, $ionicPopup, $timeout, moment, $ionicScrollDelegate, $ionicHistory, $localstorage, ezfb, $cordovaFacebook, $window) {
@@ -472,13 +474,6 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       mailElement.setAttribute('href', 'mailto:?subject=Suggestion via Waddle for iOS&body=' + message);
       };
 
-    $ionicModal.fromTemplateUrl('folder-contents.html', {
-      scope: $scope,
-      animation: 'slide-in-up'
-    }).then(function(modal) {
-      $scope.modal = modal;
-    });
-
     $scope.openModal = function(folderName) {
 
       FootprintRequests.openFolder = folderName;
@@ -492,19 +487,23 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       // $scope.modal.remove();
     };
 
+<<<<<<< HEAD
     //Cleanup the modal when we're done with it!
+=======
+    // //Cleanup the modal when we're done with it!
+>>>>>>> f4d3c6c6b1db6b5146d20deced65df81d5b46f67
     // $scope.$on('$destroy', function() {
     //   $scope.modal.remove();
     // });
 
-    // Execute action on hide modal
-    $scope.$on('modal.hidden', function() {
-      // Execute action
-    });
-    // Execute action on remove modal
-    $scope.$on('modal.removed', function() {
-      // Execute action
-    });
+    // // Execute action on hide modal
+    // $scope.$on('modal.hidden', function() {
+    //   // Execute action
+    // });
+    // // Execute action on remove modal
+    // $scope.$on('modal.removed', function() {
+    //   // Execute action
+    // });
 
     $scope.showPopup = function(footprintCheckinID, $index) {
       console.log('footprint index', $index);

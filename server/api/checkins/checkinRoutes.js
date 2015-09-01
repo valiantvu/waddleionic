@@ -1,10 +1,14 @@
 var checkinController = require('./checkinController.js');
 
 module.exports = function (app) {
-  app.get('/venuesearchweb/:facebookID/:query/:near', checkinController.searchFoursquareVenuesWeb);
-  app.get('/venuesearchmobile/:facebookID/:lat/:lng', checkinController.searchFoursquareVenuesMobile);
-  app.get('/venuesearch/geolocation/query/:facebookID/:lat/:lng/:query', checkinController.searchFoursquareVenuesBySearchQueryAndGeolocation);
-  app.get('/venue/:venueID/:facebookID', checkinController.getVenueInfo);
+  // app.get('/venuesearchweb/:facebookID/:query/:near', checkinController.searchFoursquareVenuesWeb);
+  app.get('/venuesearchweb/:facebookID/:query/:near', checkinController.searchFactualVenuesByQueryAndNear);
+  // app.get('/venuesearchmobile/:facebookID/:lat/:lng', checkinController.searchFoursquareVenuesMobile);
+  app.get('/venuesearchmobile/:facebookID/:lat/:lng', checkinController.searchFactualVenuesByGeolocation);
+  // app.get('/venuesearch/geolocation/query/:facebookID/:lat/:lng/:query', checkinController.searchFoursquareVenuesBySearchQueryAndGeolocation);
+  app.get('/venuesearch/geolocation/query/:facebookID/:lat/:lng/:query', checkinController.searchFactualVenuesBySearchQueryAndGeolocation);
+  app.get('/venue/foursquare/:venueID/:facebookID', checkinController.getFoursquareVenueInfo);
+  app.get('/venue/factual/:venueID/:facebookID', checkinController.getFactualVenueInfo);
   app.post('/nativecheckin', checkinController.handleNativeCheckin);
   app.post('/nativecheckin/edit', checkinController.editNativeCheckin);
   app.get('/sign_s3/:facebookID/:photoUUID/:photoSize', checkinController.sign_s3);
