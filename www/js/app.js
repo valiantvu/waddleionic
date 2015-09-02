@@ -11,7 +11,7 @@
 
 // setTimeout(function () {
  
-angular.module('waddle', ['ionic', 'ngCordova', 'waddle.controllers', 'waddle.services', 'angularMoment', 'uuid4', 'monospaced.elastic', 'ezfb'])
+angular.module('waddle', ['ionic', 'ionic.ion.imageCacheFactory', 'ngCordova', 'waddle.controllers', 'waddle.services', 'angularMoment', 'uuid4', 'monospaced.elastic', 'ezfb'])
 .run(function($ionicPlatform, $ionicHistory) {
   
   // $ionicHistory.clearCache();
