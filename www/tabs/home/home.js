@@ -73,7 +73,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
     $scope.createCaption = function(checkin) {
       if (checkin.caption) {
         var caption = checkin.caption;
-        var charsPerLine = 50;
+        var charsPerLine = 40;
         var numLines = caption.length / charsPerLine;
         var words = caption.split(" ");
         var line = [];
@@ -93,12 +93,12 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
 
     };
 
-    $scope.getCommentHeight = function(footprint, charsPerLine, lineHeight) {
+    $scope.getCommentHeight = function(footprint, charsPerLine, commentSectionHeight, lineHeight) {
       if (footprint.comments) {
         var comment = footprint.comments[0].comment.text;
         console.log(comment);
         var numLines = Math.ceil(comment.length / charsPerLine);
-        return lineHeight * numLines;
+        return commentSectionHeight + lineHeight * numLines;
       }
       return 0;
     };
@@ -107,6 +107,7 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
       var height;
       var checkin = footprint.checkin;
       // console.log($window.innerWidth, checkin.photoHeight, checkin.photoWidth);
+      // bottom buttons: 31 + 20 for margins
       if (checkin.photoHeight && checkin.photoWidth && checkin.photoHeight !== 'null' && checkin.photoWidth !== 'null') {
         var scale = $window.innerWidth/checkin.photoWidth;
         height = scale * checkin.photoHeight + 200;
@@ -118,34 +119,64 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
         height = 200;
       }
       var textHeight = 30;
-      var commentSectionHeight = 38;
+      var commentSectionHeight = 29;
       var iconHeight = 15;
       var charsPerLine = 40;
 
       var captionHeight = $scope.getCaptionHeight(checkin, charsPerLine, textHeight);
-      var commentHeight = $scope.getCommentHeight(footprint, charsPerLine, commentSectionHeight);
+      var commentHeight = $scope.getCommentHeight(footprint, charsPerLine, commentSectionHeight, textHeight);
       height += captionHeight + commentHeight;
       if (footprint.comments || footprint.checkin.likes !== 'null') {
         height += iconHeight;
       }
       return height;
     };
-    $scope.preloadImages = function(imageURLs, imagesPerLoad) {
+    var preLoadPromises = {};
+    var imagesPerLoad = 1;
+    $scope.getPreLoadPromise = function(index) {
+      var loadID = Math.floor(index/imagesPerLoad);
+      console.log('index', index);
+      console.log('loadID: ', loadID);
+      console.dir(preLoadPromises);
+      return preLoadPromises[loadID];
+    };
+    $scope.preloadImages = function(imagesChunk, imagesChunkIndices, imagesPerLoad, loadID) {
       console.log('preloading images');
       
-      $ImageCacheFactory.Cache(imageURLs).then(function(){
+      preLoadPromises[loadID] = $ImageCacheFactory.Cache(imagesChunk).then(function(){
+        // console.dir(promise);
+          // preLoadPromises[loadID] = promise;
           console.log("Images done loading!");
+          for (var i = 0; i < imagesChunkIndices.length; i++) {
+            $scope.footprints[imagesChunkIndices[i]].checkin.photo = imagesChunk[i];
+          }
       }, function(failed){
           console.log("An image failed: "+ failed);
       });
+      // console.dir(preLoadPromises);
     };
 
     $scope.getAggregatedFeedData = function () {
         UserRequests.getAggregatedFeedData(window.sessionStorage.userFbID, page, skipAmount)
         .then(function (data) {
           console.log('page:', page);
+          var imageURLs = [];
+          var imageIndices = [];
           if (data.data.length > 0) {
               console.log(data);
+
+              for (var i = 0; i < data.data.length; i++) {
+                if (data.data[i].checkin.photo && data.data[i].checkin.photo !== 'null') {
+                  imageURLs.push(data.data[i].checkin.photo + '/iphone6');
+                  imageIndices.push(page * skipAmount + i);
+                  data.data[i].checkin.photo = 'http://www.wallideas.net/wp-content/uploads/2015/03/Dark-Grey-Background-Amazing-HD-Wallpapers-r5099-Free.jpeg';
+                } else if (data.data[i].checkin.photoLarge !== 'null') {
+                  imageURLs.push(data.data[i].checkin.photoLarge);
+                  imageIndices.push(page * skipAmount + i);
+                  data.data[i].checkin.photo = 'http://www.wallideas.net/wp-content/uploads/2015/03/Dark-Grey-Background-Amazing-HD-Wallpapers-r5099-Free.jpeg';
+                }
+              }
+
               $scope.footprints = $scope.footprints.concat(data.data);
               FootprintRequests.footprints = $scope.footprints;
               page++;
@@ -154,22 +185,14 @@ var HomeController = function (Auth, UserRequests, MapFactory, FootprintRequests
               $scope.moreDataCanBeLoaded = false;
             }
             $scope.$broadcast('scroll.infiniteScrollComplete');
-            return data.data;
+            return {imageIndices: imageIndices, imageURLs: imageURLs};
         })
-        .then(function (data) {
-          var imagesPerLoad = 5;
-          var imageURLs = [];
-          for (var i = 0; i < data.length; i++) {
-            if (data[i].checkin.photo && data[i].checkin.photo !== 'null') {
-              imageURLs.push(data[i].checkin.photo + '/iphone6');
-            } else if (data[i].checkin.photoLarge !== 'null') {
-              imageURLs.push(data[i].checkin.photoLarge);
-            }
-          }
-          var numLoads = Math.ceil(imageURLs.length / imagesPerLoad);
-          for (var i = 0; i < numLoads; i++) {
-            var images = imageURLs.slice(i*numLoads, (i+1)*numLoads);
-            $scope.preloadImages(images, imagesPerLoad);
+        .then(function (imageData) {
+          var numLoads = Math.ceil(imageData.imageURLs.length / imagesPerLoad);
+          for (var j = 0; j < numLoads; j++) {
+            var imagesChunk = imageData.imageURLs.slice(j*imagesPerLoad, (j+1)*imagesPerLoad);
+            var imagesChunkIndices = imageData.imageIndices.slice(j*imagesPerLoad, (j+1)*imagesPerLoad);
+            $scope.preloadImages(imagesChunk, imagesChunkIndices, imagesPerLoad, j);
           }
         });
     };

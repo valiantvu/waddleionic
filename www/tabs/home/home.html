@@ -56,10 +56,10 @@
         <div class="item item-body">
 
           <!-- iphone 6 image -->
-          <img ng-if="footprint.checkin.photo && footprint.checkin.photo!== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photo}}/iphone6">
+          <img ng-if="footprint.checkin.photo && footprint.checkin.photo!== 'null'" cg-busy="{promise: getPreLoadPromise($index), templateUrl:'lib/angular-busy/angular-busy.html', message:'Loading', backdrop:true, delay:0, minDuration:700}" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photo}}">
 
           <!-- photoLarge (show if .photo doesn't exist) -->
-          <img ng-if="(!footprint.checkin.photo || footprint.checkin.photo === 'null') && footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}">
+          <!-- <img cg-busy="{promise: preLoadPromises[Math.floor($index/imagesPerLoad)], templateUrl: 'lib/angular-busy/angular-busy.html'}" ng-if="(!footprint.checkin.photo || footprint.checkin.photo === 'null') && footprint.checkin.photoLarge !== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photoLarge}}"> -->
 
           <!-- iphone 6 image -->
           <!-- <img reset-photo ng-if="footprint.checkin.photo && footprint.checkin.photo!== 'null'" ui-sref="tab.enlarged-footprint" ng-click="openFootprint(footprint, $index)" class="full-image" ng-src="{{footprint.checkin.photo}}/iphone6"> -->

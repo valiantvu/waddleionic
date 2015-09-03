@@ -11,7 +11,7 @@
 
 // setTimeout(function () {
  
-angular.module('waddle', ['ionic', 'ionic.ion.imageCacheFactory', 'ngCordova', 'waddle.controllers', 'waddle.services', 'angularMoment', 'uuid4', 'monospaced.elastic', 'ezfb'])
+angular.module('waddle', ['ionic', 'ionic.ion.imageCacheFactory', 'ngCordova', 'waddle.controllers', 'waddle.services', 'angularMoment', 'uuid4', 'monospaced.elastic', 'ezfb', 'cgBusy'])
 .run(function($ionicPlatform, $ionicHistory) {
   
   // $ionicHistory.clearCache();
@@ -359,7 +359,7 @@ angular.module('waddle', ['ionic', 'ionic.ion.imageCacheFactory', 'ngCordova', '
   // if none of the above states are matched, use this as the fallback
 
   $urlRouterProvider.otherwise('/');
-})
+});
 // }, 10000);
 
 
