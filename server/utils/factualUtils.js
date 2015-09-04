@@ -8,7 +8,7 @@ var utils = {};
 utils.getVenueInfo = function (factualID) {
   var deferred = Q.defer();
 
-  factual.get('/t/places-us', {filters:{factual_id:{"$eq":factualID}}}, function (err, res) {
+  factual.get('/t/places', {filters:{factual_id:{"$eq":factualID}}}, function (err, res) {
     if(err) {
 			console.log(err);
 			deferred.reject(err);
@@ -19,6 +19,22 @@ utils.getVenueInfo = function (factualID) {
   });
 
   return deferred.promise;
+};
+
+utils.getRestaurantInfo = function (factualID) {
+	var deferred = Q.defer();
+
+	factual.get('/t/restaurants', {filters:{factual_id:{"$eq":factualID}}}, function (err, res) {
+		if(err) {
+			console.log(err);
+			deferred.reject(err);
+		} else {
+			console.log(res.data);
+			deferred.resolve(res.data[0]);
+		}
+	});
+
+	return deferred.promise;
 };
 
 utils.getMenu = function (factualID) {
@@ -35,7 +51,7 @@ utils.getMenu = function (factualID) {
   });
 
 	return deferred.promise;
-}
+};
 
 utils.searchVenuesByGeolocation = function (latlng) {
 	var deferred = Q.defer();
@@ -51,7 +67,7 @@ utils.searchVenuesByGeolocation = function (latlng) {
 		}
 	});
 	return deferred.promise;
-}
+};
 
 utils.searchVenuesBySearchQueryAndGeolocation = function (latlng, query) {
 	var deferred = Q.defer();
@@ -65,7 +81,7 @@ utils.searchVenuesBySearchQueryAndGeolocation = function (latlng, query) {
 		}
 	});
 	return deferred.promise;
-}
+};
 
 utils.searchVenuesByQueryAndNear = function (near, query) {
 	var deferred = Q.defer();
@@ -102,7 +118,7 @@ utils.getFactualIDFromFoursquareID = function (foursquareID) {
 utils.findRestaurantsByCategoryAndLocationTerm = function () {
 
 
-}
+};
 
 utils.getFoursquareIDFromFactualID = function (factualID) {
 	console.log(factualID);

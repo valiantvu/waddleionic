@@ -321,6 +321,11 @@ span{
 	font-family: 'Open Sans', sans-serif;
 }
 
+.small-text {
+	font-size: 10px;
+	color: gray;
+}
+
 .loading-dots svg{
 	margin-top: 0.25em;
 	height: 50px;

@@ -27,7 +27,7 @@
 
 	  <div ng-repeat="(venueID, venue) in venues" class="item item-avatar item-text-wrap notifications-list">
 	  	<h4 class="ratinghex-discover" ng-if="venue[0].checkin.rating">{{venue[0].checkin.rating}}</h4>
-	  	<h4>{{venue[0].place.name}}</h4>
+	  	<h4>{{venue[0].place.name}}  <span class="small-text" ng-repeat="dollar in pricerange(venue[0].place.price) track by $index">$<span></h4>
 	  	<h5>{{venue[0].place.city}}, {{venue[0].place.province}}</h5>
 	  	<h5>Rated by {{venue[0].user.name}}</h5>
 	  	<img class="discover-image" ng-if="venue[0].checkin.photoLarge !== 'null'" ng-src="{{venue[0].checkin.photoLarge}}">

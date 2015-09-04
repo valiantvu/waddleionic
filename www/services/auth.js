@@ -55,11 +55,11 @@ var Auth = function ($q, $state, $window, $localstorage, $cordovaFacebook, ezfb)
         console.log(response);
         if (response.status === 'connected'){
           console.log('connected');
-          $state.go('tab.home');
+          // $state.go('tab.home');
           deferred.resolve();
         } else {
           console.log('not connected');
-          // $state.go('frontpage');
+          $state.go('frontpage');
           deferred.resolve();
           // deferred.reject(new Error('not connected'));
         }

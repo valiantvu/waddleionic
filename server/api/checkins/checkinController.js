@@ -43,6 +43,7 @@ checkinController.handleNativeCheckin = function (req, res) {
     }
     else {
       res.json(newFootprint);
+      getFactualRestaurantInfo(newFootprint.place.factualID);
       res.status(201).end();
     }
   })
@@ -142,6 +143,22 @@ checkinController.getFactualVenueInfo = function (req, res) {
     res.status(500).end();
   })
 };
+
+var getFactualRestaurantInfo = function (factualID) {
+  var restaurantData, place;
+  factualUtils.getRestaurantInfo(factualID)
+  .then(function (restaurantInfo) {
+    console.log(restaurantInfo);
+    restaurantData = restaurantInfo;
+    return Place.find(factualID);
+  })
+  .then(function (placeNode) {
+    place = placeNode;
+    place.setProperty('price', restaurantData.price);
+    return;
+  })
+}
+
 
 checkinController.editNativeCheckin = function (req, res) {
   var editedCheckin = req.body;
