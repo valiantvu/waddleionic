@@ -37,12 +37,12 @@ checkinController.handleNativeCheckin = function (req, res) {
     if(nativeCheckin.folderName) {
       addNativeCheckinToFolder();
     }
-    if(!footprint.place.foursquareID) {
-      console.log('hi');
-      getFoursquareIDFromFactualID();
-    }
     else {
       res.json(newFootprint);
+      if(!footprint.place.foursquareID) {
+        // console.log('hi');
+        getFoursquareIDFromFactualID(newFootprint.place.factualID, user);
+      }
       getFactualRestaurantInfo(newFootprint.place.factualID);
       res.status(201).end();
     }
@@ -76,28 +76,6 @@ checkinController.handleNativeCheckin = function (req, res) {
     });
   };
 
-  var getFoursquareIDFromFactualID = function () {
-    Place.find(newFootprint.place.factualID)
-    .then(function (placeNode) {
-      place = placeNode;
-      return factualUtils.getFoursquareIDFromFactualID(newFootprint.place.factualID)
-    })
-    .then(function (foursquareID) {
-      place.setProperty('foursquareID', foursquareID);
-      console.log('foursquareID', foursquareID);
-      return foursquareUtils.getVenueInfo(foursquareID, user);
-    })
-    .then(function (foursquareVenueInfo) {
-      console.log(JSON.stringify(foursquareVenueInfo.venue.categories));
-      // place.setProperty()
-      res.json(newFootprint);
-      res.status(201).end();
-    })
-    .catch(function(err) {
-      console.log(err);
-      res.status(500).end();
-    });
-  };
 };
 
 checkinController.getFoursquareVenueInfo = function (req, res) {
@@ -144,15 +122,39 @@ checkinController.getFactualVenueInfo = function (req, res) {
   })
 };
 
+var getFoursquareIDFromFactualID = function (factualID, user) {
+
+  Place.find(factualID)
+  .then(function (placeNode) {
+    place = placeNode;
+    return factualUtils.getFoursquareIDFromFactualID(factualID)
+  })
+  .then(function (foursquareID) {
+    place.setProperty('foursquareID', foursquareID);
+    console.log('foursquareID', foursquareID);
+    return foursquareUtils.getVenueInfo(foursquareID, user);
+  })
+  .then(function (foursquareVenueInfo) {
+    console.log(JSON.stringify(foursquareVenueInfo.venue.categories));
+    // getFactualRestaurantInfo(factualID);
+  });
+};
+
 var getFactualRestaurantInfo = function (factualID) {
   var restaurantData, place;
   factualUtils.getRestaurantInfo(factualID)
   .then(function (restaurantInfo) {
     console.log(restaurantInfo);
-    restaurantData = restaurantInfo;
+    if(!restaurantInfo.length) {
+      console.log('returning')
+      return;
+    }
+    restaurantData = restaurantInfo[0];
     return Place.find(factualID);
   })
   .then(function (placeNode) {
+    console.log('found place node');
+    console.log('price', restaurantData['price']);
     place = placeNode;
     place.setProperty('price', restaurantData.price);
     return;
@@ -220,10 +222,10 @@ checkinController.searchFactualVenuesByQueryAndNear = function (req, res) {
 
   factualUtils.searchVenuesByQueryAndNear(near, query)
   .then(function (venues) {
-    console.log(JSON.stringify(venues[0]));
+    // console.log(JSON.stringify(venues[0]));
     _.each(venues, function(venue) {
       if(venue.category_labels) {
-        console.log(JSON.stringify(venue.category_labels));
+        // console.log(JSON.stringify(venue.category_labels));
         // venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
         // venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
         venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
@@ -257,7 +259,7 @@ checkinController.searchFactualVenuesByGeolocation = function (req, res) {
         venue.location.distance = miles;
       }
       if(venue.category_labels) {
-        console.log(JSON.stringify(venue.category_labels));
+        // console.log(JSON.stringify(venue.category_labels));
         // venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
         // venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
         venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
@@ -326,7 +328,7 @@ checkinController.searchFactualVenuesBySearchQueryAndGeolocation = function (req
         venue.location.distance = miles;
       }
       if(venue.category_labels) {
-        console.log(JSON.stringify(venue.category_labels));
+        // console.log(JSON.stringify(venue.category_labels));
         // venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
         // venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
         venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';

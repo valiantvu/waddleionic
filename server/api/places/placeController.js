@@ -68,7 +68,7 @@ placeController.discoverPlacesByCategoryOrName = function (req, res) {
 
 	Place.discoverByCategoryOrName(facebookID, query)
 	.then(function (data) {
-		console.log(data);
+		// console.log(data);
 		res.json(data);
 	  res.status(200).end();
 	})
@@ -84,7 +84,7 @@ placeController.discoverPlacesByLocation = function (req, res) {
 
 	Place.discoverByLocation(facebookID, location)
 	.then(function (data) {
-		console.log(data);
+		// console.log(data);
 		res.json(data);
 	  res.status(200).end();
 	})
@@ -101,7 +101,7 @@ placeController.discoverPlacesByCategoryOrNameAndLocation = function (req, res) 
 
 	Place.discoverByCategoryOrNameAndLocation(facebookID, location, query)
 	.then(function (data) {
-		console.log(data);
+		// console.log(data);
 		res.json(data);
 	  res.status(200).end();
 	})

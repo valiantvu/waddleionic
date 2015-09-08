@@ -30,7 +30,7 @@ utils.getRestaurantInfo = function (factualID) {
 			deferred.reject(err);
 		} else {
 			console.log(res.data);
-			deferred.resolve(res.data[0]);
+			deferred.resolve(res.data);
 		}
 	});
 
@@ -130,7 +130,17 @@ utils.getFoursquareIDFromFactualID = function (factualID) {
 			deferred.reject(err);
 		} else {
 			console.log(res.data);
-  	  deferred.resolve(res.data[0].namespace_id);
+			if(res.data.length) {
+				for(i = 0; i < res.data.length; i++) {
+					if(res.data[i].namespace_id) {
+						//resolve with first defined namespace_id
+						deferred.resolve(res.data[i].namespace_id);
+						break;
+					}
+				}
+			}
+			//return empty array if !res.data.length or if namespace_id not provided
+	  	deferred.resolve([]);
 		}
   });
 

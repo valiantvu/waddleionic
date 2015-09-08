@@ -119,7 +119,16 @@ Place.assignIconToCategories = function (categoryList) {
     }
   });
   return deferred.promise;
-}
+};
+
+// Place.createFactualCategories = function (category, ) {
+//   var deferred = Q.defer();
+
+//   var query = [
+//     'MERGE (category:Category {ID: {ID}}',
+//     'SET category.name = {name}'
+//   ]
+// };
 
 Place.create = function(data){
   node = db.createNode(data);
