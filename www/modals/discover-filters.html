@@ -1,0 +1,94 @@
+<style>
+.button-radio-first-of-four {
+	position: absolute;
+	left: 0;
+	width: 25%;
+}
+.button-radio-second-of-four {
+	position: absolute;
+	left: 25%;
+	width: 25%;
+
+}
+.button-radio-third-of-four {
+	position: absolute;
+	left: 50%;
+	width: 25%;
+
+}
+.button-radio-fourth-of-four {
+	position: absolute;
+	right: 0;
+	width: 25%;
+
+}
+.button-radio-first-of-three {
+	position: absolute;
+	left: 0;
+	width: 33.333%;
+
+}
+.button-radio-second-of-three {
+	position: absolute;
+	left: 33.334%;
+	width: 33.333%;
+
+}
+.button-radio-third-of-three {
+	position: absolute;
+	right: 0;
+	width: 33.333%;
+}
+
+.filter-button-price {
+	border-radius: 0;
+	border-right: none;
+	border-top: none;
+	height: 3em;
+	background: white !important;
+}
+
+.filter-button {
+	border-radius: 0;
+	border-right: none;
+	height: 3em;
+	background: white !important;
+}
+
+.price-selected {
+	background: gray !important;
+	color: white !important;
+}
+
+/*.filter-button::after {
+	background: #d3d3d3;
+}*/
+
+.radio-buttons {
+	width: 100%;
+	position: relative;
+	display: block;
+}
+
+</style>
+
+<body>
+	<div class="grey-bg filter-modal">
+		<div class="radio-buttons">
+			<button ng-class="{'price-selected': selectedPrices.indexOf(1) > -1}" ng-click="toggleSelectPrice(1)" class="button button-small button-radio-first-of-four filter-button-price button-outline">$</button>
+			<button ng-class="{'price-selected': selectedPrices.indexOf(2) > -1}" ng-click="toggleSelectPrice(2)" class="button button-small button-radio-second-of-four filter-button-price button-outline">$$</button>
+			<button ng-class="{'price-selected': selectedPrices.indexOf(3) > -1}" ng-click="toggleSelectPrice(3)" class="button button-small button-radio-third-of-four filter-button-price button-outline">$$$</button>
+			<button ng-class="{'price-selected': selectedPrices.indexOf(4) > -1}" ng-click="toggleSelectPrice(4)" class="button button-small button-radio-fourth-of-four filter-button-price button-outline">$$$$</button>
+	  </div>
+	  <br/>
+		<br/>
+		<h5>.   sort by:</h5>
+		<div class="radio-buttons">
+		<button class="button button-small button-radio-first-of-three filter-button button-outline">relevance</button>
+		<button class="button button-small button-radio-second-of-three filter-button button-outline">distance</button>
+		<button class="button button-small button-radio-third-of-three filter-button button-outline">rating</button>
+	</div>
+	<br/>
+	</div>
+
+</body>

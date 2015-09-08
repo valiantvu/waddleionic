@@ -4,6 +4,7 @@ var DiscoverController = function (Auth,  $scope, $state, DiscoverPlaces, $ionic
   // Auth.checkLogin()
   // .then(function () {
     $scope.search = {};
+    $scope.selectedPrices = [];
 
     var searchVenuesByNameOrCategory = function () {
       console.log('search by category/place name');
@@ -52,9 +53,31 @@ var DiscoverController = function (Auth,  $scope, $state, DiscoverPlaces, $ionic
       $scope.search.query = {};
     }
 
-    $scope.showFilterOptions = function () {
+    $scope.openModal = function() {
+      $scope.modal.show();
+    };
 
-    }
+
+    $scope.showFilterOptions = function () {
+      console.log('filtering')
+      $ionicModal.fromTemplateUrl('modals/discover-filters.html', {
+        scope: $scope,
+        animation: 'slide-in-up'
+      }).then(function(modal) {
+        $scope.modal = modal;
+        $scope.openModal();
+      });
+    };
+
+    $scope.toggleSelectPrice = function (priceInt) {
+      $scope.priceIntIndex = $scope.selectedPrices.indexOf(priceInt);
+      if($scope.priceIntIndex === -1) {
+        $scope.selectedPrices.push(priceInt);
+      } else {
+        $scope.selectedPrices.splice($scope.priceIntIndex, 1);
+      }
+      console.log($scope.selectedPrices);
+    };
 
   	// $scope.discoverPlaceByCategory = function () {
 	  // 	DiscoverPlaces.byCategorySearch('Coffee', '10153079708568662')
