@@ -9,7 +9,7 @@ var DiscoverController = function (Auth,  $scope, $state, DiscoverPlaces, $ionic
     var searchVenuesByNameOrCategory = function () {
       console.log('search by category/place name');
       if($scope.search.query.length > 1) {
-        DiscoverPlaces.byCategory($scope.search.query, window.sessionStorage.userFbID)
+        DiscoverPlaces.byCategory($scope.search.query, window.sessionStorage.userFbID, $scope.selectedPrices)
         .then(function (data) {
           $scope.venues = data.data;
           console.log(data);
@@ -20,7 +20,7 @@ var DiscoverController = function (Auth,  $scope, $state, DiscoverPlaces, $ionic
     var searchVenuesByLocation = function () {
       console.log('search by location');
       if($scope.search.location.length > 1) {
-        DiscoverPlaces.byLocation($scope.search.location, window.sessionStorage.userFbID)
+        DiscoverPlaces.byLocation($scope.search.location, window.sessionStorage.userFbID. $scope.selectedPrices)
         .then(function (data) {
           $scope.venues = data.data;
           console.log(data);
@@ -31,7 +31,7 @@ var DiscoverController = function (Auth,  $scope, $state, DiscoverPlaces, $ionic
     var searchVenuesByCategoryOrNameAndLocation = function () {
       console.log('searching by both');
       if($scope.search.location.length > 1 && $scope.search.query.length > 1) {
-        DiscoverPlaces.byCategoryOrNameAndLocation($scope.search.location, $scope.search.query, window.sessionStorage.userFbID)
+        DiscoverPlaces.byCategoryOrNameAndLocation($scope.search.location, $scope.search.query, window.sessionStorage.userFbID, $scope.selectedPrices)
         .then(function (data) {
           $scope.venues = data.data;
           console.log(data);
@@ -70,13 +70,12 @@ var DiscoverController = function (Auth,  $scope, $state, DiscoverPlaces, $ionic
     };
 
     $scope.toggleSelectPrice = function (priceInt) {
-      $scope.priceIntIndex = $scope.selectedPrices.indexOf(priceInt);
-      if($scope.priceIntIndex === -1) {
+      var priceIntIndex = $scope.selectedPrices.indexOf(priceInt);
+      if(priceIntIndex === -1) {
         $scope.selectedPrices.push(priceInt);
       } else {
-        $scope.selectedPrices.splice($scope.priceIntIndex, 1);
+        $scope.selectedPrices.splice(priceIntIndex, 1);
       }
-      console.log($scope.selectedPrices);
     };
 
   	// $scope.discoverPlaceByCategory = function () {
