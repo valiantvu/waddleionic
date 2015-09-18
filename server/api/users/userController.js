@@ -6,6 +6,7 @@ var instagramUtils = require('../../utils/instagramUtils.js');
 var helpers = require('../../utils/helpers.js');
 
 var User = require('./userModel.js');
+var mongoUser = require('./mongoUserModel.js');
 var Place = require('../places/placeModel.js');
 var Checkin = require('../checkins/checkinModel.js');
 
@@ -65,6 +66,8 @@ userController.userLogin = function (req, res) {
         return user.getAggregatedFootprintList(user.node._data.data.facebookID, 0, 5)
       })
       .then(function (aggregatedFootprints) {
+        console.log('mongoUser?');
+        mongoUser.insertDocument();
         var allData = {
           user: user.node._data.data,
           friends: userFBFriendsData,
