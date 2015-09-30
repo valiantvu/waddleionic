@@ -6,6 +6,7 @@ var uuid = require('node-uuid');
 var Checkin = require('./checkinModel.js');
 var User = require('../users/userModel.js');
 var Place = require('../places/placeModel.js');
+var mongoCheckin = require('./mongoCheckinModel.js');
 
 var factualUtils = require('../../utils/factualUtils.js');
 var foursquareUtils = require('../../utils/foursquareUtils.js');
@@ -29,6 +30,7 @@ checkinController.handleNativeCheckin = function (req, res) {
   })
   .then(function (parsedCheckin) {
     console.log('parsedCheckin: ' + JSON.stringify(parsedCheckin));
+    mongoCheckin.insertDocument(parsedCheckin);
     return user.addCheckins([parsedCheckin]);
   })
   .then(function (footprint) {
