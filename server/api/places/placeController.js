@@ -1,4 +1,4 @@
-var Place = require('./placeModel.js');
+var Place = require('../neo4j/placeModel.js');
 var Q = require('q');
 var _ = require('lodash');
 

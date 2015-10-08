@@ -83,9 +83,9 @@ utils.searchVenuesBySearchQueryAndGeolocation = function (latlng, query) {
 	return deferred.promise;
 };
 
-utils.searchVenuesByQueryAndNear = function (near, query) {
+utils.searchVenuesByQueryAndNear = function (near, query, offset) {
 	var deferred = Q.defer();
-	factual.get('/t/places-us', {filters:{"name":{"$search": query}, "$or": [{"locality": {"$search": near}}, {"region": {"$search": near}}], "category_ids":{"$includes_any":[308, 107]}}, sort:"$relevance"}, function (err, res) {
+	factual.get('/t/places-us', {filters:{"name":{"$search": query}, "$or": [{"locality": {"$search": near}}, {"region": {"$search": near}}], "category_ids":{"$includes_any":[308, 107]}}, sort:"$relevance", limit: 50, offset: offset}, function (err, res) {
 		if(err) {
 			console.log(err);
 			deferred.reject(err);

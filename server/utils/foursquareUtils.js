@@ -8,7 +8,7 @@ var uuid = require('node-uuid');
 
 var helpers = require('./helpers.js');
 
-var User = require('../api/users/userModel.js');
+var User = require('../api/neo4j/userModel.js');
 
 var utils = {};
 

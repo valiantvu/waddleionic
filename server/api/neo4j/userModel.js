@@ -8,8 +8,8 @@ var neo4j = require('neo4j');
 var neo4jUrl = process.env['WADDLE_GRAPHENEDB_URL'] || 'http://localhost:7474';
 var db = new neo4j.GraphDatabase(neo4jUrl);
 
-var Checkin = require('../checkins/checkinModel.js');
-var Place = require('../places/placeModel.js');
+var Checkin = require('./checkinModel.js');
+var Place = require('./placeModel.js');
 
 // var skipAmount = 500;
 

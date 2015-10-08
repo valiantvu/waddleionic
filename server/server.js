@@ -2,8 +2,8 @@ var express = require('express');
 var app = express();
 var server=require('http').Server(app);
 var io = require('socket.io')(server);
-var User = require('./api/users/userModel.js');
-var Place = require('./api/places/placeModel.js');
+var User = require('./api/neo4j/userModel.js');
+var Place = require('./api/neo4j/placeModel.js');
 
 require('./middleware.js')(app, express);
 

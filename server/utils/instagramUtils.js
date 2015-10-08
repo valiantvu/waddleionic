@@ -7,7 +7,7 @@ var _ = require('lodash');
 var helpers = require('./helpers.js');
 var foursquareUtils = require('./foursquareUtils.js');
 
-var User = require('../api/users/userModel.js');
+var User = require('../api/neo4j/userModel.js');
 
 var utils = {};
 

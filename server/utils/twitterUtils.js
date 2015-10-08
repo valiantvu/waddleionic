@@ -8,8 +8,6 @@ var uuid = require('node-uuid');
 
 var helpers = require('./helpers.js');
 
-var User = require('../api/users/userModel.js');
-
 var utils = {};
 
 utils.requestToken = function () {

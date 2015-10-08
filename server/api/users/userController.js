@@ -5,10 +5,10 @@ var facebookUtils = require('../../utils/facebookUtils.js');
 var instagramUtils = require('../../utils/instagramUtils.js');
 var helpers = require('../../utils/helpers.js');
 
-var User = require('./userModel.js');
+var User = require('../neo4j/userModel.js');
 var mongoUser = require('./mongoUserModel.js');
-var Place = require('../places/placeModel.js');
-var Checkin = require('../checkins/checkinModel.js');
+var Place = require('../neo4j/placeModel.js');
+var Checkin = require('../neo4j/checkinModel.js');
 
 var userController = {};
 

@@ -3,9 +3,9 @@ var _ = require('lodash');
 var aws = require('aws-sdk');
 var uuid = require('node-uuid');
 
-var Checkin = require('./checkinModel.js');
-var User = require('../users/userModel.js');
-var Place = require('../places/placeModel.js');
+var Checkin = require('../neo4j/checkinModel.js');
+var User = require('../neo4j/userModel.js');
+var Place = require('../neo4j/placeModel.js');
 var mongoCheckin = require('./mongoCheckinModel.js');
 
 var factualUtils = require('../../utils/factualUtils.js');
@@ -219,11 +219,20 @@ checkinController.searchFoursquareVenuesWeb = function (req, res) {
 };
 
 checkinController.searchFactualVenuesByQueryAndNear = function (req, res) {
+  console.log("hello", req.params);
   var near = req.params.near;
   var query = req.params.query;
+  var offset = 50;
+  var previousResults = 1;
+  var page = 0;
 
-  factualUtils.searchVenuesByQueryAndNear(near, query)
+  while(previousResults > 0) {
+    console.log('previousResults', previousResults);
+    offset *= page;
+  factualUtils.searchVenuesByQueryAndNear(near, query, offset)
   .then(function (venues) {
+    previousResults = venues.length;
+    page++;
     // console.log(JSON.stringify(venues[0]));
     _.each(venues, function(venue) {
       if(venue.category_labels) {
@@ -244,6 +253,8 @@ checkinController.searchFactualVenuesByQueryAndNear = function (req, res) {
     console.log(err);
     res.status(500).end();
   });
+
+  }
 }
 
 checkinController.searchFactualVenuesByGeolocation = function (req, res) {
