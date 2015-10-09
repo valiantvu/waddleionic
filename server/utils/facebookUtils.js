@@ -7,7 +7,7 @@ var _ = require('lodash');
 var helpers = require('./helpers.js');
 var foursquareUtils = require('./foursquareUtils');
 
-var User = require('../api/neo4j/userModel.js');
+var neo4jUser = require('../api/neo4j/userModel.js');
 
 var utils = {};
 
@@ -214,7 +214,7 @@ utils.handleUpdateObject = function (update) {
   var fbPostCreatedTime = update.time - 1;
   var user;
 
-  User.find(fbUserID)
+  neo4jUser.find(fbUserID)
     .then(function (userNode) {
       user = userNode;
       return utils.makeRequestForFeedItem(user, fbPostCreatedTime);

@@ -1,4 +1,4 @@
-var Place = require('../neo4j/placeModel.js');
+var neo4jPlace = require('../neo4j/placeModel.js');
 var Q = require('q');
 var _ = require('lodash');
 
@@ -7,7 +7,7 @@ var placeController = {};
 placeController.updatePlace = function (req, res){
 
   var placeData = req.body;
-  Place.create(placeData)
+  neo4jPlace.create(placeData)
   .then(function(node) {
     res.status(204).end();
   })
@@ -20,7 +20,7 @@ placeController.updatePlace = function (req, res){
 placeController.searchWaddleDB = function (req, res) {
 	var facebookID = req.params.user;
 	var searchQuery = req.params.query;
-	Place.findAllByCountryOrCityName(facebookID, searchQuery)
+	neo4jPlace.findAllByCountryOrCityName(facebookID, searchQuery)
 	.then(function (data) {
 		console.log(data);
 		res.json(data);
@@ -34,7 +34,7 @@ placeController.searchWaddleDB = function (req, res) {
 
 placeController.assignIconToCategory = function (req, res) {
 	var categories = [];
-	Place.assignIconToCategories(categoryList)
+	neo4jPlace.assignIconToCategories(categoryList)
 	.then(function (data) {
 		console.log('category icons assigned!');
 		res.json(categories);
@@ -50,7 +50,7 @@ placeController.findFriendsAlreadyBeen = function (req, res) {
 	var facebookID = req.params.user;
 	var foursquareID = req.params.place;
 
-	Place.findFriendsAlreadyBeen(facebookID, foursquareID)
+	neo4jPlace.findFriendsAlreadyBeen(facebookID, foursquareID)
 	.then(function (data) {
 		console.log(data);
 		res.json(data);
@@ -66,7 +66,7 @@ placeController.discoverPlacesByCategoryOrName = function (req, res) {
 	var facebookID = req.params.user;
 	var query = req.params.query;
 
-	Place.discoverByCategoryOrName(facebookID, query)
+	neo4jPlace.discoverByCategoryOrName(facebookID, query)
 	.then(function (data) {
 		// console.log(data);
 		res.json(data);
@@ -82,7 +82,7 @@ placeController.discoverPlacesByLocation = function (req, res) {
 	var facebookID = req.params.user;
 	var location = req.params.location;
 
-	Place.discoverByLocation(facebookID, location)
+	neo4jPlace.discoverByLocation(facebookID, location)
 	.then(function (data) {
 		// console.log(data);
 		res.json(data);
@@ -99,7 +99,7 @@ placeController.discoverPlacesByCategoryOrNameAndLocation = function (req, res) 
 	var location = req.params.location;
 	var query = req.params.query
 
-	Place.discoverByCategoryOrNameAndLocation(facebookID, location, query)
+	neo4jPlace.discoverByCategoryOrNameAndLocation(facebookID, location, query)
 	.then(function (data) {
 		// console.log(data);
 		res.json(data);

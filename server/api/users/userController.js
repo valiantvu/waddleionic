@@ -5,8 +5,8 @@ var facebookUtils = require('../../utils/facebookUtils.js');
 var instagramUtils = require('../../utils/instagramUtils.js');
 var helpers = require('../../utils/helpers.js');
 
-var User = require('../neo4j/userModel.js');
-var mongoUser = require('./mongoUserModel.js');
+var neo4jUser = require('../neo4j/userModel.js');
+var mongoUser = require('../mongo/userModel.js');
 var Place = require('../neo4j/placeModel.js');
 var Checkin = require('../neo4j/checkinModel.js');
 
@@ -25,7 +25,7 @@ userController.userLogin = function (req, res) {
   var alreadyExists = false;
 
   // Start creation of new user or update and retrieval of existing user
-  User.createUniqueUser(userData)
+  neo4jUser.createUniqueUser(userData)
   .then(function (userNode) { 
     //note: this has the user node
     //console.dir(userNode.node._data.data)
@@ -189,7 +189,7 @@ userController.addFoursquareData = function (req, res) {
 
   else {
 
-    User.find(userData)
+    neo4jUser.find(userData)
     .then(function (userNode) { 
       user = userNode;
       return foursquareUtils.exchangeFoursquareUserCodeForToken(userData.foursquareCode, userData.redirect_uri);
@@ -234,7 +234,7 @@ userController.addFoursquareData = function (req, res) {
 };
 
  var addFoursquareDataFromIOSClient = function (userData) {
-  User.find(userData)
+  neo4jUser.find(userData)
   .then(function (userNode) { 
     user = userNode;
     return user.setProperty('fsqToken', userData.foursquareCode);
@@ -279,7 +279,7 @@ userController.addInstagramData = function (req, res) {
   var user;
   var igUserData;
 
-  User.find(userData)
+  neo4jUser.find(userData)
   .then(function (userNode) { 
     user = userNode;
     return instagramUtils.exchangeIGUserCodeForToken(userData.instagramCode, userData.build_type);
@@ -340,7 +340,7 @@ userController.getUserData = function (req, res){
     skipAmount = 0;
   }
 
-  User.find(userData)
+  neo4jUser.find(userData)
   .then(function (friend) {
     userInfo.user = friend.node._data.data;
     return friend.findAllCheckins(viewer, page, skipAmount);
@@ -378,7 +378,7 @@ userController.getAggregatedListOfCheckins = function (req, res){
     params.skipAmount = 0;
   }
 
-  User.find(params)
+  neo4jUser.find(params)
   .then(function (userNode) {
     user = userNode;
     return user.getAggregatedFootprintList(params.facebookID, params.page, params.skipAmount);
@@ -395,7 +395,7 @@ userController.getAggregatedListOfCheckins = function (req, res){
 
 userController.updateNotificationReadStatus = function (req, res) {
   var user;
-  User.find(req.body)
+  neo4jUser.find(req.body)
   .then(function (userNode) {
     user = userNode;
     return user.updateNotificationReadStatus();
@@ -429,7 +429,7 @@ userController.getUnreadNotifications = function (req, res) {
     params.skipAmount = 0;
   }
 
-  User.find(params)
+  neo4jUser.find(params)
   .then(function (userNode) {
     user = userNode;
     return user.getUnreadNotifications(params.page, params.skipAmount);
@@ -463,7 +463,7 @@ userController.getReadNotifications = function (req, res) {
     params.skipAmount = 0;
   }
   
-  User.find(params)
+  neo4jUser.find(params)
   .then(function (userNode) {
     user = userNode;
     return user.getReadNotifications(params.page, params.skipAmount);
@@ -485,7 +485,7 @@ userController.getUserInfo = function (req, res) {
   params.facebookID = req.params.user;
   console.log('dis be ma params' + JSON.stringify(req.params))
 
-  User.find(params)
+  neo4jUser.find(params)
    .then(function (userInfo) {
     console.log('userInfo' + JSON.stringify(userInfo.node._data.data));
     res.json(userInfo.node._data.data);
@@ -517,8 +517,7 @@ userController.getBucketList = function (req, res){
     params.skipAmount = 0;
   }
 
-  User.getBucketList(params.facebookID, params.page, params.skipAmount)
-
+  neo4jUser.getBucketList(params.facebookID, params.page, params.skipAmount)
   .then(function (footprints) {
     res.json(footprints);
     res.status(200).end();
@@ -535,7 +534,7 @@ userController.addFolder = function (req, res) {
   folderName = req.body.folderName,
   console.log(req.body)
 
-  User.addFolder(user, folderName)
+  neo4jUser.addFolder(user, folderName)
   .then(function (folder) {
     console.log(folder);
     res.json(folder);
@@ -566,7 +565,7 @@ userController.fetchFolders = function (req, res) {
     params.skipAmount = 0;
   }
 
-  User.fetchFolders(params.facebookID, params.page, params.skipAmount)
+  neo4jUser.fetchFolders(params.facebookID, params.page, params.skipAmount)
   .then(function (folders) {
     console.log(folders)
     res.json(folders);
@@ -598,7 +597,7 @@ userController.searchFoldersByName = function (req, res) {
     params.skipAmount = 0;
   }
 
-  User.searchFoldersByName(params.facebookID, params.query, params.page, params.skipAmount)
+  neo4jUser.searchFoldersByName(params.facebookID, params.query, params.page, params.skipAmount)
   .then(function (folders) {
     console.log(folders)
     res.json(folders);
@@ -631,7 +630,7 @@ userController.fetchFolderContents = function (req, res) {
   }
   if(params.folderName === "Suggested By Friends") {
     console.log("DESE BITCHES HV BEEN SUGGESTED BY MA FRENDZ!!");
-    User.fetchSuggestedByFriendsContents(params.facebookID, params.page, params.skipAmount)
+    neo4jUser.fetchSuggestedByFriendsContents(params.facebookID, params.page, params.skipAmount)
     .then(function (SBFcontents) {
       console.log(SBFcontents)
       res.json(SBFcontents);
@@ -642,7 +641,7 @@ userController.fetchFolderContents = function (req, res) {
       res.status(500).end();
     });
   } else {
-    User.fetchFolderContents(params.facebookID, params.folderName, params.page, params.skipAmount)
+    neo4jUser.fetchFolderContents(params.facebookID, params.folderName, params.page, params.skipAmount)
     .then(function (folderContents) {
       res.json(folderContents);
       res.status(200).end();
@@ -675,7 +674,7 @@ userController.searchFolderContents = function (req, res) {
     params.skipAmount = 0;
   }
 
-  User.searchFolderContents(params.facebookID, params.folderName, params.query, params.page, params.skipAmount)
+  neo4jUser.searchFolderContents(params.facebookID, params.folderName, params.query, params.page, params.skipAmount)
   .then(function (folderContents) {
     console.log(folderContents)
     res.json(folderContents);
@@ -692,7 +691,7 @@ userController.deleteFolderAndContents = function (req, res) {
   var facebookID = req.body.facebookID;
   var folderName = req.body.folderName;
 
-  User.deleteFolderAndContents(facebookID, folderName)
+  neo4jUser.deleteFolderAndContents(facebookID, folderName)
   .then(function (data) {
     res.json({success: "Folder and contents succesfully deleted"});
     res.status(201).end();
@@ -724,7 +723,7 @@ userController.searchUserFootprints = function (req, res) {
   else {
     params.skipAmount = 0;
   }
-  User.findFootprintsByPlaceName(facebookID, query, params.page, params.skipAmount)
+  neo4jUser.findFootprintsByPlaceName(facebookID, query, params.page, params.skipAmount)
   .then(function (footprints) {
     res.json(footprints);
     res.status(200).end();
@@ -755,7 +754,7 @@ userController.searchUserFeed = function (req, res) {
   else {
     params.skipAmount = 0;
   }
-  User.findFeedItemsByPlaceName(facebookID, query, params.page, params.skipAmount)
+  neo4jUser.findFeedItemsByPlaceName(facebookID, query, params.page, params.skipAmount)
   .then(function (footprints) {
     res.json(footprints);
     res.status(200).end();
@@ -786,7 +785,7 @@ userController.getFriendsList = function (req, res) {
     skipAmount = 0;
   }
 
-  User.find(params)
+  neo4jUser.find(params)
   .then(function(userNode) {
     user = userNode
     return user.findAllFriends(page, skipAmount);
@@ -808,7 +807,7 @@ userController.searchFriendsList = function (req, res) {
   params.page = parseInt(req.params.page);
   params.skip = parseInt(req.params.skip);
 
-  User.searchFriends(params.user, params.query, params.page, params.skip)
+  neo4jUser.searchFriends(params.user, params.query, params.page, params.skip)
   .then(function (friends) {
     res.json(friends);
     res.status(200).end();
@@ -824,7 +823,7 @@ userController.publishFacebookPost = function (req, res) {
   var linkObject = req.body.link;
   var facebookID = req.body.facebookID;
 
-  User.find({facebookID: facebookID})
+  neo4jUser.find({facebookID: facebookID})
   .then(function (userNode) {
     user = userNode;
     return facebookUtils.publishToFeed(user, linkObject);

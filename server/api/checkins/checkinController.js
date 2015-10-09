@@ -3,10 +3,10 @@ var _ = require('lodash');
 var aws = require('aws-sdk');
 var uuid = require('node-uuid');
 
-var Checkin = require('../neo4j/checkinModel.js');
-var User = require('../neo4j/userModel.js');
-var Place = require('../neo4j/placeModel.js');
-var mongoCheckin = require('./mongoCheckinModel.js');
+var neo4jCheckin = require('../neo4j/checkinModel.js');
+var neo4jUser = require('../neo4j/userModel.js');
+var neo4jPlace = require('../neo4j/placeModel.js');
+var mongoCheckin = require('../mongo/checkinModel.js');
 
 var factualUtils = require('../../utils/factualUtils.js');
 var foursquareUtils = require('../../utils/foursquareUtils.js');
@@ -22,7 +22,7 @@ checkinController.handleNativeCheckin = function (req, res) {
   var nativeCheckin = req.body;
   var facebookID = req.body.facebookID;
 
-  User.find({facebookID: facebookID})
+  neo4jUser.find({facebookID: facebookID})
   .then(function (userNode) {
     user = userNode;
     // return foursquareUtils.parseNativeCheckin(nativeCheckin);
@@ -61,7 +61,7 @@ checkinController.handleNativeCheckin = function (req, res) {
 
   var addNativeCheckinToFolder = function() {
     var newFootprintWithFolder;
-    Checkin.addToFolder(newFootprint.user.facebookID, newFootprint.checkin.checkinID, nativeCheckin.folderName)
+    neo4jCheckin.addToFolder(newFootprint.user.facebookID, newFootprint.checkin.checkinID, nativeCheckin.folderName)
     .then(function (data) {
       newFootprint.folders = {name: nativeCheckin.folderName};
       newFootprintWithFolder = newFootprint;
@@ -85,7 +85,7 @@ checkinController.getFoursquareVenueInfo = function (req, res) {
   var venueID = req.params.venueID;
   var facebookID = req.params.facebookID;
 
-  User.find({facebookID: facebookID})
+  neo4jUser.find({facebookID: facebookID})
   .then(function (userNode) {
     user = userNode;
     // return factualUtils.getFoursquareID(venueID);
@@ -126,7 +126,7 @@ checkinController.getFactualVenueInfo = function (req, res) {
 
 var getFoursquareIDFromFactualID = function (factualID, user) {
 
-  Place.find(factualID)
+  neo4jPlace.find(factualID)
   .then(function (placeNode) {
     place = placeNode;
     return factualUtils.getFoursquareIDFromFactualID(factualID)
@@ -152,7 +152,7 @@ var getFactualRestaurantInfo = function (factualID) {
       return;
     }
     restaurantData = restaurantInfo[0];
-    return Place.find(factualID);
+    return neo4jPlace.find(factualID);
   })
   .then(function (placeNode) {
     console.log('found place node');
@@ -171,7 +171,7 @@ checkinController.editNativeCheckin = function (req, res) {
 
   var parsedEditedCheckin = helpers.parseEditedNativeCheckin(req.body);
 
-  Checkin.editNativeCheckin(parsedEditedCheckin)
+  neo4jCheckin.editNativeCheckin(parsedEditedCheckin)
   .then(function (data) {
     res.json(data);
     res.status(201).end();
@@ -188,7 +188,7 @@ checkinController.searchFoursquareVenuesWeb = function (req, res) {
   var near = req.params.near;
   var query = req.params.query;
 
-  User.find({facebookID: facebookID})
+  neo4jUser.find({facebookID: facebookID})
   .then(function (userNode) {
     user = userNode;
     return foursquareUtils.searchFoursquareVenuesWeb(user, near, query);
@@ -296,7 +296,7 @@ checkinController.searchFoursquareVenuesMobile = function (req, res) {
   var facebookID = req.params.facebookID;
   var latlng = req.params.lat + ',' + req.params.lng;
 
-  User.find({facebookID: facebookID})
+  neo4jUser.find({facebookID: facebookID})
   .then(function (userNode) {
     user = userNode;
     return foursquareUtils.searchFoursquareVenuesMobile(user, latlng);
@@ -366,7 +366,7 @@ checkinController.searchFoursquareVenuesBySearchQueryAndGeolocation = function (
   var latlng = req.params.lat + ',' + req.params.lng;
   var query = req.params.query;
 
-  User.find({facebookID: facebookID})
+  neo4jUser.find({facebookID: facebookID})
   .then(function (userNode) {
     user = userNode;
     return foursquareUtils.searchFoursquareVenuesBySearchQueryAndGeolocation(user, latlng, query)
@@ -477,7 +477,7 @@ checkinController.realtimeFoursquareData = function (req, res) {
   var userFoursquareID = checkin.user.id;
   var user;
 
-  User.findByFoursquareID(userFoursquareID)
+  neo4jUser.findByFoursquareID(userFoursquareID)
   .then(function (userNode) {
     user = userNode;
     console.log(checkin);
@@ -507,7 +507,7 @@ checkinController.addToBucketList = function (req, res){
   var checkinID = req.body.checkinID;
   var facebookID = req.body.facebookID;
 
-  Checkin.addToBucketList(facebookID, checkinID)
+  neo4jCheckin.addToBucketList(facebookID, checkinID)
     .then(function (data){
       res.json(data);
       res.status(201).end();
@@ -522,7 +522,7 @@ checkinController.removeFromBucketList = function (req, res){
   var checkinID = req.body.checkinID;
   var facebookID = req.body.facebookID;
 
-  Checkin.removeFromBucketList(facebookID, checkinID)
+  neo4jCheckin.removeFromBucketList(facebookID, checkinID)
     .then(function (data){
       res.json(data);
       res.status(201).end();
@@ -544,7 +544,7 @@ checkinController.addComment = function (req, res){
     res.status(404).end()
   }
 
-  Checkin.addComment(clickerID, checkinID, text, checkinTime)
+  neo4jCheckin.addComment(clickerID, checkinID, text, checkinTime)
     .then(function (data){
       return Checkin.getComments(checkinID);
     })
@@ -565,7 +565,7 @@ checkinController.editComment = function (req, res) {
   var commentID = req.body.commentID;
   var commentText = req.body.commentText;
 
-  Checkin.editComment(facebookID, checkinID, commentID, commentText)
+  neo4jCheckin.editComment(facebookID, checkinID, commentID, commentText)
   .then (function (data) {
     console.log(data);
     res.json(data);
@@ -583,7 +583,7 @@ checkinController.removeComment = function (req, res) {
   var facebookID = req.body.facebookID;
   var commentID = req.body.commentID;
  
-  Checkin.removeComment(facebookID, checkinID , commentID)
+  neo4jCheckin.removeComment(facebookID, checkinID , commentID)
     .then(function (data){
       return Checkin.getComments(checkinID);
     })
@@ -603,9 +603,9 @@ checkinController.addToFolder = function (req, res) {
   var facebookID = req.body.facebookID;
   var folderName = req.body.folderName;
 
-  Checkin.addToFolder(facebookID, checkinID, folderName)
+  neo4jCheckin.addToFolder(facebookID, checkinID, folderName)
     .then(function (data){
-      return User.fetchFolderContents(facebookID, folderName, 0, 10)
+      return neo4jUser.fetchFolderContents(facebookID, folderName, 0, 10)
     })
     .then(function (folderContents) {
       res.json(folderContents);
@@ -622,9 +622,9 @@ checkinController.removeFromFolder = function (req, res) {
   var facebookID = req.body.facebookID;
   var folderName = req.body.folderName;
 
-  Checkin.removeFromFolder(facebookID, checkinID, folderName)
+  neo4jCheckin.removeFromFolder(facebookID, checkinID, folderName)
     .then(function (data) {
-      return User.fetchFolderContents(facebookID, folderName)
+      return neo4jUser.fetchFolderContents(facebookID, folderName)
     })
     .then(function (folderContents) {
       res.json(folderContents);
@@ -640,7 +640,7 @@ checkinController.removeFromFavorites = function (req, res) {
   var checkinID = req.body.checkinID;
   var facebookID = req.body.facebookID;
 
-  Checkin.removeFromFavorites(facebookID, checkinID)
+  neo4jCheckin.removeFromFavorites(facebookID, checkinID)
   .then(function (data){
     res.json(data);
     res.status(201).end();
@@ -655,7 +655,7 @@ checkinController.giveProps = function (req, res){
   var clickerID = req.body.clickerID;
   var checkinID = req.body.checkinID;
 
-  Checkin.giveProps(clickerID, checkinID)
+  neo4jCheckin.giveProps(clickerID, checkinID)
     .then(function (data){
       console.log(data)
       res.json(data);
@@ -672,7 +672,7 @@ checkinController.getHypesAndComments = function (req, res){
   var checkinID = req.params.checkinid;
   var parsedData = {}
 
-  Checkin.getHypes(checkinID)
+  neo4jCheckin.getHypes(checkinID)
     .then(function (hypesArray){
       parsedData.hypes = hypesArray;
       return Checkin.getComments(checkinID);
@@ -693,7 +693,7 @@ checkinController.deleteFootprint = function (req, res) {
   var facebookID = req.body.facebookID;
   var checkinID = req.body.checkinID;
 
-  Checkin.deleteFootprint(facebookID, checkinID)
+  neo4jCheckin.deleteFootprint(facebookID, checkinID)
     .then(function (data) {
       console.log(data)
       res.json({on_success: "footprint has been successfully deleted"})
@@ -708,7 +708,7 @@ checkinController.deleteFootprint = function (req, res) {
 checkinController.suggestFootprint = function (req, res) {
   var params = req.body;
 
-  Checkin.suggestFootprint(params.senderFacebookID, params.checkinID, params.receiverFacebookID, params.suggestionTime)
+  neo4jCheckin.suggestFootprint(params.senderFacebookID, params.checkinID, params.receiverFacebookID, params.suggestionTime)
   .then(function (data) {
     console.log(data);
     res.json({on_success: "suggestion sent!"})

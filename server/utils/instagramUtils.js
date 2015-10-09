@@ -7,7 +7,7 @@ var _ = require('lodash');
 var helpers = require('./helpers.js');
 var foursquareUtils = require('./foursquareUtils.js');
 
-var User = require('../api/neo4j/userModel.js');
+var neo4jUser = require('../api/neo4j/userModel.js');
 
 var utils = {};
 
@@ -19,7 +19,7 @@ utils.handleUpdateObject = function (update) {
   var igUserID = update.object_id;
   var user;
 
-  User.findByInstagramID(igUserID)
+  neo4jUser.findByInstagramID(igUserID)
   .then(function (userNode) {
     user = userNode;
     return utils.makeRequestForMedia(user, timestamp);
