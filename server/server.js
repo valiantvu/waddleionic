@@ -4,6 +4,9 @@ var server=require('http').Server(app);
 var MongoClient = require('mongodb').MongoClient;
 var mongoURL = 'mongodb://' + process.env['WADDLE_MONGOLAB_USERNAME'] + ':' + process.env['WADDLE_MONGOLAB_PASSWORD'] + '@ds027719.mongolab.com:27719/heroku_pchnmstb';
 var io = require('socket.io')(server);
+var mongoURL = 'mongodb://' + process.env['WADDLE_MONGOLAB_USERNAME'] + ':' + process.env['WADDLE_MONGOLAB_PASSWORD'] + '@ds027719.mongolab.com:27719/heroku_pchnmstb';
+var mongo = require('mongoskin')
+var db = mongo.db(mongoURL, {native_parser:true});
 var User = require('./api/neo4j/userModel.js');
 var Place = require('./api/neo4j/placeModel.js');
 var db;
@@ -36,7 +39,6 @@ io.sockets.on('connection', function (socket) {
   	})
   })
 });
-
-// console.log('hello', module.exports.db);
-
+console.log(db);
+module.exports.db = db;
 module.exports.app = app;
