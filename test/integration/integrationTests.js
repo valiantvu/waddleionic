@@ -4,7 +4,7 @@ var request = require('supertest');
 var app = require('../../server/server.js').app;
 var server = require('../../server/server.js');
 var neo4j = require('neo4j');
-var fixtures = require('../test.fixtures.js');
+var fixtures = require('../neo4j.test.fixtures.js');
 var neo4jUser = require('../../server/api/neo4j/userModel.js');
 var _ = require('lodash');
 

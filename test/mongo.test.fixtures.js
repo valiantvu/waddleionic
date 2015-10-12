@@ -2,24 +2,24 @@ var fixtures = {};
 
 fixtures.users = [
 	{
-	  facebookID: '1376881809284443',
-	  firstName: 'Dorothy',
-	  lastName: 'Bowersstein',
-	  email: 'jqhpyje_bowersstein_1420934246@tfbnw.net',
-	  fbToken: 'CAAMxNSdb8MMBADCvUUEKYO2ZCbyIAMZCmMarNhZAuXcnuZBkBK23HWYmTDp5sOylwnxxouogNACJOvWZC7ZCr4TdIO0U9dIcEca2LF1jt2JQvtNzLp7MHJkne9DQ9M3JvY1beejgViD0WrQQBYnQKSYVZCie6QjeKzSGocbZBTZB86ZBn19YWyg7fNZAFKwEZB9AgJkceI7Pos2sIgZDZD',
-	  fbProfilePicture: 'https://www.facebook.com/photo.php?fbid=1377861495853141&l=25a2ac20d2',
-	  coverPhoto: 'https://s-media-cache-ak0.pinimg.com/736x/c2/06/66/c20666fb99564cbe6c64c0ad83f79cd5.jpg',
-	  createdAt: 1444669695545,
-	  updatedAt: new Date().getTime(),
-	  lastLogin: new Date().getTime(),
-	  friends: [1376275232679666],
-	  ratedPlaces: [],
-	  checkins: [
-		  {
-		  	checkinID: '123kjdfbsokb11e3'
-		  	factualID: '0c9fc4bc-6d4c-48c7-bc33-991db4eb68b5',
-		  	rating: 5, 
-		  	caption: 'My bears are so thirsty, I luv it!! <3',
+		facebookID: '1376881809284443',
+		firstName: 'Dorothy',
+		lastName: 'Bowersstein',
+		email: 'jqhpyje_bowersstein_1420934246@tfbnw.net',
+		fbToken: 'CAAMxNSdb8MMBADCvUUEKYO2ZCbyIAMZCmMarNhZAuXcnuZBkBK23HWYmTDp5sOylwnxxouogNACJOvWZC7ZCr4TdIO0U9dIcEca2LF1jt2JQvtNzLp7MHJkne9DQ9M3JvY1beejgViD0WrQQBYnQKSYVZCie6QjeKzSGocbZBTZB86ZBn19YWyg7fNZAFKwEZB9AgJkceI7Pos2sIgZDZD',
+		fbProfilePicture: 'https://www.facebook.com/photo.php?fbid=1377861495853141&l=25a2ac20d2',
+		coverPhoto: 'https://s-media-cache-ak0.pinimg.com/736x/c2/06/66/c20666fb99564cbe6c64c0ad83f79cd5.jpg',
+		createdAt: 1444669695545,
+		updatedAt: new Date().getTime(),
+		lastLogin: new Date().getTime(),
+		friends: [1376275232679666],
+		ratedPlaces: [],
+		checkins: [
+			{
+				checkinID: '123kjdfbsokb11e3'
+				factualID: '0c9fc4bc-6d4c-48c7-bc33-991db4eb68b5',
+				rating: 5, 
+				caption: 'My bears are so thirsty, I luv it!! <3',
 		  	photo: 'http://img.lum.dolimg.com/v1/images/image_7ab7525c.jpeg',
 		  	photoHeight: 354,
 		  	photoWidth: 629,
