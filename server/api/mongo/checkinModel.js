@@ -29,7 +29,7 @@ var insertCheckinDocument = function(parsedCheckin, db, callback) {
       "source" : parsedCheckin.source,
       "pointValue" : parsedCheckin.pointValue
    }, function(err, result) {
-    assert.equal(err, null);
+    // assert.equal(err, null);
     console.log("Inserted a document into the checkins collection.");
     deferred.resolve(result);
     // callback(result);
@@ -62,7 +62,7 @@ var insertPlaceDocument = function(parsedCheckin, db, callback) {
 	  	{
 	  		'upsert': true	
 	  	}, function(err, result) {
-	  	assert.equal(err, null);
+	  	// assert.equal(err, null);
 	  	console.log("Inserted a document into the places collection.");
 	  	callback(result);
 	  });
