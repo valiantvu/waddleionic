@@ -1,10 +1,11 @@
-var MongoClient = require('mongodb').MongoClient;
-var assert = require('assert');
-var ObjectId = require('mongodb').ObjectID;
-var url = 'mongodb://' + process.env['WADDLE_MONGOLAB_USERNAME'] + ':' + process.env['WADDLE_MONGOLAB_PASSWORD'] + '@ds027719.mongolab.com:27719/heroku_pchnmstb';
+// var MongoClient = require('mongodb').MongoClient;
+// var assert = require('assert');
+// var ObjectId = require('mongodb').ObjectID;
+// var url = 'mongodb://' + process.env['WADDLE_MONGOLAB_USERNAME'] + ':' + process.env['WADDLE_MONGOLAB_PASSWORD'] + '@ds027719.mongolab.com:27719/heroku_pchnmstb';
 var Q = require('q');
-
+var mongodb = require('./../../mongoConfig.js');
 var Checkin = {};
+// mongodb.bind('checkins');
 
 var insertCheckinDocument = function(parsedCheckin, db, callback) {
 	var deferred = Q.defer();
@@ -65,16 +66,17 @@ var insertPlaceDocument = function(parsedCheckin, db, callback) {
 
 Checkin.insertDocument = function (parsedCheckin) {
 	console.log('inserting document');
-	console.log(url);
-	MongoClient.connect(url, function(err, db) {
-	  assert.equal(null, err);
-	  insertCheckinDocument(parsedCheckin, db)
+	// console.log(url);
+	// MongoClient.connect(url, function(err, db) {
+	//   assert.equal(null, err);
+  console.log(mongodb);
+	  insertCheckinDocument(parsedCheckin, mongodb)
 	  .then(function() {
-	  	insertPlaceDocument(parsedCheckin, db, function() {
-	      db.close();
+	  	insertPlaceDocument(parsedCheckin, mongodb, function() {
+	      // db.close();
 	  	});
 	  })
-	});
+	// });
 };
 
 module.exports = Checkin;
