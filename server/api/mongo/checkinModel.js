@@ -11,18 +11,18 @@ var insertCheckinDocument = function(parsedCheckin, db, callback) {
   var deferred = Q.defer();
   console.log('this be my document', parsedCheckin);
   db.collection('checkins').insertOne( {
-      "checkinID" : parsedCheckin.checkinID,
-      "caption" : parsedCheckin.caption,
-      "rating" : parsedCheckin.rating,
-      "photo" : parsedCheckin.photo,
-      "photoWidth" : parsedCheckin.photoWidth,
-      "photoHeight" : parsedCheckin.photoHeight,
-      "photoLarge" : parsedCheckin.photoLarge,
-      "photoSmall" : parsedCheckin.photoSmall,
-      "facebookID" : parsedCheckin.facebookID,
-      "factualID" : parsedCheckin.factualID,
-      "source" : parsedCheckin.source,
-      "pointValue" : parsedCheckin.pointValue
+	  "checkinID" : parsedCheckin.checkinID,
+	  "caption" : parsedCheckin.caption,
+	  "rating" : parsedCheckin.rating,
+	  "photo" : parsedCheckin.photo,
+	  "photoWidth" : parsedCheckin.photoWidth,
+	  "photoHeight" : parsedCheckin.photoHeight,
+	  "photoLarge" : parsedCheckin.photoLarge,
+	  "photoSmall" : parsedCheckin.photoSmall,
+	  "facebookID" : parsedCheckin.facebookID,
+	  "factualID" : parsedCheckin.factualID,
+	  "source" : parsedCheckin.source,
+	  "pointValue" : parsedCheckin.pointValue
    }, function(err, result) {
     assert.equal(err, null);
     console.log("Inserted a document into the checkins collection.");

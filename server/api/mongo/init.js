@@ -5,7 +5,6 @@ module.exports.init = function (callback) {
   new mongodb.Db('test', server, {w: 1}).open(function (error, client) {
     //export the client and maybe some collections as a shortcut
     module.exports.client = client;
-    module.exports.myCollection = new mongodb.Collection(client, 'myCollection');
     callback(error);
   });
 };

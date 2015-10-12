@@ -95,7 +95,7 @@ utils.searchVenuesByQueryAndNear = function (near, query, offset) {
 		}
 	});
 	return deferred.promise;
-}
+};
 
 utils.getFactualIDFromFoursquareID = function (foursquareID) {
 	console.log(foursquareID);

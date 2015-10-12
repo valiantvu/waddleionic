@@ -112,7 +112,7 @@ fixtures.places = [
 		latitude: 37.771942,
 		longitude: -122.431112,
 		hours: {"monday":[["00:00","2:00"],["11:30","23:59"]],"tuesday":[["00:00","2:00"],["11:30","23:59"]],"wednesday":[["00:00","2:00"],["11:30","23:59"]],"thursday":[["00:00","2:00"],["11:30","23:59"]],"friday":[["00:00","2:00"],["11:30","23:59"]],"saturday":[["00:00","2:00"],["11:30","23:59"]],"sunday":[["00:00","2:00"],["11:30","23:59"]]},
-		categoryLabels: [['Social', 'Bars'], ['Social', 'Food and Dining', 'Restaurants']];
+		categoryLabels: [['Social', 'Bars'], ['Social', 'Food and Dining', 'Restaurants']],
 		restaurantAttributes: {
 			cuisine: {
 				'Spanish': true, 
