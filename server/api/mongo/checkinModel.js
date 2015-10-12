@@ -1,11 +1,11 @@
-var MongoClient = require('mongodb').MongoClient;
-var assert = require('assert');
-var ObjectId = require('mongodb').ObjectID;
-var url = 'mongodb://' + process.env['WADDLE_MONGOLAB_USERNAME'] + ':' + process.env['WADDLE_MONGOLAB_PASSWORD'] + '@ds027719.mongolab.com:27719/heroku_pchnmstb';
+// var MongoClient = require('mongodb').MongoClient;
+// var assert = require('assert');
+// var ObjectId = require('mongodb').ObjectID;
+// var url = 'mongodb://' + process.env['WADDLE_MONGOLAB_USERNAME'] + ':' + process.env['WADDLE_MONGOLAB_PASSWORD'] + '@ds027719.mongolab.com:27719/heroku_pchnmstb';
 var Q = require('q');
-var mongodb = require('../../server.js').db;
-
+var mongodb = require('./../../mongoConfig.js');
 var Checkin = {};
+// mongodb.bind('checkins');
 
 var insertCheckinDocument = function(parsedCheckin, db, callback) {
   var deferred = Q.defer();
@@ -24,7 +24,7 @@ var insertCheckinDocument = function(parsedCheckin, db, callback) {
 	  "source" : parsedCheckin.source,
 	  "pointValue" : parsedCheckin.pointValue
    }, function(err, result) {
-    assert.equal(err, null);
+    // assert.equal(err, null);
     console.log("Inserted a document into the checkins collection.");
     deferred.resolve(result);
     // callback(result);
@@ -34,47 +34,48 @@ var insertCheckinDocument = function(parsedCheckin, db, callback) {
 
 var insertPlaceDocument = function(parsedCheckin, db, callback) {
 	console.log('inside place doc insertion');
-	  db.collection('places').update(
-	  	{
-	  		factualID: parsedCheckin.factualID
-	  	},
-	  {
-	  		hours_display: 'Open Daily 11:00 AM-10:00 PM',
-		    latitude: 37.575943,
-		    locality: 'Fremont',
-		    longitude: -122.044189,
-		    name: 'BLOOB!!',
-		    neighborhood: [ 'Ardenwood' ],
-		    open_24hrs: false,
-		    postcode: '94555',
-		    price: 1,
-		    rating: 3,
-		    region: 'CA',
-		    reservations: true,
-		    tel: '(510) 739-0088',
-		    website: 'http://www.fremontkungfukitchen.com/'
-	  	},
-	  	{
-	  		'upsert': true	
-	  	}, function(err, result) {
-	  	assert.equal(err, null);
-	  	console.log("Inserted a document into the places collection.");
-	  	callback(result);
-	  });
+  db.collection('places').update(
+  {
+    factualID: parsedCheckin.factualID
+  },
+  {
+    hours_display: 'Open Daily 11:00 AM-10:00 PM',
+    latitude: 37.575943,
+    locality: 'Fremont',
+    longitude: -122.044189,
+    name: 'BLOOB!!',
+    neighborhood: [ 'Ardenwood' ],
+    open_24hrs: false,
+    postcode: '94555',
+    price: 1,
+    rating: 3,
+    region: 'CA',
+    reservations: true,
+    tel: '(510) 739-0088',
+    website: 'http://www.fremontkungfukitchen.com/'
+  },
+  {
+    'upsert': true
+  }, function(err, result) {
+    // assert.equal(err, null);
+    console.log("Inserted a document into the places collection.");
+    callback(result);
+  });
 };
 
 Checkin.insertDocument = function (parsedCheckin) {
 	console.log(mongodb);
 	console.log('inserting document');
-	console.log(url);
+	// console.log(url);
 	// MongoClient.connect(url, function(err, db) {
-	  // assert.equal(null, err);
-	  insertCheckinDocument(parsedCheckin, MongoClient.db('heroku_pchnmstb'))
-	  .then(function() {
-	  	insertPlaceDocument(parsedCheckin, mongodb, function() {
-	      // db.close();
-	  	});
-	  })
+	//   assert.equal(null, err);
+  console.log(mongodb);
+  insertCheckinDocument(parsedCheckin, mongodb)
+  .then(function() {
+    insertPlaceDocument(parsedCheckin, mongodb, function() {
+      // db.close();
+    });
+  });
 	// });
 };
 
