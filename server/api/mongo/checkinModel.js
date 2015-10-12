@@ -34,33 +34,33 @@ var insertCheckinDocument = function(parsedCheckin, db, callback) {
 
 var insertPlaceDocument = function(parsedCheckin, db, callback) {
 	console.log('inside place doc insertion');
-	  db.collection('places').update(
-	  	{
-	  		factualID: parsedCheckin.factualID
-	  	},
-	  {
-	  		hours_display: 'Open Daily 11:00 AM-10:00 PM',
-		    latitude: 37.575943,
-		    locality: 'Fremont',
-		    longitude: -122.044189,
-		    name: 'BLOOB!!',
-		    neighborhood: [ 'Ardenwood' ],
-		    open_24hrs: false,
-		    postcode: '94555',
-		    price: 1,
-		    rating: 3,
-		    region: 'CA',
-		    reservations: true,
-		    tel: '(510) 739-0088',
-		    website: 'http://www.fremontkungfukitchen.com/'
-	  	},
-	  	{
-	  		'upsert': true	
-	  	}, function(err, result) {
-	  	// assert.equal(err, null);
-	  	console.log("Inserted a document into the places collection.");
-	  	callback(result);
-	  });
+  db.collection('places').update(
+  {
+    factualID: parsedCheckin.factualID
+  },
+  {
+    hours_display: 'Open Daily 11:00 AM-10:00 PM',
+    latitude: 37.575943,
+    locality: 'Fremont',
+    longitude: -122.044189,
+    name: 'BLOOB!!',
+    neighborhood: [ 'Ardenwood' ],
+    open_24hrs: false,
+    postcode: '94555',
+    price: 1,
+    rating: 3,
+    region: 'CA',
+    reservations: true,
+    tel: '(510) 739-0088',
+    website: 'http://www.fremontkungfukitchen.com/'
+  },
+  {
+    'upsert': true
+  }, function(err, result) {
+    // assert.equal(err, null);
+    console.log("Inserted a document into the places collection.");
+    callback(result);
+  });
 };
 
 Checkin.insertDocument = function (parsedCheckin) {
@@ -70,12 +70,12 @@ Checkin.insertDocument = function (parsedCheckin) {
 	// MongoClient.connect(url, function(err, db) {
 	//   assert.equal(null, err);
   console.log(mongodb);
-	  insertCheckinDocument(parsedCheckin, mongodb)
-	  .then(function() {
-	  	insertPlaceDocument(parsedCheckin, mongodb, function() {
-	      // db.close();
-	  	});
-	  })
+  insertCheckinDocument(parsedCheckin, mongodb)
+  .then(function() {
+    insertPlaceDocument(parsedCheckin, mongodb, function() {
+      // db.close();
+    });
+  });
 	// });
 };
 
