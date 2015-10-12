@@ -5,7 +5,7 @@ var app = require('../../server/server.js').app;
 var server = require('../../server/server.js');
 var neo4j = require('neo4j');
 var fixtures = require('../test.fixtures.js');
-var User = require('../../server/api/neo4j/userModel.js');
+var neo4jUser = require('../../server/api/neo4j/userModel.js');
 var _ = require('lodash');
 
 // var neo4jurl = WADDLE_GRAPHENEDB_URL || 'http://localhost:7474'
@@ -48,7 +48,9 @@ var _ = require('lodash');
 describe('Waddle user routes GET requests', function () {
     var user;
     before(function(done){
-      User.createUniqueUser(fixtures.testUser).then(function (userNode){
+
+      // Create user in Neo4j
+      neo4jUser.createUniqueUser(fixtures.testUser).then(function (userNode){
         // console.log(userNode);
         user = userNode.node._data.data;
         userNode.addFriends([fixtures.testUser2, fixtures.testUser3]).then(function (friends) {
@@ -57,7 +59,7 @@ describe('Waddle user routes GET requests', function () {
 
             _.each(friends, function(friend, index) {
               console.log(friend.body);
-              User.find({facebookID: friend.body.data[0][0].data.facebookID})
+              neo4jUser.find({facebookID: friend.body.data[0][0].data.facebookID})
                 .then(function (friendNode) {
                   friendNode.addCheckins(fixtures.testFriendFootprints[index])
                     .then(function (results) {
@@ -69,9 +71,12 @@ describe('Waddle user routes GET requests', function () {
           });
         });
       });
+
+      // TODO
+      // Create user in Mongo
     });
+
     it('should return the information of the specified user', function (done) {
-      console.log('hi again');
       request(app)
       .get('/api/users/userinfo/' + user.facebookID)
       .expect(200)
@@ -94,4 +99,22 @@ describe('Waddle user routes GET requests', function () {
     //   })
 
     // })
+});
+
+describe('Waddle user routes POST requests', function () {
+    var user;
+    // before(function(done){
+    // });
+    it('should return the information of the specified user', function (done) {
+      request(app)
+      .post('/api/users/userdata/')
+      .expect(200)
+      .end(function(err, res) {
+        if (err) throw err;
+        console.log(res.body);
+        expect(res.body.name).to.equal("Testy McTest");
+        expect(res.body.facebookID).to.equal("000000000");
+        done();
+      });
+    });
 });
