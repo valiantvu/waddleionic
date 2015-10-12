@@ -2,6 +2,8 @@ var gulp = require('gulp');
 var gutil = require('gulp-util');
 var bower = require('bower');
 var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
+var mocha = require('gulp-mocha');
 var sass = require('gulp-sass');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
@@ -34,6 +36,16 @@ gulp.task('install', ['git-check'], function() {
     .on('log', function(data) {
       gutil.log('bower', gutil.colors.cyan(data.id), data.message);
     });
+});
+
+gulp.task('mocha', function() {
+  return gulp.src(['test/integration/*.js', 'test/unit/*.js'], {read: false})
+        .pipe(mocha({reporter: 'list'}))
+        .on('error', gutil.log);
+});
+
+gulp.task('watch-mocha', function() {
+  gulp.watch(['server/**/*.js', 'server/**/**/*.js'], ['mocha']);
 });
 
 gulp.task('git-check', function(done) {
