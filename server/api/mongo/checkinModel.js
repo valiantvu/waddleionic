@@ -3,12 +3,7 @@
 // var ObjectId = require('mongodb').ObjectID;
 // var url = 'mongodb://' + process.env['WADDLE_MONGOLAB_USERNAME'] + ':' + process.env['WADDLE_MONGOLAB_PASSWORD'] + '@ds027719.mongolab.com:27719/heroku_pchnmstb';
 var Q = require('q');
-<<<<<<< HEAD
-var mongodb = require('../../server.js').db;
-
-=======
 var mongodb = require('./../../mongoConfig.js');
->>>>>>> (feat) Add mongoskin
 var Checkin = {};
 // mongodb.bind('checkins');
 
