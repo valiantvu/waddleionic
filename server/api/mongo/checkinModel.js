@@ -3,13 +3,14 @@ var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
 var url = 'mongodb://' + process.env['WADDLE_MONGOLAB_USERNAME'] + ':' + process.env['WADDLE_MONGOLAB_PASSWORD'] + '@ds027719.mongolab.com:27719/heroku_pchnmstb';
 var Q = require('q');
+var mongodb = require('../../server.js').db;
 
 var Checkin = {};
 
 var insertCheckinDocument = function(parsedCheckin, db, callback) {
-	var deferred = Q.defer();
-	console.log('this be my document', parsedCheckin);
-   db.collection('checkins').insertOne( {
+  var deferred = Q.defer();
+  console.log('this be my document', parsedCheckin);
+  db.collection('checkins').insertOne( {
       "checkinID" : parsedCheckin.checkinID,
       "caption" : parsedCheckin.caption,
       "rating" : parsedCheckin.rating,
@@ -29,7 +30,6 @@ var insertCheckinDocument = function(parsedCheckin, db, callback) {
     // callback(result);
   });
   return deferred.promise;
-
 };
 
 var insertPlaceDocument = function(parsedCheckin, db, callback) {
@@ -43,7 +43,7 @@ var insertPlaceDocument = function(parsedCheckin, db, callback) {
 		    latitude: 37.575943,
 		    locality: 'Fremont',
 		    longitude: -122.044189,
-		    name: 'Kung Fu Kitchen',
+		    name: 'BLOOB!!',
 		    neighborhood: [ 'Ardenwood' ],
 		    open_24hrs: false,
 		    postcode: '94555',
@@ -64,17 +64,18 @@ var insertPlaceDocument = function(parsedCheckin, db, callback) {
 };
 
 Checkin.insertDocument = function (parsedCheckin) {
+	console.log(mongodb);
 	console.log('inserting document');
 	console.log(url);
-	MongoClient.connect(url, function(err, db) {
-	  assert.equal(null, err);
-	  insertCheckinDocument(parsedCheckin, db)
+	// MongoClient.connect(url, function(err, db) {
+	  // assert.equal(null, err);
+	  insertCheckinDocument(parsedCheckin, MongoClient.db('heroku_pchnmstb'))
 	  .then(function() {
-	  	insertPlaceDocument(parsedCheckin, db, function() {
-	      db.close();
+	  	insertPlaceDocument(parsedCheckin, mongodb, function() {
+	      // db.close();
 	  	});
 	  })
-	});
+	// });
 };
 
 module.exports = Checkin;
