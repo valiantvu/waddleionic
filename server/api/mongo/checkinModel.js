@@ -8,9 +8,9 @@ var Checkin = {};
 // mongodb.bind('checkins');
 
 var insertCheckinDocument = function(parsedCheckin, db, callback) {
-	var deferred = Q.defer();
-	console.log('this be my document', parsedCheckin);
-   db.collection('checkins').insertOne( {
+  var deferred = Q.defer();
+  console.log('this be my document', parsedCheckin);
+  db.collection('checkins').insertOne( {
       "checkinID" : parsedCheckin.checkinID,
       "caption" : parsedCheckin.caption,
       "rating" : parsedCheckin.rating,
@@ -24,13 +24,12 @@ var insertCheckinDocument = function(parsedCheckin, db, callback) {
       "source" : parsedCheckin.source,
       "pointValue" : parsedCheckin.pointValue
    }, function(err, result) {
-    assert.equal(err, null);
+    // assert.equal(err, null);
     console.log("Inserted a document into the checkins collection.");
     deferred.resolve(result);
     // callback(result);
   });
   return deferred.promise;
-
 };
 
 var insertPlaceDocument = function(parsedCheckin, db, callback) {
@@ -44,7 +43,7 @@ var insertPlaceDocument = function(parsedCheckin, db, callback) {
 		    latitude: 37.575943,
 		    locality: 'Fremont',
 		    longitude: -122.044189,
-		    name: 'Kung Fu Kitchen',
+		    name: 'BLOOB!!',
 		    neighborhood: [ 'Ardenwood' ],
 		    open_24hrs: false,
 		    postcode: '94555',
@@ -58,13 +57,14 @@ var insertPlaceDocument = function(parsedCheckin, db, callback) {
 	  	{
 	  		'upsert': true	
 	  	}, function(err, result) {
-	  	assert.equal(err, null);
+	  	// assert.equal(err, null);
 	  	console.log("Inserted a document into the places collection.");
 	  	callback(result);
 	  });
 };
 
 Checkin.insertDocument = function (parsedCheckin) {
+	console.log(mongodb);
 	console.log('inserting document');
 	// console.log(url);
 	// MongoClient.connect(url, function(err, db) {

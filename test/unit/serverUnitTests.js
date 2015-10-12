@@ -6,7 +6,7 @@ var User = require('../../server/api/users/userModel.js');
 var instagramUtils = require('../../server/utils/instagramUtils.js');
 var neo4j = require('neo4j');
 var request = require('supertest');
-var fixtures = require('../test.fixtures.js');
+var fixtures = require('../neo4j.test.fixtures.js');
 
 var neo4jurl = 'http://localhost:7474'
 var db = new neo4j.GraphDatabase(neo4jurl);
@@ -29,10 +29,10 @@ describe('createUniqueUser function', function() {
     expect(responseData.node._data.data.facebookID).to.equal(123456789);
   });
 
-    it('Returns the facebookID passed in', function () {
+  it('Returns the facebookID passed in', function () {
     expect(responseData.node._data.data.name).to.equal("Testy McTest");
-  }); 
-})
+  });
+});
 
 describe('parseIGPost function', function() {
 
