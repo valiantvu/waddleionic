@@ -61,7 +61,8 @@ gulp.task('watch-www', function() {
 });
 
 gulp.task('mocha', function() {
-  return gulp.src(['test/integration/*.js', 'test/unit/*.js'], {read: false})
+  // If using unit tests, add: 'test/unit/*.js'
+  return gulp.src(['test/integration/*.js'], {read: false})
         .pipe(mocha({reporter: 'list'}))
         .on('error', gutil.log);
 });

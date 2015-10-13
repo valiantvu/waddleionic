@@ -480,14 +480,12 @@ userController.getReadNotifications = function (req, res) {
 }
 
 userController.getUserInfo = function (req, res) {
-  console.log('in the controller')
   var params = {};
   params.facebookID = req.params.user;
-  console.log('dis be ma params' + JSON.stringify(req.params))
 
   neo4jUser.find(params)
    .then(function (userInfo) {
-    console.log('userInfo' + JSON.stringify(userInfo.node._data.data));
+    // console.log('userInfo' + JSON.stringify(userInfo.node._data.data));
     res.json(userInfo.node._data.data);
     res.status(200).end();
   })
