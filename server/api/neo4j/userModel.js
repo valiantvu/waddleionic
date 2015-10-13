@@ -142,7 +142,7 @@ User.prototype.addFriends = function(friendsList){
 // Add checkins to a user
 // Requires a list of checkins that are mapped over and placed into batch request body
 User.prototype.addCheckins = function(combinedCheckins){
-  console.log(combinedCheckins);
+  // console.log(combinedCheckins);
   var deferred = Q.defer();
   //need to check for params!
   var facebookID = this.getProperty('facebookID');
@@ -207,7 +207,7 @@ User.prototype.addCheckins = function(combinedCheckins){
   request.post(options, function(err, response, body) {
     if (err) { deferred.reject(err); }
     else {
-      console.log(body);
+      // console.log(body);
       deferred.resolve({
         user: body[0].body.data[0][0].data,
         checkin: body[0].body.data[0][1].data,
@@ -415,7 +415,7 @@ User.prototype.countAllCheckins = function (facebookID) {
 };
 
 User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) {
-  console.log('getAggregatedFootprintList', skipAmount);
+  // console.log('getAggregatedFootprintList', skipAmount);
   var deferred = Q.defer();
 
   var query = [
@@ -444,8 +444,8 @@ User.prototype.getAggregatedFootprintList = function (viewer, page, skipAmount) 
     if (err) { deferred.reject(err); }
     else {
       var parsedResults = _.map(results, function (item) {
-        console.log('comments', item['comments']);
-        console.log('commenters', item['commenters']);
+        // console.log('comments', item['comments']);
+        // console.log('commenters', item['commenters']);
         var singleResult = {
           "user": item.user.data,
           "checkin": item.checkin.data,
@@ -531,7 +531,7 @@ User.findFootprintsByPlaceName = function (facebookID, placeName, page, skipAmou
     skipAmount: skipAmount
   };
 
-  console.log('dis b ma params:', params);
+  // console.log('dis b ma params:', params);
 
   db.query(query, params, function (err, results) {
     if (err) {
@@ -561,7 +561,7 @@ User.findFootprintsByPlaceName = function (facebookID, placeName, page, skipAmou
           }
 
           singleResult.comments = commentsArray;
-          console.log('singleResult: ', singleResult.comments);
+          // console.log('singleResult: ', singleResult.comments);
 
         }
 
@@ -584,7 +584,7 @@ User.findFootprintsByPlaceName = function (facebookID, placeName, page, skipAmou
       deferred.resolve(parsedResults);
 
     }
-  })
+  });
   return deferred.promise;
 }
 
@@ -620,7 +620,7 @@ User.prototype.assignExpertiseToCategory = function (categoryList) {
 
     // singleRequest.body.params.facebookID = facebookID;
     // singleRequest.body.params.categoryName = categoryName;
-    console.log(singleRequest.body.params);
+    // console.log(singleRequest.body.params);
     return singleRequest;
   });
 
@@ -663,7 +663,7 @@ User.findFeedItemsByPlaceName = function (facebookID, placeName, page, skipAmoun
     skipAmount: skipAmount
   };
 
-  console.log('dis b ma params:', params);
+  // console.log('dis b ma params:', params);
 
   db.query(query, params, function (err, results) {
     if (err) {
@@ -693,7 +693,7 @@ User.findFeedItemsByPlaceName = function (facebookID, placeName, page, skipAmoun
           }
 
           singleResult.comments = commentsArray;
-          console.log('singleResult: ', singleResult.comments);
+          // console.log('singleResult: ', singleResult.comments);
 
         }
 
@@ -793,7 +793,7 @@ User.prototype.getUnreadNotifications = function (page, skipAmount) {
           }
           if(singleResult.notificationTrigger.suggestionTime && item.suggestionReceiver.data) {
             singleResult.notificationTrigger.message1 = "suggested your footprint at"
-            console.log('ma suggestion bitchhh', item.suggestionReceiver);
+            // console.log('ma suggestion bitchhh', item.suggestionReceiver);
             singleResult.notificationTrigger.message2 = "to their friend, " + item.suggestionReceiver.data.name + ".";
           }
         }
@@ -861,7 +861,7 @@ User.prototype.getReadNotifications = function (page, skipAmount) {
           }
           if(singleResult.notificationTrigger.suggestionTime && item.suggestionReceiver.data) {
             singleResult.notificationTrigger.message1 = "suggested your footprint at"
-            console.log('ma suggestion bitchhh', item.suggestionReceiver);
+            // console.log('ma suggestion bitchhh', item.suggestionReceiver);
             singleResult.notificationTrigger.message2 = "to their friend, " + item.suggestionReceiver.data.name + ".";
           }
         }
@@ -967,7 +967,7 @@ User.addFolder = function (facebookID, folderName) {
   db.query(query, params, function (err, results) {
     if (err) { deferred.reject(err); }
     else {
-      console.log(results);
+      // console.log(results);
       var parsedResults = _.map(results, function (item) {
         var singleResult = {
           "user": item.user.data,
@@ -1005,7 +1005,7 @@ User.fetchFolders = function(facebookID, page, skipAmount) {
   db.query(query, params, function (err, results) {
     if (err) { deferred.reject(err); }
     else {
-      console.log(results);
+      // console.log(results);
       var parsedResults = _.map(results, function (item) {
         var singleResult = {
           "user": item.user.data,
@@ -1101,7 +1101,7 @@ User.fetchSuggestedByFriendsContents = function (facebookID, page, skipAmount) {
   db.query(query, params, function (err, results) {
     if (err) { deferred.reject(err); }
     else {
-      console.log(results);
+      // console.log(results);
       var parsedResults = _.map(results, function (item) {
         var singleResult = {
           "user": item.suggestionSource.data,
@@ -1140,7 +1140,7 @@ User.fetchFolderContents = function (facebookID, folderName, page, skipAmount) {
   db.query(query, params, function (err, results) {
     if (err) { deferred.reject(err); }
     else {
-      console.log(results);
+      // console.log(results);
       var parsedResults = _.map(results, function (item) {
         var singleResult = {
           "user": item.friend.data,
@@ -1181,7 +1181,7 @@ User.searchFolderContents = function (facebookID, folderName, searchQuery, page,
   db.query(query, params, function (err, results) {
     if (err) { deferred.reject(err); }
     else {
-      console.log(results);
+      // console.log(results);
       var parsedResults = _.map(results, function (item) {
         var singleResult = {
           "user": item.user.data,
@@ -1247,7 +1247,7 @@ User.fetchSuggestions = function () {
   db.query(query, params, function (err, results) {
     if (err) { deferred.reject(err); }
     else {
-      console.log(results);
+      // console.log(results);
       var parsedResults = _.map(results, function (item) {
         var singleResult = {
           "user": item.user.data,

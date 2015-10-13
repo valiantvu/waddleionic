@@ -2,7 +2,10 @@ var gulp = require('gulp');
 var gutil = require('gulp-util');
 var bower = require('bower');
 var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
+var mocha = require('gulp-mocha');
 var sass = require('gulp-sass');
+var clean = require('gulp-clean');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var sh = require('shelljs');
@@ -11,7 +14,9 @@ var paths = {
   sass: ['./scss/**/*.scss']
 };
 
-gulp.task('default', ['sass']);
+gulp.task('default', ['sass', 'watch-mocha']);
+
+gulp.task('concat', ['clean', 'scripts']);
 
 gulp.task('sass', function(done) {
   gulp.src('./scss/ionic.app.scss')
@@ -35,6 +40,37 @@ gulp.task('install', ['git-check'], function() {
       gutil.log('bower', gutil.colors.cyan(data.id), data.message);
     });
 });
+
+gulp.task('clean', function() {
+  return gulp.src('www/dist/**/*.js')
+  .pipe(clean());
+});
+
+gulp.task('scripts', function() {
+  return gulp.src(['www/lib/**/*.js', 'www/**/*.js'])
+    .pipe(concat('main.js'))
+    .pipe(gulp.dest('dist/assets/js'))
+    .pipe(rename({suffix: '.min'}))
+    .pipe(uglify())
+    .pipe(gulp.dest('www/dist/assets/js'));
+});
+
+
+gulp.task('watch-www', function() {
+  gulp.watch(['www/**/*.js'], ['scripts']);
+});
+
+gulp.task('mocha', function() {
+  // If using unit tests, add: 'test/unit/*.js'
+  return gulp.src(['test/integration/*.js'], {read: false})
+        .pipe(mocha({reporter: 'list'}))
+        .on('error', gutil.log);
+});
+
+gulp.task('watch-mocha', function() {
+  gulp.watch(['server/**/*.js', 'server/**/**/*.js'], ['mocha']);
+});
+
 
 gulp.task('git-check', function(done) {
   if (!sh.which('git')) {
