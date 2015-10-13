@@ -13,6 +13,7 @@
  
 angular.module('waddle', ['ionic', 'ionic.ion.imageCacheFactory', 'ngCordova', 'waddle.controllers', 'waddle.services', 'filters', 'angularMoment', 'uuid4', 'monospaced.elastic', 'ezfb', 'cgBusy'])
 .run(function($ionicPlatform, $ionicHistory) {
+  console.log('hello hello');
   
   // $ionicHistory.clearCache();
   $ionicPlatform.ready(function() {
