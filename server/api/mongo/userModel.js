@@ -5,7 +5,7 @@ var User = {};
 
 User.createUser = function(user) {
   var deferred = Q.defer();
-  mongodb.collection('users').update({facebookID: user.facebookID}, user, {upsert:true}, function(err, result) {
+  mongodb.collection('users').update({facebookID: user.facebookID}, { $set: user }, {upsert:true}, function(err, result) {
     if (err) {
       deferred.reject();
       throw err;

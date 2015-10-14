@@ -253,7 +253,7 @@ userController.addFoursquareData = function (req, res) {
   }
 };
 
- var addFoursquareDataFromIOSClient = function (userData) {
+var addFoursquareDataFromIOSClient = function (userData) {
   neo4jUser.find(userData)
   .then(function (userNode) { 
     user = userNode;
@@ -290,8 +290,8 @@ userController.addFoursquareData = function (req, res) {
   .catch(function(err) {
     console.log(err);
     res.status(500).end();
-  })
-}
+  });
+};
 
 userController.addInstagramData = function (req, res) {
 
