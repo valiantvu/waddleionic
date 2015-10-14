@@ -16,14 +16,12 @@ var userController = {};
 userController.userLogin = function (req, res) {
 
   var userData = req.body;
-  var userNode;
   var FBAccessToken;
   var userFBTaggedPostsData = [];
   var userFBPhotoData = [];
   var userFBStatusesData = [];
   var userFBFriendsData;
   var combinedFBCheckins;
-  var alreadyExists = false;
   // console.log(userData);
 
   facebookUtils.exchangeFBAccessToken(userData.fbToken)
@@ -47,126 +45,71 @@ userController.userLogin = function (req, res) {
 
     // Start creation of new user or update and retrieval of existing user
     mongoUser.createUser(userData)
-    .then(function (user) {
-      // console.log(user.result);
-      var userExists = user.result.nModified === 1 ? true : false;
+    .then(function (dbData) {
+      console.log(dbData.result);
+      var alreadyExists = dbData.result.nModified === 1 ? true : false;
 
-      if (userExists) {
-        // update number of checkins
+      if (alreadyExists) {
+        // Update number of footprints
+        // TODO: Decrement count on delete, remove this count
+        mongoUser.updateCheckinsCount(userData);
+        res.json({user: userData, alreadyExists: alreadyExists});
+        res.status(200).end();
       } else {
-        // get FB friends (getAndParseFBData)
-        // getAndParseFBData(user);
+        mongoUser.setProperty('footprintsCount', 0);
+        mongoUser.setCreatedAt(userData);
+
+        var fbID = userNode.getProperty('facebookID');
+        var fbToken = userNode.getProperty('fbToken');
+        
+        facebookUtils.getFBFriends(fbID, fbToken)
+        .then(function (friends) {
+          mongoUser.addFriends(fbRawUserData.data);
+          // Wait to send response until all friends added?
+          // i.e. put the res in "then" handler? 
+          res.json({user: userData, alreadyExists: alreadyExists});
+          res.status(200).end();
+        });
       }
-      // return user;
-      // res.json(user.result);
-      // res.status(200).end();
+    })
+    .catch(function(err) {
+      console.log(err);
+      res.status(500).end();
     });
 
     //note: this has the user node
     //console.dir(userNode.node._data.data)
     neo4jUser.createUniqueUser(userData)
-    .then(function (user) {
-      userNode = user;
+    .then(function (userNode) {
       console.log('neo4j user node created/found!');
-      return userNode.countAllCheckins(userData.facebookID);
-    })
-    //Path forks here for existing vs new users
-    .then(function (checkinsCount) {
-      // console.log(checkinsCount);
-      // console.log(userNode.getProperty('footprintsCount'));
-      // console.log('fb checkins: ', checkinsAlreadyStored.length);
-      // For existing users
-      if (userNode.getProperty('footprintsCount') >= 0) {
-        console.log('Setting footprintsCount and finding friends...');
-        userNode.setProperty('footprintsCount', checkinsCount);
-        userNode.findAllFriends(0, 100)
-        .then(function (friendsList){
+      var alreadyExists = userNode.getProperty('footprintsCount') >= 0;
 
-          userFBFriendsData = friendsList;
-          return userNode.getAggregatedFootprintList(userNode.node._data.data.facebookID, 0, 5);
-        })
-        .then(function (aggregatedFootprints) {
-          console.log('Constructing allData...');
-          var allData = {
-            user: userNode.node._data.data,
-            friends: userFBFriendsData,
-            aggregatedFootprints: aggregatedFootprints
-          };
-          // console.log('allData', allData);
-          res.json(allData);
+      if (alreadyExists) {
+        // Update number of footprints
+        // TODO: Decrement count on delete, remove this count
+        userNode.setProperty('footprintsCount', userNode.countAllCheckins(userData.facebookID));
+      } else {
+        userNode.setProperty('footprintsCount', 0);
+
+        var fbID = userNode.getProperty('facebookID');
+        var fbToken = userNode.getProperty('fbToken');
+        
+        facebookUtils.getFBFriends(fbID, fbToken)
+        .then(function (friends) {
+          userNode.addFriends(fbRawUserData.data);
           res.status(200).end();
         });
-      } else {
-        // For new users, start chain of facebook requests.
-        console.log('initiate get and parse fbdata');
-        getAndParseFBDataNeo4j();
       }
+    })
+    .catch(function(err) {
+      console.log(err);
+      res.status(500).end();
     });
   })
   .catch(function(err) {
     console.log(err);
     res.status(500).end();
   });
-
-  // Start getting data for checkins and photos
-  var getAndParseFBDataNeo4j = function () {
-    var fbID = userNode.getProperty('facebookID');
-    var fbToken = userNode.getProperty('fbToken');
-
-    facebookUtils.getFBFriends(fbID, fbToken)
-    .then(function (fbRawUserData) {
-      // Friends data
-      return userNode.addFriends(fbRawUserData.data);
-    })
-    .then(function (friends) {
-      userNode.setProperty('footprintsCount', 0);
-      return userNode.getAggregatedFootprintList(userNode.node._data.data.facebookID, 0, 5);
-    })
-    .then(function (aggregatedFootprints) {
-      var allData = {
-        user: userNode.node._data.data,
-        friends: userFBFriendsData,
-        aggregatedFootprints: aggregatedFootprints
-      };
-      console.log('allData', allData);
-      res.json(allData);
-      res.status(200).end();
-    })
-    .catch(function(err) {
-      console.log(err);
-      res.status(500).end();
-    });
-  };
-
-  // Start getting data for checkins and photos
-  var getAndParseFBDataMongo = function () {
-    var fbID = userNode.getProperty('facebookID');
-    var fbToken = userNode.getProperty('fbToken');
-
-    facebookUtils.getFBFriends(fbID, fbToken)
-    .then(function (fbRawUserData) {
-      // Friends data
-      return mongoUser.addFriends(fbRawUserData.data);
-    })
-    .then(function (friends) {
-      userNode.setProperty('footprintsCount', 0);
-      return userNode.getAggregatedFootprintList(userNode.node._data.data.facebookID, 0, 5);
-    })
-    .then(function (aggregatedFootprints) {
-      // var allData = {
-      //   user: userNode.node._data.data,
-      //   friends: userFBFriendsData,
-      //   aggregatedFootprints: aggregatedFootprints
-      // };
-      // console.log('allData', allData);
-      res.json(user);
-      res.status(200).end();
-    })
-    .catch(function(err) {
-      console.log(err);
-      res.status(500).end();
-    });
-  };
 };
 
 userController.addFoursquareData = function (req, res) {
