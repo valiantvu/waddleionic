@@ -60,6 +60,10 @@ userController.userLogin = function (req, res) {
     })
     .then(function (friendsList) {
       // update friends list
+    })
+    .then(function () {
+      // res.json(user.result);
+      res.send(200);
     });
       
     //note: this has the user node

@@ -103,16 +103,19 @@ describe('Waddle user routes GET requests', function () {
 });
 
 describe('Waddle user routes POST requests', function () {
-    var user;
-    // before(function(done){
-    // });
-    it('should add new user on login', function (done) {
-      // request(app)
-      // .post('/api/users/userdata/')
-      // .expect(200)
-      // .end(function(err, res) {
-      //   if (err) throw err;
-        done();
-      // });
+  var postData = mongoFixtures.users[0];
+  console.log(postData);
+  // var user;
+  // before(function(done){
+  // });
+  it('should add new user on login', function (done) {
+    request(app)
+    .post('/api/users/userdata/')
+    .send(postData)
+    .expect(200)
+    .end(function(err, res) {
+      if (err) throw err;
+      done();
     });
+  });
 });
