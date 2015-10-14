@@ -48,7 +48,7 @@ userController.userLogin = function (req, res) {
     .then(function (dbData) {
       console.log(dbData.result);
       var alreadyExists = dbData.result.nModified === 1 ? true : false;
-
+      mongoUser.findUser(userData);
       if (alreadyExists) {
         // Update number of footprints
         // TODO: Decrement count on delete, remove this count
@@ -56,15 +56,15 @@ userController.userLogin = function (req, res) {
         res.json({user: userData, alreadyExists: alreadyExists});
         res.status(200).end();
       } else {
-        mongoUser.setProperty('footprintsCount', 0);
+        mongoUser.setProperty(userData, 'footprintsCount', 0);
         mongoUser.setCreatedAt(userData);
 
-        var fbID = userNode.getProperty('facebookID');
-        var fbToken = userNode.getProperty('fbToken');
+        // var fbID = mongoUser.getProperty('facebookID');
+        // var fbToken = userNode.getProperty('fbToken');
         
-        facebookUtils.getFBFriends(fbID, fbToken)
-        .then(function (friends) {
-          mongoUser.addFriends(fbRawUserData.data);
+        facebookUtils.getFBFriends(userData.facebookID, FBAccessToken)
+        .then(function (fbRawUserData) {
+          mongoUser.addFriends(userData, fbRawUserData.data);
           // Wait to send response until all friends added?
           // i.e. put the res in "then" handler? 
           res.json({user: userData, alreadyExists: alreadyExists});
@@ -91,10 +91,7 @@ userController.userLogin = function (req, res) {
       } else {
         userNode.setProperty('footprintsCount', 0);
 
-        var fbID = userNode.getProperty('facebookID');
-        var fbToken = userNode.getProperty('fbToken');
-        
-        facebookUtils.getFBFriends(fbID, fbToken)
+        facebookUtils.getFBFriends(userData.facebookID, FBAccessToken)
         .then(function (friends) {
           userNode.addFriends(fbRawUserData.data);
           res.status(200).end();

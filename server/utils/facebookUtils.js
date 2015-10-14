@@ -52,6 +52,7 @@ utils.getFBProfilePicture = function (userID) {
 };
 
 utils.getFBFriends = function (fbID, fbToken) {
+  console.log(fbID, fbToken);
   var deferred = Q.defer();
 
   // var fbID = user.getProperty('facebookID');

@@ -31,7 +31,6 @@ User.setCreatedAt = function (user) {
       throw err;
     }
     if (result) {
-      console.log(result);
       console.log('Added createdAt property!');
       deferred.resolve(result);
     }
@@ -40,15 +39,16 @@ User.setCreatedAt = function (user) {
   return deferred.promise;
 };
 
-User.setProperty = function (property, value) {
+User.setProperty = function (user, property, value) {
   var deferred = Q.defer();
-  mongodb.collection('users').update({facebookID: user.facebookID}, { $set: {property: value} }, function(err, result) {
+  var newProperty = {};
+  newProperty[property] = value;
+  mongodb.collection('users').update({facebookID: user.facebookID}, { $set: newProperty }, function(err, result) {
     if (err) {
       deferred.reject();
       throw err;
     }
     if (result) {
-      console.log(result);
       console.log('Updated property!');
       deferred.resolve(result);
     }
@@ -97,8 +97,8 @@ User.findUser = function (user) {
       throw err;
     }
     if (result) {
-      // console.log(result);
       console.log('Found user!');
+      console.log(result);
       deferred.resolve(result);
     }
   });
@@ -106,7 +106,8 @@ User.findUser = function (user) {
   return deferred.promise;
 };
 
-User.addFriends = function (friends) {
+User.addFriends = function (user, friends) {
+  console.log(friends);
   var deferred = Q.defer();
   mongodb.collection('users').update({facebookID: user.facebookID}, {$set: {friends: friends} }, function(err, result) {
     if (err) {
@@ -123,6 +124,8 @@ User.addFriends = function (friends) {
   return deferred.promise;
 };
 
-
+User.buildFeed = function (user, friends) {
+  // TODO
+};
 
 module.exports = User;
