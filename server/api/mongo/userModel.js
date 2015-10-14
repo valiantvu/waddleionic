@@ -23,6 +23,14 @@ User.createUser = function(user) {
   return deferred.promise;
 };
 
+User.setCreatedAt = function(user) {
+  // TODO
+};
+
+User.setProperty = function(property, value) {
+  // TODO
+};
+
 User.findUser = function(user) {
   var deferred = Q.defer();
   mongodb.collection('users').findOne({facebookID: user.facebookID}, function(err, result) {
@@ -33,6 +41,23 @@ User.findUser = function(user) {
     if (result) {
       // console.log(result);
       console.log('Found user!');
+      deferred.resolve(result);
+    }
+  });
+
+  return deferred.promise;
+};
+
+User.addFriends = function(friends) {
+  var deferred = Q.defer();
+  mongodb.collection('users').update({facebookID: user.facebookID}, {$set: {friends: friends} }, function(err, result) {
+    if (err) {
+      deferred.reject();
+      throw err;
+    }
+    if (result) {
+      console.log(result);
+      console.log('Friends added!');
       deferred.resolve(result);
     }
   });

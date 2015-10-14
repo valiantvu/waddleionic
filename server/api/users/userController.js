@@ -16,7 +16,7 @@ var userController = {};
 userController.userLogin = function (req, res) {
 
   var userData = req.body;
-  var user;
+  var userNode;
   var FBAccessToken;
   var userFBTaggedPostsData = [];
   var userFBPhotoData = [];
@@ -25,8 +25,6 @@ userController.userLogin = function (req, res) {
   var combinedFBCheckins;
   var alreadyExists = false;
   // console.log(userData);
-
-  // Start creation of new user or update and retrieval of existing user
 
   facebookUtils.exchangeFBAccessToken(userData.fbToken)
   // Store access token on scope, Get profile pictures from Facebook
@@ -47,58 +45,61 @@ userController.userLogin = function (req, res) {
     // lodash .extend has been renamed to .assign
     _.assign(userData, properties);
 
+    // Start creation of new user or update and retrieval of existing user
     mongoUser.createUser(userData)
     .then(function (user) {
-      console.log(user.result);
+      // console.log(user.result);
       var userExists = user.result.nModified === 1 ? true : false;
 
       if (userExists) {
         // update number of checkins
       } else {
         // get FB friends (getAndParseFBData)
+        // getAndParseFBData(user);
       }
       // return user;
-      res.json(user.result);
-      res.status(200).end();
+      // res.json(user.result);
+      // res.status(200).end();
     });
-    // .then(function (friendsList) {
-    //   update friends list
-    // })
 
     //note: this has the user node
     //console.dir(userNode.node._data.data)
     neo4jUser.createUniqueUser(userData)
-    .then(function (userNode) {
-      user = userNode;
-      return user.countAllCheckins(userData.facebookID);
+    .then(function (user) {
+      userNode = user;
+      console.log('neo4j user node created/found!');
+      return userNode.countAllCheckins(userData.facebookID);
     })
     //Path forks here for existing vs new users
     .then(function (checkinsCount) {
+      // console.log(checkinsCount);
+      // console.log(userNode.getProperty('footprintsCount'));
       // console.log('fb checkins: ', checkinsAlreadyStored.length);
       // For existing users
-      if (user.getProperty('footprintsCount') >= 0) {
-        user.setProperty('footprintsCount', checkinsCount);
-        user.findAllFriends(0, 100)
+      if (userNode.getProperty('footprintsCount') >= 0) {
+        console.log('Setting footprintsCount and finding friends...');
+        userNode.setProperty('footprintsCount', checkinsCount);
+        userNode.findAllFriends(0, 100)
         .then(function (friendsList){
 
           userFBFriendsData = friendsList;
-          return user.getAggregatedFootprintList(user.node._data.data.facebookID, 0, 5);
+          return userNode.getAggregatedFootprintList(userNode.node._data.data.facebookID, 0, 5);
         })
         .then(function (aggregatedFootprints) {
-          // console.log('mongoUser?');
-          // mongoUser.insertDocument();
+          console.log('Constructing allData...');
           var allData = {
-            user: user.node._data.data,
+            user: userNode.node._data.data,
             friends: userFBFriendsData,
             aggregatedFootprints: aggregatedFootprints
           };
-          // res.json(allData);
-          // res.status(200).end();
+          // console.log('allData', allData);
+          res.json(allData);
+          res.status(200).end();
         });
       } else {
-      //   // For new users, start chain of facebook requests.
-      //   console.log('initiate get and parse fbdata');
-        getAndParseFBData();
+        // For new users, start chain of facebook requests.
+        console.log('initiate get and parse fbdata');
+        getAndParseFBDataNeo4j();
       }
     });
   })
@@ -108,83 +109,58 @@ userController.userLogin = function (req, res) {
   });
 
   // Start getting data for checkins and photos
-  var getAndParseFBData = function () {
+  var getAndParseFBDataNeo4j = function () {
+    var fbID = userNode.getProperty('facebookID');
+    var fbToken = userNode.getProperty('fbToken');
 
-    facebookUtils.getFBFriends(user)
+    facebookUtils.getFBFriends(fbID, fbToken)
     .then(function (fbRawUserData) {
       // Friends data
-      return user.addFriends(fbRawUserData.data);
+      return userNode.addFriends(fbRawUserData.data);
     })
     .then(function (friends) {
-      // Parse Friends data
-      // var allFriends = _.map(friends, function(friend){
-      //   return friend.body.data[0][0].data;
-      // })
-      // userFBFriendsData = allFriends;
-
-      // return facebookUtils.getFBFeedItemsWithLocation(user);
-
-      //get tagged places
-    //   return facebookUtils.getFBTaggedPosts(user);
-    // })
-    // // .then(function (fbRawFeedItemsWithLocation) {
-    // //   console.log("RAW data RAWRRRRR: " + JSON.stringify(fbRawFeedItemsWithLocation));
-    // //   return facebookUtils.parseFBData(user, fbRawFeedItemsWithLocation);
-    // // })
-    // // .then(function (fbParsedFeedItems) {
-    // //   console.log("PARSED DATA: " + JSON.stringify(fbParsedFeedItems));
-    // //   return user.addCheckins(fbParsedFeedItems);
-    // // })
-    // .then(function (fbRawTaggedPostsData) {
-    //   // parse Checkin data
-    //   return facebookUtils.parseFBData(user, fbRawTaggedPostsData);
-    // })
-    // .then(function (fbParsedTaggedPostsData) {
-    //   userFBTaggedPostsData = fbParsedTaggedPostsData;
-    //   // get Picture data
-    //   return facebookUtils.getFBPhotos(user);
-    // })
-    // .then(function (fbRawPhotoList) {
-    //   // parse Photo data
-    //   console.log("# of photos: ", fbRawPhotoList.length)
-    //   return facebookUtils.parseFBData(user, fbRawPhotoList); 
-    // })
-    // .then(function (fbParsedPhotoData) {
-    //   // merge tagged places and photos
-    //   userFBPhotoData = fbParsedPhotoData;
-    //   combinedFBCheckins = userFBTaggedPostsData.concat(userFBPhotoData);
-    //   //get statuses posted by user
-    //   return facebookUtils.getFBStatuses(user);
-    //   // return user.addCheckins(combinedFBCheckins);
-    // })
-    // .then(function (fbRawStatusList) {
-    //   return facebookUtils.parseFBData(user, fbRawStatusList);
-    // })
-    // .then(function (fbParsedStatusesData) {
-    //   userFBStatusesData = fbParsedStatusesData;
-    //   combinedFBCheckins = combinedFBCheckins.concat(userFBStatusesData);
-    //   console.log("combinedCheckins: " + combinedFBCheckins);
-    //   return helpers.addCityProvinceAndCountryInfoToParsedCheckins(combinedFBCheckins);
-    // })
-    // .then(function (combinedFBCheckinsWithLocation) {
-    //   return user.addCheckins(combinedFBCheckinsWithLocation);
-    // })
-    // .then(function (data) {
-    //   return user.countAllCheckins(userData.facebookID);
-    // })
-    // .then(function (checkinsCount) {
-      user.setProperty('footprintsCount', 0);
-      return user.getAggregatedFootprintList(user.node._data.data.facebookID, 0, 5);
+      userNode.setProperty('footprintsCount', 0);
+      return userNode.getAggregatedFootprintList(userNode.node._data.data.facebookID, 0, 5);
     })
     .then(function (aggregatedFootprints) {
       var allData = {
-        user: user.node._data.data,
-        // friends: userFBFriendsData,
+        user: userNode.node._data.data,
+        friends: userFBFriendsData,
         aggregatedFootprints: aggregatedFootprints
       };
       console.log('allData', allData);
-      // res.json(allData);
-      // res.status(200).end();
+      res.json(allData);
+      res.status(200).end();
+    })
+    .catch(function(err) {
+      console.log(err);
+      res.status(500).end();
+    });
+  };
+
+  // Start getting data for checkins and photos
+  var getAndParseFBDataMongo = function () {
+    var fbID = userNode.getProperty('facebookID');
+    var fbToken = userNode.getProperty('fbToken');
+
+    facebookUtils.getFBFriends(fbID, fbToken)
+    .then(function (fbRawUserData) {
+      // Friends data
+      return mongoUser.addFriends(fbRawUserData.data);
+    })
+    .then(function (friends) {
+      userNode.setProperty('footprintsCount', 0);
+      return userNode.getAggregatedFootprintList(userNode.node._data.data.facebookID, 0, 5);
+    })
+    .then(function (aggregatedFootprints) {
+      // var allData = {
+      //   user: userNode.node._data.data,
+      //   friends: userFBFriendsData,
+      //   aggregatedFootprints: aggregatedFootprints
+      // };
+      // console.log('allData', allData);
+      res.json(user);
+      res.status(200).end();
     })
     .catch(function(err) {
       console.log(err);

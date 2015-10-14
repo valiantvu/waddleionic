@@ -6,8 +6,6 @@ fixtures.users = [
 		firstName: 'Dorothy',
 		lastName: 'Bowersstein',
 		email: 'jqhpyje_bowersstein_1420934246@tfbnw.net',
-		fbToken: 'CAAMxNSdb8MMBADCvUUEKYO2ZCbyIAMZCmMarNhZAuXcnuZBkBK23HWYmTDp5sOylwnxxouogNACJOvWZC7ZCr4TdIO0U9dIcEca2LF1jt2JQvtNzLp7MHJkne9DQ9M3JvY1beejgViD0WrQQBYnQKSYVZCie6QjeKzSGocbZBTZB86ZBn19YWyg7fNZAFKwEZB9AgJkceI7Pos2sIgZDZD',
-		fbProfilePicture: 'https://www.facebook.com/photo.php?fbid=1377861495853141&l=25a2ac20d2',
 		coverPhoto: 'https://s-media-cache-ak0.pinimg.com/736x/c2/06/66/c20666fb99564cbe6c64c0ad83f79cd5.jpg',
 		createdAt: 1444669695545,
 		updatedAt: new Date().getTime(),
