@@ -57,37 +57,26 @@ User.setProperty = function (user, property, value) {
   return deferred.promise;
 };
 
-User.updateCheckinsCount = function (user) {
-  var deferred = Q.defer();
+// User.updateCheckinsCount = function (user) {
+//   var deferred = Q.defer();
 
-  // mongodb.collection('users').find({facebookID: user.facebookID}, function(err, result) {
-  //   if (err) {
-  //     deferred.reject();
-  //     throw err;
-  //   }
-  //   if (result) {
-  //     console.log('found user!');
-  //     console.log(result);
-  //   }
-  // });
+//   mongodb.collection('users').update({facebookID: user.facebookID}, { $set: {footprintsCount: 10} }, function(err, result) {
+//     if (err) {
+//       deferred.reject();
+//       throw err;
+//     }
+//     if (result) {
+//       console.log(result);
+//       // mongodb.collection('users').update({facebookID: user.facebookID}, {createdAt: new Date()}, function(err, result) {
+//         // user.createdAt = new Date();
+//       // });
+//       console.log('Update checkins count!');
+//       deferred.resolve(result);
+//     }
+//   });
 
-  mongodb.collection('users').update({facebookID: user.facebookID}, { $set: {footprintsCount: 10} }, function(err, result) {
-    if (err) {
-      deferred.reject();
-      throw err;
-    }
-    if (result) {
-      console.log(result);
-      // mongodb.collection('users').update({facebookID: user.facebookID}, {createdAt: new Date()}, function(err, result) {
-        // user.createdAt = new Date();
-      // });
-      console.log('Update checkins count!');
-      deferred.resolve(result);
-    }
-  });
-
-  return deferred.promise;
-};
+//   return deferred.promise;
+// };
 
 User.findUser = function (user) {
   var deferred = Q.defer();

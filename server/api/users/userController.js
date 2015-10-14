@@ -40,7 +40,7 @@ userController.userLogin = function (req, res) {
     } else {
       properties['fbProfilePicture'] = 'https://s3-us-west-2.amazonaws.com/waddle/logo+assets/WaddlePenguinLogo181.png';
     }
-    // lodash .extend has been renamed to .assign
+    // lodash's .extend has been renamed to .assign
     _.assign(userData, properties);
 
     // Start creation of new user or update and retrieval of existing user
@@ -52,21 +52,16 @@ userController.userLogin = function (req, res) {
       if (alreadyExists) {
         // Update number of footprints
         // TODO: Decrement count on delete, remove this count
-        mongoUser.updateCheckinsCount(userData);
+        // mongoUser.updateCheckinsCount(userData);
         res.json({user: userData, alreadyExists: alreadyExists});
         res.status(200).end();
       } else {
         mongoUser.setProperty(userData, 'footprintsCount', 0);
         mongoUser.setCreatedAt(userData);
-
-        // var fbID = mongoUser.getProperty('facebookID');
-        // var fbToken = userNode.getProperty('fbToken');
         
         facebookUtils.getFBFriends(userData.facebookID, FBAccessToken)
         .then(function (fbRawUserData) {
           mongoUser.addFriends(userData, fbRawUserData.data);
-          // Wait to send response until all friends added?
-          // i.e. put the res in "then" handler? 
           res.json({user: userData, alreadyExists: alreadyExists});
           res.status(200).end();
         });
@@ -94,7 +89,7 @@ userController.userLogin = function (req, res) {
         facebookUtils.getFBFriends(userData.facebookID, FBAccessToken)
         .then(function (friends) {
           userNode.addFriends(fbRawUserData.data);
-          res.status(200).end();
+          // res.status(200).end();
         });
       }
     })
@@ -112,21 +107,18 @@ userController.userLogin = function (req, res) {
 userController.addFoursquareData = function (req, res) {
 
   var userData = req.body;
-  console.log('thsi is ma body', req.body)
   var user;
-
-  console.log('add 4s data');
 
   //if client is ios app, then fousquareCode that is returned is actually the access token
   if(userData.build_type === 'ios') {
-    console.log('inside ios client')
+    console.log('inside ios client');
     addFoursquareDataFromIOSClient(userData);
   }
 
   else {
 
     neo4jUser.find(userData)
-    .then(function (userNode) { 
+    .then(function (userNode) {
       user = userNode;
       return foursquareUtils.exchangeFoursquareUserCodeForToken(userData.foursquareCode, userData.redirect_uri);
     })
@@ -139,7 +131,7 @@ userController.addFoursquareData = function (req, res) {
       return foursquareUtils.getUserFoursquareIDFromToken(user);
     })
     .then(function (userFoursquareData) {
-      console.log('foursquare response data')
+      console.log('foursquare response data');
       return user.setProperty('foursquareID', userFoursquareData.response.user.id);
     })
     .then(function (userNode) {
@@ -165,13 +157,13 @@ userController.addFoursquareData = function (req, res) {
     .catch(function(err) {
       console.log(err);
       res.status(500).end();
-    })
+    });
   }
 };
 
 var addFoursquareDataFromIOSClient = function (userData) {
   neo4jUser.find(userData)
-  .then(function (userNode) { 
+  .then(function (userNode) {
     user = userNode;
     return user.setProperty('fsqToken', userData.foursquareCode);
   })
@@ -180,7 +172,7 @@ var addFoursquareDataFromIOSClient = function (userData) {
     return foursquareUtils.getUserFoursquareIDFromToken(user);
   })
   .then(function (userFoursquareData) {
-    console.log('foursquare response data')
+    console.log('foursquare response data');
     return user.setProperty('foursquareID', userFoursquareData.response.user.id);
   })
   .then(function (userNode) {
@@ -216,7 +208,7 @@ userController.addInstagramData = function (req, res) {
   var igUserData;
 
   neo4jUser.find(userData)
-  .then(function (userNode) { 
+  .then(function (userNode) {
     user = userNode;
     return instagramUtils.exchangeIGUserCodeForToken(userData.instagramCode, userData.build_type);
   })
@@ -224,17 +216,17 @@ userController.addInstagramData = function (req, res) {
     igUserData = igData;
     return user.setProperty('igToken', igUserData.access_token);
   })
-  .then(function (userNode) { 
+  .then(function (userNode) {
     user = userNode;
     return user.setProperty('instagramID', igUserData.user.id);
   })
   .then(function (userNode) {
-    user = userNode
+    user = userNode;
     return instagramUtils.tabThroughInstagramPosts(user);
   })
   .then(function (rawInstagramPosts) {
     // console.log('rawInstagramPosts', JSON.stringify(rawInstagramPosts));
-    return instagramUtils.parseIGData(rawInstagramPosts, user)
+    return instagramUtils.parseIGData(rawInstagramPosts, user);
   })
   .then(function (parsedInstagramCheckins) {
       return helpers.addCityProvinceAndCountryInfoToParsedCheckins(parsedInstagramCheckins);
@@ -249,7 +241,7 @@ userController.addInstagramData = function (req, res) {
   .catch(function(err) {
     console.log(err);
     res.status(500).end();
-  })
+  });
 
 };
 
@@ -343,12 +335,12 @@ userController.updateNotificationReadStatus = function (req, res) {
   .catch(function (err) {
     console.log(err);
     res.status(500).end();
-  })
+  });
 };
 
 userController.getUnreadNotifications = function (req, res) {
   var user;
-  var params = {}
+  var params = {};
   params.facebookID = req.params.user;
 
   if(req.params.page) {
@@ -377,7 +369,7 @@ userController.getUnreadNotifications = function (req, res) {
   .catch(function (err) {
     console.log(err);
     res.status(500).end();
-  })
+  });
 };
 
 userController.getReadNotifications = function (req, res) {
@@ -411,7 +403,7 @@ userController.getReadNotifications = function (req, res) {
   .catch(function (err) {
     console.log(err);
     res.status(500).end();
-  })
+  });
   
 };
 
@@ -473,10 +465,10 @@ userController.getBucketList = function (req, res){
 };
 
 userController.addFolder = function (req, res) {
-  var user, folderName
+  var user, folderName;
   user = req.body.facebookID;
   folderName = req.body.folderName,
-  console.log(req.body)
+  console.log(req.body);
 
   neo4jUser.addFolder(user, folderName)
   .then(function (folder) {
@@ -488,7 +480,7 @@ userController.addFolder = function (req, res) {
     console.log(err);
     res.status(500).end();
   });
-}
+};
 
 userController.fetchFolders = function (req, res) {
   var params = {};
@@ -519,7 +511,7 @@ userController.fetchFolders = function (req, res) {
     console.log(err)
     res.status(500).end();
   });
-}
+};
 
 userController.searchFoldersByName = function (req, res) {
   var params = {};
@@ -551,7 +543,7 @@ userController.searchFoldersByName = function (req, res) {
     console.log(err)
     res.status(500).end();
   });
-}
+};
 
 userController.fetchFolderContents = function (req, res) {
   var params = {};
@@ -576,7 +568,7 @@ userController.fetchFolderContents = function (req, res) {
     console.log("DESE BITCHES HV BEEN SUGGESTED BY MA FRENDZ!!");
     neo4jUser.fetchSuggestedByFriendsContents(params.facebookID, params.page, params.skipAmount)
     .then(function (SBFcontents) {
-      console.log(SBFcontents)
+      console.log(SBFcontents);
       res.json(SBFcontents);
       res.status(200).end();
     })
@@ -591,11 +583,11 @@ userController.fetchFolderContents = function (req, res) {
       res.status(200).end();
     })
     .catch(function (err) {
-      console.log(err)
+      console.log(err);
       res.status(500).end();
     });
   }
-}
+};
 
 userController.searchFolderContents = function (req, res) {
   var params = {};
@@ -620,15 +612,15 @@ userController.searchFolderContents = function (req, res) {
 
   neo4jUser.searchFolderContents(params.facebookID, params.folderName, params.query, params.page, params.skipAmount)
   .then(function (folderContents) {
-    console.log(folderContents)
+    console.log(folderContents);
     res.json(folderContents);
     res.status(200).end();
   })
   .catch(function(err) {
-    console.log(err)
+    console.log(err);
     res.status(500).end();
   });
-}
+};
 
 userController.deleteFolderAndContents = function (req, res) {
   console.log('Deleting: ', req.body.folderName);
@@ -641,9 +633,9 @@ userController.deleteFolderAndContents = function (req, res) {
     res.status(201).end();
   })
   .catch(function (data) {
-    console.log(err)
+    console.log(err);
     res.status(500).end();
-  })
+  });
 
 };
 
@@ -675,8 +667,8 @@ userController.searchUserFootprints = function (req, res) {
   .catch(function(err) {
     console.log(err);
     res.status(500).end();
-  })
-}
+  });
+};
 
 userController.searchUserFeed = function (req, res) {
   var params = {};
@@ -706,8 +698,8 @@ userController.searchUserFeed = function (req, res) {
   .catch(function(err) {
     console.log(err);
     res.status(500).end();
-  })
-}
+  });
+};
 
 userController.getFriendsList = function (req, res) {
   var user, page, skipAmount;
@@ -731,7 +723,7 @@ userController.getFriendsList = function (req, res) {
 
   neo4jUser.find(params)
   .then(function(userNode) {
-    user = userNode
+    user = userNode;
     return user.findAllFriends(page, skipAmount);
   })
   .then(function (friends) {
@@ -780,6 +772,6 @@ userController.publishFacebookPost = function (req, res) {
     console.log(err);
     res.status(500).end();
   });
-}
+};
 
 module.exports = userController;
