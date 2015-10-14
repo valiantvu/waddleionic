@@ -7,6 +7,7 @@ var neo4j = require('neo4j');
 var neo4jFixtures = require('../neo4j.test.fixtures.js');
 var mongoFixtures = require('../mongo.test.fixtures.js');
 var neo4jUser = require('../../server/api/neo4j/userModel.js');
+var mongoUser = require('../../server/api/mongo/userModel.js');
 var _ = require('lodash');
 
 // var neo4jurl = WADDLE_GRAPHENEDB_URL || 'http://localhost:7474'
@@ -103,23 +104,28 @@ describe('Waddle user routes GET requests', function () {
 });
 
 describe('Waddle user routes POST requests', function () {
-  var postData = mongoFixtures.users[0];
-  // console.log(postData);
+  var testUser = mongoFixtures.users[0];
+  // console.log(testUser);
   // var user;
   // before(function(done){
   // });
   it('should add new user on login', function (done) {
     request(app)
     .post('/api/users/userdata/')
-    .send(postData)
+    .send(testUser)
     .expect(200)
     .end(function(err, res) {
       if (err) throw err;
       console.log('POSTED DATA:');
       console.log(res);
-      // expect(res.body.name).to.equal("Testy McTest");
-      // expect(res.body.facebookID).to.equal("000000000");
-      done();
+      expect(res.body.nModified).to.equal(1);
+
+      mongoUser.findUser({facebookID: testUser.facebookID})
+      .then(function(user) {
+        expect(user.firstName).to.equal("Dorothy");
+        expect(user.facebookID).to.equal("1376881809284443");
+        done();
+      });
     });
   });
 });

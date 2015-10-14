@@ -24,7 +24,7 @@ userController.userLogin = function (req, res) {
   var userFBFriendsData;
   var combinedFBCheckins;
   var alreadyExists = false;
-  console.log(userData);
+  // console.log(userData);
 
   // Start creation of new user or update and retrieval of existing user
 
@@ -49,7 +49,7 @@ userController.userLogin = function (req, res) {
 
     mongoUser.createUser(userData)
     .then(function (user) {
-      // console.log(user.result);
+      console.log(user.result);
       var userExists = user.result.nModified === 1 ? true : false;
 
       if (userExists) {
@@ -60,17 +60,11 @@ userController.userLogin = function (req, res) {
       // return user;
       res.json(user.result);
       res.status(200).end();
-      // res.status(200);
-      // res.send(user.result);
-    // })
-    // .then(function (friendsList) {
-      // update friends list
-    // })
-    // .then(function () {
-      // res.send(200);
-      // res.json(allData);
     });
-      
+    // .then(function (friendsList) {
+    //   update friends list
+    // })
+
     //note: this has the user node
     //console.dir(userNode.node._data.data)
     neo4jUser.createUniqueUser(userData)
@@ -98,8 +92,8 @@ userController.userLogin = function (req, res) {
             friends: userFBFriendsData,
             aggregatedFootprints: aggregatedFootprints
           };
-          res.json(allData);
-          res.status(200).end();
+          // res.json(allData);
+          // res.status(200).end();
         });
       } else {
       //   // For new users, start chain of facebook requests.
@@ -189,8 +183,8 @@ userController.userLogin = function (req, res) {
         aggregatedFootprints: aggregatedFootprints
       };
       console.log('allData', allData);
-      res.json(allData);
-      res.status(200).end();
+      // res.json(allData);
+      // res.status(200).end();
     })
     .catch(function(err) {
       console.log(err);
@@ -508,6 +502,16 @@ userController.getReadNotifications = function (req, res) {
 userController.getUserInfo = function (req, res) {
   var params = {};
   params.facebookID = req.params.user;
+
+  // mongoUser.findUser(userData)
+  // .then(function (user) {
+  //   res.json(user);
+  //   res.status(200).end();
+  // })
+  // .catch(function (err) {
+  //   console.log(err);
+  //   res.status(500).end();
+  // });
 
   neo4jUser.find(params)
    .then(function (userInfo) {
