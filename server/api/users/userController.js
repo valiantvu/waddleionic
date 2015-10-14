@@ -49,7 +49,7 @@ userController.userLogin = function (req, res) {
 
     mongoUser.createUser(userData)
     .then(function (user) {
-      console.log(user);
+      // console.log(user.result);
       var userExists = user.result.nModified === 1 ? true : false;
 
       if (userExists) {
@@ -57,13 +57,18 @@ userController.userLogin = function (req, res) {
       } else {
         // get FB friends (getAndParseFBData)
       }
-    })
-    .then(function (friendsList) {
+      // return user;
+      res.json(user.result);
+      res.status(200).end();
+      // res.status(200);
+      // res.send(user.result);
+    // })
+    // .then(function (friendsList) {
       // update friends list
-    })
-    .then(function () {
-      // res.json(user.result);
-      res.send(200);
+    // })
+    // .then(function () {
+      // res.send(200);
+      // res.json(allData);
     });
       
     //note: this has the user node

@@ -104,7 +104,7 @@ describe('Waddle user routes GET requests', function () {
 
 describe('Waddle user routes POST requests', function () {
   var postData = mongoFixtures.users[0];
-  console.log(postData);
+  // console.log(postData);
   // var user;
   // before(function(done){
   // });
@@ -115,6 +115,10 @@ describe('Waddle user routes POST requests', function () {
     .expect(200)
     .end(function(err, res) {
       if (err) throw err;
+      console.log('POSTED DATA:');
+      console.log(res);
+      // expect(res.body.name).to.equal("Testy McTest");
+      // expect(res.body.facebookID).to.equal("000000000");
       done();
     });
   });
