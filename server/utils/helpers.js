@@ -100,7 +100,7 @@ helpers.addCityProvinceAndCountryInfoToParsedCheckins = function (parsedCheckins
 }
 
 helpers.parseNativeCheckin = function (venue) {
-  var deferred = Q.defer();
+  // var deferred = Q.defer();
 
   var formattedCheckin = {
     'checkinID': uuid.v4(),
@@ -157,22 +157,24 @@ helpers.parseNativeCheckin = function (venue) {
     formattedCheckin.pointValue += 3;
   }
 
+  return formattedCheckin;
 
-  helpers.findCityProvinceAndCountry(formattedCheckin.lat, formattedCheckin.lng)
-  .then(function (geocodeData) {
-    console.log(geocodeData);
-      if(geocodeData.city) {
-        formattedCheckin.city = geocodeData.city;
-      }
-      if(geocodeData.province) {
-        formattedCheckin.province = geocodeData.province;
-      }
-      if(geocodeData.country) {
-        formattedCheckin.country = geocodeData.country;
-      }
-    deferred.resolve(formattedCheckin);
-  })
-  return deferred.promise;
+  //find location data--not needed now that factual API is being used
+  // helpers.findCityProvinceAndCountry(formattedCheckin.lat, formattedCheckin.lng)
+  // .then(function (geocodeData) {
+  //   console.log(geocodeData);
+  //     if(geocodeData.city) {
+  //       formattedCheckin.city = geocodeData.city;
+  //     }
+  //     if(geocodeData.province) {
+  //       formattedCheckin.province = geocodeData.province;
+  //     }
+  //     if(geocodeData.country) {
+  //       formattedCheckin.country = geocodeData.country;
+  //     }
+  //   deferred.resolve(formattedCheckin);
+  // })
+  // return deferred.promise;
 }
 
 helpers.parseEditedNativeCheckin = function (editedCheckin) {

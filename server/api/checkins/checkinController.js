@@ -7,6 +7,8 @@ var neo4jCheckin = require('../neo4j/checkinModel.js');
 var neo4jUser = require('../neo4j/userModel.js');
 var neo4jPlace = require('../neo4j/placeModel.js');
 var mongoCheckin = require('../mongo/checkinModel.js');
+var mongoPlace= require('../mongo/placeModel.js');
+
 
 var factualUtils = require('../../utils/factualUtils.js');
 var foursquareUtils = require('../../utils/foursquareUtils.js');
@@ -18,19 +20,33 @@ var categoryList = require('../../utils/categoryList.js');
 var checkinController = {};
 
 checkinController.handleNativeCheckin = function (req, res) {
-  var user, categories, newFootprint, place;
+  var user, categories, newFootprint, place, restaurantInfo;
   var nativeCheckin = req.body;
   var facebookID = req.body.facebookID;
+
+  parsedCheckin = helpers.parseNativeCheckin(nativeCheckin);
+  console.log('parsedCheckin: ' + JSON.stringify(parsedCheckin));
+  mongoCheckin.createCheckin(parsedCheckin)
+  .then(function (checkin) {
+    console.log('this is my checkin', checkin.result);
+    var checkinSuccess = checkin.result.nModified === 1 ? true : false;
+    if(checkinSuccess) {
+      console.log('checkins is a succes!!');
+      // return getFactualRestaurantInfo(parsedCheckin.factualID);
+      return mongoPlace.createOrUpdatePlace(parsedCheckin);
+    }
+  })
+  // .then(function (restaurantInfo) {
+  //     console.log(' my restauarnt Info', restaurantInfo);
+  //     if(restaurantInfo.length) {
+  //       parsedCheckin.restaurantInfo = restaurantInfo;
+  //     }
+  //     return mongoPlace.createOrUpdatePlace(parsedCheckin);
+  // })
 
   neo4jUser.find({facebookID: facebookID})
   .then(function (userNode) {
     user = userNode;
-    // return foursquareUtils.parseNativeCheckin(nativeCheckin);
-    return helpers.parseNativeCheckin(nativeCheckin);
-  })
-  .then(function (parsedCheckin) {
-    console.log('parsedCheckin: ' + JSON.stringify(parsedCheckin));
-    mongoCheckin.insertDocument(parsedCheckin);
     return user.addCheckins([parsedCheckin]);
   })
   .then(function (footprint) {
@@ -45,7 +61,7 @@ checkinController.handleNativeCheckin = function (req, res) {
         // console.log('hi');
         getFoursquareIDFromFactualID(newFootprint.place.factualID, user);
       }
-      getFactualRestaurantInfo(newFootprint.place.factualID);
+      // getFactualRestaurantInfo(newFootprint.place.factualID);
       res.status(201).end();
     }
   })

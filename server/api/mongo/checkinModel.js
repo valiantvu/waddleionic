@@ -4,21 +4,30 @@ var Checkin = {};
 
 Checkin.createCheckin = function(parsedCheckin) {
   var deferred = Q.defer();
-  mongodb.collection('users').update({facebookID: parsedCheckin.facebookID}, user, {upsert:true}, function(err, result) {
+
+  mongodb.collection('users').update({facebookID: parsedCheckin.facebookID}, {'$push':{checkins: {
+    "checkinID" : parsedCheckin.checkinID,
+    "caption" : parsedCheckin.caption,
+    "rating" : parsedCheckin.rating,
+    "photo" : parsedCheckin.photo,
+    "photoWidth" : parsedCheckin.photoWidth,
+    "photoHeight" : parsedCheckin.photoHeight,
+    "facebookID" : parsedCheckin.facebookID,
+    "factualID" : parsedCheckin.factualID,
+    "source" : parsedCheckin.source,
+    "pointValue" : parsedCheckin.pointValue
+  }
+}}, function(err, result) {
     if (err) {
       deferred.reject();
       throw err;
     }
     if (result) {
-      console.log(result);
-      // mongodb.collection('users').update({facebookID: user.facebookID}, {createdAt: new Date()}, function(err, result) {
-        // user.createdAt = new Date();
-      // });
-      console.log('Added user!');
+      // console.log(result);
+      // console.log('Added checkin!');
       deferred.resolve(result);
     }
   });
-
   return deferred.promise;
 };
 

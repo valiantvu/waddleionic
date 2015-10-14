@@ -194,4 +194,38 @@ fixtures.places = [
 	}
 ];
 
+fixtures.footprints = [
+	{
+		address: "34460 Fremont Blvd",
+		address_extended: "Ste D",
+		category_ids: [],
+		category_labels: [],
+		country: "us",
+		email: "info@sweetorchiddesserts.com",
+		factual_id: "7a739b40-1add-012f-a1ad-003048c87378",
+		hours: {},
+		hours_display: "Tue-Sun 12:00 PM-11:00 PM",
+		iconUrlPrefix: "https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-",
+		iconUrlSuffix: "-2.svg",
+		latitude: 37.574792,
+		locality: "Fremont",
+		location: Object,
+		longitude: -122.039176,
+		name: "Sweet Orchid",
+		neighborhood: Array[1],
+		postcode: "94555",
+		region: "CA",
+		tel: "(510) 739-6300",
+		website: "http://www.sweetorchiddesserts.com/",
+		lat: 37.574792,
+		lng: -122.039176,
+		facebookID: '1376881809284443',
+		rating: 3,
+		footprintCaption: 'its aight, I guess...',
+		photo: 'http://www.briggsgarden.com/wp-content/uploads/2011/03/orchid-magenta.jpg',
+		photoHeight: 415,
+		photoWidth: 661
+	}
+];
+
 module.exports = fixtures;
