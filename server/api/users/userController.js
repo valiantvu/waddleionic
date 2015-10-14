@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var Q = require('q');
 
 var foursquareUtils = require('../../utils/foursquareUtils.js');
 var facebookUtils = require('../../utils/facebookUtils.js');
@@ -23,18 +24,14 @@ userController.userLogin = function (req, res) {
   var userFBFriendsData;
   var combinedFBCheckins;
   var alreadyExists = false;
+  console.log(userData);
 
   // Start creation of new user or update and retrieval of existing user
-  neo4jUser.createUniqueUser(userData)
-  .then(function (userNode) { 
-    //note: this has the user node
-    //console.dir(userNode.node._data.data)
-    user = userNode;
-    return facebookUtils.exchangeFBAccessToken(userData.fbToken);
-  })
-  // Store acces token on scope, Get profile pictures from Facebook
+
+  facebookUtils.exchangeFBAccessToken(userData.fbToken)
+  // Store access token on scope, Get profile pictures from Facebook
   .then(function (fbReqData) {
-    FBAccessToken = fbReqData.access_token
+    FBAccessToken = fbReqData.access_token;
     return facebookUtils.getFBProfilePicture(userData.facebookID);
   })
   .then(function (fbPicData) {
@@ -47,40 +44,60 @@ userController.userLogin = function (req, res) {
     } else {
       properties['fbProfilePicture'] = 'https://s3-us-west-2.amazonaws.com/waddle/logo+assets/WaddlePenguinLogo181.png';
     }
-    return user.setProperties(properties);
-  })
-  .then(function (userNode) { 
-    user = userNode;
-    return user.countAllCheckins(userData.facebookID);
-  })
-  //Path forks here for existing vs new users
-  .then(function (checkinsCount) {
-    // console.log('fb checkins: ', checkinsAlreadyStored.length);
-    // For existing users
-    if (user.getProperty('footprintsCount') >= 0) {
-      user.setProperty('footprintsCount', checkinsCount);
-      user.findAllFriends(0, 100)
-      .then(function (friendsList){
+    // lodash .extend has been renamed to .assign
+    _.assign(userData, properties);
 
-        userFBFriendsData = friendsList;
-        return user.getAggregatedFootprintList(user.node._data.data.facebookID, 0, 5)
-      })
-      .then(function (aggregatedFootprints) {
-        console.log('mongoUser?');
-        mongoUser.insertDocument();
-        var allData = {
-          user: user.node._data.data,
-          friends: userFBFriendsData,
-          aggregatedFootprints: aggregatedFootprints
-        };
-        res.json(allData);
-        res.status(200).end();
-      })
-    } else {
-    //   // For new users, start chain of facebook requests.
-    //   console.log('initiate get and parse fbdata');
-      getAndParseFBData();
-    }
+    mongoUser.createUser(userData)
+    .then(function (user) {
+      console.log(user);
+      var userExists = user.result.nModified === 1 ? true : false;
+
+      if (userExists) {
+        // update number of checkins
+      } else {
+        // get FB friends (getAndParseFBData)
+      }
+    })
+    .then(function (friendsList) {
+      // update friends list
+    });
+      
+    //note: this has the user node
+    //console.dir(userNode.node._data.data)
+    neo4jUser.createUniqueUser(userData)
+    .then(function (userNode) {
+      user = userNode;
+      return user.countAllCheckins(userData.facebookID);
+    })
+    //Path forks here for existing vs new users
+    .then(function (checkinsCount) {
+      // console.log('fb checkins: ', checkinsAlreadyStored.length);
+      // For existing users
+      if (user.getProperty('footprintsCount') >= 0) {
+        user.setProperty('footprintsCount', checkinsCount);
+        user.findAllFriends(0, 100)
+        .then(function (friendsList){
+
+          userFBFriendsData = friendsList;
+          return user.getAggregatedFootprintList(user.node._data.data.facebookID, 0, 5);
+        })
+        .then(function (aggregatedFootprints) {
+          // console.log('mongoUser?');
+          // mongoUser.insertDocument();
+          var allData = {
+            user: user.node._data.data,
+            friends: userFBFriendsData,
+            aggregatedFootprints: aggregatedFootprints
+          };
+          res.json(allData);
+          res.status(200).end();
+        });
+      } else {
+      //   // For new users, start chain of facebook requests.
+      //   console.log('initiate get and parse fbdata');
+        getAndParseFBData();
+      }
+    });
   })
   .catch(function(err) {
     console.log(err);
@@ -162,7 +179,7 @@ userController.userLogin = function (req, res) {
         // friends: userFBFriendsData,
         aggregatedFootprints: aggregatedFootprints
       };
-      console.log('allData', allData)
+      console.log('allData', allData);
       res.json(allData);
       res.status(200).end();
     })
@@ -170,7 +187,7 @@ userController.userLogin = function (req, res) {
       console.log(err);
       res.status(500).end();
     });
-  }
+  };
 };
 
 userController.addFoursquareData = function (req, res) {
