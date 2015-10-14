@@ -1,11 +1,26 @@
-// var MongoClient = require('mongodb').MongoClient;
-// var assert = require('assert');
-// var ObjectId = require('mongodb').ObjectID;
-// var url = 'mongodb://' + process.env['WADDLE_MONGOLAB_USERNAME'] + ':' + process.env['WADDLE_MONGOLAB_PASSWORD'] + '@ds027719.mongolab.com:27719/heroku_pchnmstb';
 var Q = require('q');
 var mongodb = require('./../../mongoConfig.js');
 var Checkin = {};
-// mongodb.bind('checkins');
+
+Checkin.createCheckin = function(parsedCheckin) {
+  var deferred = Q.defer();
+  mongodb.collection('users').update({facebookID: parsedCheckin.facebookID}, user, {upsert:true}, function(err, result) {
+    if (err) {
+      deferred.reject();
+      throw err;
+    }
+    if (result) {
+      console.log(result);
+      // mongodb.collection('users').update({facebookID: user.facebookID}, {createdAt: new Date()}, function(err, result) {
+        // user.createdAt = new Date();
+      // });
+      console.log('Added user!');
+      deferred.resolve(result);
+    }
+  });
+
+  return deferred.promise;
+};
 
 var insertCheckinDocument = function(parsedCheckin, db, callback) {
   var deferred = Q.defer();
