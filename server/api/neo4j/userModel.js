@@ -32,7 +32,7 @@ User.prototype.setProperty = function(property, value) {
 User.prototype.setProperties = function(properties) {
   for (var key in properties){
     if (properties.hasOwnProperty(key)){
-      this.node.data[key] = properties[key]
+      this.node.data[key] = properties[key];
     }
   }
   return this.save();
@@ -61,7 +61,7 @@ User.prototype.save = function (){
 User.createUniqueUser = function (data) {
   var deferred = Q.defer();
   if (!data.facebookID || !data.name){
-    deferred.reject(new Error('Requires facebookID and name parameters'))
+    deferred.reject(new Error('Requires facebookID and name parameters'));
   }
 
   var query = [
@@ -127,7 +127,7 @@ User.prototype.addFriends = function(friendsList){
   };
 
   request.post(options, function(err, response, body) {
-    if (err) { deferred.reject(err) }
+    if (err) { deferred.reject(err); }
     else {
       // console.log(body[0].body.data[0][0]);
       // console.log(response);
@@ -242,8 +242,8 @@ User.prototype.findAllFriends = function (page, skipAmount) {
     if (err) { deferred.reject(err); }
     else {
       var parsedResults = _.map(results, function (friend) {
-        return friend.friend._data.data
-      })
+        return friend.friend._data.data;
+      });
 
       deferred.resolve(parsedResults);
     }
@@ -276,7 +276,7 @@ User.searchFriends = function (user, friendNameQuery, page, skipAmount) {
     if (err) { deferred.reject(err); }
     else {
       var parsedResults = _.map(results, function (friend) {
-        return friend.friend._data.data
+        return friend.friend._data.data;
       });
       deferred.resolve(parsedResults);
     }
@@ -350,7 +350,7 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
             var commentData = {
               comment: item['comments'][i].data,
               commenter: item['commenters'][i].data
-            }
+            };
             // console.log(commentData);
             //removed DISTINCT modifier on collect(comment)--this is an temporary solution to remove duplicate comments
             if(!commentsArray.length) {
@@ -383,7 +383,7 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
           singleResult.folders = foldersArray;
         }
 
-        return singleResult
+        return singleResult;
       });
       deferred.resolve(parsedResults);
     }
@@ -402,7 +402,7 @@ User.prototype.countAllCheckins = function (facebookID) {
 
   var params = {
     facebookID: this.getProperty('facebookID')
-  }
+  };
 
   db.query(query, params, function (err, results) {
     if (err) { deferred.reject(err); }

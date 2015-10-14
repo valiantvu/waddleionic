@@ -428,7 +428,7 @@ userController.updateNotificationReadStatus = function (req, res) {
     console.log(err);
     res.status(500).end();
   })
-}
+};
 
 userController.getUnreadNotifications = function (req, res) {
   var user;
@@ -462,7 +462,7 @@ userController.getUnreadNotifications = function (req, res) {
     console.log(err);
     res.status(500).end();
   })
-}
+};
 
 userController.getReadNotifications = function (req, res) {
   var user;
@@ -497,7 +497,7 @@ userController.getReadNotifications = function (req, res) {
     res.status(500).end();
   })
   
-}
+};
 
 userController.getUserInfo = function (req, res) {
   var params = {};

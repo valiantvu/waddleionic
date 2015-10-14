@@ -79,6 +79,7 @@ describe('Waddle user routes GET requests', function () {
     });
 
     it('should return the information of the specified user', function (done) {
+      this.timeout(10000);
       request(app)
       .get('/api/users/userinfo/' + user.facebookID)
       .expect(200)
@@ -110,20 +111,29 @@ describe('Waddle user routes POST requests', function () {
   // before(function(done){
   // });
   it('should add new user on login', function (done) {
+    this.timeout(10000);
     request(app)
     .post('/api/users/userdata/')
     .send(testUser)
     .expect(200)
     .end(function(err, res) {
       if (err) throw err;
-      console.log('POSTED DATA:');
-      console.log(res);
-      expect(res.body.nModified).to.equal(1);
+      // console.log('POSTED DATA:');
+      // console.log(res);
+      expect(res.body.n).to.equal(1);
 
       mongoUser.findUser({facebookID: testUser.facebookID})
       .then(function(user) {
-        expect(user.firstName).to.equal("Dorothy");
+        // console.log(user);
         expect(user.facebookID).to.equal("1376881809284443");
+        expect(user.firstName).to.equal("Dorothy");
+        expect(user.lastName).to.equal("Bowersstein");
+        expect(user.email).to.equal("jqhpyje_bowersstein_1420934246@tfbnw.net");
+        expect(user.fbToken).to.equal("CAAMxNSdb8MMBADCvUUEKYO2ZCbyIAMZCmMarNhZAuXcnuZBkBK23HWYmTDp5sOylwnxxouogNACJOvWZC7ZCr4TdIO0U9dIcEca2LF1jt2JQvtNzLp7MHJkne9DQ9M3JvY1beejgViD0WrQQBYnQKSYVZCie6QjeKzSGocbZBTZB86ZBn19YWyg7fNZAFKwEZB9AgJkceI7Pos2sIgZDZD");
+        expect(user.fbProfilePicture).to.equal("https://www.facebook.com/photo.php?fbid=1377861495853141&l=25a2ac20d2");
+        expect(user.coverPhoto).to.equal("https://s-media-cache-ak0.pinimg.com/736x/c2/06/66/c20666fb99564cbe6c64c0ad83f79cd5.jpg");
+        expect(user.createdAt).to.equal(1444669695545);
+        expect(user.friends).to.equal([1376275232679666]);
         done();
       });
     });
