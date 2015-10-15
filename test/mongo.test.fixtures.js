@@ -8,8 +8,7 @@ fixtures.users = [
 		lastName: 'Bowersstein',
 		email: 'jqhpyje_bowersstein_1420934246@tfbnw.net',
 		// fbToken: 'CAAMxNSdb8MMBADCvUUEKYO2ZCbyIAMZCmMarNhZAuXcnuZBkBK23HWYmTDp5sOylwnxxouogNACJOvWZC7ZCr4TdIO0U9dIcEca2LF1jt2JQvtNzLp7MHJkne9DQ9M3JvY1beejgViD0WrQQBYnQKSYVZCie6QjeKzSGocbZBTZB86ZBn19YWyg7fNZAFKwEZB9AgJkceI7Pos2sIgZDZD',
-		
-		fbToken: 'CAAMxNSdb8MMBANtsFlBW7uzBlMsf3FlkmkIlWZB8Y2bEsHhMUCaACCNWmCVxQlnXXQ8hSiBAK8Wx87mZCM5jItKVtOQhvMk99x2Ua64VS6yeSD0NZCQd5YfFqhLdJRdYaUaxSazghLFGXFJZCBeZCUUlRZBNCYwxihHZAbmUfdAZAGjXWt0SYQZBN9fKxtiCwivUZC7zRqAtReUQZDZD',
+		fbToken: "CAAMxNSdb8MMBAGx3rqzaK62s25uwVrHn021nun3UEa993CSLYFgTiOZBcrGiJWNy7vGkKPEyxuMv3kZCauU7Rzojwcsio1bgkSi2bJ2XfeAPy72thaANKWcRolI5IR20ZBTQZA3J73Wb8Jr3PADElCQFVg6BYBjcFHvd6cR6s8HtDWagINw3cYNqiq8Qgkg5Lwu30kUTmAZDZD",
 		coverPhoto: 'https://s-media-cache-ak0.pinimg.com/736x/c2/06/66/c20666fb99564cbe6c64c0ad83f79cd5.jpg',
 		createdAt: 1444669695545,
 		updatedAt: new Date().getTime(),

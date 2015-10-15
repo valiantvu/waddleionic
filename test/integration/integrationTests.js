@@ -108,50 +108,50 @@ describe('Waddle user routes POST requests', function () {
   var testUser = mongoFixtures.users[0];
 
   // Retrieve short term access token for test users
-  before(function(done){
-    request(app)
-    .get()
-    // .expect(200)
-    .end(function(err, res) {
-      if (err) throw err;
-      console.log(res);
-      console.log('fb app accessed!');
-      // request(app)
-      // .get('https://graph.facebook.com/898529293496515/accounts/test-users'+String(res.body))
-      // .expect(200)
-      // .end(function(err, res) {
-      //   if (err) throw err;
-      //   console.log(res.body);
+  // before(function(done){
+  //   request(app)
+  //   .get()
+  //   // .expect(200)
+  //   .end(function(err, res) {
+  //     if (err) throw err;
+  //     console.log(res);
+  //     console.log('fb app accessed!');
+  //     // request(app)
+  //     // .get('https://graph.facebook.com/898529293496515/accounts/test-users'+String(res.body))
+  //     // .expect(200)
+  //     // .end(function(err, res) {
+  //     //   if (err) throw err;
+  //     //   console.log(res.body);
         
-      //   done();
-      // });
-      done();
-    });
-  });
+  //     //   done();
+  //     // });
+  //     done();
+    // });
+  // });
 
   it('should add new user on login', function (done) {
     this.timeout(7000);
-    // request(app)
-    // .post('/api/users/userdata/')
-    // .send(testUser)
-    // .expect(200)
-    // .end(function(err, res) {
-    //   if (err) throw err;
-    //   expect(res.body.result.n).to.equal(1);
-    //   mongoUser.findUser({facebookID: testUser.facebookID})
-    //   .then(function(user) {
-    //     console.log('Found test user!');
-    //     console.log(user);
-    //     expect(user.facebookID).to.equal("1376881809284443");
-    //     expect(user.firstName).to.equal("Dorothy");
-    //     expect(user.lastName).to.equal("Bowersstein");
-    //     expect(user.email).to.equal("jqhpyje_bowersstein_1420934246@tfbnw.net");
-    //     expect(user.fbProfilePicture).to.equal("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfa1/v/t1.0-1/p200x200/10906299_1377861495853141_9133878358668117315_n.jpg?oh=3e33c1713500cccb7508c75b480a9cb1&oe=56CEC3AD&__gda__=1451839969_fa2fb0666166848bd4da7898faf1a6bd");
-    //     expect(user.coverPhoto).to.equal("https://s-media-cache-ak0.pinimg.com/736x/c2/06/66/c20666fb99564cbe6c64c0ad83f79cd5.jpg");
-    //     expect(user.friends.length).to.equal(2);
-    //     done();
-    //   });
-    // });
-    done();
+    request(app)
+    .post('/api/users/userdata/')
+    .send(testUser)
+    .expect(200)
+    .end(function(err, res) {
+      if (err) throw err;
+      expect(res.body.result.n).to.equal(1);
+      mongoUser.findUser({facebookID: testUser.facebookID})
+      .then(function(user) {
+        console.log('Found test user!');
+        console.log(user);
+        expect(user.facebookID).to.equal("1376881809284443");
+        expect(user.firstName).to.equal("Dorothy");
+        expect(user.lastName).to.equal("Bowersstein");
+        expect(user.email).to.equal("jqhpyje_bowersstein_1420934246@tfbnw.net");
+        expect(user.fbProfilePicture).to.equal("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfa1/v/t1.0-1/p200x200/10906299_1377861495853141_9133878358668117315_n.jpg?oh=3e33c1713500cccb7508c75b480a9cb1&oe=56CEC3AD&__gda__=1451839969_fa2fb0666166848bd4da7898faf1a6bd");
+        expect(user.coverPhoto).to.equal("https://s-media-cache-ak0.pinimg.com/736x/c2/06/66/c20666fb99564cbe6c64c0ad83f79cd5.jpg");
+        expect(user.friends.length).to.equal(2);
+        done();
+      });
+    });
+    // done();
   });
 });
