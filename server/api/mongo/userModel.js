@@ -26,7 +26,7 @@ User.createUser = function (user) {
 
 User.setCreatedAt = function (user) {
   var deferred = Q.defer();
-  mongodb.collection('users').update({facebookID: user.facebookID}, { $set: {createdAt: new Date()} }, function(err, result) {
+  mongodb.collection('users').update({facebookID: user.facebookID}, { $set: {createdAt: new Date().getTime()} }, function(err, result) {
     if (err) {
       deferred.reject();
       throw err;
