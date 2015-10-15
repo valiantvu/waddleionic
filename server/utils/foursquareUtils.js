@@ -90,21 +90,23 @@ utils.tabThroughFoursquareCheckinHistory = function (user) {
   return deferred.promise;
 };
 
-utils.getVenueInfo = function (venueID, user) {
+utils.getVenueInfo = function (venueID) {
+  console.log('venueID', venueID);
   var deferred = Q.defer();
 
   var query = {
     v: '20150409'
   };
 
-  var oauthToken = user.getProperty('fsqToken');
+  //fetch user's fsq token, if available
+  // var oauthToken = user.getProperty('fsqToken');
 
-  if (oauthToken) {
-    query.oauth_token = oauthToken;
-  } else {
+  // if (oauthToken) {
+  //   query.oauth_token = oauthToken;
+  // } else {
     query.client_id = process.env.WADDLE_FOURSQUARE_CLIENT_ID;
     query.client_secret = process.env.WADDLE_FOURSQUARE_CLIENT_SECRET;
-  }
+  // }
 
   var queryPath = 'https://api.foursquare.com/v2/venues/' + venueID + '?&' + qs.stringify(query);
   console.log(queryPath);

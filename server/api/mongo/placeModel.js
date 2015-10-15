@@ -36,16 +36,19 @@ Place.findPlace = function(factual_id) {
   return deferred.promise;
 };
 
-Place.setFoursquareID = function(factual_id, foursquareID) {
+Place.setPropertyOnPlaceDocument = function(factual_id, key, value) {
+  var query = {
+    '$set': {}
+  };
+  query['$set'][key] = value;
   var deferred = Q.defer();
-  mongodb.collection('places').update({factual_id: factual_id}, {'$set':{foursquareID: foursquareID}}, function(err, result) {
+  mongodb.collection('places').update({factual_id: factual_id}, query, function(err, result) {
     if (err) {
       deferred.reject();
       throw err;
     }
     if (result) {
-      // console.log(result);
-      console.log('foursquareID set!');
+      console.log('property set!');
       deferred.resolve(result);
     }
   });

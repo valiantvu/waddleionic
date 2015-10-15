@@ -21,7 +21,7 @@ var checkinController = {};
 
 
 checkinController.handleNativeCheckin = function (req, res) {
-  var user, place;
+  var user, place, foursquareID;
   var nativeCheckin = helpers.addMetaDataToNativeCheckin(req.body);
   var factual_id = nativeCheckin.factualVenueData.factual_id;
   var facebookID = req.body.facebookID;
@@ -31,14 +31,11 @@ checkinController.handleNativeCheckin = function (req, res) {
     // console.log('this is my checkin', checkin.result);
     var checkinSuccess = checkin.result.nModified === 1 ? true : false;
     if(checkinSuccess) {
-      console.log('checkins is a succes!!');
-      return factualUtils.getRestaurantInfo(nativeCheckin.factualVenueData.factual_id);
+      return factualUtils.getRestaurantInfo(factual_id);
     }
   })
   .then(function (restaurantInfo) {
-    console.log('my restauarnt Info', restaurantInfo);
     if(restaurantInfo.length) {
-      console.log('restauarnt has length!');
       nativeCheckin.factualVenueData = restaurantInfo[0];
     }
     return mongoPlace.createOrUpdatePlace(nativeCheckin.factualVenueData);
@@ -48,20 +45,29 @@ checkinController.handleNativeCheckin = function (req, res) {
     // var placeUpdateSuccess = place.result.nModified === 1 ? true : false;
     // if(placeUpdateSuccess) {
       // console.log('placeSuccess', placeUpdateSuccess)
-      return mongoPlace.findPlace(nativeCheckin.factualVenueData.factual_id);
+      return mongoPlace.findPlace(factual_id);
     // }
   })
   .then(function (placeDocument) {
-    console.log('placeDocument', placeDocument);
-    if(!placeDocument.foursquareID) {
-      return factualUtils.getFoursquareIDFromFactualID(nativeCheckin.factualVenueData.factual_id); 
+    if(!placeDocument.foursquareID || !placeDocument.foursquareCategories) {
+      console.log('hiiii');
+      return factualUtils.getFoursquareIDFromFactualID(factual_id); 
     } else {
       res.status(201).end();
     }
   })
-  .then(function (foursquareID) {
-    console.log(foursquareID);
-    return mongoPlace.setFoursquareID(nativeCheckin.factualVenueData.factual_id, foursquareID);
+  .then(function (foursquareVenueID) {
+    console.log('foursquareID', foursquareVenueID);
+    foursquareID = foursquareVenueID;
+    return mongoPlace.setPropertyOnPlaceDocument(factual_id, 'foursquareID', foursquareID);
+  })
+  .then(function (place) {
+    console.log(place);
+    return foursquareUtils.getVenueInfo(foursquareID);
+  })
+  .then(function (foursquareVenueInfo) {
+    console.log(foursquareVenueInfo);
+    return mongoPlace.setPropertyOnPlaceDocument(factual_id, 'foursquareCategories', foursquareVenueInfo.venue.categories);
   })
   .then(function (place) {
     // var placeUpdateSuccess = place.result.nModified === 1 ? true : false;
