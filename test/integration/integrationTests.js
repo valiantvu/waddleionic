@@ -108,26 +108,26 @@ describe('Waddle user routes POST requests', function () {
   var testUser = mongoFixtures.users[0];
 
   // Retrieve short term access token for test users
-  // before(function(done){
-  //   request(app)
-  //   .get()
-  //   // .expect(200)
-  //   .end(function(err, res) {
-  //     if (err) throw err;
-  //     console.log(res);
-  //     console.log('fb app accessed!');
-  //     // request(app)
-  //     // .get('https://graph.facebook.com/898529293496515/accounts/test-users'+String(res.body))
-  //     // .expect(200)
-  //     // .end(function(err, res) {
-  //     //   if (err) throw err;
-  //     //   console.log(res.body);
+  before(function(done){
+    request(app)
+    .get()
+    // .expect(200)
+    .end(function(err, res) {
+      if (err) throw err;
+      console.log(res);
+      console.log('fb app accessed!');
+      // request(app)
+      // .get('https://graph.facebook.com/898529293496515/accounts/test-users'+String(res.body))
+      // .expect(200)
+      // .end(function(err, res) {
+      //   if (err) throw err;
+      //   console.log(res.body);
         
-  //     //   done();
-  //     // });
-  //     done();
-  //   });
-  // });
+      //   done();
+      // });
+      done();
+    });
+  });
 
   it('should add new user on login', function (done) {
     this.timeout(7000);

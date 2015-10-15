@@ -42,8 +42,13 @@ User.setCreatedAt = function (user) {
 
 User.setProperty = function (user, property, value) {
   var deferred = Q.defer();
-  var newProperty = {};
-  newProperty[property] = value;
+  var newProperty;
+  if (value) {
+    newProperty = {};
+    newProperty[property] = value;
+  } else {
+    newProperty = property;
+  }
   mongodb.collection('users').update({facebookID: user.facebookID}, { $set: newProperty }, function(err, result) {
     if (err) {
       deferred.reject();

@@ -61,7 +61,17 @@ userController.userLogin = function (req, res) {
         res.json({user: userData, alreadyExists: alreadyExists});
         res.status(200).end();
       } else {
-        mongoUser.setProperty(userData, 'footprintsCount', 0);
+        var properties = {
+          footprintsCount: 0,
+          friends: [],
+          checkins: [],
+          ratedPlaces: [],
+          notifications: [],
+          folders: [],
+          feed: [],
+        };
+
+        mongoUser.setProperty(userData, properties);
         mongoUser.setCreatedAt(userData);
         
         facebookUtils.getFBFriends(userData.facebookID, FBAccessToken)
