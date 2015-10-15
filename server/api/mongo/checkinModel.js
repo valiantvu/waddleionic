@@ -18,7 +18,9 @@ Checkin.createCheckin = function(checkin) {
     "photoWidth" : checkin.photoWidth,
     "photoHeight" : checkin.photoHeight,
     "source" : checkin.source,
-    "pointValue" : checkin.pointValue
+    "pointValue" : checkin.pointValue,
+    "likes" : [],
+    "comments" : []
   }
 }}, function(err, result) {
     if (err) {
