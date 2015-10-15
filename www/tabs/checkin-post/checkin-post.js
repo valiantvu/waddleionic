@@ -44,21 +44,21 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 	$scope.sendCheckinDataToServer = function(venueInfo) {
     $scope.disabled = true;
     $scope.loading = true;
+    console.log(venueInfo);
     console.log($scope.checkinInfo.photo);
-		var checkinData = venueInfo;
-		checkinData.lat = venueInfo.latitude;
-		checkinData.lng = venueInfo.longitude;
-		checkinData.rating = $scope.checkinInfo.rating;
-		checkinData.facebookID = window.sessionStorage.userFbID;
+		var checkinData = {
+      factualVenueData: $scope.venue.factualVenueData,
+      rating: $scope.checkinInfo.rating,
+      facebookID: window.sessionStorage.userFbID
+    };
+
 		if($scope.checkinInfo.footprintCaption) {
 			checkinData.footprintCaption = $scope.checkinInfo.footprintCaption;
 		}
 		// if(venueInfo.categories[0] && venueInfo.categories[0].name) {
 		// 	checkinData.categories = venueInfo.categories[0].name;
 		// }
-    if(venueInfo.category_ids.length) {
-      checkinData.categories = venueInfo.category_ids[0];
-    }
+    checkinData.categories = $scope.venue.factualVenueData.category_ids[0];
 		if($scope.checkinInfo.folder) {
 			checkinData.folderName = $scope.checkinInfo.folder;
 		}

@@ -1,21 +1,24 @@
 var Q = require('q');
 var mongodb = require('./../../mongoConfig.js');
+var uuid = require('node-uuid');
 var Checkin = {};
 
-Checkin.createCheckin = function(parsedCheckin) {
+Checkin.createCheckin = function(checkin) {
   var deferred = Q.defer();
 
-  mongodb.collection('users').update({facebookID: parsedCheckin.facebookID}, {'$push':{checkins: {
-    "checkinID" : parsedCheckin.checkinID,
-    "caption" : parsedCheckin.caption,
-    "rating" : parsedCheckin.rating,
-    "photo" : parsedCheckin.photo,
-    "photoWidth" : parsedCheckin.photoWidth,
-    "photoHeight" : parsedCheckin.photoHeight,
-    "facebookID" : parsedCheckin.facebookID,
-    "factualID" : parsedCheckin.factualID,
-    "source" : parsedCheckin.source,
-    "pointValue" : parsedCheckin.pointValue
+  mongodb.collection('users').update({facebookID: checkin.facebookID}, {'$push':{checkins: {
+    "checkinID" : uuid.v4(),
+    "factual_id" : checkin.factualVenueData.factual_id,
+    "facebookID" : checkin.facebookID,
+    "createdAt": new Date().getTime(),
+    "updatedAt": new Date().getTime(),
+    "caption" : checkin.footprintCaption,
+    "rating" : checkin.rating,
+    "photo" : checkin.photo,
+    "photoWidth" : checkin.photoWidth,
+    "photoHeight" : checkin.photoHeight,
+    "source" : checkin.source,
+    "pointValue" : checkin.pointValue
   }
 }}, function(err, result) {
     if (err) {

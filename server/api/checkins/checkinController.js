@@ -19,81 +19,114 @@ var categoryList = require('../../utils/categoryList.js');
 
 var checkinController = {};
 
+
 checkinController.handleNativeCheckin = function (req, res) {
-  var user, categories, newFootprint, place, restaurantInfo;
-  var nativeCheckin = req.body;
+  var user, place;
+  var nativeCheckin = helpers.addMetaDataToNativeCheckin(req.body);
+  var factual_id = nativeCheckin.factualVenueData.factual_id;
   var facebookID = req.body.facebookID;
 
-  parsedCheckin = helpers.parseNativeCheckin(nativeCheckin);
-  console.log('parsedCheckin: ' + JSON.stringify(parsedCheckin));
-  mongoCheckin.createCheckin(parsedCheckin)
+  mongoCheckin.createCheckin(nativeCheckin)
   .then(function (checkin) {
-    console.log('this is my checkin', checkin.result);
+    // console.log('this is my checkin', checkin.result);
     var checkinSuccess = checkin.result.nModified === 1 ? true : false;
     if(checkinSuccess) {
       console.log('checkins is a succes!!');
-      // return getFactualRestaurantInfo(parsedCheckin.factualID);
-      return mongoPlace.createOrUpdatePlace(parsedCheckin);
+      return factualUtils.getRestaurantInfo(nativeCheckin.factualVenueData.factual_id);
     }
   })
-  // .then(function (restaurantInfo) {
-  //     console.log(' my restauarnt Info', restaurantInfo);
-  //     if(restaurantInfo.length) {
-  //       parsedCheckin.restaurantInfo = restaurantInfo;
-  //     }
-  //     return mongoPlace.createOrUpdatePlace(parsedCheckin);
-  // })
-
-  neo4jUser.find({facebookID: facebookID})
-  .then(function (userNode) {
-    user = userNode;
-    return user.addCheckins([parsedCheckin]);
-  })
-  .then(function (footprint) {
-    console.log(footprint);
-    newFootprint = footprint
-    if(nativeCheckin.folderName) {
-      addNativeCheckinToFolder();
+  .then(function (restaurantInfo) {
+    console.log('my restauarnt Info', restaurantInfo);
+    if(restaurantInfo.length) {
+      console.log('restauarnt has length!');
+      nativeCheckin.factualVenueData = restaurantInfo[0];
     }
-    else {
-      res.json(newFootprint);
-      if(!footprint.place.foursquareID) {
-        // console.log('hi');
-        getFoursquareIDFromFactualID(newFootprint.place.factualID, user);
-      }
-      // getFactualRestaurantInfo(newFootprint.place.factualID);
+    return mongoPlace.createOrUpdatePlace(nativeCheckin.factualVenueData);
+  })
+  .then(function (place) {
+    console.log('place', place)
+    // var placeUpdateSuccess = place.result.nModified === 1 ? true : false;
+    // if(placeUpdateSuccess) {
+      // console.log('placeSuccess', placeUpdateSuccess)
+      return mongoPlace.findPlace(nativeCheckin.factualVenueData.factual_id);
+    // }
+  })
+  .then(function (placeDocument) {
+    console.log('placeDocument', placeDocument);
+    if(!placeDocument.foursquareID) {
+      return factualUtils.getFoursquareIDFromFactualID(nativeCheckin.factualVenueData.factual_id); 
+    } else {
       res.status(201).end();
     }
   })
-  // .then(function (categoryData) {
-  //   categories = categoryData[0].body.data[0];
-  //   console.log('these are the categories: ', categories);
-  //   user.assignExpertiseToCategory(categories);
-  // })
+  .then(function (foursquareID) {
+    console.log(foursquareID);
+    return mongoPlace.setFoursquareID(nativeCheckin.factualVenueData.factual_id, foursquareID);
+  })
+  .then(function (place) {
+    // var placeUpdateSuccess = place.result.nModified === 1 ? true : false;
+    // if(placeUpdateSuccess) {
+      res.status(201).end();
+    // }
+  })
   .catch(function (err) {
     console.log(err);
     res.status(500).end();
   });
 
-  var addNativeCheckinToFolder = function() {
-    var newFootprintWithFolder;
-    neo4jCheckin.addToFolder(newFootprint.user.facebookID, newFootprint.checkin.checkinID, nativeCheckin.folderName)
-    .then(function (data) {
-      newFootprint.folders = {name: nativeCheckin.folderName};
-      newFootprintWithFolder = newFootprint;
-      if(!newFootprint.place.foursquareID) {
-        helpers.getFoursquareIDFromFactualID();
-      } else {
-        res.json(newFootprint);
-        res.status(201).end();
-      }
-    })
-    .catch(function(err) {
-      console.log(err);
-      res.status(500).end();
-    });
-  };
 
+
+  // parsedCheckinForNeo4j = helpers.parseNativeCheckinForNeo4j(nativeCheckin);
+  // console.log('parsedCheckin: ' + JSON.stringify(parsedCheckinForNeo4j));
+  // neo4jUser.find({facebookID: facebookID})
+  // .then(function (userNode) {
+  //   user = userNode;
+  //   return user.addCheckins([parsedCheckinForNeo4j]);
+  // })
+  // .then(function (footprint) {
+  //   console.log(footprint);
+  //   newFootprint = footprint
+  //   if(nativeCheckin.folderName) {
+  //     addNativeCheckinToFolder();
+  //   }
+  //   else {
+  //     res.json(newFootprint);
+  //     if(!footprint.place.foursquareID) {
+  //       // console.log('hi');
+  //       getFoursquareIDFromFactualID(newFootprint.place.factualID, user);
+  //     }
+  //     // getFactualRestaurantInfo(newFootprint.place.factualID);
+  //     res.status(201).end();
+  //   }
+  // })
+  // // .then(function (categoryData) {
+  // //   categories = categoryData[0].body.data[0];
+  // //   console.log('these are the categories: ', categories);
+  // //   user.assignExpertiseToCategory(categories);
+  // // })
+  // .catch(function (err) {
+  //   console.log(err);
+  //   res.status(500).end();
+  // });
+
+  // var addNativeCheckinToFolder = function() {
+  //   var newFootprintWithFolder;
+  //   neo4jCheckin.addToFolder(newFootprint.user.facebookID, newFootprint.checkin.checkinID, nativeCheckin.folderName)
+  //   .then(function (data) {
+  //     newFootprint.folders = {name: nativeCheckin.folderName};
+  //     newFootprintWithFolder = newFootprint;
+  //     if(!newFootprint.place.foursquareID) {
+  //       helpers.getFoursquareIDFromFactualID();
+  //     } else {
+  //       res.json(newFootprint);
+  //       res.status(201).end();
+  //     }
+  //   })
+  //   .catch(function(err) {
+  //     console.log(err);
+  //     res.status(500).end();
+  //   });
+  // };
 };
 
 checkinController.getFoursquareVenueInfo = function (req, res) {
@@ -234,6 +267,9 @@ checkinController.searchFoursquareVenuesWeb = function (req, res) {
   });
 };
 
+
+//this function is altered to page through the factual API results (as opposed to just serving the first 20 results)
+//currently broken
 checkinController.searchFactualVenuesByQueryAndNear = function (req, res) {
   console.log("hello", req.params);
   var near = req.params.near;
@@ -241,27 +277,33 @@ checkinController.searchFactualVenuesByQueryAndNear = function (req, res) {
   var offset = 50;
   var previousResults = 1;
   var page = 0;
+  var venues = [];
+  var venue;
 
   while(previousResults > 0) {
     console.log('previousResults', previousResults);
     offset *= page;
   factualUtils.searchVenuesByQueryAndNear(near, query, offset)
-  .then(function (venues) {
-    previousResults = venues.length;
+  .then(function (factualVenues) {
+    previousResults = factualVenues.length;
     page++;
-    // console.log(JSON.stringify(venues[0]));
-    _.each(venues, function(venue) {
-      if(venue.category_labels) {
-        // console.log(JSON.stringify(venue.category_labels));
-        // venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
-        // venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
-        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
-        venue.iconUrlSuffix = '-2.svg';
+    // console.log(JSON.stringify(factualVenues[0]));
+    _.each(factualVenues, function(factualVenue) {
+      venue = {};
+      venue.factualVenueData = factualVenue;
+      venue.addendum = {};
+      if(factualVenue.category_labels) {
+        // console.log(JSON.stringify(factualVenue.category_labels));
+        // factualVenue.iconUrlPrefix = categoryList.dictionary[factualVenue.categories[0].name].prefix;
+        // factualVenue.iconUrlSuffix = categoryList.dictionary[factualVenue.categories[0].name].suffix;
+        venue.addendum.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.addendum.iconUrlSuffix =  '-2.svg';
       }
       else {
-        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
-        venue.iconUrlSuffix = '-2.svg';
+        venue.addendum.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.addendum.iconUrlSuffix = '-2.svg';
       }
+      venues.push(venue);
     })
     res.json(venues);
   })
@@ -274,31 +316,36 @@ checkinController.searchFactualVenuesByQueryAndNear = function (req, res) {
 }
 
 checkinController.searchFactualVenuesByGeolocation = function (req, res) {
-  var miles;
+  var miles, venue
   var latlng = [req.params.lat, req.params.lng];
+  var venues = [];
 
   factualUtils.searchVenuesByGeolocation(latlng)
-  .then(function(venues) {
-    _.each(venues, function(venue) {
-      if(venue['$distance']) {
+  .then(function(factualVenues) {
+    _.each(factualVenues, function(factualVenue) {
+      venue = {};
+      venue.factualVenueData = factualVenue;
+      venue.addendum = {};
+      if(factualVenue['$distance']) {
         //convert meters to miles, rounded to the nearest .1 mi;
-        miles = Math.round((venue['$distance'] * 0.00062137119) * 10) / 10;
-        // venue['$distance'] = miles;
-        venue.location = {};
-        venue.location.distance = miles;
+        miles = Math.round((factualVenue['$distance'] * 0.00062137119) * 10) / 10;
+        // factualVenue['$distance'] = miles;
+        venue.addendum.location = {};
+        venue.addendum.location.distance = miles;
       }
-      if(venue.category_labels) {
-        // console.log(JSON.stringify(venue.category_labels));
-        // venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
-        // venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
-        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
-        venue.iconUrlSuffix = '-2.svg';
+      if(factualVenue.category_labels) {
+        // console.log(JSON.stringify(factualVenue.category_labels));
+        // factualVenue.iconUrlPrefix = categoryList.dictionary[factualVenue.categories[0].name].prefix;
+        // factualVenue.iconUrlSuffix = categoryList.dictionary[factualVenue.categories[0].name].suffix;
+        venue.addendum.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.addendum.iconUrlSuffix = '-2.svg';
       }
       else {
-        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
-        venue.iconUrlSuffix = '-2.svg';
+        venue.addendum.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.addendum.iconUrlSuffix = '-2.svg';
       }
-    })
+      venues.push(venue);
+    });
     res.json(venues);
   })
   .catch(function (err){
@@ -325,12 +372,12 @@ checkinController.searchFoursquareVenuesMobile = function (req, res) {
         venue.location.distance = miles;
       }
       if(venue.categories[0] && venue.categories[0].name && categoryList.dictionary[venue.categories[0].name]) {
-        venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
-        venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
+        venue.addendum.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
+        venue.addendum.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
       }
       else {
-        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
-        venue.iconUrlSuffix = '-2.svg';
+        venue.addendum.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.addendum.iconUrlSuffix = '-2.svg';
       }
     })
     res.json(venues);
@@ -342,30 +389,34 @@ checkinController.searchFoursquareVenuesMobile = function (req, res) {
 };
 
 checkinController.searchFactualVenuesBySearchQueryAndGeolocation = function (req, res) {
-  var miles;
+  var miles, venue;
   var latlng = [req.params.lat, req.params.lng];
   var query = req.params.query;
+  var venues = [];
 
   factualUtils.searchVenuesBySearchQueryAndGeolocation(latlng, query)
-  .then(function (venues) {
-    _.each(venues, function(venue) {
-      if(venue['$distance']) {
+  .then(function (factualVenues) {
+    _.each(factualVenues, function(factualVenue) {
+      venue = {};
+      venue.factualVenueData = factualVenue;
+      venue.addendum = {};
+      if(factualVenue['$distance']) {
         //convert meters to miles, rounded to the nearest .1 mi;
-        miles = Math.round((venue['$distance'] * 0.00062137119) * 10) / 10;
-        // venue['$distance'] = miles;
+        miles = Math.round((factualVenue['$distance'] * 0.00062137119) * 10) / 10;
+        // factualVenue['$distance'] = miles;
         venue.location = {};
         venue.location.distance = miles;
       }
-      if(venue.category_labels) {
-        // console.log(JSON.stringify(venue.category_labels));
-        // venue.iconUrlPrefix = categoryList.dictionary[venue.categories[0].name].prefix;
-        // venue.iconUrlSuffix = categoryList.dictionary[venue.categories[0].name].suffix;
-        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
-        venue.iconUrlSuffix = '-2.svg';
+      if(factualVenue.category_labels) {
+        // console.log(JSON.stringify(factualVenue.category_labels));
+        // factualVenue.iconUrlPrefix = categoryList.dictionary[factualVenue.categories[0].name].prefix;
+        // factualVenue.iconUrlSuffix = categoryList.dictionary[factualVenue.categories[0].name].suffix;
+        venue.addendum.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.addendum.iconUrlSuffix = '-2.svg';
       }
       else {
-        venue.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
-        venue.iconUrlSuffix = '-2.svg';
+        venue.addendum.iconUrlPrefix = 'https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-';
+        venue.addendum.iconUrlSuffix = '-2.svg';
       }
     })
     res.json(venues);
