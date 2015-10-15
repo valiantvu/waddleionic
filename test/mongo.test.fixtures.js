@@ -3,14 +3,16 @@ var fixtures = {};
 fixtures.users = [
 	{
 		facebookID: '1376881809284443',
+		name: 'Dorothy Amhhgiajeahb Bowersstein',
 		firstName: 'Dorothy',
 		lastName: 'Bowersstein',
 		email: 'jqhpyje_bowersstein_1420934246@tfbnw.net',
+		// fbToken: 'CAAMxNSdb8MMBADCvUUEKYO2ZCbyIAMZCmMarNhZAuXcnuZBkBK23HWYmTDp5sOylwnxxouogNACJOvWZC7ZCr4TdIO0U9dIcEca2LF1jt2JQvtNzLp7MHJkne9DQ9M3JvY1beejgViD0WrQQBYnQKSYVZCie6QjeKzSGocbZBTZB86ZBn19YWyg7fNZAFKwEZB9AgJkceI7Pos2sIgZDZD',
+		fbToken: 'CAAMxNSdb8MMBAJAKCSOSypCeeAoSWrUm4Pf5i8sJDq2ZCbAQ3ykIVzECV1ZBrKOZA6lDYZAgJ6JDPmSftGcmu4gHvZCuZAsO1TfgXuJ78xRZA61jDQtAIXUUZAb9fAVOWxPALhdeJNO6Qnc06C6TcKO5xZBC0z3TY6R9xV9CIbekGosZCZAVwgUmvZBZCF03ZAQCfO598ZCy2Y8xux7lJs6i895K4QB',
 		coverPhoto: 'https://s-media-cache-ak0.pinimg.com/736x/c2/06/66/c20666fb99564cbe6c64c0ad83f79cd5.jpg',
 		createdAt: 1444669695545,
 		updatedAt: new Date().getTime(),
 		lastLogin: new Date().getTime(),
-		friends: [1376275232679666],
 		ratedPlaces: [],
 		checkins: [
 			{

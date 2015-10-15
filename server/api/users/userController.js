@@ -22,13 +22,18 @@ userController.userLogin = function (req, res) {
   var userFBStatusesData = [];
   var userFBFriendsData;
   var combinedFBCheckins;
-  // console.log(userData);
+  console.log(userData);
 
   facebookUtils.exchangeFBAccessToken(userData.fbToken)
   // Store access token on scope, Get profile pictures from Facebook
   .then(function (fbReqData) {
-    FBAccessToken = fbReqData.access_token;
-    return facebookUtils.getFBProfilePicture(userData.facebookID);
+    // console.log(fbReqData);
+    if (fbReqData.access_token) {
+      FBAccessToken = fbReqData.access_token;
+      return facebookUtils.getFBProfilePicture(userData.facebookID);
+    } else {
+      res.status(500).send('FB Access Token not found :/');
+    }
   })
   .then(function (fbPicData) {
     var properties = {
@@ -46,7 +51,7 @@ userController.userLogin = function (req, res) {
     // Start creation of new user or update and retrieval of existing user
     mongoUser.createUser(userData)
     .then(function (dbData) {
-      console.log(dbData.result);
+      // console.log(dbData.result);
       var alreadyExists = dbData.result.nModified === 1 ? true : false;
       mongoUser.findUser(userData);
       if (alreadyExists) {
@@ -62,14 +67,14 @@ userController.userLogin = function (req, res) {
         facebookUtils.getFBFriends(userData.facebookID, FBAccessToken)
         .then(function (fbRawUserData) {
           mongoUser.addFriends(userData, fbRawUserData.data);
-          res.json({user: userData, alreadyExists: alreadyExists});
+          res.json({user: userData, alreadyExists: alreadyExists, result: dbData.result});
           res.status(200).end();
         });
       }
     })
     .catch(function(err) {
       console.log(err);
-      res.status(500).end();
+      res.status(500).send(err);
     });
 
     //note: this has the user node
@@ -95,12 +100,12 @@ userController.userLogin = function (req, res) {
     })
     .catch(function(err) {
       console.log(err);
-      res.status(500).end();
+      res.status(500).send(err);
     });
   })
   .catch(function(err) {
     console.log(err);
-    res.status(500).end();
+    res.status(500).send(err);
   });
 };
 

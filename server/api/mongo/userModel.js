@@ -11,12 +11,13 @@ User.createUser = function (user) {
       throw err;
     }
     if (result) {
-      console.log(result);
+      // console.log(result);
       // mongodb.collection('users').update({facebookID: user.facebookID}, {createdAt: new Date()}, function(err, result) {
         // user.createdAt = new Date();
       // });
       console.log('Added user!');
-      deferred.resolve(result);
+      var updatedUser = User.findUser({facebookID: user.facebookID});
+      deferred.resolve({result: result, updatedUser: updatedUser});
     }
   });
 
@@ -87,7 +88,7 @@ User.findUser = function (user) {
     }
     if (result) {
       console.log('Found user!');
-      console.log(result);
+      // console.log(result);
       deferred.resolve(result);
     }
   });
@@ -96,7 +97,7 @@ User.findUser = function (user) {
 };
 
 User.addFriends = function (user, friends) {
-  console.log(friends);
+  // console.log(friends);
   var deferred = Q.defer();
   mongodb.collection('users').update({facebookID: user.facebookID}, {$set: {friends: friends} }, function(err, result) {
     if (err) {
@@ -104,7 +105,7 @@ User.addFriends = function (user, friends) {
       throw err;
     }
     if (result) {
-      console.log(result);
+      // console.log(result);
       console.log('Friends added!');
       deferred.resolve(result);
     }
