@@ -59,7 +59,7 @@ setTimeout(function() {
       UserRequests.allData = storedUserData.data;
       $scope.loading = false;
       // console.log('alldata:  ', UserRequests.allData)
-      if(UserRequests.allData.user.footprintsCount >= 0) {
+      if(UserRequests.allData.alreadyExists) {
         console.log('heeyah');
         // $ionicHistory.clearCache()
         // .then(function() {

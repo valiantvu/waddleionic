@@ -3,16 +3,16 @@ var fixtures = {};
 fixtures.users = [
 	{
 		facebookID: '1376881809284443',
+		name: 'Dorothy Amhhgiajeahb Bowersstein',
 		firstName: 'Dorothy',
 		lastName: 'Bowersstein',
 		email: 'jqhpyje_bowersstein_1420934246@tfbnw.net',
-		fbToken: 'CAAMxNSdb8MMBADCvUUEKYO2ZCbyIAMZCmMarNhZAuXcnuZBkBK23HWYmTDp5sOylwnxxouogNACJOvWZC7ZCr4TdIO0U9dIcEca2LF1jt2JQvtNzLp7MHJkne9DQ9M3JvY1beejgViD0WrQQBYnQKSYVZCie6QjeKzSGocbZBTZB86ZBn19YWyg7fNZAFKwEZB9AgJkceI7Pos2sIgZDZD',
-		fbProfilePicture: 'https://www.facebook.com/photo.php?fbid=1377861495853141&l=25a2ac20d2',
+		// fbToken: 'CAAMxNSdb8MMBADCvUUEKYO2ZCbyIAMZCmMarNhZAuXcnuZBkBK23HWYmTDp5sOylwnxxouogNACJOvWZC7ZCr4TdIO0U9dIcEca2LF1jt2JQvtNzLp7MHJkne9DQ9M3JvY1beejgViD0WrQQBYnQKSYVZCie6QjeKzSGocbZBTZB86ZBn19YWyg7fNZAFKwEZB9AgJkceI7Pos2sIgZDZD',
+		// fbToken: "CAAMxNSdb8MMBAGx3rqzaK62s25uwVrHn021nun3UEa993CSLYFgTiOZBcrGiJWNy7vGkKPEyxuMv3kZCauU7Rzojwcsio1bgkSi2bJ2XfeAPy72thaANKWcRolI5IR20ZBTQZA3J73Wb8Jr3PADElCQFVg6BYBjcFHvd6cR6s8HtDWagINw3cYNqiq8Qgkg5Lwu30kUTmAZDZD",
 		coverPhoto: 'https://s-media-cache-ak0.pinimg.com/736x/c2/06/66/c20666fb99564cbe6c64c0ad83f79cd5.jpg',
 		createdAt: 1444669695545,
 		updatedAt: new Date().getTime(),
 		lastLogin: new Date().getTime(),
-		friends: [1376275232679666],
 		ratedPlaces: [],
 		checkins: [
 			{
@@ -191,6 +191,39 @@ fixtures.places = [
 			organicOptions: true,
 			vegetarianOptions: true
 		}
+	}
+];
+
+fixtures.footprints = [
+{factualVenueData: {
+		address: "34460 Fremont Blvd",
+		address_extended: "Ste D",
+		category_ids: [],
+		category_labels: [],
+		country: "us",
+		email: "info@sweetorchiddesserts.com",
+		factual_id: "7a739b40-1add-012f-a1ad-003048c87378",
+		hours: {},
+		hours_display: "Tue-Sun 12:00 PM-11:00 PM",
+		latitude: 37.574792,
+		locality: "Fremont",
+		location: Object,
+		longitude: -122.039176,
+		name: "Sweet Orchid",
+		neighborhood: Array[1],
+		postcode: "94555",
+		region: "CA",
+		tel: "(510) 739-6300",
+		website: "http://www.sweetorchiddesserts.com/",
+	},
+	iconUrlPrefix: "https://s3-us-west-2.amazonaws.com/waddle/Badges/uncatagorized-1/uncategorized-",
+	iconUrlSuffix: "-2.svg",
+	facebookID: '1376881809284443',
+	rating: 3,
+	footprintCaption: 'its aight, I guess...',
+	photo: 'http://www.briggsgarden.com/wp-content/uploads/2011/03/orchid-magenta.jpg',
+	photoHeight: 415,
+	photoWidth: 661
 	}
 ];
 

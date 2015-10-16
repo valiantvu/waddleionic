@@ -49,13 +49,14 @@ utils.getFBProfilePicture = function (userID) {
     });
 
   return deferred.promise;
-}
+};
 
-utils.getFBFriends = function (user) {
+utils.getFBFriends = function (fbID, fbToken) {
+  console.log(fbID, fbToken);
   var deferred = Q.defer();
 
-  var fbID = user.getProperty('facebookID');
-  var fbToken = user.getProperty('fbToken');
+  // var fbID = user.getProperty('facebookID');
+  // var fbToken = user.getProperty('fbToken');
   
   var query = {
     access_token: fbToken
@@ -126,7 +127,7 @@ utils.makeFBPaginatedRequest = function (queryPath, container) {
     .then(function (data) {
       var dataObj = JSON.parse(data);
 
-      container.push(dataObj.data)
+      container.push(dataObj.data);
       console.log("makeFBPaginatedRequest container: " + JSON.stringify(container));
 
       if (!dataObj.paging) {
@@ -144,7 +145,7 @@ utils.makeFBPaginatedRequest = function (queryPath, container) {
     });
 
   return deferred.promise;
-}
+};
 
 utils.getFBPhotos = function (user) {
   var deferred = Q.defer();
@@ -193,7 +194,7 @@ utils.getFBFeedItemsWithLocation = function(user) {
   var query = {
     access_token: fbToken,
     'with': 'location'
-  }
+  };
 
   var queryPath = 'https://graph.facebook.com/'+fbID+'/feed?' + qs.stringify(query);
 
@@ -204,7 +205,7 @@ utils.getFBFeedItemsWithLocation = function(user) {
   deferred.resolve(utils.makeFBPaginatedRequest(queryPath, feedItemContainer));
 
   return deferred.promise;
-}
+};
 
 utils.handleUpdateObject = function (update) {
   console.log("update: " + JSON.stringify(update));
@@ -290,7 +291,7 @@ utils.parseFBData = function (user, data) {
         'category': 'null',
         'pointValue': 3,
         'source': 'facebook'
-      }
+      };
 
       if (datum.likes) {
         place.likes = datum.likes.data.length;
@@ -328,12 +329,12 @@ utils.parseFBData = function (user, data) {
   Q.all(foursquareVenueQueries)
     .then(function (foursquareVenueIDs) {
       _.each(parsedData, function (datum, index) {
-        datum.foursquareID = foursquareVenueIDs[index]["foursquareID"]
+        datum.foursquareID = foursquareVenueIDs[index]["foursquareID"];
         if(foursquareVenueIDs[index]["category"]) {
           datum.category = foursquareVenueIDs[index]["category"];
         }
       });
-      console.log("parsedData: ", parsedData)
+      console.log("parsedData: ", parsedData);
       deferred.resolve(parsedData);
     })
     .catch(function (err) {

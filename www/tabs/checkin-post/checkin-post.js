@@ -8,7 +8,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 	$scope.selectedFolder = null;
   $scope.disabled = false;
   $scope.loading = false;
-  $scope.fbProfilePicture = $localstorage.getObject('user').fbProfilePicture;
+  // $scope.fbProfilePicture = $localstorage.getObject('user').fbProfilePicture;
 
    //janky way to load venue list instead of checkin post when swapping back to checkin tab
   $scope.$on("$ionicView.enter", function(scopes, states) {
@@ -21,15 +21,15 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 	$scope.venue = NativeCheckin.selectedVenue;
 
   var photoUUID;
-	console.log($scope.venue)
+	console.log($scope.venue);
 
 	$scope.viewFoldersList = function() {
     UserRequests.fetchFolders(window.sessionStorage.userFbID, 0, 10)
     .then(function (folders) {
       $scope.folders = folders.data;
-      UserRequests.userFolderData = folders.data
-      console.log($scope.folders)
-    })
+      UserRequests.userFolderData = folders.data;
+      console.log($scope.folders);
+    });
    };
 
   $scope.passSelectedFolderInfo = function(folder, $index) {
@@ -44,26 +44,23 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
 	$scope.sendCheckinDataToServer = function(venueInfo) {
     $scope.disabled = true;
     $scope.loading = true;
+    console.log(venueInfo);
     console.log($scope.checkinInfo.photo);
 		var checkinData = {
-			factual_id: venueInfo.factual_id,
-			name: venueInfo.name,
-			lat: venueInfo.latitude,
-			lng: venueInfo.longitude,
-			rating: $scope.checkinInfo.rating,
-			facebookID: window.sessionStorage.userFbID
-		};
+      factualVenueData: $scope.venue.factualVenueData,
+      rating: $scope.checkinInfo.rating,
+      facebookID: window.sessionStorage.userFbID
+    };
+
 		if($scope.checkinInfo.footprintCaption) {
-			checkinData.footprintCaption = $scope.checkinInfo.footprintCaption
+			checkinData.footprintCaption = $scope.checkinInfo.footprintCaption;
 		}
 		// if(venueInfo.categories[0] && venueInfo.categories[0].name) {
 		// 	checkinData.categories = venueInfo.categories[0].name;
 		// }
-    if(venueInfo.category_ids.length) {
-      checkinData.categories = venueInfo.category_ids[0];
-    }
+    checkinData.categories = $scope.venue.factualVenueData.category_ids[0];
 		if($scope.checkinInfo.folder) {
-			checkinData.folderName = $scope.checkinInfo.folder
+			checkinData.folderName = $scope.checkinInfo.folder;
 		}
     if($scope.checkinInfo.photo) {
       var photoUUID = uuid4.generate();
@@ -114,9 +111,9 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
         //of displaying the new footprint twice, in the case that the new footprint gets appended to the list after the footprints list has already
         //refreshed with the new data
           $rootScope.$broadcast('newFootprint', footprint);
-        })
+        });
     }
-	}
+	};
 
 
 
@@ -138,7 +135,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
   	UserRequests.addFolder(window.sessionStorage.userFbID, folderName, folderDescription)
   	.then (function (data) {
   		$scope.addFootprintToFolder(folderName);
-  	})
+  	});
 
   };
 
@@ -162,7 +159,7 @@ var CheckinPostController = function ($scope, $rootScope, $state, NativeCheckin,
             console.log(public_url);
             i++;
             uploadImageToAWS();
-          })
+          });
         } else {
           console.log('finished uploading photos');
         }
@@ -249,10 +246,10 @@ var StarRatingDirective = function () {
 	return {
 		restrict: 'A',
 		template: '<ul class="rating">'
-		   + ' <li ng-repeat="star in stars" ng-class="star" ng-click="toggle($index)">'
-		   + '  <i class="ion-star checkin"></i>'
-		   + ' </li>'
-		   + '</ul>',
+  	  + ' <li ng-repeat="star in stars" ng-class="star" ng-click="toggle($index)">'
+  	  + '  <i class="ion-star checkin"></i>'
+  	  + ' </li>'
+  	  + '</ul>',
 		scope: {
 		 ratingValue: '=',
 		 max : '=',
@@ -397,13 +394,13 @@ var PictureSelectDirective = function ($q) {
                   });          
                  console.log(photoBucket);
 
-               }
+               };
                console.dir(photoBucket);
                fileReader.readAsDataURL(photoBucket[0].blob);
             });
 
         }
-    }
+    };
 };
 
 PictureSelectDirective.$inject = ['$q'];

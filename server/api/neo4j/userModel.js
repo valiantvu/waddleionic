@@ -32,7 +32,7 @@ User.prototype.setProperty = function(property, value) {
 User.prototype.setProperties = function(properties) {
   for (var key in properties){
     if (properties.hasOwnProperty(key)){
-      this.node.data[key] = properties[key]
+      this.node.data[key] = properties[key];
     }
   }
   return this.save();
@@ -61,7 +61,7 @@ User.prototype.save = function (){
 User.createUniqueUser = function (data) {
   var deferred = Q.defer();
   if (!data.facebookID || !data.name){
-    deferred.reject(new Error('Requires facebookID and name parameters'))
+    deferred.reject(new Error('Requires facebookID and name parameters'));
   }
 
   var query = [
@@ -127,7 +127,7 @@ User.prototype.addFriends = function(friendsList){
   };
 
   request.post(options, function(err, response, body) {
-    if (err) { deferred.reject(err) }
+    if (err) { deferred.reject(err); }
     else {
       // console.log(body[0].body.data[0][0]);
       // console.log(response);
@@ -163,20 +163,20 @@ User.prototype.addCheckins = function(combinedCheckins){
     'MERGE (checkin:Checkin {checkinID: {checkinID}})',
     'ON CREATE SET checkin = {checkinID: {checkinID}, likes: {likes}, photoSmall: {photoSmall}, photoLarge: {photoLarge}, photo: {photo}, photoHeight: {photoHeight}, photoWidth: {photoWidth}, caption: {caption}, checkinTime: {checkinTime}, pointValue: {pointValue}, rating: {rating}, source: {source}}',
     // 'ON MATCH SET checkin.checkinTime = {checkinTime}, checkin.likes = {likes}, checkin.photoSmall = {photoSmall}, checkin.photoLarge = {photoLarge}, checkin.caption = {caption}, checkin.rating = {rating}, checkin.source = {source}',
-    'MERGE (place:Place {factualID: {factualID}})',
-    'ON CREATE SET place = {name: {name}, factualID: {factualID}, lat: {lat}, lng: {lng}, country: {country}, province:{province}, city:{city}, category: {category}}',
-    'ON MATCH SET place.name = {name}, place.lat = {lat}, place.lng = {lng}, place.country = {country}, place.province = {province}, place.city = {city}, place.category = {category}',
+    'MERGE (place:Place {factual_id: {factual_id}})',
+    'ON CREATE SET place = {name: {name}, factual_id: {factual_id}, latitude: {latitude}, longitude: {longitude}, country: {country}, region:{region}, locality:{locality}, category: {category}}',
+    'ON MATCH SET place.name = {name}, place.latitude = {latitude}, place.longitude = {longitude}, place.country = {country}, place.region = {region}, place.locality = {locality}, place.category = {category}',
     'MERGE (country:Country {name: {country}})',
-    'MERGE (province:Province {name: {province}, country: {country}})',
-    'MERGE (city:City {name: {city}, province:{province}, country:{country}})',
+    'MERGE (region:Region {name: {region}, country: {country}})',
+    'MERGE (locality:Locality {name: {locality}, region:{region}, country:{country}})',
     'MERGE (category:Category {name:{category}})',
     'MERGE (user)-[:hasCheckin]->(checkin)',
     'MERGE (checkin)-[:hasPlace]->(place)',
-    'MERGE (place)-[:hasCity]->(city)',
+    'MERGE (place)-[:hasLocality]->(locality)',
     'MERGE (place)-[:hasCategory]->(category)',
-    'MERGE (city)-[:hasCountry]->(country)',
-    'MERGE (province)-[:hasCountry]->(country)',
-    'MERGE (city)-[:hasProvince]->(province)',
+    'MERGE (locality)-[:hasCountry]->(country)',
+    'MERGE (region)-[:hasCountry]->(country)',
+    'MERGE (locality)-[:hasRegion]->(region)',
     'RETURN user, checkin, place, category',
   ].join('\n');
 
@@ -242,8 +242,8 @@ User.prototype.findAllFriends = function (page, skipAmount) {
     if (err) { deferred.reject(err); }
     else {
       var parsedResults = _.map(results, function (friend) {
-        return friend.friend._data.data
-      })
+        return friend.friend._data.data;
+      });
 
       deferred.resolve(parsedResults);
     }
@@ -276,7 +276,7 @@ User.searchFriends = function (user, friendNameQuery, page, skipAmount) {
     if (err) { deferred.reject(err); }
     else {
       var parsedResults = _.map(results, function (friend) {
-        return friend.friend._data.data
+        return friend.friend._data.data;
       });
       deferred.resolve(parsedResults);
     }
@@ -350,7 +350,7 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
             var commentData = {
               comment: item['comments'][i].data,
               commenter: item['commenters'][i].data
-            }
+            };
             // console.log(commentData);
             //removed DISTINCT modifier on collect(comment)--this is an temporary solution to remove duplicate comments
             if(!commentsArray.length) {
@@ -383,7 +383,7 @@ User.prototype.findAllCheckins = function (viewer, page, skipAmount) {
           singleResult.folders = foldersArray;
         }
 
-        return singleResult
+        return singleResult;
       });
       deferred.resolve(parsedResults);
     }
@@ -402,7 +402,7 @@ User.prototype.countAllCheckins = function (facebookID) {
 
   var params = {
     facebookID: this.getProperty('facebookID')
-  }
+  };
 
   db.query(query, params, function (err, results) {
     if (err) { deferred.reject(err); }

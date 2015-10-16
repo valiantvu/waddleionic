@@ -1,51 +1,171 @@
-var MongoClient = require('mongodb').MongoClient;
-var assert = require('assert');
-var ObjectId = require('mongodb').ObjectID;
-var url = 'mongodb://' + process.env['WADDLE_MONGOLAB_USERNAME'] + ':' + process.env['WADDLE_MONGOLAB_PASSWORD'] + '@ds027719.mongolab.com:27719/heroku_pchnmstb';
+var mongodb = require('./../../mongoConfig.js');
+var Q = require('q');
 
 var User = {};
 
-var insertDocument = function(db, callback) {
-	console.log('this be my document');
-   db.collection('checkins').insertOne( {
-      "address" : {
-         "street" : "2 Avenue",
-         "zipcode" : "10075",
-         "building" : "1480",
-         "coord" : [ -73.9557413, 40.7720266 ],
-      },
-      "borough" : "Manhattan",
-      "cuisine" : "Italian",
-      "grades" : [
-         {
-            "date" : new Date("2014-10-01T00:00:00Z"),
-            "grade" : "A",
-            "score" : 11
-         },
-         {
-            "date" : new Date("2014-01-16T00:00:00Z"),
-            "grade" : "B",
-            "score" : 17
-         }
-      ],
-      "name" : "Vella",
-      "restaurant_id" : "41704620"
-   }, function(err, result) {
-    assert.equal(err, null);
-    console.log("Inserted a document into the restaurants collection.");
-    callback(result);
+User.createUser = function (user) {
+  var deferred = Q.defer();
+  mongodb.collection('users').update({facebookID: user.facebookID}, { $set: user }, {upsert:true}, function(err, result) {
+    if (err) {
+      deferred.reject();
+      throw err;
+    }
+    if (result) {
+      // console.log(result);
+      // mongodb.collection('users').update({facebookID: user.facebookID}, {createdAt: new Date()}, function(err, result) {
+        // user.createdAt = new Date();
+      // });
+      console.log('Added user!');
+      var updatedUser = User.findUser({facebookID: user.facebookID});
+      deferred.resolve({result: result, updatedUser: updatedUser});
+    }
   });
+
+  return deferred.promise;
 };
 
-User.insertDocument = function () {
-	console.log('inserting document');
-	console.log(url);
-	MongoClient.connect(url, function(err, db) {
-	  assert.equal(null, err);
-	  insertDocument(db, function() {
-	      db.close();
-	  });
-	});
+User.setCreatedAt = function (user) {
+  var deferred = Q.defer();
+  mongodb.collection('users').update({facebookID: user.facebookID}, { $set: {createdAt: new Date().getTime()} }, function(err, result) {
+    if (err) {
+      deferred.reject();
+      throw err;
+    }
+    if (result) {
+      console.log('Added createdAt property!');
+      deferred.resolve(result);
+    }
+  });
+
+  return deferred.promise;
+};
+
+User.setProperty = function (user, property, value) {
+  var deferred = Q.defer();
+  var newProperty;
+  if (value) {
+    newProperty = {};
+    newProperty[property] = value;
+  } else {
+    newProperty = property;
+  }
+  mongodb.collection('users').update({facebookID: user.facebookID}, { $set: newProperty }, function(err, result) {
+    if (err) {
+      deferred.reject();
+      throw err;
+    }
+    if (result) {
+      console.log('Updated property!');
+      deferred.resolve(result);
+    }
+  });
+
+  return deferred.promise;
+};
+
+// User.updateCheckinsCount = function (user) {
+//   var deferred = Q.defer();
+
+//   mongodb.collection('users').update({facebookID: user.facebookID}, { $set: {footprintsCount: 10} }, function(err, result) {
+//     if (err) {
+//       deferred.reject();
+//       throw err;
+//     }
+//     if (result) {
+//       console.log(result);
+//       // mongodb.collection('users').update({facebookID: user.facebookID}, {createdAt: new Date()}, function(err, result) {
+//         // user.createdAt = new Date();
+//       // });
+//       console.log('Update checkins count!');
+//       deferred.resolve(result);
+//     }
+//   });
+
+//   return deferred.promise;
+// };
+
+User.findUser = function (user) {
+  var deferred = Q.defer();
+  mongodb.collection('users').findOne({facebookID: user.facebookID}, function(err, result) {
+    if (err) {
+      deferred.reject();
+      throw err;
+    }
+    if (result) {
+      console.log('Found user!');
+      // console.log(result);
+      deferred.resolve(result);
+    }
+  });
+
+  return deferred.promise;
+};
+
+User.addFriends = function (user, friends) {
+  // console.log(friends);
+  var deferred = Q.defer();
+  mongodb.collection('users').update({facebookID: user.facebookID}, {$set: {friends: friends} }, function(err, result) {
+    if (err) {
+      deferred.reject();
+      throw err;
+    }
+    if (result) {
+      // console.log(result);
+      console.log('Friends added!');
+      deferred.resolve(result);
+    }
+  });
+
+  return deferred.promise;
+};
+
+User.findFriends = function (facebookID) {
+  var deferred = Q.defer();
+  mongodb.collection('users').findOne({facebookID: facebookID}, {friends: 1}, function (err, result) {
+    if(err) {
+      deferred.reject();
+      throw err;
+    }
+    if(result) {
+      deferred.resolve(result);
+    }
+  });
+  return deferred.promise;
+};
+
+User.buildFeed = function (userAndFriendsFacebookIDs, checkin) {
+  var deferred = Q.defer();
+  mongodb.collection('users').update({facebookID:{'$in':userAndFriendsFacebookIDs}}, {$push: {feed: 
+    {
+      checkinID: checkin.checkinID,
+      facebookID: checkin.facebookID,
+      createdAt: checkin.createdAt
+    }
+  }}, {multi: true}, function(err, result) {
+    if (err) {
+      deferred.reject();
+      throw err;
+    }
+    if (result) {
+      deferred.resolve(result);
+    }
+  });
+  return deferred.promise;
+};
+
+User.findFeedItem = function (facebookID, checkinID) {
+  var deferred = Q.defer();
+  mongodb.collection('users').findOne({facebookID: facebookID, 'feed.checkinID': checkinID}, {feed:{$elemMatch: {checkinID: checkinID}}},
+  function(err, result) {
+    if (err) {
+      deferred.reject();
+      throw err;
+    }
+    if (result) {
+      deferred.resolve(result);
+    }
+  });
+  return deferred.promise;
 };
 
 module.exports = User;
