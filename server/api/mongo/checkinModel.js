@@ -7,7 +7,7 @@ Checkin.createCheckin = function(checkin) {
   var deferred = Q.defer();
 
   mongodb.collection('users').update({facebookID: checkin.facebookID}, {'$push':{checkins: {
-    "checkinID" : uuid.v4(),
+    "checkinID" : checkin.checkinID,
     "factual_id" : checkin.factualVenueData.factual_id,
     "facebookID" : checkin.facebookID,
     "createdAt": checkin.createdAt,

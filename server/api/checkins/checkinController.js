@@ -87,9 +87,11 @@ checkinController.handleNativeCheckin = function (req, res) {
     mongoUser.findFriends(facebookID)
     .then(function (friends) {
       console.log('these are also my friends', friends);
-      // return mongoUser.buildFeed(nativeCheckin);
+      //push user's own facebookID into friends array so that user's own feed is also updated
+      friends.friends.push(facebookID);
+      console.log('me and my frands: ', friends.friends);
+      return mongoUser.buildFeed(friends.friends, nativeCheckin);
     });
-
   };
 
 

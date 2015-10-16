@@ -127,7 +127,6 @@ User.findFriends = function (facebookID) {
       throw err;
     }
     if(result) {
-      console.log('these are my friends!', result);
       deferred.resolve(result);
     }
   });
@@ -141,8 +140,8 @@ User.buildFeed = function (userAndFriendsFacebookIDs, checkin) {
       checkinID: checkin.checkinID,
       facebookID: checkin.facebookID,
       createdAt: checkin.createdAt
-    } 
-  }}, function(err, result) {
+    }
+  }}, {multi: true}, function(err, result) {
     if (err) {
       deferred.reject();
       throw err;
