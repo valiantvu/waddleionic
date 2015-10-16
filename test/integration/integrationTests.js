@@ -14,6 +14,7 @@ var mongoPlace = require('../../server/api/mongo/placeModel.js');
 var _ = require('lodash');
 var qs = require('querystring');
 var helpers = require('./../../server/utils/helpers.js');
+var factualUtils = require('./../../server/utils/factualUtils.js');
 
 // var neo4jurl = WADDLE_GRAPHENEDB_URL || 'http://localhost:7474'
 // var db = new neo4j.GraphDatabase(neo4jurl);
@@ -169,7 +170,6 @@ describe('User login', function () {
       });
     });
   });
-
 });
 
 describe('User footprint post', function () {
@@ -195,7 +195,7 @@ describe('User footprint post', function () {
     .send(testFootprint)
     .expect(200)
     .end(function(err, res) {
-      if (err) throw err;  
+      if (err) throw err;
       mongoCheckin.findCheckin(testFootprint.facebookID, res.body.checkinID)
       .then(function (checkin) {
         expect(checkin.checkins[0]).to.have.property('checkinID', res.body.checkinID);
@@ -236,6 +236,39 @@ describe('User footprint post', function () {
         expect(place.name).to.equal("Sweet Orchid");
         done();
       });
+    });
+  });
+});
+
+describe('Factual geospatial search requests', function () {
+  var factualIDs = ['2cd905c4-04ec-497b-b2a0-72c0d9bbe6b1', '20e72644-ab86-4185-af14-9f085df69429'];
+  var loc = [37.783601, -122.408643];
+  it('should search for nearby factual places matching a list of factual ids', function (done) {
+    this.timeout(7000);
+    factualUtils.searchVenuesByFactualIDsAndGeolocation(loc, factualIDs)
+    .then(function (res) {
+      console.log(res);
+      var place = res[0];
+      expect(place.address).to.equal('25 Mason St');
+      // expect(place.category_ids[0]).to.equal(347);
+      // expect(place.country).to.equal('us');
+      // expect(place.email).to.equal('info@farmerbrownsf.com');
+      // expect(place.factual_id).to.equal('20e72644-ab86-4185-af14-9f085df69429');
+      // expect(place.hours).to.contain.keys('monday'); // contain.alls.key not working
+      expect(place.hours_display).to.equal('Mon-Thu 5:00 PM-10:00 PM; Fri 5:00 PM-11:59 PM; Sat 9:00 AM-2:30 PM, 5:00 PM-11:59 PM; Sun 9:00 AM-2:30 PM, 5:00 PM-10:00 PM');
+      expect(place.latitude).to.equal(37.783641);
+      expect(place.locality).to.equal('San Francisco');
+      expect(place.longitude).to.equal(-122.409233);
+      expect(place.name).to.equal('Farmerbrown');
+      // expect(place.neighborhood).to.include('Union Square');
+      // expect(place.neighborhood).to.include('Tenderloin');
+      // expect(place.neighborhood).to.include('Civic Center');
+      // expect(place.postcode).to.equal('94102');
+      // expect(place.region).to.equal('CA');
+      // expect(place.tel).to.equal('\(415\) 409-3276');
+      // expect(place.website).to.equal('http://www.farmerbrownsf.com');
+      expect(place.$distance).to.equal(52.04011);
+      done();
     });
   });
 });
