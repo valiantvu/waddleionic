@@ -8,6 +8,7 @@ var neo4jUser = require('../neo4j/userModel.js');
 var neo4jPlace = require('../neo4j/placeModel.js');
 var mongoCheckin = require('../mongo/checkinModel.js');
 var mongoPlace= require('../mongo/placeModel.js');
+var mongoUser = require('../mongo/userModel.js');
 
 
 var factualUtils = require('../../utils/factualUtils.js');
@@ -42,6 +43,7 @@ checkinController.handleNativeCheckin = function (req, res) {
   })
   .then(function (place) {
     console.log('place', place)
+    addCheckinToUserAndFriendsFeeds();
     // var placeUpdateSuccess = place.result.nModified === 1 ? true : false;
     // if(placeUpdateSuccess) {
       // console.log('placeSuccess', placeUpdateSuccess)
@@ -79,6 +81,16 @@ checkinController.handleNativeCheckin = function (req, res) {
     console.log(err);
     res.status(500).end();
   });
+
+  var addCheckinToUserAndFriendsFeeds = function() {
+    console.log('adding checkin to user and friends feeds');
+    mongoUser.findFriends(facebookID)
+    .then(function (friends) {
+      console.log('these are also my friends', friends);
+      // return mongoUser.buildFeed(nativeCheckin);
+    });
+
+  };
 
 
 

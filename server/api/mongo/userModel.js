@@ -119,8 +119,41 @@ User.addFriends = function (user, friends) {
   return deferred.promise;
 };
 
-User.buildFeed = function (user, friends) {
-  // TODO
+User.findFriends = function (facebookID) {
+  var deferred = Q.defer();
+  mongodb.collection('users').findOne({facebookID: facebookID}, {friends: 1}, function (err, result) {
+    if(err) {
+      deferred.reject();
+      throw err;
+    }
+    if(result) {
+      console.log('these are my friends!', result);
+      deferred.resolve(result);
+    }
+  });
+  return deferred.promise;
+};
+
+User.buildFeed = function (userAndFriendsFacebookIDs, checkin) {
+  var deferred = Q.defer();
+  mongodb.collection('users').update({facebookID:{'$in':userAndFriendsFacebookIDs}}, {$push: {feed: 
+    {
+      checkinID: checkin.checkinID,
+      facebookID: checkin.facebookID,
+      createdAt: checkin.createdAt
+    } 
+  }}, function(err, result) {
+    if (err) {
+      deferred.reject();
+      throw err;
+    }
+    if (result) {
+      // console.log(result);
+      // console.log('Added checkin!');
+      deferred.resolve(result);
+    }
+  });
+  return deferred.promise;
 };
 
 module.exports = User;

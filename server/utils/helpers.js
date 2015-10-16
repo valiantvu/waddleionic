@@ -102,6 +102,7 @@ helpers.addCityProvinceAndCountryInfoToParsedCheckins = function (parsedCheckins
 helpers.addMetaDataToNativeCheckin = function (nativeCheckin) {
   nativeCheckin.source = 'waddle';
   nativeCheckin.pointValue = 8;
+  nativeCheckin.createdAt = new Date().getTime();
   if (nativeCheckin.footprintCaption) {
     nativeCheckin.pointValue += 3;
   }

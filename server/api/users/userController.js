@@ -21,7 +21,7 @@ userController.userLogin = function (req, res) {
   var userFBPhotoData = [];
   var userFBStatusesData = [];
   var userFBFriendsData;
-  var combinedFBCheckins;
+  var combinedFBCheckins, friendFacebookIDs;
   console.log(userData);
 
   facebookUtils.exchangeFBAccessToken(userData.fbToken)
@@ -76,7 +76,8 @@ userController.userLogin = function (req, res) {
         
         facebookUtils.getFBFriends(userData.facebookID, FBAccessToken)
         .then(function (fbRawUserData) {
-          mongoUser.addFriends(userData, fbRawUserData.data);
+          friendFacebookIDs = _.pluck(fbRawUserData.data, 'id');
+          mongoUser.addFriends(userData, friendFacebookIDs);
           res.json({user: userData, alreadyExists: alreadyExists, result: dbData.result});
           res.status(200).end();
         });
