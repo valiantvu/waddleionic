@@ -198,7 +198,6 @@ describe('User footprint post', function () {
       if (err) throw err;  
       mongoCheckin.findCheckin(testFootprint.facebookID, res.body.checkinID)
       .then(function (checkin) {
-        console.log('hi my checkin: ', checkin.checkins[0]);
         expect(checkin.checkins[0]).to.have.property('checkinID', res.body.checkinID);
         expect(checkin.checkins[0]).to.have.property('rating', 3);
         done();
@@ -206,23 +205,22 @@ describe('User footprint post', function () {
     });
   });
 
-  //  it('should add a document to user and friends feed array when user posts footprint', function (done) {
-  //   request(app)
-  //   .post('/api/checkins/nativecheckin')
-  //   .send(testFootprint)
-  //   .expect(201)
-  //   .end(function(err, res) {
-  //     if (err) throw err;
-  //     console.log('dis is ma bootyful bodayyy AYY', res.body);
-  //     // mongoCheckin.findCheckin(testFootprint[0].facebook, res.body)
-  //     mongoUser.findFeedItem(testFootprint.facebookID, res.body.checkinID)
-  //     .then(function (feedItem) {
-  //       expect(feedItem.feed[0]).to.equal("7a739b40-1add-012f-a1ad-003048c87378");
-  //       expect(feedItem.feed[0]).to.equal("Sweet Orchid");
-  //       done();
-  //     });
-  //   });
-  // });
+   it('should add a document to user and friends feed array when user posts footprint', function (done) {
+    request(app)
+    .post('/api/checkins/nativecheckin')
+    .send(testFootprint)
+    .expect(200)
+    .end(function(err, res) {
+      if (err) throw err;
+      mongoUser.findFeedItem(testFootprint.facebookID, res.body.checkinID)
+      .then(function (feedItem) {
+        console.log('FEED MEEEE', feedItem);
+        expect(feedItem.feed[0]).to.have.property('checkinID', res.body.checkinID);
+        expect(feedItem.feed[0]).to.have.property('facebookID', testFootprint.facebookID);
+        done();
+      });
+    });
+  });
 
   it('should add or modify a document in places collection when user posts a footprint', function (done) {
     this.timeout(10000);

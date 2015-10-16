@@ -155,7 +155,7 @@ User.buildFeed = function (userAndFriendsFacebookIDs, checkin) {
 
 User.findFeedItem = function (facebookID, checkinID) {
   var deferred = Q.defer();
-  mongodb.collection('users').findOne({facebookID: facebookID, 'checkins.checkinID': checkinID}, {checkins:{$elemMatch: {checkinID: checkinID}}},
+  mongodb.collection('users').findOne({facebookID: facebookID, 'feed.checkinID': checkinID}, {feed:{$elemMatch: {checkinID: checkinID}}},
   function(err, result) {
     if (err) {
       deferred.reject();
