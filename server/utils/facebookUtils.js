@@ -51,11 +51,12 @@ utils.getFBProfilePicture = function (userID) {
   return deferred.promise;
 };
 
-utils.getFBFriends = function (user) {
+utils.getFBFriends = function (fbID, fbToken) {
+  console.log(fbID, fbToken);
   var deferred = Q.defer();
 
-  var fbID = user.getProperty('facebookID');
-  var fbToken = user.getProperty('fbToken');
+  // var fbID = user.getProperty('facebookID');
+  // var fbToken = user.getProperty('fbToken');
   
   var query = {
     access_token: fbToken

@@ -9,6 +9,8 @@ var mongoFixtures = require('../mongo.test.fixtures.js');
 var neo4jUser = require('../../server/api/neo4j/userModel.js');
 var mongoUser = require('../../server/api/mongo/userModel.js');
 var _ = require('lodash');
+var qs = require('querystring');
+var helpers = require('./../../server/utils/helpers.js');
 
 // var neo4jurl = WADDLE_GRAPHENEDB_URL || 'http://localhost:7474'
 // var db = new neo4j.GraphDatabase(neo4jurl);
@@ -50,47 +52,47 @@ var _ = require('lodash');
 describe('Waddle user routes GET requests', function () {
     var user;
     before(function(done){
-
+      this.timeout(10000);
       // Create user in Neo4j
-      neo4jUser.createUniqueUser(neo4jFixtures.testUser).then(function (userNode){
-        // console.log(userNode);
-        user = userNode.node._data.data;
-        userNode.addFriends([neo4jFixtures.testUser2, neo4jFixtures.testUser3]).then(function (friends) {
-          userNode.addCheckins(neo4jFixtures.testUserFootprints)
-          .then(function (categoryNames) {
+      // neo4jUser.createUniqueUser(neo4jFixtures.testUser).then(function (userNode){
+      //   // console.log(userNode);
+      //   user = userNode.node._data.data;
+      //   userNode.addFriends([neo4jFixtures.testUser2, neo4jFixtures.testUser3]).then(function (friends) {
+      //     userNode.addCheckins(neo4jFixtures.testUserFootprints)
+      //     .then(function (categoryNames) {
 
-            _.each(friends, function(friend, index) {
-              // console.log(friend.body);
-              neo4jUser.find({facebookID: friend.body.data[0][0].data.facebookID})
-                .then(function (friendNode) {
-                  friendNode.addCheckins(neo4jFixtures.testFriendFootprints[index])
-                    .then(function (results) {
-                      // console.log(results);
-                    });
-                });
-            });
-            done();
-          });
-        });
-      });
-
+      //       _.each(friends, function(friend, index) {
+      //         // console.log(friend.body);
+      //         neo4jUser.find({facebookID: friend.body.data[0][0].data.facebookID})
+      //           .then(function (friendNode) {
+      //             friendNode.addCheckins(neo4jFixtures.testFriendFootprints[index])
+      //               .then(function (results) {
+      //                 // console.log(results);
+      //               });
+      //           });
+      //       });
+      //       done();
+      //     });
+      //   });
+      // });
+      done();
       // TODO
       // Create user in Mongo
     });
 
-    it('should return the information of the specified user', function (done) {
-      this.timeout(10000);
-      request(app)
-      .get('/api/users/userinfo/' + user.facebookID)
-      .expect(200)
-      .end(function(err, res) {
-        if (err) throw err;
-        // console.log(res.body);
-        expect(res.body.name).to.equal("Testy McTest");
-        expect(res.body.facebookID).to.equal("000000000");
-        done();
-      });
-    });
+    // it('should return the information of the specified user', function (done) {
+    //   this.timeout(10000);
+    //   request(app)
+    //   .get('/api/users/userinfo/' + user.facebookID)
+    //   .expect(200)
+    //   .end(function(err, res) {
+    //     if (err) throw err;
+    //     // console.log(res.body);
+    //     expect(res.body.name).to.equal("Testy McTest");
+    //     expect(res.body.facebookID).to.equal("000000000");
+    //     done();
+    //   });
+    // });
     // it('should return the first 5 footprints aggregate feed of the specified user', function(done) {
     //   request(app)
     //   .get('/aggregatefeed/000000000/0/5')
@@ -105,35 +107,61 @@ describe('Waddle user routes GET requests', function () {
 });
 
 describe('Waddle user routes POST requests', function () {
+  var testUserFBData;
   var testUser = mongoFixtures.users[0];
-  // console.log(testUser);
-  // var user;
-  // before(function(done){
-  // });
+  var query = {
+    client_id: process.env.WADDLE_FACEBOOK_APP_ID,
+    client_secret: process.env.WADDLE_FACEBOOK_APP_SECRET,
+    grant_type: 'client_credentials'
+  };
+
+  var queryPath = 'https://graph.facebook.com/oauth/access_token?' + qs.stringify(query);
+ 
+
+  // Retrieve short term access token for test users
+  before(function (done){
+    helpers.httpsGet(queryPath)
+    .then(function (res) {
+      helpers.httpsGet('https://graph.facebook.com/898529293496515/accounts/test-users?'+String(res))
+      .then(function (res) {
+        var testUsers = JSON.parse(res).data;
+        var n = testUsers.length - 1;
+
+        // Get fb data for Dorothy Bowersstein
+        while(testUserFBData === undefined) {
+          var id = testUsers[n].id;
+          if (id === '1376881809284443') {
+            testUserFBData = testUsers[n];
+          }
+          n--;
+        }
+        done();
+      });
+    });
+  });
+
   it('should add new user on login', function (done) {
-    this.timeout(10000);
+
+    testUser.fbToken = testUserFBData.access_token;
+    this.timeout(7000);
     request(app)
     .post('/api/users/userdata/')
     .send(testUser)
     .expect(200)
     .end(function(err, res) {
       if (err) throw err;
-      // console.log('POSTED DATA:');
-      // console.log(res);
-      expect(res.body.n).to.equal(1);
-
+      expect(res.body.result.n).to.equal(1);
       mongoUser.findUser({facebookID: testUser.facebookID})
       .then(function(user) {
-        // console.log(user);
+        console.log('Found test user!');
+        console.log(user);
         expect(user.facebookID).to.equal("1376881809284443");
         expect(user.firstName).to.equal("Dorothy");
         expect(user.lastName).to.equal("Bowersstein");
         expect(user.email).to.equal("jqhpyje_bowersstein_1420934246@tfbnw.net");
-        expect(user.fbToken).to.equal("CAAMxNSdb8MMBADCvUUEKYO2ZCbyIAMZCmMarNhZAuXcnuZBkBK23HWYmTDp5sOylwnxxouogNACJOvWZC7ZCr4TdIO0U9dIcEca2LF1jt2JQvtNzLp7MHJkne9DQ9M3JvY1beejgViD0WrQQBYnQKSYVZCie6QjeKzSGocbZBTZB86ZBn19YWyg7fNZAFKwEZB9AgJkceI7Pos2sIgZDZD");
-        expect(user.fbProfilePicture).to.equal("https://www.facebook.com/photo.php?fbid=1377861495853141&l=25a2ac20d2");
+        expect(user.fbProfilePicture).to.equal("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfa1/v/t1.0-1/p200x200/10906299_1377861495853141_9133878358668117315_n.jpg?oh=3e33c1713500cccb7508c75b480a9cb1&oe=56CEC3AD&__gda__=1451839969_fa2fb0666166848bd4da7898faf1a6bd");
         expect(user.coverPhoto).to.equal("https://s-media-cache-ak0.pinimg.com/736x/c2/06/66/c20666fb99564cbe6c64c0ad83f79cd5.jpg");
-        expect(user.createdAt).to.equal(1444669695545);
-        expect(user.friends).to.equal([1376275232679666]);
+        expect(user.friends.length).to.equal(2);
         done();
       });
     });
