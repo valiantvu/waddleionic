@@ -69,6 +69,20 @@ utils.searchVenuesByGeolocation = function (latlng) {
 	return deferred.promise;
 };
 
+utils.searchVenuesByFactualIDsAndGeolocation = function (latlng, factualIDs) {
+	var deferred = Q.defer();
+	factual.get('/t/places-us', {filters:{"factual_id":{"$in":factualIDs}, "category_ids":{"$includes_any":[308, 107]}}, geo:{"$circle":{"$center": latlng, "$meters": 500}}, sort:"$relevance"}, function (err, res) {
+		if(err) {
+			console.log(err);
+			deferred.reject(err);
+		} else {
+			// console.log(res.data);
+			deferred.resolve(res.data);
+		}
+	});
+	return deferred.promise;
+};
+
 utils.searchVenuesBySearchQueryAndGeolocation = function (latlng, query) {
 	var deferred = Q.defer();
 	factual.get('/t/places-us', {filters:{"name":{"$search": query}, "category_ids":{"$includes_any":[308, 107]}}, geo:{"$circle":{"$center": latlng, "$meters": 25000}}, sort:"$relevance"}, function (err, res) {
