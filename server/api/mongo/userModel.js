@@ -147,8 +147,21 @@ User.buildFeed = function (userAndFriendsFacebookIDs, checkin) {
       throw err;
     }
     if (result) {
-      // console.log(result);
-      // console.log('Added checkin!');
+      deferred.resolve(result);
+    }
+  });
+  return deferred.promise;
+};
+
+User.findFeedItem = function (facebookID, checkinID) {
+  var deferred = Q.defer();
+  mongodb.collection('users').findOne({facebookID: facebookID, 'checkins.checkinID': checkinID}, {checkins:{$elemMatch: {checkinID: checkinID}}},
+  function(err, result) {
+    if (err) {
+      deferred.reject();
+      throw err;
+    }
+    if (result) {
       deferred.resolve(result);
     }
   });

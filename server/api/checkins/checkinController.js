@@ -24,13 +24,16 @@ var checkinController = {};
 checkinController.handleNativeCheckin = function (req, res) {
   var user, place, foursquareID;
   var nativeCheckin = helpers.addMetaDataToNativeCheckin(req.body);
+  var checkinID = nativeCheckin.checkinID;
   var factual_id = nativeCheckin.factualVenueData.factual_id;
   var facebookID = req.body.facebookID;
 
   mongoCheckin.createCheckin(nativeCheckin)
   .then(function (checkin) {
     // console.log('this is my checkin', checkin.result);
-    var checkinSuccess = checkin.result.nModified === 1 ? true : false;
+    // var checkinSuccess = checkin.result.nModified === 1 ? true : false;
+    console.log('new checkin: ', checkin);
+    var checkinSuccess = true;
     if(checkinSuccess) {
       return factualUtils.getRestaurantInfo(factual_id);
     }
@@ -74,7 +77,8 @@ checkinController.handleNativeCheckin = function (req, res) {
   .then(function (place) {
     // var placeUpdateSuccess = place.result.nModified === 1 ? true : false;
     // if(placeUpdateSuccess) {
-      res.status(201).end();
+    res.json({checkinID: checkinID});
+    res.status(200).end();
     // }
   })
   .catch(function (err) {

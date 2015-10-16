@@ -5,7 +5,8 @@ var Place = {};
 Place.createOrUpdatePlace = function(placeData) {
   console.log('hey im here!!!', placeData);
   var deferred = Q.defer();
-  mongodb.collection('places').update({factual_id: placeData.factual_id}, placeData, {upsert:true}, function(err, result) {
+  //{rating: 1} is to supply sort argument...refactor at some point 
+  mongodb.collection('places').findAndModify({factual_id: placeData.factual_id}, {rating: 1}, placeData, {upsert: true, new: true}, function(err, result) {
     if (err) {
       deferred.reject();
       throw err;
@@ -40,7 +41,7 @@ Place.setPropertyOnPlaceDocument = function(factual_id, key, value) {
   var query = {
     '$set': {}
   };
-  query['$set'][key] = value;
+  query.$set[key] = value;
   var deferred = Q.defer();
   mongodb.collection('places').update({factual_id: factual_id}, query, function(err, result) {
     if (err) {
