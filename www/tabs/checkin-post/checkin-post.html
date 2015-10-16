@@ -16,14 +16,14 @@
       <!-- Profile Picture -->
       <img class="checkin-post-propic" ng-src='{{fbProfilePicture}}'>
       <!-- Badge -->
-       <img ng-src="{{venue.iconUrlPrefix}}40x40{{venue.iconUrlSuffix}}" class="waddlebadge">
+       <img ng-src="{{venue.addendum.iconUrlPrefix}}40x40{{venue.addendum.iconUrlSuffix}}" class="waddlebadge">
 
       <!-- Place Name and Location-->
-        <h2>{{venue.name}}</h2>
+        <h2>{{venue.factualVenueData.name}}</h2>
         <p> 
           <!-- <a ng-if="venue.location.city">{{venue.location.city}}</a><a ng-if="venue.location.city && venue.location.state">,</a>
           <a ng-if="venue.location.state">{{venue.location.state}}</a> -->
-          <a>{{venue.locality}}, {{venue.region}}</a>
+          <a>{{venue.factualVenueData.locality}}, {{venue.factualVenueData.region}}</a>
         </p>
     </div>
 

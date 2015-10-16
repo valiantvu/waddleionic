@@ -17,7 +17,7 @@ helpers.httpsGet = function (queryPath) {
     });
     res.on('end', function(){
       deferred.resolve(data);
-    })
+    });
   }).on('error', function(err) {
     deferred.reject(err);
   });
@@ -39,7 +39,7 @@ helpers.httpsPost = function (queryPath, headers, body) {
        console.log(err);
        // console.log(res.statusCode);
        deferred.resolve(body);
-  })
+  });
 
   return deferred.promise;
 };
@@ -62,18 +62,18 @@ helpers.findCityProvinceAndCountry = function (lat, lng) {
       } else if(feature.id.indexOf("country") > -1) {
         cityProvinceAndCountryData.country = feature.text;
       }
-    })
+    });
     deferred.resolve(cityProvinceAndCountryData);
   })
   .catch(function (err) {
     deferred.reject(err);
   });
-  return deferred.promise
-}
+  return deferred.promise;
+};
 
 helpers.addCityProvinceAndCountryInfoToParsedCheckins = function (parsedCheckins) {
   var deferred = Q.defer();
-  var geocodeQueries = []
+  var geocodeQueries = [];
   _.each(parsedCheckins, function (parsedCheckin) {
     geocodeQueries.push(helpers.findCityProvinceAndCountry(parsedCheckin.lat, parsedCheckin.lng));
   });
@@ -89,56 +89,61 @@ helpers.addCityProvinceAndCountryInfoToParsedCheckins = function (parsedCheckins
         if(geocodeData[index].country) {
           parsedCheckin.country = geocodeData[index].country;
         }
-    })
+    });
     deferred.resolve(parsedCheckins);
   })
   .catch(function (err) {
       deferred.reject(err);
-  })
+  });
 
   return deferred.promise;
-}
+};
 
-helpers.parseNativeCheckin = function (venue) {
-  var deferred = Q.defer();
-
-  var formattedCheckin = {
-    'checkinID': uuid.v4(),
-    'name': venue.name,
-    'lat': venue.lat,
-    'lng': venue.lng,
-    'checkinTime': new Date(),
-    'factualID': venue.factual_id,
-    'photo': 'null',
-    'photoWidth': 'null',
-    'photoHeight': 'null',
-    'foursquareID': 'null',
-    'likes': 'null',
-    'photoSmall': 'null',
-    'photoLarge': 'null',
-    'caption': 'null',
-    'address': 'null',
-    'city': 'null',
-    'province': 'null',
-    'country': 'null',
-    'postalCode': 'null',
-    'category': 'null',
-    'pointValue': 5,
-    'rating': 0,
-    'source': 'waddle'
-  };
-
-  if (venue.categories) {
-    formattedCheckin.category = venue.categories;
+helpers.addMetaDataToNativeCheckin = function (nativeCheckin) {
+  nativeCheckin.checkinID = uuid.v4();
+  nativeCheckin.source = 'waddle';
+  nativeCheckin.pointValue = 8;
+  nativeCheckin.createdAt = new Date().getTime();
+  if (nativeCheckin.footprintCaption) {
+    nativeCheckin.pointValue += 3;
   }
-
-  if (venue.address) {
-    formattedCheckin.address = venue.address;
+  //TODO: figure out how to generate different size images from AWS url
+  if (nativeCheckin.photo) {
+    nativeCheckin.pointValue += 3;
   }
+  return nativeCheckin;
+};
 
-  if (venue.postalCode) {
-    formattedCheckin.postalCode = venue.postalCode;
-  }
+helpers.parseNativeCheckinForNeo4j = function (venue) {
+  // var deferred = Q.defer();
+
+  // var formattedCheckin = {
+  //     'checkinID': uuid.v4(),
+  //     'checkinTime': new Date(),
+  //     'factualID': venue.factualVenueData.factual_id,
+  //     'photo': 'null',
+  //     'photoWidth': 'null',
+  //     'photoHeight': 'null',
+  //     'foursquareID': 'null',
+  //     'likes': 'null',
+  //     'photoSmall': 'null',
+  //     'photoLarge': 'null',
+  //     'caption': 'null',
+  //     'pointValue': 5,
+  //     'source': 'waddle',
+  //     'rating': 0
+  //     'name':
+  //     'latitude':
+  //     'longitude':
+  //     'postalcode':
+  //     'address':
+  //     'locality':
+  //     'region':
+  //     'email': 
+
+  //   },
+  //   place: venue.factualVenueData
+  // };
 
   if (venue.footprintCaption) {
     formattedCheckin.caption = venue.footprintCaption;
@@ -151,29 +156,30 @@ helpers.parseNativeCheckin = function (venue) {
   }
 
   //TODO: figure out how to generate different size images from AWS url
-
   if (venue.photo) {
-    formattedCheckin.photoLarge = venue.photo;
+    formattedCheckin.checkin.photo = venue.photo;
     formattedCheckin.pointValue += 3;
   }
 
+  return formattedCheckin;
 
-  helpers.findCityProvinceAndCountry(formattedCheckin.lat, formattedCheckin.lng)
-  .then(function (geocodeData) {
-    console.log(geocodeData);
-      if(geocodeData.city) {
-        formattedCheckin.city = geocodeData.city;
-      }
-      if(geocodeData.province) {
-        formattedCheckin.province = geocodeData.province;
-      }
-      if(geocodeData.country) {
-        formattedCheckin.country = geocodeData.country;
-      }
-    deferred.resolve(formattedCheckin);
-  })
-  return deferred.promise;
-}
+  //find location data--not needed now that factual API is being used
+  // helpers.findCityProvinceAndCountry(formattedCheckin.lat, formattedCheckin.lng)
+  // .then(function (geocodeData) {
+  //   console.log(geocodeData);
+  //     if(geocodeData.city) {
+  //       formattedCheckin.city = geocodeData.city;
+  //     }
+  //     if(geocodeData.province) {
+  //       formattedCheckin.province = geocodeData.province;
+  //     }
+  //     if(geocodeData.country) {
+  //       formattedCheckin.country = geocodeData.country;
+  //     }
+  //   deferred.resolve(formattedCheckin);
+  // })
+  // return deferred.promise;
+};
 
 helpers.parseEditedNativeCheckin = function (editedCheckin) {
   var formattedCheckin = {

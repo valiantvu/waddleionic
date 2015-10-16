@@ -8,6 +8,9 @@ var neo4jFixtures = require('../neo4j.test.fixtures.js');
 var mongoFixtures = require('../mongo.test.fixtures.js');
 var neo4jUser = require('../../server/api/neo4j/userModel.js');
 var mongoUser = require('../../server/api/mongo/userModel.js');
+var mongoCheckin = require('../../server/api/mongo/checkinModel.js');
+var mongoPlace = require('../../server/api/mongo/placeModel.js');
+
 var _ = require('lodash');
 var qs = require('querystring');
 var helpers = require('./../../server/utils/helpers.js');
@@ -106,7 +109,7 @@ describe('Waddle user routes GET requests', function () {
     // })
 });
 
-describe('Waddle user routes POST requests', function () {
+describe('User login', function () {
   var testUserFBData;
   var testUser = mongoFixtures.users[0];
   var query = {
@@ -153,8 +156,8 @@ describe('Waddle user routes POST requests', function () {
       expect(res.body.result.n).to.equal(1);
       mongoUser.findUser({facebookID: testUser.facebookID})
       .then(function(user) {
-        console.log('Found test user!');
-        console.log(user);
+        // console.log('Found test user!');
+        // console.log(user);
         expect(user.facebookID).to.equal("1376881809284443");
         expect(user.firstName).to.equal("Dorothy");
         expect(user.lastName).to.equal("Bowersstein");
@@ -166,4 +169,74 @@ describe('Waddle user routes POST requests', function () {
       });
     });
   });
+
 });
+
+describe('User footprint post', function () {
+  var testFootprint = mongoFixtures.footprints[0];
+  var response;
+
+  // Retrieve short term access token for test users
+  before(function (done) {
+    // request(app)
+    // .post('/api/checkins/nativecheckin')
+    // .send(testFootprint)
+    // .expect(201)
+    // .end(err, res) {
+    //   response = res.body
+      done();
+    // }
+  });
+
+  it('should add a document to checkins array when user posts a footprint', function (done) {
+    this.timeout(10000);
+    request(app)
+    .post('/api/checkins/nativecheckin')
+    .send(testFootprint)
+    .expect(200)
+    .end(function(err, res) {
+      if (err) throw err;  
+      mongoCheckin.findCheckin(testFootprint.facebookID, res.body.checkinID)
+      .then(function (checkin) {
+        expect(checkin.checkins[0]).to.have.property('checkinID', res.body.checkinID);
+        expect(checkin.checkins[0]).to.have.property('rating', 3);
+        done();
+      });
+    });
+  });
+
+   it('should add a document to user and friends feed array when user posts footprint', function (done) {
+    request(app)
+    .post('/api/checkins/nativecheckin')
+    .send(testFootprint)
+    .expect(200)
+    .end(function(err, res) {
+      if (err) throw err;
+      mongoUser.findFeedItem(testFootprint.facebookID, res.body.checkinID)
+      .then(function (feedItem) {
+        console.log('FEED MEEEE', feedItem);
+        expect(feedItem.feed[0]).to.have.property('checkinID', res.body.checkinID);
+        expect(feedItem.feed[0]).to.have.property('facebookID', testFootprint.facebookID);
+        done();
+      });
+    });
+  });
+
+  it('should add or modify a document in places collection when user posts a footprint', function (done) {
+    this.timeout(10000);
+    request(app)
+    .post('/api/checkins/nativecheckin')
+    .send(testFootprint)
+    .expect(200)
+    .end(function(err, res) {
+      if (err) throw err;
+      mongoPlace.findPlace(testFootprint.factualVenueData.factual_id)
+      .then(function (place) {
+        expect(place.factual_id).to.equal("7a739b40-1add-012f-a1ad-003048c87378");
+        expect(place.name).to.equal("Sweet Orchid");
+        done();
+      });
+    });
+  });
+});
+

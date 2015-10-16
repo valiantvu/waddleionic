@@ -33,11 +33,11 @@
     <!-- </div> -->
      <!--  <h2>{{location}}</h2> -->
     <div class="item item-avatar item-text-wrap notifications-list" ng-repeat="venue in venues" ui-sref="tab.checkin-post" ng-click='passSelectedVenueInfoToPostTab(venue)' ui-sref-opts="{reload: true}">
-        <img class="waddlebadge-checkin-list" ng-src="{{venue.iconUrlPrefix}}40x40{{venue.iconUrlSuffix}}">
-        <h2>{{venue.name}}</h2>
+        <img class="waddlebadge-checkin-list" ng-src="{{venue.addendum.iconUrlPrefix}}40x40{{venue.addendum.iconUrlSuffix}}">
+        <h2>{{venue.factualVenueData.name}}</h2>
         <!-- <h5 class="venue-info">{{venue.location.formattedAddress[0]}}, {{venue.location.formattedAddress[1]}}<h5> -->
-        <h5 class="venue-info">{{venue.address}}, {{venue.locality}}, {{venue.region}}<h5>
-        <h5 ng-if="venue.location.distance" class="venue-info">{{venue.location.distance}} mi</h5>
+        <h5 class="venue-info">{{venue.factualVenueData.address}}, {{venue.factualVenueData.locality}}, {{venue.factualVenueData.region}}<h5>
+        <h5 ng-if="venue.addendum.location.distance" class="venue-info">{{venue.addendum.location.distance}} mi</h5>
     </div>
 
   <ion-infinite-scroll
