@@ -89,6 +89,14 @@ placeController.findFriendsAlreadyBeen = function (req, res) {
 	});
 };
 
+placeController.discoverPlaces = function (req, res) {
+	// TODO
+	// Search by category, venue name, locality, or nearby
+	// Call userModel function to search through ratedPlaces and
+	// retrieve a list of place IDs matching search terms
+	// Then retrieve nearby places through factual api
+};
+
 placeController.discoverPlacesByCategoryOrName = function (req, res) {
 	var facebookID = req.params.user;
 	var query = req.params.query;
