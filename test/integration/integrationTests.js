@@ -10,6 +10,7 @@ var neo4jUser = require('../../server/api/neo4j/userModel.js');
 var mongoUser = require('../../server/api/mongo/userModel.js');
 var mongoCheckin = require('../../server/api/mongo/checkinModel.js');
 var mongoPlace = require('../../server/api/mongo/placeModel.js');
+var factualUtils = require('../../server/utils/factualUtils.js');
 
 var _ = require('lodash');
 var qs = require('querystring');
@@ -174,18 +175,10 @@ describe('User login', function () {
 
 describe('User footprint post', function () {
   var testFootprint = mongoFixtures.footprints[0];
-  var response;
 
-  // Retrieve short term access token for test users
   before(function (done) {
-    // request(app)
-    // .post('/api/checkins/nativecheckin')
-    // .send(testFootprint)
-    // .expect(201)
-    // .end(err, res) {
-    //   response = res.body
+
       done();
-    // }
   });
 
   it('should add a document to checkins array when user posts a footprint', function (done) {

@@ -784,16 +784,27 @@ checkinController.deleteFootprint = function (req, res) {
   var facebookID = req.body.facebookID;
   var checkinID = req.body.checkinID;
 
-  neo4jCheckin.deleteFootprint(facebookID, checkinID)
-    .then(function (data) {
-      console.log(data)
-      res.json({on_success: "footprint has been successfully deleted"})
-      res.status(200).end();
-    })
-    .catch(function (err) {
-      console.log(err);
-      res.status(500).end();
-    });
+  mongoCheckin.deleteCheckin(facebookID, checkinID)
+  .then(function (data) {
+    console.log(data);
+    res.json({on_success: "footprint has been successfully deleted"})
+    res.status(200).end();
+  })
+  .catch(function (err) {
+    console.log(err);
+    res.status(500).end();
+  });
+
+  // neo4jCheckin.deleteFootprint(facebookID, checkinID)
+  //   .then(function (data) {
+  //     console.log(data)
+  //     res.json({on_success: "footprint has been successfully deleted"})
+  //     res.status(200).end();
+  //   })
+  //   .catch(function (err) {
+  //     console.log(err);
+  //     res.status(500).end();
+  //   });
 };
 
 checkinController.suggestFootprint = function (req, res) {

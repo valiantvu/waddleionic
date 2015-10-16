@@ -129,8 +129,20 @@ utils.getFactualIDFromFoursquareID = function (foursquareID) {
   return deferred.promise;
 };
 
-utils.findRestaurantsByCategoryAndLocationTerm = function () {
+utils.findVenuesByNameOrCategory = function() {
+	var deferred = Q.defer();
+	factual.get('/t/places-us', {filters:{"$or": [{"name":{'$bw': query}}, {"category_labels":{"$includes": {"$bw": query}}}], limit: 50}}, function (err, res) {
+		if(err) {
+			console.log(err);
+			deferred.reject(err);
+		} else {
+			console.log(res.data);
+			deferred.resolve(res.data);
+		}
+	});
+};
 
+utils.findRestaurantsByCategoryAndLocationTerm = function () {
 
 };
 

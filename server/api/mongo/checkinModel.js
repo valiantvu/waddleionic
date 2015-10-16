@@ -53,4 +53,20 @@ Checkin.findCheckin = function(facebookID, checkinID) {
   return deferred.promise;
 };
 
+Checkin.deleteCheckin = function(facebookID, checkinID) {
+  var deferred = Q.defer();
+  mongodb.collection('users').update({facebookID: facebookID, 'checkins.checkinID': checkinID}, {checkins:{$elemMatch: {checkinID: checkinID}}},
+  function (err, result) {
+    if (err) {
+      deferred.reject();
+      throw err;
+    }
+    if (result) {
+      console.log(result);
+      deferred.resolve(result);
+    }
+  });
+  return deferred.promise;
+}
+
 module.exports = Checkin;
