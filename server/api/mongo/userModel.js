@@ -135,7 +135,7 @@ User.findFriends = function (facebookID) {
 
 User.buildFeed = function (userAndFriendsFacebookIDs, checkin) {
   var deferred = Q.defer();
-  mongodb.collection('users').update({facebookID:{'$in':userAndFriendsFacebookIDs}}, {$push: {feed: 
+  mongodb.collection('users').update({facebookID:{'$in':userAndFriendsFacebookIDs}}, {$push: {feed:
     {
       checkinID: checkin.checkinID,
       facebookID: checkin.facebookID,
@@ -156,6 +156,48 @@ User.buildFeed = function (userAndFriendsFacebookIDs, checkin) {
 User.findFeedItem = function (facebookID, checkinID) {
   var deferred = Q.defer();
   mongodb.collection('users').findOne({facebookID: facebookID, 'feed.checkinID': checkinID}, {feed:{$elemMatch: {checkinID: checkinID}}},
+  function(err, result) {
+    if (err) {
+      deferred.reject();
+      throw err;
+    }
+    if (result) {
+      deferred.resolve(result);
+    }
+  });
+  return deferred.promise;
+};
+
+
+User.buildRatedPlaces = function (userAndFriendsFacebookIDs, checkin) {
+  console.log(checkin);
+  var deferred = Q.defer();
+  var checkinAndRating = {};
+  checkinAndRating[checkin.checkinID] = {rating: checkin.rating, facebookID: checkin.facebookID};
+  // Find user and their friends
+  // For each user, find matching place document
+  // Update the checkins field by pushing new checkin in
+  // Update average rating for place document
+
+
+  // Find user ids
+  // For each user, upsert in ratedPlaces matching on factualID (set with checkinAndRating object)
+  // 
+  mongodb.collection('users').update({facebookID:{'$in':userAndFriendsFacebookIDs}, ratedPlaces:{$elemMatch: {factualID: factualID}}}, {$set: checkinAndRating}, {multi: true}, function(err, result) {
+    if (err) {
+      deferred.reject();
+      throw err;
+    }
+    if (result) {
+      deferred.resolve(result);
+    }
+  });
+  return deferred.promise;
+};
+
+User.findRatedPlace = function (facebookID, checkinID) {
+  var deferred = Q.defer();
+  mongodb.collection('users').findOne({facebookID: facebookID, 'ratedPlaces.factualID': factualID}, {ratedPlaces:{$elemMatch: {factualID: factualID}}},
   function(err, result) {
     if (err) {
       deferred.reject();

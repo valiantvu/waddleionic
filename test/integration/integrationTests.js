@@ -207,7 +207,7 @@ describe('User footprint post', function () {
       if (err) throw err;
       mongoUser.findFeedItem(testFootprint.facebookID, res.body.checkinID)
       .then(function (feedItem) {
-        console.log('FEED MEEEE', feedItem);
+        // console.log('FEED MEEEE', feedItem);
         expect(feedItem.feed[0]).to.have.property('checkinID', res.body.checkinID);
         expect(feedItem.feed[0]).to.have.property('facebookID', testFootprint.facebookID);
         done();
@@ -240,7 +240,7 @@ describe('Factual geospatial search requests', function () {
     this.timeout(7000);
     factualUtils.searchVenuesByFactualIDsAndGeolocation(loc, factualIDs)
     .then(function (res) {
-      console.log(res);
+      // console.log(res);
       var place = res[0];
       expect(place.address).to.equal('25 Mason St');
       // expect(place.category_ids[0]).to.equal(347);

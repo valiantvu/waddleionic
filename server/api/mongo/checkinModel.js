@@ -22,7 +22,7 @@ Checkin.createCheckin = function(checkin) {
     "likes" : [],
     "comments" : []
   }
-}}, {upsert: true, new: true}, 
+}}, {upsert: true, new: true},
 function (err, result) {
     if (err) {
       deferred.reject();
@@ -46,7 +46,7 @@ Checkin.findCheckin = function(facebookID, checkinID) {
       throw err;
     }
     if (result) {
-      console.log(result);
+      // console.log(result);
       deferred.resolve(result);
     }
   });

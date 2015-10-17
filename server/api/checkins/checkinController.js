@@ -10,7 +10,6 @@ var mongoCheckin = require('../mongo/checkinModel.js');
 var mongoPlace= require('../mongo/placeModel.js');
 var mongoUser = require('../mongo/userModel.js');
 
-
 var factualUtils = require('../../utils/factualUtils.js');
 var foursquareUtils = require('../../utils/foursquareUtils.js');
 var instagramUtils = require('../../utils/instagramUtils.js');
@@ -32,7 +31,7 @@ checkinController.handleNativeCheckin = function (req, res) {
   .then(function (checkin) {
     // console.log('this is my checkin', checkin.result);
     // var checkinSuccess = checkin.result.nModified === 1 ? true : false;
-    console.log('new checkin: ', checkin);
+    // console.log('new checkin: ', checkin);
     var checkinSuccess = true;
     if(checkinSuccess) {
       return factualUtils.getRestaurantInfo(factual_id);
@@ -45,8 +44,7 @@ checkinController.handleNativeCheckin = function (req, res) {
     return mongoPlace.createOrUpdatePlace(nativeCheckin.factualVenueData);
   })
   .then(function (place) {
-    console.log('place', place);
-    addCheckinToUserAndFriendsFeeds();
+    addCheckinToFeedsAndRatedPlaces();
     // var placeUpdateSuccess = place.result.nModified === 1 ? true : false;
     // if(placeUpdateSuccess) {
       // console.log('placeSuccess', placeUpdateSuccess)
@@ -55,14 +53,13 @@ checkinController.handleNativeCheckin = function (req, res) {
   })
   .then(function (placeDocument) {
     if(!placeDocument.foursquareID || !placeDocument.foursquareCategories) {
-      console.log('hiiii');
-      return factualUtils.getFoursquareIDFromFactualID(factual_id); 
+      return factualUtils.getFoursquareIDFromFactualID(factual_id);
     } else {
       res.status(201).end();
     }
   })
   .then(function (foursquareVenueID) {
-    console.log('foursquareID', foursquareVenueID);
+    // console.log('foursquareID', foursquareVenueID);
     foursquareID = foursquareVenueID;
     return mongoPlace.setPropertyOnPlaceDocument(factual_id, 'foursquareID', foursquareID);
   })
@@ -86,15 +83,16 @@ checkinController.handleNativeCheckin = function (req, res) {
     res.status(500).end();
   });
 
-  var addCheckinToUserAndFriendsFeeds = function() {
+  var addCheckinToFeedsAndRatedPlaces = function() {
     console.log('adding checkin to user and friends feeds');
     mongoUser.findFriends(facebookID)
     .then(function (friends) {
-      console.log('these are also my friends', friends);
+      // console.log('these are also my friends', friends);
       //push user's own facebookID into friends array so that user's own feed is also updated
       friends.friends.push(facebookID);
       console.log('me and my frands: ', friends.friends);
-      return mongoUser.buildFeed(friends.friends, nativeCheckin);
+      mongoUser.buildFeed(friends.friends, nativeCheckin);
+      // mongoUser.buildRatedPLaces(friends.friends, nativeCheckin);
     });
   };
 
