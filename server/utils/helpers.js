@@ -4,6 +4,8 @@ var Q = require('q');
 var request = require('request');
 var qs = require('querystring');
 var uuid = require('node-uuid');
+var mongoTag = require('../../server/api/mongo/tagModel.js');
+var tagList = require('../../server/utils/discoverTags.js').list;
 
 var helpers = {};
 
@@ -209,6 +211,21 @@ helpers.parseEditedNativeCheckin = function (editedCheckin) {
     formattedCheckin.pointValue += 3;
   }
   return formattedCheckin;
+};
+
+//this function can be run any time we want to update the tags collection in mongo
+helpers.updateTagsCollection = function() {
+  var deferred = Q.defer();
+  mongoTag.deleteAllTagsinCollection()
+  .then(function (success) {
+    console.log(success);
+    return mongoTag.saveListOfTags(tagList);
+  })
+  .catch(function (err) {
+    deferred.reject();
+    throw err;
+  });
+  return deferred.promise;
 };
 
 module.exports = helpers;

@@ -11,6 +11,7 @@ var mongoUser = require('../../server/api/mongo/userModel.js');
 var mongoCheckin = require('../../server/api/mongo/checkinModel.js');
 var mongoPlace = require('../../server/api/mongo/placeModel.js');
 var factualUtils = require('../../server/utils/factualUtils.js');
+var helpers = require('../../server/utils/helpers.js');
 
 var _ = require('lodash');
 var qs = require('querystring');
@@ -177,7 +178,6 @@ describe('User footprint post', function () {
   var testFootprint = mongoFixtures.footprints[0];
 
   before(function (done) {
-      factualUtils.findVenuesByNameWithinGeolocationBounds('coffee');
       done();
   });
 

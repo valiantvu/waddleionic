@@ -104,7 +104,7 @@ User.findUser = function (user) {
 User.addFriends = function (user, friends) {
   // console.log(friends);
   var deferred = Q.defer();
-  mongodb.collection('users').update({facebookID: user.facebookID}, {$set: {friends: friends} }, function(err, result) {
+  mongodb.collection('users').update({facebookID: user.facebookID}, {$set: {friends: friends}}, function(err, result) {
     if (err) {
       deferred.reject();
       throw err;
