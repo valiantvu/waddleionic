@@ -129,13 +129,15 @@ utils.getFactualIDFromFoursquareID = function (foursquareID) {
   return deferred.promise;
 };
 
-utils.findVenuesByNameOrCategory = function() {
+utils.findVenuesByNameOrCategoryWithinGeolocationBounds = function(query) {
+	console.log('HEYEYE');
 	var deferred = Q.defer();
-	factual.get('/t/places-us', {filters:{"$or": [{"name":{'$bw': query}}, {"category_labels":{"$includes": {"$bw": query}}}], limit: 50}}, function (err, res) {
+	factual.get('/t/places-us', {filters:{"$or":[{"name":{'$bw': query}}, {"category_labels":{"$includes":{"$bw":query}}}]}, limit:50, geo:{"$circle":{"$center":[37.784862, -122.407035],"$meters": 5000}}, select: 'name'}, function (err, res) {
 		if(err) {
 			console.log(err);
 			deferred.reject(err);
 		} else {
+			console.log("OOBIE BLOOBIE!!");
 			console.log(res.data);
 			deferred.resolve(res.data);
 		}

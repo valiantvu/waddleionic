@@ -177,7 +177,7 @@ describe('User footprint post', function () {
   var testFootprint = mongoFixtures.footprints[0];
 
   before(function (done) {
-
+      factualUtils.findVenuesByNameOrCategoryWithinGeolocationBounds('coffee');
       done();
   });
 
