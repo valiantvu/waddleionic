@@ -129,10 +129,10 @@ utils.getFactualIDFromFoursquareID = function (foursquareID) {
   return deferred.promise;
 };
 
-utils.findVenuesByNameOrCategoryWithinGeolocationBounds = function(query) {
+utils.findVenuesByNameWithinGeolocationBounds = function(query) {
 	console.log('HEYEYE');
 	var deferred = Q.defer();
-	factual.get('/t/places-us', {filters:{"$or":[{"name":{'$bw': query}}, {"category_labels":{"$includes":{"$bw":query}}}]}, limit:50, geo:{"$circle":{"$center":[37.784862, -122.407035],"$meters": 5000}}, select: 'name'}, function (err, res) {
+	factual.get('/t/places-us', {filters:{"name":{'$search': query}}, limit:50, geo:{"$circle":{"$center":[37.784862, -122.407035],"$meters": 5000}}, select: 'name'}, function (err, res) {
 		if(err) {
 			console.log(err);
 			deferred.reject(err);
@@ -142,6 +142,8 @@ utils.findVenuesByNameOrCategoryWithinGeolocationBounds = function(query) {
 			deferred.resolve(res.data);
 		}
 	});
+	//
+	//filters:{"$or":[{"name":{'$search': query}}, {"category_labels":{"$includes":{"$bw":query}}}]}
 };
 
 utils.findRestaurantsByCategoryAndLocationTerm = function () {
