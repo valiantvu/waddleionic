@@ -11,10 +11,13 @@ placeController.fetchTagsBasedOnSearchTerm = function (req, res) {
 	var dropdownResults = [];
 	var searchTerm = req.params.query;
 	var geolocation = [req.params.lat, req.params.lng];
+	//radius expects an int in meters for factual query to work, with a max of 25000 m
+	var radius = req.params.radius;
+
 	mongoTag.fetchTagsBasedOnSearchTerm(searchTerm)
 	.then(function (tags) {
 		dropdownResults = dropdownResults.concat(tags);
-		return factualUtils.findVenuesByNameWithinGeolocationBounds(searchTerm, geolocation);
+		return factualUtils.findVenuesByNameWithinGeolocationBounds(searchTerm, geolocation, radius);
 	})
 	.then(function (venues) {
 		console.log(venues);
