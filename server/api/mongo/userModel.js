@@ -171,33 +171,62 @@ User.findFeedItem = function (facebookID, checkinID) {
 
 User.buildRatedPlaces = function (userAndFriendsFacebookIDs, checkin) {
   console.log(checkin);
+  console.log('building rated places for user and friends');
+  // console.log(userAndFriendsFacebookIDs);
+  checkin.apiSource = 'restaurants';
   var deferred = Q.defer();
-  var checkinAndRating = {};
-  checkinAndRating[checkin.checkinID] = {rating: checkin.rating, facebookID: checkin.facebookID};
-  // Find user and their friends
-  // For each user, find matching place document
-  // Update the checkins field by pushing new checkin in
-  // Update average rating for place document
+  // var checkinAndRating = {};
+  // var checkinAndRating = { checkinID: checkinID, rating: checkin.rating, facebookID: checkin.facebookID};
+  var factualID = 1;
+  var userAndFriendsFacebookIDs = ['10203426526517301', '10202833487341857'];
+  var checkinAndRating = { checkinID: '777', rating: 3, facebookID: 1 };
 
-
-  // Find user ids
-  // For each user, upsert in ratedPlaces matching on factualID (set with checkinAndRating object)
-  // 
-  mongodb.collection('users').update({facebookID:{'$in':userAndFriendsFacebookIDs}, ratedPlaces:{$elemMatch: {factualID: factualID}}}, {$set: checkinAndRating}, {multi: true}, function(err, result) {
-    if (err) {
-      deferred.reject();
-      throw err;
+  mongodb.collection('users').update(
+    {facebookID: {$in: userAndFriendsFacebookIDs}, 'ratedPlaces.factualID': factualID },
+    {$addToSet: {'ratedPlaces.$.ratings': checkinAndRating} },
+    {multi: true},
+    function(err, result) {
+      console.log('Update ratedPlaces resolved.');
+      if (err !== null) {
+        console.log('Error updating ratedPlaces!');
+        console.log(err);
+        deferred.reject();
+        throw err;
+      }
+      if (result) {
+        console.log('Updated ratedPlaces for user and friends');
+        console.log(result);
+        deferred.resolve(result);
+      }
     }
-    if (result) {
-      deferred.resolve(result);
-    }
-  });
+  );
+  
+  // mongodb.collection('users').update(
+  //   {'facebookID': {'$in': [ '10203426526517301', '10202833487341857' ]}, 'ratedPlaces.factualID': 1 },
+  //   {'$addToSet': {'ratedPlaces.$.ratings': checkinAndRating} },
+  //   {'multi': true},
+  //   function(err, result) {
+  //     console.log('Update ratedPlaces resolved.');
+  //     if (err !== null) {
+  //       console.log('Error updating ratedPlaces!');
+  //       console.log(err);
+  //       deferred.reject();
+  //       throw err;
+  //     }
+  //     if (result) {
+  //       console.log('Updated ratedPlaces for user and friends');
+  //       console.log(result);
+  //       deferred.resolve(result);
+  //     }
+  //   }
+  // );
   return deferred.promise;
 };
 
+// WIP
 User.findRatedPlace = function (facebookID, checkinID) {
   var deferred = Q.defer();
-  mongodb.collection('users').findOne({facebookID: facebookID, 'ratedPlaces.factualID': factualID}, {ratedPlaces:{$elemMatch: {factualID: factualID}}},
+  mongodb.collection('users').findOne({facebookID: facebookID, 'ratedPlaces.factualID': factualID},
   function(err, result) {
     if (err) {
       deferred.reject();

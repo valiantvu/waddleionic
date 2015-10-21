@@ -49,7 +49,7 @@ placeController.searchWaddleDB = function (req, res) {
 	var searchQuery = req.params.query;
 	neo4jPlace.findAllByCountryOrCityName(facebookID, searchQuery)
 	.then(function (data) {
-		console.log(data);
+		// console.log(data);
 		res.json(data);
 		res.status(200).end();
 	})
@@ -79,7 +79,7 @@ placeController.findFriendsAlreadyBeen = function (req, res) {
 
 	neo4jPlace.findFriendsAlreadyBeen(facebookID, foursquareID)
 	.then(function (data) {
-		console.log(data);
+		// console.log(data);
 		res.json(data);
 		res.status(200).end();
 	})
