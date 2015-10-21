@@ -35,7 +35,7 @@ Tag.createTextIndexOnNameField = function() {
 
 Tag.fetchTagsBasedOnSearchTerm = function (searchTerm) {
   var deferred = Q.defer();
-  mongodb.collection('tags').find({'$text':{'$search': searchTerm}}, {name: 1}).toArray(function (err, result) {
+  mongodb.collection('tags').find({'$text':{'$search': searchTerm}}, {name: 1}, {limit: 3}).toArray(function (err, result) {
     if (err) {
       deferred.reject();
       throw err;

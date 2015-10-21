@@ -266,3 +266,25 @@ describe('Factual geospatial search requests', function () {
   });
 });
 
+describe('Dropdown results on discover tab', function () {
+  var results;
+
+  it('should add or modify a document in places collection when user posts a footprint', function (done) {
+    this.timeout(10000);
+    request(app)
+    .get('/api/places/tags/thai/37.7836240/-122.4089990/5000')
+    .expect(200)
+    .end(function(err, res) {
+      if (err) throw err;
+      console.log("dis is ma bodayy", res.body);
+      var results = res.body;
+      expect(results[0].name).to.equal("Thai");
+      //the following test will fail if there are ever less than 5 thai restaurants within 5000m of Hack Reactor:
+      expect(results.length).to.equal(6);
+      expect(results[1]).to.have.property("name");
+      expect(results[1]).to.have.property("address");
+      done();
+    });
+  });
+});
+

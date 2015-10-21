@@ -129,7 +129,7 @@ utils.getFactualIDFromFoursquareID = function (foursquareID) {
 
 utils.findVenuesByNameWithinGeolocationBounds = function(query, geolocation, radius) {
 	var deferred = Q.defer();
-	factual.get('/t/places-us', {filters:{"name":{'$search': query}}, limit:50, geo:{"$circle":{"$center": geolocation,"$meters": radius}}, select: 'name, address'}, function (err, res) {
+	factual.get('/t/places-us', {filters:{"name":{'$search': query}}, limit:5, geo:{"$circle":{"$center": geolocation,"$meters": radius}}, select: 'name, address'}, function (err, res) {
 		if(err) {
 			console.log(err);
 			deferred.reject(err);
