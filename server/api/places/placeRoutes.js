@@ -8,5 +8,5 @@ module.exports = function (app) {
   app.get('/discover/category/:query/:user/:price?', placeController.discoverPlacesByCategoryOrName);
   app.get('/discover/location/:location/:user', placeController.discoverPlacesByLocation);
   app.get('/discover/location-category/:location/:query/:user', placeController.discoverPlacesByCategoryOrNameAndLocation);
-  app.get('/tags/:query', placeController.fetchTagsBasedOnSearchTerm);
+  app.get('/tags/:lat/:lng/:query', placeController.fetchTagsBasedOnSearchTerm);
 };

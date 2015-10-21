@@ -45,7 +45,7 @@ checkinController.handleNativeCheckin = function (req, res) {
     return mongoPlace.createOrUpdatePlace(nativeCheckin.factualVenueData);
   })
   .then(function (place) {
-    console.log('place', place)
+    console.log('place', place);
     addCheckinToUserAndFriendsFeeds();
     // var placeUpdateSuccess = place.result.nModified === 1 ? true : false;
     // if(placeUpdateSuccess) {

@@ -2,17 +2,25 @@ var Q = require('q');
 var _ = require('lodash');
 var neo4jPlace = require('../neo4j/placeModel.js');
 var mongoPlace= require('../mongo/placeModel.js');
-var mongoTag= require('../mongo/tagModel.js');
-
+var mongoTag = require('../mongo/tagModel.js');
+var factualUtils = require('../../utils/factualUtils.js');
 
 var placeController = {};
 
 placeController.fetchTagsBasedOnSearchTerm = function (req, res) {
+	var dropdownResults = [];
 	var searchTerm = req.params.query;
+	var geolocation = [req.params.lat, req.params.lng];
 	mongoTag.fetchTagsBasedOnSearchTerm(searchTerm)
-	.then(function (results) {
-		console.log(results);
-		res.json(results);
+	.then(function (tags) {
+		dropdownResults = dropdownResults.concat(tags);
+		return factualUtils.findVenuesByNameWithinGeolocationBounds(searchTerm, geolocation);
+	})
+	.then(function (venues) {
+		console.log(venues);
+		dropdownResults = dropdownResults.concat(venues);
+		// dropdownResults = venues.concat(dropdownResults);
+		res.json(dropdownResults);
 		res.status(200).end();
 	})
 	.catch(function (err) {

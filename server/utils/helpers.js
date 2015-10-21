@@ -221,6 +221,10 @@ helpers.updateTagsCollection = function() {
     console.log(success);
     return mongoTag.saveListOfTags(tagList);
   })
+  .then(function (success) {
+    console.log(success);
+    return mongoTag.createTextIndexOnNameField();
+  })
   .catch(function (err) {
     deferred.reject();
     throw err;

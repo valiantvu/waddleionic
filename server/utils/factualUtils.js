@@ -7,7 +7,6 @@ var utils = {};
 
 utils.getVenueInfo = function (factualID) {
   var deferred = Q.defer();
-
   factual.get('/t/places', {filters:{factual_id:{"$eq":factualID}}}, function (err, res) {
     if(err) {
 			console.log(err);
@@ -17,7 +16,6 @@ utils.getVenueInfo = function (factualID) {
 			deferred.resolve(res.data);
 		}
   });
-
   return deferred.promise;
 };
 
@@ -129,20 +127,18 @@ utils.getFactualIDFromFoursquareID = function (foursquareID) {
   return deferred.promise;
 };
 
-utils.findVenuesByNameWithinGeolocationBounds = function(query) {
-	console.log('HEYEYE');
+utils.findVenuesByNameWithinGeolocationBounds = function(query, geoCoordinates) {
 	var deferred = Q.defer();
-	factual.get('/t/places-us', {filters:{"name":{'$search': query}}, limit:50, geo:{"$circle":{"$center":[37.784862, -122.407035],"$meters": 5000}}, select: 'name'}, function (err, res) {
+	factual.get('/t/places-us', {filters:{"name":{'$search': query}}, limit:50, geo:{"$circle":{"$center": geoCoordinates,"$meters": 5000}}, select: 'name, address'}, function (err, res) {
 		if(err) {
 			console.log(err);
 			deferred.reject(err);
 		} else {
-			console.log("OOBIE BLOOBIE!!");
-			console.log(res.data);
 			deferred.resolve(res.data);
 		}
 	});
-	//
+	return deferred.promise;
+	//the following query return places matching the name of category label in addition to name--may be used in future
 	//filters:{"$or":[{"name":{'$search': query}}, {"category_labels":{"$includes":{"$bw":query}}}]}
 };
 
