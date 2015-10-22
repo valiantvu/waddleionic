@@ -266,13 +266,25 @@ User.updateAvgRating = function (usersWithRatedPlace, factualID) {
     // Unwind ratings
     // Project rating
     // Average rating
-    {$match: {facebookID: '10203426526517301'}},
+    {$match: {facebookID: {$in: usersWithRatedPlace}}},
+    {$project: {_id:0, 'facebookID': '$facebookID', 'ratedPlaces':'$ratedPlaces'}},
     {$unwind: '$ratedPlaces'},
     {$match: {'ratedPlaces.factualID': factualID}},
-    {$project: {_id:0, 'ratings':'$ratedPlaces.ratings'}},
+    {$project: {_id:0, 'facebookID': '$facebookID', 'ratings':'$ratedPlaces.ratings'}},
     {$unwind: '$ratings'},
-    {$project: {_id:0, 'rating':'$ratings.rating'}},
-    {$group: {_id:null, avg: {$avg: '$rating'}}},
+    {$project: {_id:0, 'facebookID': '$facebookID', 'rating':'$ratings.rating'}},
+    {$group: {_id:'$facebookID', avg: {$avg: '$rating'}}},
+    // {$group: {_id:null, avg: {$avg: '$rating'}}},
+
+
+
+    // {$match: {facebookID: '10203426526517301'}},
+    // {$unwind: '$ratedPlaces'},
+    // {$match: {'ratedPlaces.factualID': factualID}},
+    // {$project: {_id:0, 'ratings':'$ratedPlaces.ratings'}},
+    // {$unwind: '$ratings'},
+    // {$project: {_id:0, 'rating':'$ratings.rating'}},
+    // {$group: {_id:null, avg: {$avg: '$rating'}}},
     function(err, result) {
       if (err) {
         console.log(err);
@@ -281,8 +293,9 @@ User.updateAvgRating = function (usersWithRatedPlace, factualID) {
       }
       if (result) {
         console.log('Calculated average rating');
-        var avg = result[0].avg;
-        console.log(avg);
+        console.log(result);
+        // var avg = result[0].avg;
+        // console.log(avg);
         // Add checkinAndRating to each user's ratings for the relevant ratedPlace
         deferred.resolve(result);
       }
