@@ -206,10 +206,7 @@ User.buildRatedPlaces = function (userAndFriendsFacebookIDs, checkin) {
       // with the ratedPlace already saved
       mongodb.collection('users').update(
         {facebookID: {$in: usersWithRatedPlace}, 'ratedPlaces.factualID': factualID },
-        {
-          $addToSet: {'ratedPlaces.$.ratings': checkinAndRating}
-          // $set: {'ratedPlaces.$.avgRating': ratedPlaces.$.avgRating*ratedPlaces.$.length + checkin.rating/(ratedPlaces.$.length + 1) }
-        },
+        { $addToSet: {'ratedPlaces.$.ratings': checkinAndRating} },
         {multi: true},
         function(err, result) {
           if (err) {
@@ -258,23 +255,14 @@ User.buildRatedPlaces = function (userAndFriendsFacebookIDs, checkin) {
 User.updateAvgRating = function (usersWithRatedPlace, factualID) {
   var deferred = Q.defer();
   mongodb.collection('users').aggregate(
-    // Match user docs by $in array of fbids
-    // Group user documents by fbid
-    // Unwind ratedPlaces
-    // Match on factualID
-    // Project ratings
-    // Unwind ratings
-    // Project rating
-    // Average rating
-    {$match: {facebookID: {$in: usersWithRatedPlace}}},
+    {$match: {facebookID: {'$in': usersWithRatedPlace}}},
     {$project: {_id:0, 'facebookID': '$facebookID', 'ratedPlaces':'$ratedPlaces'}},
     {$unwind: '$ratedPlaces'},
     {$match: {'ratedPlaces.factualID': factualID}},
     {$project: {_id:0, 'facebookID': '$facebookID', 'factualID': '$ratedPlaces.factualID', 'ratings':'$ratedPlaces.ratings'}},
-    // {$group: {_id:'$facebookID', avg: {$avg: '$ratings.rating'}}},
     {$unwind: '$ratings'},
     {$project: {_id:0, 'facebookID': '$facebookID', 'factualID': '$factualID', 'rating':'$ratings.rating'}},
-    {$group: {_id:{'facebookID': '$facebookID', 'factualID': '$factualID'}, avg: {$avg: '$rating'}}},
+    {$group: {_id:{'facebookID': '$facebookID', 'factualID': '$factualID'}, 'avg': {'$avg': '$rating'}}},
     {$project: {_id:0, 'facebookID': '$_id.facebookID', 'factualID': '$_id.factualID', 'avgRating':'$avg'}},
 
     function(err, result) {
@@ -284,18 +272,27 @@ User.updateAvgRating = function (usersWithRatedPlace, factualID) {
         throw err;
       }
       if (result) {
-        console.log('Calculated average rating');
-        console.log(result);
+        console.log('Calculated average ratings');
         _.each(result, function(item) {
-          console.log(item);
+          // console.log(item);
+          mongodb.collection('users').update(
+            {'facebookID': item.facebookID, 'ratedPlaces.factualID': item.factualID },
+            { $set: {'ratedPlaces.$.avgRating' : item.avgRating}},
+            function (err, result) {
+              if (err) {
+                console.log(err);
+                deferred.reject();
+                throw err;
+              }
+              if (result) {
+                // console.log(result);
+                deferred.resolve(result);
+              }
+            });
         });
-        deferred.resolve(result);
       }
     }
   );
-  // mongodb.collection('users').update(
-  //   {facebookID: {$in: usersWithoutRatedPlace} },
-  //   { $set: {'ratedPlaces.avgRating' : average}});
 };
 
 // WIP
