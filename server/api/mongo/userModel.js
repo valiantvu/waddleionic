@@ -172,7 +172,6 @@ User.findFeedItem = function (facebookID, checkinID) {
 
 User.buildRatedPlaces = function (userAndFriendsFacebookIDs, checkin) {
   // console.log(checkin);
-  // var userAndFriendsFacebookIDs = ['10203426526517301', '10202833487341857'];
   var deferredRatedPlaceCreated = Q.defer();
   var deferredRatedPlaceUpdated = Q.defer();
   var factualID = checkin.factualVenueData.factual_id;
@@ -216,7 +215,7 @@ User.buildRatedPlaces = function (userAndFriendsFacebookIDs, checkin) {
           }
           if (result) {
             console.log('Added checkin and rating information for relevant rated place');
-            console.log(result);
+            // console.log(result);
             User.updateAvgRating(usersWithRatedPlace, factualID);
             deferredRatedPlaceUpdated.resolve(result);
           }
@@ -237,7 +236,7 @@ User.buildRatedPlaces = function (userAndFriendsFacebookIDs, checkin) {
           }
           if (result) {
             console.log('Created new ratedPlace for user and friends');
-            console.log(result);
+            // console.log(result);
             // Add checkinAndRating to each user's ratings for the relevant ratedPlace
             deferredRatedPlaceCreated.resolve(result);
           }
@@ -308,6 +307,29 @@ User.findRatedPlace = function (facebookID, checkinID) {
       deferred.resolve(result);
     }
   });
+  return deferred.promise;
+};
+
+User.getFactualIDsOfRatedPlaces = function (facebookID) {
+  var deferred = Q.defer();
+  facebookID =  '10203426526517301';
+  mongodb.collection('users').aggregate(
+    {$match: {facebookID: facebookID}},
+    {$unwind: '$ratedPlaces'},
+    {$project: {_id:0, 'factualID': '$ratedPlaces.factualID'}},
+    function(err, result) {
+      if (err) {
+        console.log(err);
+        deferred.reject();
+        throw err;
+      }
+      if (result) {
+        var factualIDs = _.pluck(result, 'factualID');
+        // console.log(factualIDs);
+        deferred.resolve(factualIDs);
+      }
+    }
+  );
   return deferred.promise;
 };
 
