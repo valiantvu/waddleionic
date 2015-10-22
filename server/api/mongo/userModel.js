@@ -171,8 +171,7 @@ User.findFeedItem = function (facebookID, checkinID) {
 
 
 User.buildRatedPlaces = function (userAndFriendsFacebookIDs, checkin) {
-  console.log(checkin);
-  // checkin.apiSource = 'restaurants';
+  // console.log(checkin);
   // var userAndFriendsFacebookIDs = ['10203426526517301', '10202833487341857'];
   var deferredRatedPlaceCreated = Q.defer();
   var deferredRatedPlaceUpdated = Q.defer();
@@ -185,9 +184,8 @@ User.buildRatedPlaces = function (userAndFriendsFacebookIDs, checkin) {
     ratings: [ checkinAndRating ]
   };
 
-
-  console.log(newRatedPlace);
-  console.log(checkinAndRating);
+  // console.log(newRatedPlace);
+  // console.log(checkinAndRating);
 
   mongodb.collection('users').find({facebookID: {$in: userAndFriendsFacebookIDs}, 'ratedPlaces.factualID': factualID }, {facebookID: 1}).toArray(function (err, result) {
     if (err) {
@@ -199,16 +197,19 @@ User.buildRatedPlaces = function (userAndFriendsFacebookIDs, checkin) {
 
       var usersWithRatedPlace = _.pluck(result, 'facebookID');
       var usersWithoutRatedPlace = _.difference(userAndFriendsFacebookIDs, usersWithRatedPlace);
-      console.log('Users with matching rated place:');
-      console.log(usersWithRatedPlace);
-      console.log('Users without matching rated place:');
-      console.log(usersWithoutRatedPlace);
+      // console.log('Users with matching rated place:');
+      // console.log(usersWithRatedPlace);
+      // console.log('Users without matching rated place:');
+      // console.log(usersWithoutRatedPlace);
 
       // Insert rating information into existing ratedPlace for users
       // with the ratedPlace already saved
       mongodb.collection('users').update(
         {facebookID: {$in: usersWithRatedPlace}, 'ratedPlaces.factualID': factualID },
-        {$addToSet: {'ratedPlaces.$.ratings': checkinAndRating} },
+        {
+          $addToSet: {'ratedPlaces.$.ratings': checkinAndRating}
+          // $set: {'ratedPlaces.$.avgRating': ratedPlaces.$.avgRating*ratedPlaces.$.length + checkin.rating/(ratedPlaces.$.length + 1) }
+        },
         {multi: true},
         function(err, result) {
           if (err) {
@@ -219,6 +220,7 @@ User.buildRatedPlaces = function (userAndFriendsFacebookIDs, checkin) {
           if (result) {
             console.log('Added checkin and rating information for relevant rated place');
             console.log(result);
+            User.updateAvgRating(usersWithRatedPlace, factualID);
             deferredRatedPlaceUpdated.resolve(result);
           }
         }
@@ -250,6 +252,45 @@ User.buildRatedPlaces = function (userAndFriendsFacebookIDs, checkin) {
   });
   
   return Q.all([deferredRatedPlaceCreated.promise, deferredRatedPlaceUpdated.promise]);
+};
+
+
+User.updateAvgRating = function (usersWithRatedPlace, factualID) {
+  var deferred = Q.defer();
+  mongodb.collection('users').aggregate(
+    // Match user docs by $in array of fbids
+    // Group user documents by fbid
+    // Unwind ratedPlaces
+    // Match on factualID
+    // Project ratings
+    // Unwind ratings
+    // Project rating
+    // Average rating
+    {$match: {facebookID: '10203426526517301'}},
+    {$unwind: '$ratedPlaces'},
+    {$match: {'ratedPlaces.factualID': factualID}},
+    {$project: {_id:0, 'ratings':'$ratedPlaces.ratings'}},
+    {$unwind: '$ratings'},
+    {$project: {_id:0, 'rating':'$ratings.rating'}},
+    {$group: {_id:null, avg: {$avg: '$rating'}}},
+    function(err, result) {
+      if (err) {
+        console.log(err);
+        deferred.reject();
+        throw err;
+      }
+      if (result) {
+        console.log('Calculated average rating');
+        var avg = result[0].avg;
+        console.log(avg);
+        // Add checkinAndRating to each user's ratings for the relevant ratedPlace
+        deferred.resolve(result);
+      }
+    }
+  );
+  // mongodb.collection('users').update(
+  //   {facebookID: {$in: usersWithoutRatedPlace} },
+  //   { $set: {'ratedPlaces.avgRating' : average}});
 };
 
 // WIP
