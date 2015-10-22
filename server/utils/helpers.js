@@ -27,6 +27,47 @@ helpers.httpsGet = function (queryPath) {
   return deferred.promise;
 };
 
+helpers.buildFactualSearchQuery = function (searchParams) {
+  var query = {};
+  query.filters = {};
+  if(searchParams.lat && searchParams.lng && searchParams.radius) {
+    query.geo = {
+      "$circle":{
+        "$center": [searchParams.lat, searchParams.lng],
+        "$meters": searchParams.radius
+      }
+    };
+  }
+  if(searchParams.neighborhood && searchParams.city && searchParams.state) {
+    query.filters.neighborhoods = {"$includes_any": searchParams.neighborhoods};
+    query.filters.locality = searchParams.city;
+    query.filters.region = searchParams.state;
+  }
+  else if(searchParams.city && searchParams.state) {
+    query.filters.locality = searchParams.city;
+    query.filters.region = searchParams.state;
+  }
+
+  if(searchParams.category) {
+    query.filters.category_labels = {"$includes_any": searchParams.categories};
+  }
+
+  if(searchParams.price) {
+    console.log('price');
+  }
+
+  if(searchParams.attr) {
+    console.log('meh');
+  }
+
+  if(searchParams.sort === 'rating') {
+    query.sort = "placerank:desc";
+  } else if (searchParams.sort === 'distance') {
+    query.sort = "$distance";
+  }
+
+};
+
 helpers.httpsPost = function (queryPath, headers, body) {
   console.log(queryPath);
   var deferred = Q.defer();

@@ -44,6 +44,11 @@ placeController.updatePlace = function (req, res){
   });
 };
 
+placeController.discoverPlaces = function (req, res) {
+	var searchParams = req.params;
+	var factualQuery = helpers.buildFactualSearchQuery(searchParams);
+}
+
 placeController.searchWaddleDB = function (req, res) {
 	var facebookID = req.params.user;
 	var searchQuery = req.params.query;
@@ -114,6 +119,8 @@ placeController.discoverPlacesByCategoryOrName = function (req, res) {
 };
 
 placeController.discoverPlacesByLocation = function (req, res) {
+	console.log('dis be ma wreck', req.params);
+	console.log(req.body);
 	var facebookID = req.params.user;
 	var location = req.params.location;
 

@@ -278,7 +278,6 @@ Place.findAllByCountryOrCityName = function (userID, locationName) {
 }
 
 Place.discoverByLocation = function (facebookID, locationTerm) {
-  console.log('locationnnnn');
   var deferred = Q.defer();
 
   var query = [
@@ -295,8 +294,6 @@ Place.discoverByLocation = function (facebookID, locationTerm) {
     facebookID: facebookID,
     locationQuery: '(?i).*' + locationTerm + '.*'
   };
-
-  console.log('dis b ma params:', params);
 
   db.query(query, params, function (err, results) {
     if (err) {

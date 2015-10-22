@@ -23,6 +23,7 @@ var DiscoverPlaces = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $
     },
     byLocation: function(locationTerm, userFbID) {
       var url = '/api/places/discover/location/' + locationTerm + '/' + userFbID;
+      console.log('by location!!');
 
       if(ionic.Platform.isIOS()) {
         if(window.sessionStorage.stagingEnvironment) {
@@ -34,6 +35,7 @@ var DiscoverPlaces = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $
 
       return $http({
         method: 'GET',
+        params: {'data': 'this is my data!', 'woot': 'so woo'},
         url: url
       });
     },

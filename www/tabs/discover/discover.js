@@ -19,8 +19,9 @@ var DiscoverController = function (Auth,  $scope, $state, DiscoverPlaces, $ionic
 
     var searchVenuesByLocation = function () {
       console.log('search by location');
+      // $scope.search.location = "new%20york";
       if($scope.search.location.length > 1) {
-        DiscoverPlaces.byLocation($scope.search.location, window.sessionStorage.userFbID. $scope.selectedPrices)
+        DiscoverPlaces.byLocation($scope.search.location, window.sessionStorage.userFbID, $scope.selectedPrices)
         .then(function (data) {
           $scope.venues = data.data;
           console.log(data);
@@ -42,9 +43,11 @@ var DiscoverController = function (Auth,  $scope, $state, DiscoverPlaces, $ionic
     $scope.bifurcateSearch = function() {
       if($scope.search.query && $scope.search.location) {
         searchVenuesByCategoryOrNameAndLocation();
-      } else if($scope.search.query.length) {
-        searchVenuesByNameOrCategory();
-      } else {
+      } 
+      // else if($scope.search.query.length) {
+      //   searchVenuesByNameOrCategory();
+      // } 
+      else {
         searchVenuesByLocation();
       }
     };
