@@ -26,6 +26,10 @@ checkinController.handleNativeCheckin = function (req, res) {
   var checkinID = nativeCheckin.checkinID;
   var factual_id = nativeCheckin.factualVenueData.factual_id;
   var facebookID = req.body.facebookID;
+  var categories = _.flatten(nativeCheckin.factualVenueData.category_labels);
+  console.log(categories);
+  var apiSource = categories.indexOf('Restaurants') > 0 ? 'restaurants' : 'places';
+  apiSource = categories.indexOf('Hotels') > 0 ? 'hotels' : apiSource;
 
   mongoCheckin.createCheckin(nativeCheckin)
   .then(function (checkin) {
@@ -41,6 +45,8 @@ checkinController.handleNativeCheckin = function (req, res) {
     if(restaurantInfo.length) {
       nativeCheckin.factualVenueData = restaurantInfo[0];
     }
+    nativeCheckin.factualVenueData.apiSource = apiSource;
+    console.log('apiSource: ', nativeCheckin.factualVenueData.apiSource);
     return mongoPlace.createOrUpdatePlace(nativeCheckin.factualVenueData);
   })
   .then(function (place) {

@@ -171,23 +171,17 @@ User.findFeedItem = function (facebookID, checkinID) {
 
 
 User.buildRatedPlaces = function (userAndFriendsFacebookIDs, checkin) {
-  // console.log(checkin);
-  checkin.apiSource = 'restaurants';
+  console.log(checkin);
+  // checkin.apiSource = 'restaurants';
+  // var userAndFriendsFacebookIDs = ['10203426526517301', '10202833487341857'];
   var deferredRatedPlaceCreated = Q.defer();
   var deferredRatedPlaceUpdated = Q.defer();
   var factualID = checkin.factualVenueData.factual_id;
-
-  // var userAndFriendsFacebookIDs = ['10203426526517301', '10202833487341857'];
-  // var checkinAndRating = { checkinID: checkin.checkinID, rating: checkin.rating, facebookID: checkin.facebookID};
-  // console.log(checkinAndRating);
-  // var ratedPlace = { factualID: factualID, avgRating: 0, apiSource: checkin.apiSource, ratings: [] };
-  // console.log(ratedPlace);
-
   var checkinAndRating = { checkinID: checkin.checkinID, rating: checkin.rating, facebookID: checkin.facebookID};
   var newRatedPlace = {
     factualID: factualID,
-    avgRating: 0,
-    apiSource: checkin.apiSource,
+    avgRating: checkin.rating,
+    apiSource: checkin.factualVenueData.apiSource,
     ratings: [ checkinAndRating ]
   };
 
