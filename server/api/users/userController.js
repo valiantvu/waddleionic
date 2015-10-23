@@ -22,7 +22,7 @@ userController.userLogin = function (req, res) {
   var userFBStatusesData = [];
   var userFBFriendsData;
   var combinedFBCheckins, friendFacebookIDs;
-  console.log(userData);
+  // console.log(userData);
 
   facebookUtils.exchangeFBAccessToken(userData.fbToken)
   // Store access token on scope, Get profile pictures from Facebook
@@ -519,7 +519,7 @@ userController.fetchFolders = function (req, res) {
 
   neo4jUser.fetchFolders(params.facebookID, params.page, params.skipAmount)
   .then(function (folders) {
-    console.log(folders)
+    // console.log(folders)
     res.json(folders);
     res.status(200).end();
   })

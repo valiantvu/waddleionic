@@ -49,7 +49,7 @@ placeController.searchWaddleDB = function (req, res) {
 	var searchQuery = req.params.query;
 	neo4jPlace.findAllByCountryOrCityName(facebookID, searchQuery)
 	.then(function (data) {
-		console.log(data);
+		// console.log(data);
 		res.json(data);
 		res.status(200).end();
 	})
@@ -79,7 +79,7 @@ placeController.findFriendsAlreadyBeen = function (req, res) {
 
 	neo4jPlace.findFriendsAlreadyBeen(facebookID, foursquareID)
 	.then(function (data) {
-		console.log(data);
+		// console.log(data);
 		res.json(data);
 		res.status(200).end();
 	})
@@ -87,6 +87,14 @@ placeController.findFriendsAlreadyBeen = function (req, res) {
 		console.log(err);
 		res.status(500).end();
 	});
+};
+
+placeController.discoverPlaces = function (req, res) {
+	// TODO
+	// Search by category, venue name, locality, or nearby
+	// Call userModel function to search through ratedPlaces and
+	// retrieve a list of place IDs matching search terms
+	// Then retrieve nearby places through factual api
 };
 
 placeController.discoverPlacesByCategoryOrName = function (req, res) {

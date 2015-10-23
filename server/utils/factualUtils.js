@@ -12,7 +12,7 @@ utils.getVenueInfo = function (factualID) {
 			console.log(err);
 			deferred.reject(err);
 		} else {
-			console.log(res.data);
+			// console.log(res.data);
 			deferred.resolve(res.data);
 		}
   });
@@ -27,7 +27,7 @@ utils.getRestaurantInfo = function (factualID) {
 			console.log(err);
 			deferred.reject(err);
 		} else {
-			console.log(res.data);
+			// console.log(res.data);
 			deferred.resolve(res.data);
 		}
 	});
@@ -43,7 +43,7 @@ utils.getMenu = function (factualID) {
 			console.log(err);
 			deferred.reject(err);
 		} else {
-			console.log(res.data);
+			// console.log(res.data);
 			deferred.resolve(res.data);
 		}
   });
@@ -60,7 +60,7 @@ utils.searchVenuesByGeolocation = function (latlng) {
 			console.log(err);
 			deferred.reject(err);
 		} else {
-			console.log(res.data);
+			// console.log(res.data);
 			deferred.resolve(res.data);
 		}
 	});
@@ -88,7 +88,7 @@ utils.searchVenuesBySearchQueryAndGeolocation = function (latlng, query) {
 			console.log(err);
 			deferred.reject(err);
 		} else {
-			console.log(res.data);
+			// console.log(res.data);
 			deferred.resolve(res.data);
 		}
 	});
@@ -102,7 +102,7 @@ utils.searchVenuesByQueryAndNear = function (near, query, offset) {
 			console.log(err);
 			deferred.reject(err);
 		} else {
-			console.log(res.data);
+			// console.log(res.data);
 			deferred.resolve(res.data);
 		}
 	});
@@ -119,7 +119,7 @@ utils.getFactualIDFromFoursquareID = function (foursquareID) {
 			deferred.reject(err);
 		} else {
 			
-		console.log(res.data);
+		// console.log(res.data);
   	deferred.resolve(res.data);
 		}
   });
@@ -155,7 +155,7 @@ utils.getFoursquareIDFromFactualID = function (factualID) {
 			console.log(err);
 			deferred.reject(err);
 		} else {
-			console.log(res.data);
+			// console.log(res.data);
 			if(res.data.length) {
 				for(i = 0; i < res.data.length; i++) {
 					if(res.data[i].namespace_id) {

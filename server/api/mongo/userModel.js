@@ -1,5 +1,6 @@
 var mongodb = require('./../../mongoConfig.js');
 var Q = require('q');
+var _ = require('lodash');
 
 var User = {};
 
@@ -135,7 +136,7 @@ User.findFriends = function (facebookID) {
 
 User.buildFeed = function (userAndFriendsFacebookIDs, checkin) {
   var deferred = Q.defer();
-  mongodb.collection('users').update({facebookID:{'$in':userAndFriendsFacebookIDs}}, {$push: {feed: 
+  mongodb.collection('users').update({facebookID:{'$in':userAndFriendsFacebookIDs}}, {$push: {feed:
     {
       checkinID: checkin.checkinID,
       facebookID: checkin.facebookID,
@@ -165,6 +166,178 @@ User.findFeedItem = function (facebookID, checkinID) {
       deferred.resolve(result);
     }
   });
+  return deferred.promise;
+};
+
+
+User.buildRatedPlaces = function (userAndFriendsFacebookIDs, checkin) {
+  // console.log(checkin);
+  var deferredRatedPlaceCreated = Q.defer();
+  var deferredRatedPlaceUpdated = Q.defer();
+  var factualID = checkin.factualVenueData.factual_id;
+  var checkinAndRating = { checkinID: checkin.checkinID, rating: checkin.rating, facebookID: checkin.facebookID};
+  var newRatedPlace = {
+    factualID: factualID,
+    avgRating: checkin.rating,
+    apiSource: checkin.factualVenueData.apiSource,
+    ratings: [ checkinAndRating ]
+  };
+
+  // console.log(newRatedPlace);
+  // console.log(checkinAndRating);
+
+  mongodb.collection('users').find({facebookID: {$in: userAndFriendsFacebookIDs}, 'ratedPlaces.factualID': factualID }, {facebookID: 1}).toArray(function (err, result) {
+    if (err) {
+      console.log(err);
+      deferredRatedPlaceUpdated.reject();
+      throw err;
+    }
+    if (result) {
+
+      var usersWithRatedPlace = _.pluck(result, 'facebookID');
+      var usersWithoutRatedPlace = _.difference(userAndFriendsFacebookIDs, usersWithRatedPlace);
+      // console.log('Users with matching rated place:');
+      // console.log(usersWithRatedPlace);
+      // console.log('Users without matching rated place:');
+      // console.log(usersWithoutRatedPlace);
+
+      // Insert rating information into existing ratedPlace for users
+      // with the ratedPlace already saved
+      mongodb.collection('users').update(
+        {facebookID: {$in: usersWithRatedPlace}, 'ratedPlaces.factualID': factualID },
+        { $addToSet: {'ratedPlaces.$.ratings': checkinAndRating} },
+        {multi: true},
+        function(err, result) {
+          if (err) {
+            console.log(err);
+            deferredRatedPlaceUpdated.reject();
+            throw err;
+          }
+          if (result) {
+            console.log('Added checkin and rating information for relevant rated place');
+            // console.log(result);
+            User.updateAvgRating(usersWithRatedPlace, factualID);
+            deferredRatedPlaceUpdated.resolve(result);
+          }
+        }
+      );
+
+      // Insert new rated place with rating object for users
+      // who do not have the ratedPlace already saved
+      mongodb.collection('users').update(
+        {facebookID: {$in: usersWithoutRatedPlace} },
+        {$addToSet: {'ratedPlaces': newRatedPlace} },
+        {multi: true},
+        function(err, result) {
+          if (err) {
+            console.log(err);
+            deferredRatedPlaceCreated.reject();
+            throw err;
+          }
+          if (result) {
+            console.log('Created new ratedPlace for user and friends');
+            // console.log(result);
+            // Add checkinAndRating to each user's ratings for the relevant ratedPlace
+            deferredRatedPlaceCreated.resolve(result);
+          }
+        }
+      );
+      deferredRatedPlaceCreated.resolve(result);
+      deferredRatedPlaceUpdated.resolve(result);
+    }
+  });
+  
+  return Q.all([deferredRatedPlaceCreated.promise, deferredRatedPlaceUpdated.promise]);
+};
+
+
+User.updateAvgRating = function (usersWithRatedPlace, factualID) {
+  var deferred = Q.defer();
+  mongodb.collection('users').aggregate(
+    {$match: {facebookID: {'$in': usersWithRatedPlace}}},
+    {$project: {_id:0, 'facebookID': '$facebookID', 'ratedPlaces':'$ratedPlaces'}},
+    {$unwind: '$ratedPlaces'},
+    {$match: {'ratedPlaces.factualID': factualID}},
+    {$project: {_id:0, 'facebookID': '$facebookID', 'factualID': '$ratedPlaces.factualID', 'ratings':'$ratedPlaces.ratings'}},
+    {$unwind: '$ratings'},
+    {$project: {_id:0, 'facebookID': '$facebookID', 'factualID': '$factualID', 'rating':'$ratings.rating'}},
+    {$group: {_id:{'facebookID': '$facebookID', 'factualID': '$factualID'}, 'avg': {'$avg': '$rating'}}},
+    {$project: {_id:0, 'facebookID': '$_id.facebookID', 'factualID': '$_id.factualID', 'avgRating':'$avg'}},
+
+    function(err, result) {
+      if (err) {
+        console.log(err);
+        deferred.reject();
+        throw err;
+      }
+      if (result) {
+        console.log('Calculated average ratings');
+        _.each(result, function(item) {
+          // console.log(item);
+          mongodb.collection('users').update(
+            {'facebookID': item.facebookID, 'ratedPlaces.factualID': item.factualID },
+            { $set: {'ratedPlaces.$.avgRating' : item.avgRating}},
+            function (err, result) {
+              if (err) {
+                console.log(err);
+                deferred.reject();
+                throw err;
+              }
+              if (result) {
+                // console.log(result);
+                deferred.resolve(result);
+              }
+            });
+        });
+      }
+    }
+  );
+};
+
+User.findRatingsForPlace= function (facebookID, factualID, checkinID) {
+  var deferred = Q.defer();
+  mongodb.collection('users').aggregate(
+    {$match: {facebookID: facebookID}},
+    {$project: {_id:0, 'ratedPlaces':'$ratedPlaces'}},
+    {$unwind: '$ratedPlaces'},
+    {$match: {'ratedPlaces.factualID': factualID}},
+    {$project: {_id:0, 'ratings':'$ratedPlaces.ratings'}},
+    {$unwind: '$ratings'},
+    {$match: {'ratings.checkinID': checkinID}},
+    {$project: {_id:0, 'checkinID':'$ratings.checkinID', 'facebookID':'$ratings.facebookID', 'rating':'$ratings.rating'}},
+    function(err, result) {
+      if (err) {
+        console.log(err);
+        deferred.reject();
+        throw err;
+      }
+      if (result) {
+        deferred.resolve(result);
+      }
+    }
+  );
+  return deferred.promise;
+};
+
+User.getFactualIDsOfRatedPlaces = function (facebookID) {
+  var deferred = Q.defer();
+  mongodb.collection('users').aggregate(
+    {$match: {facebookID: facebookID}},
+    {$unwind: '$ratedPlaces'},
+    {$project: {_id:0, 'factualID': '$ratedPlaces.factualID'}},
+    function(err, result) {
+      if (err) {
+        console.log(err);
+        deferred.reject();
+        throw err;
+      }
+      if (result) {
+        var factualIDs = _.pluck(result, 'factualID');
+        // console.log(factualIDs);
+        deferred.resolve(factualIDs);
+      }
+    }
+  );
   return deferred.promise;
 };
 

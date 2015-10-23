@@ -198,7 +198,7 @@ describe('User footprint post', function () {
     });
   });
 
-   it('should add a document to user and friends feed array when user posts footprint', function (done) {
+  it('should add a document to user and friends feed array when user posts footprint', function (done) {
     request(app)
     .post('/api/checkins/nativecheckin')
     .send(testFootprint)
@@ -207,7 +207,7 @@ describe('User footprint post', function () {
       if (err) throw err;
       mongoUser.findFeedItem(testFootprint.facebookID, res.body.checkinID)
       .then(function (feedItem) {
-        console.log('FEED MEEEE', feedItem);
+        // console.log('FEED MEEEE', feedItem);
         expect(feedItem.feed[0]).to.have.property('checkinID', res.body.checkinID);
         expect(feedItem.feed[0]).to.have.property('facebookID', testFootprint.facebookID);
         done();
@@ -231,6 +231,25 @@ describe('User footprint post', function () {
       });
     });
   });
+
+  it('should add a rating to user and friends rated places array when user posts footprint', function (done) {
+    this.timeout(10000);
+    request(app)
+    .post('/api/checkins/nativecheckin')
+    .send(testFootprint)
+    .expect(200)
+    .end(function(err, res) {
+      if (err) throw err;
+      mongoUser.findRatingsForPlace(testFootprint.facebookID, testFootprint.factualVenueData.factual_id, res.body.checkinID)
+      .then(function (rating) {
+        console.log(rating);
+        expect(rating[0]).to.have.property('checkinID', res.body.checkinID);
+        expect(rating[0]).to.have.property('facebookID', testFootprint.facebookID);
+        expect(rating[0]).to.have.property('rating', testFootprint.rating);
+        done();
+      });
+    });
+  });
 });
 
 describe('Factual geospatial search requests', function () {
@@ -240,7 +259,7 @@ describe('Factual geospatial search requests', function () {
     this.timeout(7000);
     factualUtils.searchVenuesByFactualIDsAndGeolocation(loc, factualIDs)
     .then(function (res) {
-      console.log(res);
+      // console.log(res);
       var place = res[0];
       expect(place.address).to.equal('25 Mason St');
       // expect(place.category_ids[0]).to.equal(347);

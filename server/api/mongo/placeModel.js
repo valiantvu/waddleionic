@@ -3,7 +3,7 @@ var mongodb = require('./../../mongoConfig.js');
 var Place = {};
 
 Place.createOrUpdatePlace = function(placeData) {
-  console.log('hey im here!!!', placeData);
+  // console.log('hey im here!!!', placeData);
   var deferred = Q.defer();
   //{rating: 1} is to supply sort argument...refactor at some point 
   mongodb.collection('places').findAndModify({factual_id: placeData.factual_id}, {rating: 1}, placeData, {upsert: true, new: true}, function(err, result) {
@@ -12,7 +12,7 @@ Place.createOrUpdatePlace = function(placeData) {
       throw err;
     }
     if (result) {
-      console.log(result);
+      // console.log(result);
       console.log('Added place!');
       deferred.resolve(result);
     }

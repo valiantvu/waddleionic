@@ -10,7 +10,6 @@ var mongoCheckin = require('../mongo/checkinModel.js');
 var mongoPlace= require('../mongo/placeModel.js');
 var mongoUser = require('../mongo/userModel.js');
 
-
 var factualUtils = require('../../utils/factualUtils.js');
 var foursquareUtils = require('../../utils/foursquareUtils.js');
 var instagramUtils = require('../../utils/instagramUtils.js');
@@ -27,12 +26,15 @@ checkinController.handleNativeCheckin = function (req, res) {
   var checkinID = nativeCheckin.checkinID;
   var factual_id = nativeCheckin.factualVenueData.factual_id;
   var facebookID = req.body.facebookID;
+  var categories = _.flatten(nativeCheckin.factualVenueData.category_labels);
+  var apiSource = categories.indexOf('Restaurants') > 0 ? 'restaurants' : 'places';
+  apiSource = categories.indexOf('Hotels') > 0 ? 'hotels' : apiSource;
 
   mongoCheckin.createCheckin(nativeCheckin)
   .then(function (checkin) {
     // console.log('this is my checkin', checkin.result);
     // var checkinSuccess = checkin.result.nModified === 1 ? true : false;
-    console.log('new checkin: ', checkin);
+    // console.log('new checkin: ', checkin);
     var checkinSuccess = true;
     if(checkinSuccess) {
       return factualUtils.getRestaurantInfo(factual_id);
@@ -42,11 +44,12 @@ checkinController.handleNativeCheckin = function (req, res) {
     if(restaurantInfo.length) {
       nativeCheckin.factualVenueData = restaurantInfo[0];
     }
+    nativeCheckin.factualVenueData.apiSource = apiSource;
+    // console.log('apiSource: ', nativeCheckin.factualVenueData.apiSource);
     return mongoPlace.createOrUpdatePlace(nativeCheckin.factualVenueData);
   })
   .then(function (place) {
-    console.log('place', place);
-    addCheckinToUserAndFriendsFeeds();
+    addCheckinToFeedsAndRatedPlaces();
     // var placeUpdateSuccess = place.result.nModified === 1 ? true : false;
     // if(placeUpdateSuccess) {
       // console.log('placeSuccess', placeUpdateSuccess)
@@ -55,23 +58,22 @@ checkinController.handleNativeCheckin = function (req, res) {
   })
   .then(function (placeDocument) {
     if(!placeDocument.foursquareID || !placeDocument.foursquareCategories) {
-      console.log('hiiii');
-      return factualUtils.getFoursquareIDFromFactualID(factual_id); 
+      return factualUtils.getFoursquareIDFromFactualID(factual_id);
     } else {
       res.status(201).end();
     }
   })
   .then(function (foursquareVenueID) {
-    console.log('foursquareID', foursquareVenueID);
+    // console.log('foursquareID', foursquareVenueID);
     foursquareID = foursquareVenueID;
     return mongoPlace.setPropertyOnPlaceDocument(factual_id, 'foursquareID', foursquareID);
   })
   .then(function (place) {
-    console.log(place);
+    // console.log(place);
     return foursquareUtils.getVenueInfo(foursquareID);
   })
   .then(function (foursquareVenueInfo) {
-    console.log(foursquareVenueInfo);
+    // console.log(foursquareVenueInfo);
     return mongoPlace.setPropertyOnPlaceDocument(factual_id, 'foursquareCategories', foursquareVenueInfo.venue.categories);
   })
   .then(function (place) {
@@ -86,15 +88,22 @@ checkinController.handleNativeCheckin = function (req, res) {
     res.status(500).end();
   });
 
-  var addCheckinToUserAndFriendsFeeds = function() {
+  var addCheckinToFeedsAndRatedPlaces = function() {
     console.log('adding checkin to user and friends feeds');
     mongoUser.findFriends(facebookID)
     .then(function (friends) {
-      console.log('these are also my friends', friends);
+      // console.log('these are also my friends', friends);
       //push user's own facebookID into friends array so that user's own feed is also updated
       friends.friends.push(facebookID);
-      console.log('me and my frands: ', friends.friends);
-      return mongoUser.buildFeed(friends.friends, nativeCheckin);
+      // console.log('me and my frands: ', friends.friends);
+      mongoUser.buildFeed(friends.friends, nativeCheckin)
+      .catch(function(err) {
+        console.log(err);
+      });
+      mongoUser.buildRatedPlaces(friends.friends, nativeCheckin)
+      .catch(function(err) {
+        console.log(err);
+      });
     });
   };
 
@@ -219,7 +228,7 @@ var getFactualRestaurantInfo = function (factualID) {
   var restaurantData, place;
   factualUtils.getRestaurantInfo(factualID)
   .then(function (restaurantInfo) {
-    console.log(restaurantInfo);
+    // console.log(restaurantInfo);
     if(!restaurantInfo.length) {
       console.log('returning')
       return;
