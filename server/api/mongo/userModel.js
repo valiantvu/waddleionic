@@ -294,25 +294,33 @@ User.updateAvgRating = function (usersWithRatedPlace, factualID) {
   );
 };
 
-// WIP
-User.findRatedPlace = function (facebookID, checkinID) {
+User.findRatingsForPlace= function (facebookID, factualID, checkinID) {
   var deferred = Q.defer();
-  mongodb.collection('users').findOne({facebookID: facebookID, 'ratedPlaces.factualID': factualID},
-  function(err, result) {
-    if (err) {
-      deferred.reject();
-      throw err;
+  mongodb.collection('users').aggregate(
+    {$match: {facebookID: facebookID}},
+    {$project: {_id:0, 'ratedPlaces':'$ratedPlaces'}},
+    {$unwind: '$ratedPlaces'},
+    {$match: {'ratedPlaces.factualID': factualID}},
+    {$project: {_id:0, 'ratings':'$ratedPlaces.ratings'}},
+    {$unwind: '$ratings'},
+    {$match: {'ratings.checkinID': checkinID}},
+    {$project: {_id:0, 'checkinID':'$ratings.checkinID', 'facebookID':'$ratings.facebookID', 'rating':'$ratings.rating'}},
+    function(err, result) {
+      if (err) {
+        console.log(err);
+        deferred.reject();
+        throw err;
+      }
+      if (result) {
+        deferred.resolve(result);
+      }
     }
-    if (result) {
-      deferred.resolve(result);
-    }
-  });
+  );
   return deferred.promise;
 };
 
 User.getFactualIDsOfRatedPlaces = function (facebookID) {
   var deferred = Q.defer();
-  facebookID =  '10203426526517301';
   mongodb.collection('users').aggregate(
     {$match: {facebookID: facebookID}},
     {$unwind: '$ratedPlaces'},

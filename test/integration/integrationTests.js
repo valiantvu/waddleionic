@@ -198,7 +198,7 @@ describe('User footprint post', function () {
     });
   });
 
-   it('should add a document to user and friends feed array when user posts footprint', function (done) {
+  it('should add a document to user and friends feed array when user posts footprint', function (done) {
     request(app)
     .post('/api/checkins/nativecheckin')
     .send(testFootprint)
@@ -227,6 +227,25 @@ describe('User footprint post', function () {
       .then(function (place) {
         expect(place.factual_id).to.equal("7a739b40-1add-012f-a1ad-003048c87378");
         expect(place.name).to.equal("Sweet Orchid");
+        done();
+      });
+    });
+  });
+
+  it('should add a rating to user and friends rated places array when user posts footprint', function (done) {
+    this.timeout(10000);
+    request(app)
+    .post('/api/checkins/nativecheckin')
+    .send(testFootprint)
+    .expect(200)
+    .end(function(err, res) {
+      if (err) throw err;
+      mongoUser.findRatingsForPlace(testFootprint.facebookID, testFootprint.factualVenueData.factual_id, res.body.checkinID)
+      .then(function (rating) {
+        console.log(rating);
+        expect(rating[0]).to.have.property('checkinID', res.body.checkinID);
+        expect(rating[0]).to.have.property('facebookID', testFootprint.facebookID);
+        expect(rating[0]).to.have.property('rating', testFootprint.rating);
         done();
       });
     });
