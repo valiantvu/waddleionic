@@ -81,7 +81,7 @@ Place.findFriendsAlreadyBeen = function (facebookID, foursquareID) {
     }
   })
   return deferred.promise;
-}
+};
 
 Place.assignIconToCategories = function (categoryList) {
   var deferred = Q.defer();
@@ -150,7 +150,7 @@ Place.create = function(data){
       deferred.resolve(place);
     }
   });
-}
+};
 
 Place.find = function (factualID) {
 
@@ -275,7 +275,7 @@ Place.findAllByCountryOrCityName = function (userID, locationName) {
     }
   })
   return deferred.promise;
-}
+};
 
 Place.discoverByLocation = function (facebookID, locationTerm) {
   var deferred = Q.defer();
@@ -313,10 +313,10 @@ Place.discoverByLocation = function (facebookID, locationTerm) {
         };
 
         if(item.folder) {
-          singleResult.folder = item.folder.data
+          singleResult.folder = item.folder.data;
         }
 
-        return singleResult
+        return singleResult;
       });
 
       var groupedResults = _.groupBy(parsedResults, function (item) {
@@ -326,10 +326,10 @@ Place.discoverByLocation = function (facebookID, locationTerm) {
       deferred.resolve(groupedResults);
 
     }
-  })
+  });
   return deferred.promise;
 
-}
+};
 
 Place.discoverByCategoryOrName = function (facebookID, searchTerm) {
   var deferred = Q.defer();
@@ -438,6 +438,60 @@ Place.discoverByCategoryOrNameAndLocation = function (facebookID, locationTerm, 
 
     }
   })
+  return deferred.promise;
+};
+
+Place.addRatingsToSearchResults = function (factualPlaces, ratedPlaces) {
+  // Getting rater's info after retrieving factual results is more efficient
+  // than beforehand (in getRatedPlaces) as you may not need to 
+  // iterate through all rated places, but only rated places matching the
+  // search params. 
+
+  // Store ratings, avgRating, and facebook ids for each place (with factual ID as the key)
+  // Retrieve names for all facebook ids in search results
+  // Store names in ratingInfoByFactualID
+  // Use ratingInfoByFactualID when rendering search results (lookup on factual ID)
+  var deferred = Q.defer();
+  var allFacebookIDs = [];
+  var ratingInfoByFactualID = {};
+  var raters = {};
+
+  // Iterate through factual results
+  // Organize of users who have rated each place
+  _.each(factualPlaces, function(place) {
+    var ratings = ratedPlaces[place.factualID].ratings;
+    var facebookIDs;
+
+    if (ratings.length === 1) {
+      facebookIDs = [ratings[0].facebookID];
+      
+    } else if (ratings.length > 1) {
+      facebookIDs = [ratings[0].facebookID, ratings[1].facebookID];
+    }
+
+    ratingInfoByFactualID[place.factualID] = {
+      facebookIDs: facebookIDs,
+      ratings: ratings,
+      avgRating: ratedPlaces[place.factualID.avgRating]
+    };
+    // ratingInfoByFactualID[place.factualID].facebookIDs = facebookIDs;
+    // place.ratings = ratings;
+    // place.avgRating = ratedPlaces[place.factualID.avgRating];
+    allFacebookIDs = allFacebookIDs.concat(facebookIDs);
+
+  });
+
+  User.getNames(allFacebookIDs)
+    .then(function(persons) {
+      _.each(persons, function (person) {
+        raters[person.factualID] = person.name;
+      });
+
+      deferred.resolve({ raters: raters, ratingInfoByFactualID: ratingInfoByFactualID});
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
   return deferred.promise;
 };
 

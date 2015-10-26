@@ -64,6 +64,26 @@ User.setProperty = function (user, property, value) {
   return deferred.promise;
 };
 
+User.getNames = function (facebookIDs) {
+  var deferred = Q.defer();
+  mongodb.collection('users').aggregate(
+    {$match: {facebookID: {'$in': facebookIDs}}},
+    {$project: {_id:0, 'name': '$name', 'facebookID': '$facebookID'}},
+    function(err, results) {
+      if (err) {
+        console.log(err);
+        deferred.reject();
+        throw err;
+      }
+      if (results) {
+        deferred.resolve(_.pluck(results, 'name'));
+      }
+    }
+  );
+  return deferred.promise;
+};
+
+
 // User.updateCheckinsCount = function (user) {
 //   var deferred = Q.defer();
 
@@ -172,6 +192,7 @@ User.findFeedItem = function (facebookID, checkinID) {
 
 User.buildRatedPlaces = function (userAndFriendsFacebookIDs, checkin) {
   // console.log(checkin);
+  User.getRatedPlaces('10203426526517301');
   var deferredRatedPlaceCreated = Q.defer();
   var deferredRatedPlaceUpdated = Q.defer();
   var factualID = checkin.factualVenueData.factual_id;
@@ -319,23 +340,33 @@ User.findRatingsForPlace= function (facebookID, factualID, checkinID) {
   return deferred.promise;
 };
 
-User.getFactualIDsOfRatedPlaces = function (facebookID) {
-  console.log('getting getFactualIDsOfRatedPlaces');
+User.getRatedPlaces = function (facebookID) {
   var deferred = Q.defer();
   mongodb.collection('users').aggregate(
     {$match: {facebookID: facebookID}},
     {$unwind: '$ratedPlaces'},
-    {$project: {_id:0, 'factualID': '$ratedPlaces.factualID'}},
-    function(err, result) {
+    {$project: {_id:0, 'factualID': '$ratedPlaces.factualID', 'avgRating': '$ratedPlaces.avgRating', 'ratings': '$ratedPlaces.ratings'}},
+    function(err, results) {
       if (err) {
         console.log(err);
         deferred.reject();
         throw err;
       }
-      if (result) {
-        var factualIDs = _.pluck(result, 'factualID');
-        // console.log(factualIDs);
-        deferred.resolve(factualIDs);
+      if (results) {
+        console.log('Getting ratedPlaces for user', facebookID);
+        // console.log(results);
+        // var factualIDs = _.pluck(results, 'factualID');
+        // var factualIDs = [];
+        var ratedPlaces = {
+          factualIDs: []
+        };
+        _.each(results, function (place) {
+          ratedPlaces.factualIDs.push(place.factualID);
+          ratedPlaces[place.factualID] = {avgRating: place.avgRating, ratings: place.ratings};
+        });
+        // var ratedPlaces = {results: results, factualIDs: factualIDs};
+        console.log(ratedPlaces);
+        deferred.resolve(ratedPlaces);
       }
     }
   );
