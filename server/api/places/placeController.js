@@ -4,6 +4,8 @@ var neo4jPlace = require('../neo4j/placeModel.js');
 var mongoPlace= require('../mongo/placeModel.js');
 var mongoTag = require('../mongo/tagModel.js');
 var factualUtils = require('../../utils/factualUtils.js');
+var helpers = require('../../utils/helpers.js');
+
 
 var placeController = {};
 
@@ -46,8 +48,20 @@ placeController.updatePlace = function (req, res){
 
 placeController.discoverPlaces = function (req, res) {
 	var searchParams = req.params;
+	console.log(searchParams);
 	var factualQuery = helpers.buildFactualSearchQuery(searchParams);
-}
+	console.log('factualQuery', factualQuery);
+	factualUtils.executeSearch(factualQuery)
+	.then(function (results) {
+		console.log(results);
+		res.json(results);
+		res.status(200).end();
+	})
+	.catch(function(err) {
+		console.log(err);
+		res.status(500).end();
+	});
+};
 
 placeController.searchWaddleDB = function (req, res) {
 	var facebookID = req.params.user;

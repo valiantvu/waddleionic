@@ -109,6 +109,19 @@ utils.searchVenuesByQueryAndNear = function (near, query, offset) {
 	return deferred.promise;
 };
 
+utils.executeSearch = function (searchQuery) {
+	var deferred = Q.defer();
+	factual.get('/t/' + searchQuery.apiSource, searchQuery.body, function (err, res) {
+		if (err) {
+			console.log(err);
+			deferred.reject(err);
+		} else {
+			deferred.resolve(res.data);
+		}
+	});
+	return deferred.promise;
+};
+
 utils.getFactualIDFromFoursquareID = function (foursquareID) {
 	console.log(foursquareID);
 	var deferred = Q.defer();

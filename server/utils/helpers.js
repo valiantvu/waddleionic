@@ -29,43 +29,66 @@ helpers.httpsGet = function (queryPath) {
 
 helpers.buildFactualSearchQuery = function (searchParams) {
   var query = {};
-  query.filters = {};
-  if(searchParams.lat && searchParams.lng && searchParams.radius) {
-    query.geo = {
+  query.apiSource = searchParams.api_source;
+  query.body = {};
+  query.body.filters = {};
+  if(searchParams.lat && searchParams.lng && searchParams.rad) {
+    query.body.geo = {
       "$circle":{
         "$center": [searchParams.lat, searchParams.lng],
-        "$meters": searchParams.radius
+        "$meters": searchParams.rad
       }
     };
   }
   if(searchParams.neighborhood && searchParams.city && searchParams.state) {
-    query.filters.neighborhoods = {"$includes_any": searchParams.neighborhoods};
-    query.filters.locality = searchParams.city;
-    query.filters.region = searchParams.state;
+    if(searchParams.neighborhood.length > 1) {
+      query.body.filters.neighborhoods = {"$includes_any": searchParams.neighborhoods};
+    } else {
+      query.body.filters.neighborhoods = {"$includes": searchParams.neighborhoods[0]};
+    }
+    query.body.filters.locality = searchParams.city;
+    query.body.filters.region = searchParams.state;
   }
   else if(searchParams.city && searchParams.state) {
-    query.filters.locality = searchParams.city;
-    query.filters.region = searchParams.state;
+    query.body.filters.locality = searchParams.city;
+    query.body.filters.region = searchParams.state;
   }
 
   if(searchParams.category) {
-    query.filters.category_labels = {"$includes_any": searchParams.categories};
+    if(query.apiSource === 'places') {
+      if(searchParams.categories.length > 1) {
+        query.body.filters.category_labels= {"$includes_any": searchParams.categories};  
+      } else {
+        query.body.filters.category_labels= {"$includes": searchParams.categories[0]}; 
+      }
+    }
+    else if(query.apiSource === 'restaurants') {
+      if(searchParams.categories.length > 1) {
+        query.body.filters.cuisine= {"$includes_any": searchParams.categories};  
+      } else {
+        query.body.filters.cuisine= {"$includes": searchParams.categories[0]}; 
+      }
+    }
   }
 
   if(searchParams.price) {
-    console.log('price');
+    if(searchParams.price.length > 1) {
+      query.body.filters.cuisine= {"$includes_any": searchParams.categories}; 
+    } else {
+      query.body.filters.cuisine= {"$includes": searchParams.categories}; 
+    }
   }
 
   if(searchParams.attr) {
-    console.log('meh');
+    searchParams.attr = query.body.filters[searchParams.attr] = true;
   }
 
   if(searchParams.sort === 'rating') {
-    query.sort = "placerank:desc";
+    query.body.sort = "placerank:desc";
   } else if (searchParams.sort === 'distance') {
-    query.sort = "$distance";
+    query.body.sort = "$distance";
   }
-
+  return query;
 };
 
 helpers.httpsPost = function (queryPath, headers, body) {
