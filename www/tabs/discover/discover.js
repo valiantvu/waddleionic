@@ -6,6 +6,11 @@ var DiscoverController = function (Auth,  $scope, $state, DiscoverPlaces, $ionic
     $scope.search = {};
     $scope.selectedPrices = [];
 
+    DiscoverPlaces.search(window.sessionStorage.userFbID, {})
+    .then(function (places) {
+      console.log(places.data);
+    });
+
     var searchVenuesByNameOrCategory = function () {
       console.log('search by category/place name');
       if($scope.search.query.length > 1) {
@@ -13,7 +18,7 @@ var DiscoverController = function (Auth,  $scope, $state, DiscoverPlaces, $ionic
         .then(function (data) {
           $scope.venues = data.data;
           console.log(data);
-        })
+        });
       }
     };
 
@@ -25,7 +30,7 @@ var DiscoverController = function (Auth,  $scope, $state, DiscoverPlaces, $ionic
         .then(function (data) {
           $scope.venues = data.data;
           console.log(data);
-        })
+        });
       }
     };
 
@@ -36,9 +41,9 @@ var DiscoverController = function (Auth,  $scope, $state, DiscoverPlaces, $ionic
         .then(function (data) {
           $scope.venues = data.data;
           console.log(data);
-        })
+        });
       }
-    }
+    };
 
     $scope.bifurcateSearch = function() {
       if($scope.search.query && $scope.search.location) {
@@ -54,7 +59,7 @@ var DiscoverController = function (Auth,  $scope, $state, DiscoverPlaces, $ionic
 
     $scope.clearSearch = function () {
       $scope.search.query = {};
-    }
+    };
 
     $scope.openModal = function() {
       $scope.modal.show();
@@ -62,7 +67,7 @@ var DiscoverController = function (Auth,  $scope, $state, DiscoverPlaces, $ionic
 
 
     $scope.showFilterOptions = function () {
-      console.log('filtering')
+      console.log('filtering');
       $ionicModal.fromTemplateUrl('modals/discover-filters.html', {
         scope: $scope,
         animation: 'slide-in-up'
@@ -118,5 +123,5 @@ DiscoverController.$inject = ['Auth', '$scope', '$state', 'DiscoverPlaces', '$io
 // Custom Submit will avoid binding data to multiple fields in ng-repeat and allow custom on submit processing
 
 angular.module('waddle.discover', [])
-  .controller('DiscoverController', DiscoverController)
+  .controller('DiscoverController', DiscoverController);
 })();

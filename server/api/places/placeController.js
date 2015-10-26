@@ -53,6 +53,7 @@ placeController.discoverPlaces = function (req, res) {
 	var user = req.params.user;
 	//req.query should be an object 
 	console.log(searchParams);
+	console.log(user);
 
 
   //if searchParams includes list of rated places, then search factual API excluding the rated place; if searchParams
@@ -63,9 +64,11 @@ placeController.discoverPlaces = function (req, res) {
 			console.log('factualIDs: ', ratedPlaces);
 			searchParams.ratedPlaces = ratedPlaces;
 			//this property is used to alter the query so that it filters the list of rated places that is passed in via the searchParams
-			searchParams.shouldFilterRatedPlaces = true;
+			if(ratedPlaces.length > 0) {
+				searchParams.shouldFilterRatedPlaces = true;
+			}
 			factualQuery = helpers.buildFactualSearchQuery(searchParams);
-			console.log('factualQuery', factualQuery);
+			console.log('factualQuery', JSON.stringify(factualQuery));
 			return factualUtils.executeSearch(factualQuery);
 		})
 		.then(function (results) {

@@ -29,15 +29,16 @@ helpers.httpsGet = function (queryPath) {
 
 helpers.buildFactualSearchQuery = function (searchParams) {
   var query = {};
-  query.apiSource = searchParams.api_source;
+  query.apiSource = searchParams.apiSource;
   query.body = {};
   query.body.filters = {};
   //whether or not to search via places in user's network, or via factual
-  if(searchParams.filterRatedPlaces) {
+  if(searchParams.shouldFilterRatedPlaces) {
     query.body.filters.factual_id = {"$in": searchParams.ratedPlaces};
-  } else {
-    query.body.filters.factual_id = {"$nin": ratedPlaces};
+  } else if (searchParams.ratedPlaces.length > 0) {
+    query.body.filters.factual_id = {"$nin": searchParams.ratedPlaces};
   }
+
   if(searchParams.lat && searchParams.lng && searchParams.rad) {
     query.body.geo = {
       "$circle":{
@@ -47,7 +48,7 @@ helpers.buildFactualSearchQuery = function (searchParams) {
     };
   }
   if(searchParams.neighborhood && searchParams.city && searchParams.state) {
-    if(searchParams.neighborhood.length > 1) {
+    if(Array.isArray(searchParams.neighborhood) && searchParams.neighborhood.length > 1) {
       query.body.filters.neighborhoods = {"$includes_any": searchParams.neighborhoods};
     } else {
       query.body.filters.neighborhoods = {"$includes": searchParams.neighborhoods[0]};
@@ -60,32 +61,33 @@ helpers.buildFactualSearchQuery = function (searchParams) {
     query.body.filters.region = searchParams.state;
   }
 
-  if(searchParams) {
-    if(query.apiSource === 'places') {
-      if(searchParams.categories.length > 1) {
-        query.body.filters.category_labels= {"$includes_any": searchParams.categories};  
-      } else {
-        query.body.filters.category_labels= {"$includes": searchParams.categories[0]}; 
-      }
-    }
-    else if(query.apiSource) {
-      if(searchParams.categories.length > 1) {
-        query.body.filters.cuisine= {"$includes_any": searchParams.categories};  
-      } else {
-        query.body.filters.cuisine= {"$includes": searchParams.categories[0]}; 
-      }
+  if(query.apiSource === 'places') {
+    console.log('categories');
+    if(Array.isArray(searchParams.categories) && searchParams.categories.length > 1) {
+      query.body.filters.category_labels= {"$includes_any": searchParams.categories};  
+    } else {
+      query.body.filters.category_labels= {"$includes": searchParams.categories}; 
     }
   }
+  else if(query.apiSource === 'restaurants') {
+    console.log('cuinese');
 
-  if(searchParams.price) {
-    if(searchParams.price.length > 1) {
-      query.body.filters.cuisine= {"$includes_any": searchParams.categories}; 
+    if(Array.isArray(searchParams.categories) && searchParams.categories.length > 1) {
+      query.body.filters.cuisine= {"$includes_any": searchParams.categories};  
     } else {
       query.body.filters.cuisine= {"$includes": searchParams.categories}; 
     }
   }
 
-  if(searchParams.attr) {
+  if(searchParams.apiSource === 'restaurants' && searchParams.price) {
+    if(Array.isArray(searchParams.price) && searchParams.price.length > 1) {
+      query.body.filters.cuisine= {"$includes_any": searchParams.categories}; 
+    } else {
+      query.body.filters.cuisine= {"$includes": searchParams.price}; 
+    }
+  }
+
+  if(searchParams.apiSource === 'restaurants' && searchParams.attr) {
     searchParams.attr = query.body.filters[searchParams.attr] = true;
   }
 
