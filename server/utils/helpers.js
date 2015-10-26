@@ -27,11 +27,17 @@ helpers.httpsGet = function (queryPath) {
   return deferred.promise;
 };
 
-helpers.buildFactualSearchQuery = function (searchParams) {
+helpers.buildFactualSearchQuery = function (searchParams, searchThroughRatedPlaces, ratedPlaces) {
   var query = {};
   query.apiSource = searchParams.api_source;
   query.body = {};
   query.body.filters = {};
+  //whether or not to search via places in user's network, or via factual
+  if(searchThroughRatedPlaces) {
+    query.body.filters.factual_id = {"$in": ratedPlaces};
+  } else {
+    query.body.filters.factual_id = {"$nin": ratedPlaces};
+  }
   if(searchParams.lat && searchParams.lng && searchParams.rad) {
     query.body.geo = {
       "$circle":{

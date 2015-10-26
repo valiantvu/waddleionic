@@ -51,6 +51,7 @@ placeController.discoverPlaces = function (req, res) {
 	console.log(searchParams);
 	var factualQuery = helpers.buildFactualSearchQuery(searchParams);
 	console.log('factualQuery', factualQuery);
+	// mongoUser.getFactualIDsOfRatedPlaces
 	factualUtils.executeSearch(factualQuery)
 	.then(function (results) {
 		console.log(results);
