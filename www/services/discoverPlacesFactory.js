@@ -35,7 +35,6 @@ var DiscoverPlaces = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $
 
       return $http({
         method: 'GET',
-        params: {'data': 'this is my data!', 'woot': 'so woo'},
         url: url
       });
     },

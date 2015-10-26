@@ -27,14 +27,14 @@ helpers.httpsGet = function (queryPath) {
   return deferred.promise;
 };
 
-helpers.buildFactualSearchQuery = function (searchParams, searchThroughRatedPlaces, ratedPlaces) {
+helpers.buildFactualSearchQuery = function (searchParams) {
   var query = {};
   query.apiSource = searchParams.api_source;
   query.body = {};
   query.body.filters = {};
   //whether or not to search via places in user's network, or via factual
-  if(searchThroughRatedPlaces) {
-    query.body.filters.factual_id = {"$in": ratedPlaces};
+  if(searchParams.filterRatedPlaces) {
+    query.body.filters.factual_id = {"$in": searchParams.ratedPlaces};
   } else {
     query.body.filters.factual_id = {"$nin": ratedPlaces};
   }
@@ -60,7 +60,7 @@ helpers.buildFactualSearchQuery = function (searchParams, searchThroughRatedPlac
     query.body.filters.region = searchParams.state;
   }
 
-  if(searchParams.category) {
+  if(searchParams) {
     if(query.apiSource === 'places') {
       if(searchParams.categories.length > 1) {
         query.body.filters.category_labels= {"$includes_any": searchParams.categories};  
@@ -68,7 +68,7 @@ helpers.buildFactualSearchQuery = function (searchParams, searchThroughRatedPlac
         query.body.filters.category_labels= {"$includes": searchParams.categories[0]}; 
       }
     }
-    else if(query.apiSource === 'restaurants') {
+    else if(query.apiSource) {
       if(searchParams.categories.length > 1) {
         query.body.filters.cuisine= {"$includes_any": searchParams.categories};  
       } else {

@@ -112,6 +112,8 @@ var UserRequests = function ($http, ezfb){
         }
       }
       console.log(url);
+      console.log(arguments);
+
 
       if (userFbID) {
         return $http({

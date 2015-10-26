@@ -5,7 +5,7 @@ module.exports = function (app) {
   app.get('/search/:user/:query', placeController.searchWaddleDB);
   app.get('/assigncategories/:user', placeController.assignIconToCategory);
   app.get('/beenhere/:place/:user', placeController.findFriendsAlreadyBeen);
-  app.get('/discover/:user/:lat?/:lng?/:rad?/:loc?/:category?/:price/:attr/:name?/api_source?/:sort?', placeController.discoverPlaces);
+  app.get('/discover/search/:user', placeController.discoverPlaces);
   app.get('/discover/category/:query/:user/:price?', placeController.discoverPlacesByCategoryOrName);
   app.get('/discover/location/:location/:user', placeController.discoverPlacesByLocation);
   app.get('/discover/location-category/:location/:query/:user', placeController.discoverPlacesByCategoryOrNameAndLocation);

@@ -1,7 +1,8 @@
 var Q = require('q');
 var _ = require('lodash');
 var neo4jPlace = require('../neo4j/placeModel.js');
-var mongoPlace= require('../mongo/placeModel.js');
+var mongoPlace = require('../mongo/placeModel.js');
+var mongoUser = require('../mongo/userModel.js');
 var mongoTag = require('../mongo/tagModel.js');
 var factualUtils = require('../../utils/factualUtils.js');
 var helpers = require('../../utils/helpers.js');
@@ -47,21 +48,48 @@ placeController.updatePlace = function (req, res){
 };
 
 placeController.discoverPlaces = function (req, res) {
-	var searchParams = req.params;
+	var factualQuery;
+	var searchParams = req.query;
+	var user = req.params.user;
+	//req.query should be an object 
 	console.log(searchParams);
-	var factualQuery = helpers.buildFactualSearchQuery(searchParams);
-	console.log('factualQuery', factualQuery);
-	// mongoUser.getFactualIDsOfRatedPlaces
-	factualUtils.executeSearch(factualQuery)
-	.then(function (results) {
-		console.log(results);
-		res.json(results);
-		res.status(200).end();
-	})
-	.catch(function(err) {
-		console.log(err);
-		res.status(500).end();
-	});
+
+
+  //if searchParams includes list of rated places, then search factual API excluding the rated place; if searchParams
+  //doesn't include list of rated places, get rated places and use the factual API to filter that list based on user input
+	if(!searchParams.ratedPlaces) {
+		mongoUser.getFactualIDsOfRatedPlaces(user)
+		.then(function (ratedPlaces) {
+			console.log('factualIDs: ', ratedPlaces);
+			searchParams.ratedPlaces = ratedPlaces;
+			//this property is used to alter the query so that it filters the list of rated places that is passed in via the searchParams
+			searchParams.shouldFilterRatedPlaces = true;
+			factualQuery = helpers.buildFactualSearchQuery(searchParams);
+			console.log('factualQuery', factualQuery);
+			return factualUtils.executeSearch(factualQuery);
+		})
+		.then(function (results) {
+			console.log(results);
+			res.json(results);
+			res.status(200).end();
+		})
+		.catch(function(err) {
+			console.log(err);
+			res.status(500).end();
+		});
+	} else {
+		factualQuery = helpers.buildFactualSearchQuery(searchParams);
+		factualUtils.executeSearch(factualQuery)
+		.then(function (results) {
+			console.log(results);
+			res.json(results);
+			res.status(200).end();
+		})
+		.catch(function(err) {
+			console.log(err);
+			res.status(500).end();
+		});
+	}
 };
 
 placeController.searchWaddleDB = function (req, res) {
@@ -109,13 +137,13 @@ placeController.findFriendsAlreadyBeen = function (req, res) {
 	});
 };
 
-placeController.discoverPlaces = function (req, res) {
-	// TODO
-	// Search by category, venue name, locality, or nearby
-	// Call userModel function to search through ratedPlaces and
-	// retrieve a list of place IDs matching search terms
-	// Then retrieve nearby places through factual api
-};
+// placeController.discoverPlaces = function (req, res) {
+// 	// TODO
+// 	// Search by category, venue name, locality, or nearby
+// 	// Call userModel function to search through ratedPlaces and
+// 	// retrieve a list of place IDs matching search terms
+// 	// Then retrieve nearby places through factual api
+// };
 
 placeController.discoverPlacesByCategoryOrName = function (req, res) {
 	var facebookID = req.params.user;

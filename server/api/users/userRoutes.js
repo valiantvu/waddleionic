@@ -20,7 +20,7 @@ module.exports = function(app){
   app.get('/folder/search/:user/:folder/:query/:page?/:skip?', userController.searchFolderContents);
 
   // Feed
-  app.get('/aggregatefeed/:user/:page?/:skip?', userController.getAggregatedListOfCheckins);
+  app.get('/aggregatefeed/:user/:page?/:skip?/:data?', userController.getAggregatedListOfCheckins);
 
   // Notifications
   app.post('/notifications/update', userController.updateNotificationReadStatus);

@@ -320,6 +320,7 @@ User.findRatingsForPlace= function (facebookID, factualID, checkinID) {
 };
 
 User.getFactualIDsOfRatedPlaces = function (facebookID) {
+  console.log('getting getFactualIDsOfRatedPlaces');
   var deferred = Q.defer();
   mongodb.collection('users').aggregate(
     {$match: {facebookID: facebookID}},
