@@ -34,10 +34,22 @@ Tag.createTextIndexOnNameField = function() {
 };
 
 Tag.fetchTagsBasedOnSearchTerm = function (searchTerm) {
+  var regex;
   var deferred = Q.defer();
-  mongodb.collection('tags').find({'$text':{'$search': searchTerm}}, {name: 1}, {limit: 3}).toArray(function (err, result) {
+  if(searchTerm.length >= 3) {
+    regex = new RegExp(searchTerm);
+  } else {
+    var regexStringBeginsWith = '^' + searchTerm;
+    regex = new RegExp(regexStringBeginsWith);
+  }
+  console.log(regex);
+
+  mongodb.collection('tags').find({'name':{'$regex': regex, '$options': 'i'}}, {name: 1}, {limit: 3}).toArray(function (err, result) {
+  // mongodb.collection('tags').find({'$text':{'$search': searchTerm}}, {name: 1}, {limit: 3}).toArray(function (err, result) {
+
     if (err) {
       deferred.reject();
+      console.log(err);
       throw err;
     }
     if (result) {

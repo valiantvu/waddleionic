@@ -1,5 +1,115 @@
 var tags = {};
 tags.list = [
+ {
+    "name": "Restaurants",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "American",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Barbecue",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Buffets",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Burgers",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Chinese",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Delis",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Diners",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Fast Food",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "French",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Indian",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Italian",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Japanese",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Korean",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Mexican",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Middle Eastern",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Pizza",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Seafood",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Steakhouses",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Sushi",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Thai",
+    "factualCategoryID": 1,
+    "type": []
+  },
+  {
+    "name": "Vegan and Vegetarian",
+    "factualCategoryID": 1,
+    "type": []
+  },
   {
     "name": "Classic and Antique Car",
     "factualCategoryID": 1,
@@ -751,116 +861,6 @@ tags.list = [
   },
   {
     "name": "Juice Bars and Smoothies",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Restaurants",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "American",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Barbecue",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Buffets",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Burgers",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Chinese",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Delis",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Diners",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Fast Food",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "French",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Indian",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Italian",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Japanese",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Korean",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Mexican",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Middle Eastern",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Pizza",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Seafood",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Steakhouses",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Sushi",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Thai",
-    "factualCategoryID": 1,
-    "type": []
-  },
-  {
-    "name": "Vegan and Vegetarian",
     "factualCategoryID": 1,
     "type": []
   },

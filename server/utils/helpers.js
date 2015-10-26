@@ -27,6 +27,81 @@ helpers.httpsGet = function (queryPath) {
   return deferred.promise;
 };
 
+helpers.buildFactualSearchQuery = function (searchParams) {
+  var query = {};
+  query.apiSource = searchParams.apiSource;
+  query.body = {};
+  query.body.filters = {};
+  //whether or not to search via places in user's network, or via factual
+  if(searchParams.shouldFilterRatedPlaces) {
+    query.body.filters.factual_id = {"$in": searchParams.ratedPlaces};
+  } else if (searchParams.ratedPlaces.length > 0) {
+    query.body.filters.factual_id = {"$nin": searchParams.ratedPlaces};
+  }
+
+  if(searchParams.lat && searchParams.lng && searchParams.rad) {
+    query.body.geo = {
+      "$circle":{
+        "$center": [searchParams.lat, searchParams.lng],
+        "$meters": searchParams.rad
+      }
+    };
+  }
+  if(searchParams.neighborhood && searchParams.city && searchParams.state) {
+    if(Array.isArray(searchParams.neighborhood) && searchParams.neighborhood.length > 1) {
+      query.body.filters.neighborhoods = {"$includes_any": searchParams.neighborhoods};
+    } else {
+      query.body.filters.neighborhoods = {"$includes": searchParams.neighborhoods[0]};
+    }
+    query.body.filters.locality = searchParams.city;
+    query.body.filters.region = searchParams.state;
+  }
+  else if(searchParams.city && searchParams.state) {
+    query.body.filters.locality = searchParams.city;
+    query.body.filters.region = searchParams.state;
+  }
+
+  if(query.apiSource === 'places') {
+    if(Array.isArray(searchParams.categories) && searchParams.categories.length > 1) {
+      query.body.filters.category_labels= {"$includes_any": searchParams.categories};  
+    } else {
+      query.body.filters.category_labels= {"$includes": searchParams.categories}; 
+    }
+  }
+  else if(query.apiSource === 'restaurants') {
+    if(Array.isArray(searchParams.categories) && searchParams.categories.length > 1) {
+      query.body.filters.cuisine= {"$includes_any": searchParams.categories};  
+    } else {
+      query.body.filters.cuisine= {"$includes": searchParams.categories}; 
+    }
+    if(searchParams.price) {
+      if(Array.isArray(searchParams.price) && searchParams.price.length > 1) {
+        query.body.filters.cuisine= {"$includes_any": searchParams.categories}; 
+      } else {
+        query.body.filters.cuisine= {"$includes": searchParams.price}; 
+      }
+    }
+
+    if(searchParams.attr) {
+      if(Array.isArray(searchParams.attr)) {
+        for(var i = 0; i < searchParams.attr.length; i++) {
+          query.body.filters[searchParams.attr[i]] = true;
+        }
+      } else {
+          query.body.filters[searchParams.attr] = true;
+      }
+    }
+  }
+
+
+  if(searchParams.sort === 'rating') {
+    query.body.sort = "placerank:desc";
+  } else if (searchParams.sort === 'distance') {
+    query.body.sort = "$distance";
+  }
+  return query;
+};
+
 helpers.httpsPost = function (queryPath, headers, body) {
   console.log(queryPath);
   var deferred = Q.defer();
