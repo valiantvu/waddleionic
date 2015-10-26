@@ -62,7 +62,6 @@ helpers.buildFactualSearchQuery = function (searchParams) {
   }
 
   if(query.apiSource === 'places') {
-    console.log('categories');
     if(Array.isArray(searchParams.categories) && searchParams.categories.length > 1) {
       query.body.filters.category_labels= {"$includes_any": searchParams.categories};  
     } else {
@@ -70,26 +69,30 @@ helpers.buildFactualSearchQuery = function (searchParams) {
     }
   }
   else if(query.apiSource === 'restaurants') {
-    console.log('cuinese');
-
     if(Array.isArray(searchParams.categories) && searchParams.categories.length > 1) {
       query.body.filters.cuisine= {"$includes_any": searchParams.categories};  
     } else {
       query.body.filters.cuisine= {"$includes": searchParams.categories}; 
     }
-  }
+    if(searchParams.price) {
+      if(Array.isArray(searchParams.price) && searchParams.price.length > 1) {
+        query.body.filters.cuisine= {"$includes_any": searchParams.categories}; 
+      } else {
+        query.body.filters.cuisine= {"$includes": searchParams.price}; 
+      }
+    }
 
-  if(searchParams.apiSource === 'restaurants' && searchParams.price) {
-    if(Array.isArray(searchParams.price) && searchParams.price.length > 1) {
-      query.body.filters.cuisine= {"$includes_any": searchParams.categories}; 
-    } else {
-      query.body.filters.cuisine= {"$includes": searchParams.price}; 
+    if(searchParams.attr) {
+      if(Array.isArray(searchParams.attr)) {
+        for(var i = 0; i < searchParams.attr.length; i++) {
+          query.body.filters[searchParams.attr[i]] = true;
+        }
+      } else {
+          query.body.filters[searchParams.attr] = true;
+      }
     }
   }
 
-  if(searchParams.apiSource === 'restaurants' && searchParams.attr) {
-    searchParams.attr = query.body.filters[searchParams.attr] = true;
-  }
 
   if(searchParams.sort === 'rating') {
     query.body.sort = "placerank:desc";

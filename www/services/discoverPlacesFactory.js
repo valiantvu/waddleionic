@@ -12,7 +12,7 @@ var DiscoverPlaces = function ($http, $q, $cordovaGeolocation, $ionicPlatform, $
         rad: 10000,
         categories: ["Coffee", "Thai"],
         apiSource: 'places',
-        attr: 'wifi',
+        attr: ['wifi'],
         sort: 'distance'
       };
       var url = '/api/places/discover/search/' + userFbID;
