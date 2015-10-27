@@ -59,9 +59,9 @@ placeController.discoverPlaces = function (req, res) {
   //if searchParams includes list of rated places, then search factual API excluding the rated place; if searchParams
   //doesn't include list of rated places, get rated places and use the factual API to filter that list based on user input
 	if(!searchParams.ratedPlaces) {
-		mongoUser.getFactualIDsOfRatedPlaces(user)
+		mongoUser.getRatedPlaces(user)
 		.then(function (ratedPlaces) {
-			console.log('factualIDs: ', ratedPlaces);
+			console.log('factualIDs: ', ratedPlaces.factualIDs);
 			searchParams.ratedPlaces = ratedPlaces;
 			//this property is used to alter the query so that it filters the list of rated places that is passed in via the searchParams
 			if(ratedPlaces.length > 0) {
@@ -71,8 +71,10 @@ placeController.discoverPlaces = function (req, res) {
 			console.log('factualQuery', JSON.stringify(factualQuery));
 			return factualUtils.executeSearch(factualQuery);
 		})
+		.then(function (factualPlaces) {
+			return mongoPlace.addRatingsToSearchResults(factualPlaces, searchParams.ratedPlaces);
+		})
 		.then(function (results) {
-			console.log(results);
 			res.json(results);
 			res.status(200).end();
 		})
@@ -83,8 +85,10 @@ placeController.discoverPlaces = function (req, res) {
 	} else {
 		factualQuery = helpers.buildFactualSearchQuery(searchParams);
 		factualUtils.executeSearch(factualQuery)
+		.then(function (factualPlaces) {
+			return mongoPlace.addRatingsToSearchResults(factualPlaces, searchParams.ratedPlaces);
+		})
 		.then(function (results) {
-			console.log(results);
 			res.json(results);
 			res.status(200).end();
 		})

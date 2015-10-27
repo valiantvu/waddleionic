@@ -76,7 +76,7 @@ User.getNames = function (facebookIDs) {
         throw err;
       }
       if (results) {
-        deferred.resolve(_.pluck(results, 'name'));
+        deferred.resolve(results);
       }
     }
   );

@@ -34,9 +34,11 @@ helpers.buildFactualSearchQuery = function (searchParams) {
   query.body.filters = {};
   //whether or not to search via places in user's network, or via factual
   if(searchParams.shouldFilterRatedPlaces) {
-    query.body.filters.factual_id = {"$in": searchParams.ratedPlaces};
-  } else if (searchParams.ratedPlaces.length > 0) {
-    query.body.filters.factual_id = {"$nin": searchParams.ratedPlaces};
+    query.body.filters.factual_id = {"$in": searchParams.ratedPlaces.factualIDs};
+  } else if (searchParams.ratedPlaces.factualIDs.length > 0) {
+    console.log("about to do nin search");
+    console.log(searchParams.ratedPlaces.factualIDs);
+    query.body.filters.factual_id = {"$in": searchParams.ratedPlaces.factualIDs};
   }
 
   if(searchParams.lat && searchParams.lng && searchParams.rad) {
